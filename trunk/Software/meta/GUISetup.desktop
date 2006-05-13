@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Encoding=UTF-8
+Name=GUI Setup
+Comment=Configure the UWSDR GUI
+Icon=GUISetup.png
+Exec=/usr/local/bin/GUISetup
+Path=.
+Terminal=false

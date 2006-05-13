@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Encoding=UTF-8
+Name=UWSDR GUI
+Comment=The UWSDR GUI
+Icon=UWSDR.png
+Exec=/usr/local/bin/UWSDR
+Path=.
+Terminal=false

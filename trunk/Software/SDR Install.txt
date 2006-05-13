@@ -1,0 +1,33 @@
+SDR Installation
+================
+
+In order to use the SDR prototype, unpack the ZIP file into a convenient place.
+
+There are now three programs. UWSDR.exe which is the SDR GUI itself, SDREmulator.exe which is as the name suggests, an emulator for the SDR, and finally GUISetup.exe which sets up the required parameters to start the SDR.
+
+To start you need to setup the GUI. Run GUISetup.exe and choose a name for your SDR, then an SR filename. A suitable file, named 13cms_simple.sdr is included, choose that one. The audio API to use should be selected first, followed by the input and output sound devices. The IP Address of the SDR will be "localhost" unless you intend to test across two PCs. The control port hould be an unused port number on your PC, I use 5003.
+
+Pressing Create will put these initial parameters into the registry. You can change these values later, the name of existing configurations will appear on the drop down menu. Changing the values here will not change any other values associated with the named SDR if it already exists.
+
+If nothing changes, you shouldn't need to run GUISetup again, unless you get another SDR.
+
+You can either run the GUI with the SDR Emulator or without.
+
+
+With the SDR Emulator
+---------------------
+
+Now you need to run the SDREmulator. Run the program with the number that you used for the control port above, as an argument. So in my case I use "SDREmulator 5003". This will bring up a window where you can see interaction with the GUI. You will need to run this every time you use the SDR GUI, until we have a real SDR to play with.
+
+Now run the SDR GUI itself, this is named UWSDR.exe and now takes a mandatory argument. This is the name that you entered into the Name entry in GUISetup above.
+
+
+Without the SDR Emulator
+------------------------
+
+Run the SDR GUI itself, named UWSDR.exe and give it two arguments, the first is "-s" to tell it not to use the SDR and the second the is the name that you entered into the Name entry in GUISetup above.
+
+
+In the final version, running GUISetup will create an entry for this SDR in the program menu, at least under Windows. For now, you must specify the name explicitely. The SDR GUI should start up and be ready to play with.
+
+Now go to the SDR Usage document.

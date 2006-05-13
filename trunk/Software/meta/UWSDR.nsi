@@ -1,0 +1,104 @@
+;NSIS Modern User Interface version 1.70
+;UWSDR install script
+;Written by Jonathan Naylor
+
+  SetCompressor lzma
+
+;--------------------------------
+;Include Modern UI
+
+  !include "MUI.nsh"
+
+;--------------------------------
+;Configuration
+
+  ;General
+  Name "UWSDR 0.5"
+  OutFile "UWSDR.exe"
+
+  ;Folder selection page
+  InstallDir "$PROGRAMFILES\UWSDR"
+  
+  ;Get install folder from registry if available
+  InstallDirRegKey HKCU "Software\UWSDR" "InstPath"
+
+;--------------------------------
+;Interface Settings
+
+  !define MUI_ABORTWARNING
+
+;--------------------------------
+;Pages
+
+  !insertmacro MUI_PAGE_LICENSE "C:\Documents and Settings\Administrator\My Documents\UWSDR\Copying.txt"
+  !insertmacro MUI_PAGE_DIRECTORY
+
+  !insertmacro MUI_PAGE_INSTFILES
+  !insertmacro MUI_UNPAGE_CONFIRM
+  !insertmacro MUI_UNPAGE_INSTFILES
+  
+;--------------------------------
+;Languages
+ 
+  !insertmacro MUI_LANGUAGE "English"
+
+;--------------------------------
+;Installer Sections
+
+Section "UWSDR Program Files" SecProgram
+
+  SetOutPath "$INSTDIR"
+  
+  File "C:\Documents and Settings\Administrator\My Documents\UWSDR\Release\UWSDR.exe"
+  File "C:\Documents and Settings\Administrator\My Documents\UWSDR\Release\GUISetup.exe"
+  File "C:\Documents and Settings\Administrator\My Documents\UWSDR\Release\SDRSetup.exe"
+  File "C:\Documents and Settings\Administrator\My Documents\UWSDR\Release\SDREmulator.exe"
+  File "C:\Documents and Settings\Administrator\My Documents\UWSDR\Release\fftw3.dll"
+  File "C:\Documents and Settings\Administrator\My Documents\UWSDR\Release\PA19.dll"
+  File "C:\Documents and Settings\Administrator\My Documents\UWSDR\Release\wxbase26_vc_custom.dll"
+  File "C:\Documents and Settings\Administrator\My Documents\UWSDR\Release\wxbase26_net_vc_custom.dll"
+  File "C:\Documents and Settings\Administrator\My Documents\UWSDR\Release\wxmsw26_core_vc_custom.dll"
+  File "C:\Documents and Settings\Administrator\My Documents\UWSDR\Copying.txt"
+  File "C:\Documents and Settings\Administrator\My Documents\UWSDR\meta\UWSDR.ico"
+  File "C:\Documents and Settings\Administrator\My Documents\UWSDR\meta\GUISetup.ico"
+  File "C:\Documents and Settings\Administrator\My Documents\UWSDR\meta\SDRSetup.ico"
+  File "C:\Documents and Settings\Administrator\My Documents\UWSDR\meta\Help.ico"
+  File "C:\Documents and Settings\Administrator\My Documents\UWSDR\13cms.sdr"
+
+  ;Create start menu entry
+  CreateDirectory "$SMPROGRAMS\UWSDR"
+  CreateShortCut "$SMPROGRAMS\UWSDR\GUISetup.lnk"  "$INSTDIR\GUISetup.exe"   "" "$INSTDIR\GUISetup.ico"
+  CreateShortCut "$SMPROGRAMS\UWSDR\SDRSetup.lnk"  "$INSTDIR\SDRSetup.exe"   "" "$INSTDIR\SDRSetup.ico"
+  CreateShortCut "$SMPROGRAMS\UWSDR\Licence.lnk"   "$INSTDIR\Licence.txt"
+  CreateShortCut "$SMPROGRAMS\UWSDR\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
+
+  ;Store install folder
+  WriteRegStr HKCU "Software\UWSDR" "InstPath" $INSTDIR
+
+  ;Store Windows uninstall keys
+  WriteRegStr   HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\UWSDR" "DisplayName"      "UWSDR"
+  WriteRegStr   HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\UWSDR" "UninstallString" '"$INSTDIR\uninstall.exe"'
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\UWSDR" "NoModify" 1
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\UWSDR" "NoRepair" 1
+
+  ;Create uninstaller
+  WriteUninstaller "$INSTDIR\Uninstall.exe"
+
+SectionEnd
+
+;--------------------------------
+;Uninstaller Section
+
+Section "Uninstall"
+
+  Delete "$INSTDIR\*.*"
+  RMDir  "$INSTDIR"
+
+  Delete "$SMPROGRAMS\UWSDR\*.*"
+  RMDir  "$SMPROGRAMS\UWSDR"
+
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\UWSDR"
+
+  DeleteRegKey HKCU "Software\UWSDR"
+
+SectionEnd

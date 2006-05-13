@@ -1,0 +1,43 @@
+# wxMSW 2.4.2 It is invoked with:
+# 
+# make -f Makefile.win [FINAL=1 [WXUSINGDLL=1]
+#
+
+# Change this to point to the root of your wxMSW installation
+
+export WXDIR=/c/wxWindows-2.4.2
+
+include ${WXDIR}/src/makeg95.env
+
+#
+# Set the version of FFTW that you have, here.
+#
+export FFT_VERS := 3
+# export FFT_VERS := 2
+
+ifeq ($(FFT_VERS),3)
+    FFT_CFLAGS := -DHAVE_FFTW3=1
+    FFT_LIB := -lfftw3
+endif
+
+ifeq ($(FFT_VERS),2)
+    FFT_CFLAGS := -DHAVE_FFTW2=1
+    FFT_LIB := -lfftw
+endif
+
+export LDFLAGS := $(ALL_LDFLAGS) -L..
+
+# export LIBS := $(FFT_LIB) $(LIBS)
+export LIBS := $(LIBS)
+
+# export CFLAGS := -I.. $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) $(FFT_CFLAGS) -fexceptions
+export CFLAGS := -I.. $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) -fexceptions
+
+all:		GUI/UWSDR.exe
+
+GUI/UWSDR.exe:
+		make -C GUI
+
+clean:
+		rm -f core *~ *.bak
+		make -C GUI clean

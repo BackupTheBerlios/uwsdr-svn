@@ -1,0 +1,78 @@
+These are the changes in the µWave SDR GUI.
+
+Prototype 1 - 11 March 2006
+===========================
+
+First release, only a screen with a tuning dial and frequency changes but little functionality.
+
+Used wxWidget 2.4.2
+
+
+Prototype 2 - 19 March 2006
+===========================
+
+Many many changes compared to Prototype 1, now has functionality.
+
+Saving and restoring of values between sessions.
+
+Frequency keypad.
+
+Preferences dialogue.
+
+SDR Emulator program, but not very good so far.
+
+GUI Setup program.
+
+Used wxWidget 2.6.2
+
+
+Prototype 3 - 2 April 2006
+==========================
+
+Many more peferences to play with.
+
+Uses wxWidgets 2.6.3.
+
+Changed to Visual C++ for compiling.
+
+Added the -s option to the SDR GUI.
+
+SDR Emulator seems to work now.
+
+Expanded preferences considerably.
+
+Added a hardware info panel.
+
+Added small digits for the last two digits.
+
+Removed the RIT choice and use a button instead.
+
+Removed the step size choice.
+
+Added the mute button.
+
+Expanded the SDR hardware file considerably.
+
+
+Prototype 4 - 14 April 2006
+===========================
+
+Integrated the SDR1000 DSP code.
+
+Expanded preferences even more, many to do with the DSP code.
+
+S Meter has choices of different displays.
+
+False signal input added for testing.
+
+Added support for sound cards, sound files, SDR data stream and dummy input and output.
+
+Added two more VFOs, C and D with associated split options.
+
+Added transmit limits separate from the receive limits.
+
+S Meter and spectrum display show data, the bad news is that they aren't working properly yet.
+
+All of the knobs should work except for the squelch knob.
+
+Changes to the GUISetup program because of the way that sound cards are handled.

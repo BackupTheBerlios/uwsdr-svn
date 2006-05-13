@@ -1,0 +1,56 @@
+SDR Prototype Screen
+====================
+
+This is a non functioning SDR control panel. This will be the basis of the real control panel, all that needs to be done is to add control of the SDR (easy) and interface to a modified version of the SDR1000 DSP code (hard). This release will allow interested parties to play with the controls and provide feedback on what they see.
+
+Here is a brief overview of the different controls that you will see, and how they are used.
+
+Menu - this will provide a drop down menu where configuration panels can be accessed as well as not so commonly used SDR controls will be located.
+
+The menu currently has four options. The Frequency Keypad is what the names suggests, a calculator type entry of frequency, making quick changes of frequency relatively easy. The Preferences allows for the setting of the maximum and minimum frequencies for the SDR which must be within the limits set for the hardware which is held in the SDR file. The Shift value in kHz is also set here. You can also set the different step sizes for tuning and also the different filters and AGC values for each mode.
+
+I am sure further preferences will appear here in due course.
+
+There is an information box under Hardware Info which gives a listing of the fixed SDR parameters that are held in the .SDR file.
+
+The About box is simply acknowledgements for work done on the project. Exit is self explanatory. You cannot exit when transmitting.
+
+VFO A/B - Selects VFO A or B to be the primary VFO. This information will be refelected on the intormation area to the right of the frequency display.
+
+VFO C/D - Selects VFO C or D to be the primary VFO. This information will be refelected on the intormation area to the right of the frequency display.
+
+Swap - Swaps the values in VFO A and VFO B or VFO C and VFO D, depesning on which VFO is the current VFO.
+
+SPLIT - This will make the SDR receive on the frequency set by the main VFO selected by the user and transmit on the other VFO. The VFO in use as well as the SPLIT status is always displayed in the information panel.
+
+SHIFT - - Subtracts a shift to the current VFO on transmit for accessing repeaters. This shift is set in the preferences panels. The SPLIT status is shown in the information panel.
+
+SHIFT + - Adds a shift to the current VFO on transmit for accessing repeaters. This shift is set in the preferences panels. The SPLIT status is shown in the information panel.
+
+Tuning Knob - This is rotated by moving the mouse over it, and pressing either the left or right mouse buttons. This is an auto-repeat system so keeping the button pressed will tune the SDR continuously. The speed of tuning is set by the Speed setting, see later. This can further be controlled by the position where the mouse is when the button is pressed. The white lines indicate the different zones, nearer the centre is slower, and further out is faster.
+
+MHz - - Subtracts one Megahertz from the current VFO frequency.
+
+MHz + - Adds one Megahertz from the current VFO frequency.
+
+The frequency display attempts to replicate that authentic black box experience.
+
+The spectrum display will eventually show a 20 kHz range of frequencies round the current operating frequency. This is currently non operational.
+
+Mode - Sets the SDR (actually the DSP code, the SDR knows nothing about the mode), to one of  CW Narrow, CW Wide , USB, LSB, FM Narrow and even AM. The setting of the mode can also affect the speed of tuning and the filter bandwidth, see the entries for Speed and Filter below.
+
+RIT - Switches the RIT on and off. The status of the RIT is seen in the informaion box.
+
+Mute - Turns the SDR receiver off when not in use, transmit is still available.
+
+Filter - This sets the IF bandwidth of the SDR (really the DSP). It can be one of many values between 15 kHz and 25 Hz. When in the Auto mode the bandwidth will be dependent on the mode in use. In Auto mode the value used is that which is set in the preferences section.
+
+RIT Knob - This is the knob that controls the actual RIT value. It can move between -5 kHz and +5 kHz. This knob is controled in exactly the same way as the tuning knob, see above. This control has end stops however.
+
+TRANSMIT - This is the push-to-talk switch for the SDR. Pressing it will potentially cause the frequency display to change, as well as a nice red TRANSMIT appearing in the information box.
+
+S Meter - This is a pretty good replication of a real S Meter. It'll probably be calibrated correctly too! This is currently non operational.
+
+Mic Gain, Power, AF Gain and Squelch Knobs - These knobs operate in the same manner as the RIT knob described above. They are currently not operational.
+
+The window can be closed by clicking the close button in the top right of the window, or selecting Exit from the menu.

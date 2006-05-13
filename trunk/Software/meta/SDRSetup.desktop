@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Encoding=UTF-8
+Name=SDR Setup
+Comment=Configure the UWSDR hardware
+Icon=SDRSetup.png
+Exec=/usr/local/bin/SDRSetup
+Path=.
+Terminal=false
