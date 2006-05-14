@@ -84,9 +84,6 @@ extern IMAG *newvec_IMAG (int size, char *tag);
 extern void delvec_IMAG (IMAG * vec);
 extern COMPLEX *newvec_COMPLEX (int size, char *tag);
 extern void delvec_COMPLEX (COMPLEX * buf);
-extern void dump_REAL (FILE * fp, char *head, REAL * ptr, int beg, int fin);
-extern void dump_IMAG (FILE * fp, char *head, IMAG * ptr, int beg, int fin);
-extern void dump_CX (FILE * fp, char *head, COMPLEX * ptr, int beg, int fin);
 
 extern CXB newCXB (int size, COMPLEX * base, char *tag);
 extern void delCXB (CXB p);
@@ -96,5 +93,8 @@ extern void delRLB (RLB p);
 
 extern REAL normalize_vec_REAL (REAL *, int);
 extern REAL normalize_vec_COMPLEX (COMPLEX *, int);
+
+extern void dumpREAL(REAL* buf, int size, char* text);
+extern void dumpCOMPLEX(COMPLEX* buf, int size, char* text);
 
 #endif

@@ -34,6 +34,8 @@ Bridgewater, NJ 08807
 
 #include <bufvec.h>
 
+#include <wx/wx.h>
+
 /*------------------------------------------------------------------------*/
 /* wrapper around calloc */
 #include <fftw3.h>
@@ -226,39 +228,24 @@ normalize_vec_COMPLEX (COMPLEX * z, int n)
     return 0.0;
 }
 
-/*------------------------------------------------------------------------*/
-/*------------------------------------------------------------------------*/
-/* mostly for debugging when necessary */
-
-void
-dump_REAL (FILE * fp, char *head, REAL * ptr, int beg, int fin)
+void dumpREAL(REAL* buf, int size, char* text)
 {
-  int i;
-  FILE *iop = fp ? fp : stderr;
-  if (head && *head)
-    fprintf (iop, "dump_REAL: %s\n", head);
-  for (i = beg; i < fin; i++)
-    fprintf (iop, "%5d %g\n", i, ptr[i]);
+	wxLogDebug(text);
+
+	for (int i = 0; i < size; i += 8)
+		wxLogDebug("%04X: %g %g %g %g %g %g %g %g", i,
+			buf[i + 0], buf[i + 1], buf[i + 2], buf[i + 3],
+			buf[i + 4], buf[i + 5], buf[i + 6], buf[i + 7]);
 }
 
-void
-dump_IMAG (FILE * fp, char *head, IMAG * ptr, int beg, int fin)
+void dumpCOMPLEX(COMPLEX* buf, int size, char* text)
 {
-  int i;
-  FILE *iop = fp ? fp : stderr;
-  if (head && *head)
-    fprintf (iop, "dump_REAL: %s\n", head);
-  for (i = beg; i < fin; i++)
-    fprintf (iop, "%5d %g\n", i, ptr[i]);
-}
+	wxLogDebug(text);
 
-void
-dump_CX (FILE * fp, char *head, COMPLEX * ptr, int beg, int fin)
-{
-  int i;
-  FILE *iop = fp ? fp : stderr;
-  if (head && *head)
-    fprintf (iop, "dump_CX: %s\n", head);
-  for (i = beg; i < fin; i++)
-    fprintf (iop, "%5d %g %g\n", i, ptr[i].re, ptr[i].im);
+	for (int i = 0; i < size; i += 8)
+		wxLogDebug("%04X: %g:%g %g:%g %g:%g %g:%g %g:%g %g:%g %g:%g %g:%g", i,
+			buf[i + 0].re, buf[i + 0].im, buf[i + 1].re, buf[i + 1].im,
+			buf[i + 2].re, buf[i + 2].im, buf[i + 3].re, buf[i + 3].im,
+			buf[i + 4].re, buf[i + 4].im, buf[i + 5].re, buf[i + 5].im,
+			buf[i + 6].re, buf[i + 6].im, buf[i + 7].re, buf[i + 7].im);
 }

@@ -42,18 +42,17 @@
 #ifndef min
 #define min(a, b) ((a) < (b) ? (a) : (b))
 #endif
+
 #ifndef max
 #define max(a, b) ((a) > (b) ? (a) : (b))
 #endif
+
 #define abs(a) ((a) >= 0 ? (a) : -(a))
 
-
-#define MONDO 1e15
-#define BITSY 1e-15
-
+const REAL MONDO = 1E15F;
+const REAL BITSY = 1E-15F;
 
 extern INLINE REAL sqr(REAL);
 extern unsigned int npoof2(unsigned int);
-extern unsigned int nblock2(unsigned int);
 
 #endif

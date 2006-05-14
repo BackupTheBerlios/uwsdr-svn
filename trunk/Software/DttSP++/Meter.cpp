@@ -53,7 +53,7 @@ m_cpdrSave(0.0F)
 	int i;
 
 	for (i = 0; i < RXMETERPTS; i++)
-		m_rxval[i] = 0.0F;
+		m_rxval[i] = -200.0F;
 
 	for (i = 0; i < TXMETERPTS; i++)
 		m_txval[i] = 0.0F;
@@ -68,7 +68,7 @@ void CMeter::reset()
 	int i;
 
 	for (i = 0; i < RXMETERPTS; i++)
-		m_rxval[i] = 0.0F;
+		m_rxval[i] = -200.0F;
 
 	for (i = 0; i < TXMETERPTS; i++)
 		m_txval[i] = 0.0F;

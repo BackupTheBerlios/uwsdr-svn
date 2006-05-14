@@ -59,8 +59,7 @@ m_notchFlag(false)
 	wxASSERT(d != NULL);
 	wxASSERT(sampleRate > 0.0F);
 
-	m_p = new CFilterOVSV(257, bits, sampleRate);
-	m_p->setFilter(-6000.0F, 6000.0F);
+	m_p = new CFilterOVSV(256, bits, sampleRate, -6000.0F, 6000.0F);
 
 	m_in  = newCXB(256, m_p->fetchPoint());
 	m_out = newCXB(256, m_p->storePoint());

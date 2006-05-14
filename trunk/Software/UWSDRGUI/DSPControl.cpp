@@ -361,11 +361,11 @@ float CDSPControl::getMeter(int type)
 	return m_dttsp->getMeter(type);
 }
 
-void CDSPControl::getSpectrum(float* spectrum)
+void CDSPControl::getSpectrum(float* spectrum, int pos)
 {
 	wxASSERT(m_dttsp != NULL);
 
-	m_dttsp->getSpectrum(spectrum);
+	m_dttsp->getSpectrum(spectrum, pos);
 }
 
 void CDSPControl::setAFGain(unsigned int value)

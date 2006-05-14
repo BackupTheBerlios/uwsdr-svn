@@ -486,20 +486,6 @@ CXBpeakpwr (CXB buff)
 
 }
 
-float do_tap(CXB buf)
-{
-	int i, len = CXBhave(buf);
-
-	float val = 0.0F;
-	for (i = 0; i < len; i++)
-		val += Csqrmag(CXBdata(buf, i));
-
-	val /= float(len);
-
-	return 10.0F * (float)log10(val + 1E-20);
-}
-		
-
 //========================================================================
 /* all */
 
@@ -689,8 +675,6 @@ do_rx_pre (int k)
 {
   int i, n = min (CXBhave (rx[k].buf.i), uni.buflen);
 
-wxLogMessage("1: %f", do_tap(rx[k].buf.i));
-
   if (rx[k].nb.flag)
     noiseblanker (rx[k].nb.gen);
   if (rx[k].nb_sdrom.flag)
@@ -698,13 +682,9 @@ wxLogMessage("1: %f", do_tap(rx[k].buf.i));
 
   // metering for uncorrected values here
 
-wxLogMessage("2: %f", do_tap(rx[k].buf.i));
-
   do_rx_meter (k, rx[k].buf.i, RXMETER_PRE_CONV);
 
   correctIQ (rx[k].buf.i, rx[k].iqfix);
-
-wxLogMessage("3: %f", do_tap(rx[k].buf.i));
 
   /* 2nd IF conversion happens here */
 
@@ -715,8 +695,6 @@ wxLogMessage("3: %f", do_tap(rx[k].buf.i));
 	CXBdata (rx[k].buf.i, i) = Cmul (CXBdata (rx[k].buf.i, i),
 					 OSCCdata (rx[k].osc.gen, i));
     }
-
-wxLogMessage("4: %f", do_tap(rx[k].buf.i));
 
   /* filtering, metering, spectrum, squelch, & AGC */
 
@@ -737,8 +715,6 @@ wxLogMessage("4: %f", do_tap(rx[k].buf.i));
 
   CXBhave (rx[k].buf.o) = CXBhave (rx[k].buf.i);
 
-wxLogMessage("5: %f", do_tap(rx[k].buf.o));
-
   do_rx_meter (k, rx[k].buf.o, RXMETER_POST_FILT);
   do_rx_spectrum (k, rx[k].buf.o, SPEC_POST_FILT);
 
@@ -751,9 +727,6 @@ wxLogMessage("5: %f", do_tap(rx[k].buf.o));
     DttSPAgc (rx[k].dttspagc.gen, rx[k].tick);
   do_rx_meter(k, rx[k].buf.o,RXMETER_POST_AGC);
   do_rx_spectrum (k, rx[k].buf.o, SPEC_POST_AGC);
-
-wxLogMessage("6: %f", do_tap(rx[k].buf.o));
-
 }
 
 PRIVATE void

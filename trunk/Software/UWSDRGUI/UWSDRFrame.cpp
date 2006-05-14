@@ -227,6 +227,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_sdr->enableRX(true);
 
 	m_spectrumDisplay->setSampleRate(m_parameters->m_hardwareSampleRate);
+	m_spectrumDisplay->setPosition(m_parameters->m_spectrumPos);
 	m_spectrumDisplay->setType(m_parameters->m_spectrumType);
 	m_spectrumDisplay->setSpeed(m_parameters->m_spectrumSpeed);
 
@@ -1124,6 +1125,10 @@ void CUWSDRFrame::onTimer(wxTimerEvent& event)
 	wxASSERT(m_sMeter != NULL);
 	wxASSERT(m_spectrumDisplay != NULL);
 
+	m_parameters->m_spectrumPos   = m_spectrumDisplay->getPosition();
+	m_parameters->m_spectrumType  = m_spectrumDisplay->getType();
+	m_parameters->m_spectrumSpeed = m_spectrumDisplay->getSpeed();
+
 	if (m_txOn) {
 		int meter = m_sMeter->getTXMeter();
 		m_parameters->m_txMeter = meter;
@@ -1135,12 +1140,9 @@ void CUWSDRFrame::onTimer(wxTimerEvent& event)
 
 			m_sMeter->setLevel(val * 94.0);
 
-			m_dsp->getSpectrum(m_spectrum);
+			m_dsp->getSpectrum(m_spectrum, m_parameters->m_spectrumPos);
 			m_spectrumDisplay->showSpectrum(m_spectrum, 0.25);
 		}
-
-		m_parameters->m_spectrumType  = m_spectrumDisplay->getType();
-		m_parameters->m_spectrumSpeed = m_spectrumDisplay->getSpeed();
 	} else {
 		int meter = m_sMeter->getRXMeter();
 		m_parameters->m_rxMeter = meter;
@@ -1150,12 +1152,9 @@ void CUWSDRFrame::onTimer(wxTimerEvent& event)
 		if (val != -200.0F) {
 			m_sMeter->setLevel(val + 110.0);
 
-			m_dsp->getSpectrum(m_spectrum);
+			m_dsp->getSpectrum(m_spectrum, m_parameters->m_spectrumPos);
 			m_spectrumDisplay->showSpectrum(m_spectrum);
 		}
-
-		m_parameters->m_spectrumType  = m_spectrumDisplay->getType();
-		m_parameters->m_spectrumSpeed = m_spectrumDisplay->getSpeed();
 	}
 }
 

@@ -87,4 +87,7 @@ extern void delRLB(RLB* p);
 extern REAL normalize_vec_REAL(REAL*, unsigned int n);
 extern REAL normalize_vec_COMPLEX(COMPLEX*, unsigned int n);
 
+extern void dumpREAL(REAL* buf, unsigned int size, char* text);
+extern void dumpCOMPLEX(COMPLEX* buf, unsigned int size, char* text);
+
 #endif

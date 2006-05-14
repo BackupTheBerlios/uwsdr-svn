@@ -70,7 +70,7 @@ class CDSPControl : public wxThread, public IDataCallback {
 	virtual void setSquelch(unsigned int value);
 
 	virtual float getMeter(int type);
-	virtual void  getSpectrum(float* spectrum);
+	virtual void  getSpectrum(float* spectrum, int pos);
 
     private:
 	CDTTSPControl* m_dttsp;

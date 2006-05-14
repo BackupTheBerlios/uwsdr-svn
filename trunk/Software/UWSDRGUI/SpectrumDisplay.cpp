@@ -24,18 +24,22 @@
 
 const int MENU_PANADAPTER = 16531;
 const int MENU_WATERFALL  = 16532;
-const int MENU_100MS      = 16533;
-const int MENU_200MS      = 16534;
-const int MENU_300MS      = 16535;
-const int MENU_400MS      = 16536;
-const int MENU_500MS      = 16537;
-const int MENU_1000MS     = 16538;
+const int MENU_PRE_FILT   = 16533;
+const int MENU_POST_FILT  = 16534;
+const int MENU_100MS      = 16535;
+const int MENU_200MS      = 16536;
+const int MENU_300MS      = 16537;
+const int MENU_400MS      = 16538;
+const int MENU_500MS      = 16539;
+const int MENU_1000MS     = 16540;
 
 BEGIN_EVENT_TABLE(CSpectrumDisplay, wxPanel)
 	EVT_PAINT(CSpectrumDisplay::onPaint)
 	EVT_RIGHT_DOWN(CSpectrumDisplay::onMouse)
 	EVT_MENU(MENU_PANADAPTER, CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_WATERFALL,  CSpectrumDisplay::onMenu)
+	EVT_MENU(MENU_PRE_FILT,   CSpectrumDisplay::onMenu)
+	EVT_MENU(MENU_POST_FILT,  CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_100MS,  CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_200MS,  CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_300MS,  CSpectrumDisplay::onMenu)
@@ -58,8 +62,11 @@ m_bitmap(NULL),
 m_sampleRate(0),
 m_menu(NULL),
 m_speedMenu(NULL),
+m_posMenu(NULL),
+m_typeMenu(NULL),
 m_type(0),
 m_speed(0),
+m_position(0),
 m_factor(1),
 m_ticks(0)
 {
@@ -74,10 +81,18 @@ m_ticks(0)
 	m_speedMenu->AppendRadioItem(MENU_500MS,  wxT("500 ms"));
 	m_speedMenu->AppendRadioItem(MENU_1000MS, wxT("1 s"));
 
+	m_posMenu = new wxMenu();
+	m_posMenu->AppendRadioItem(MENU_PRE_FILT,  _("Pre-Filter"));
+	m_posMenu->AppendRadioItem(MENU_POST_FILT, _("Post-Filter"));
+
+	m_typeMenu = new wxMenu();
+	m_typeMenu->AppendRadioItem(MENU_PANADAPTER, _("Panadapter"));
+	m_typeMenu->AppendRadioItem(MENU_WATERFALL,  _("Waterfall"));
+
 	m_menu = new wxMenu();
-	m_menu->AppendRadioItem(MENU_PANADAPTER, _("Panadapter"));
-	m_menu->AppendRadioItem(MENU_WATERFALL,  _("Waterfall"));
-	m_menu->Append(-1, _("Refresh"), m_speedMenu);
+	m_menu->Append(-1, _("Position"), m_posMenu);
+	m_menu->Append(-1, _("Type"),     m_typeMenu);
+	m_menu->Append(-1, _("Refresh"),  m_speedMenu);
 
 	createPanadapter();
 
@@ -357,13 +372,25 @@ void CSpectrumDisplay::onMouse(wxMouseEvent& event)
 
 	switch (m_type) {
 		case SPECTRUM_PANADAPTER:
-			m_menu->Check(MENU_PANADAPTER, true);
+			m_typeMenu->Check(MENU_PANADAPTER, true);
 			break;
 		case SPECTRUM_WATERFALL:
-			m_menu->Check(MENU_WATERFALL, true);
+			m_typeMenu->Check(MENU_WATERFALL, true);
 			break;
 		default:
 			::wxLogError(_("Unknown spectrum type = %d"), m_type);
+			break;
+	}
+
+	switch (m_position) {
+		case SPECTRUM_PANADAPTER:
+			m_posMenu->Check(MENU_PRE_FILT, true);
+			break;
+		case SPECTRUM_WATERFALL:
+			m_posMenu->Check(MENU_POST_FILT, true);
+			break;
+		default:
+			::wxLogError(_("Unknown spectrum position = %d"), m_type);
 			break;
 	}
 
@@ -405,6 +432,12 @@ void CSpectrumDisplay::onMenu(wxCommandEvent& event)
 			break;
 		case MENU_WATERFALL:
 			setType(SPECTRUM_WATERFALL);
+			break;
+		case MENU_PRE_FILT:
+			setPosition(SPECTRUM_PRE_FILT);
+			break;
+		case MENU_POST_FILT:
+			setPosition(SPECTRUM_POST_FILT);
 			break;
 		case MENU_100MS:
 			setSpeed(SPECTRUM_100MS);
@@ -485,6 +518,11 @@ void CSpectrumDisplay::setSpeed(int speed)
 	m_speed = speed;
 }
 
+void CSpectrumDisplay::setPosition(int position)
+{
+	m_position = position;
+}
+
 int CSpectrumDisplay::getType() const
 {
 	return m_type;
@@ -493,4 +531,9 @@ int CSpectrumDisplay::getType() const
 int CSpectrumDisplay::getSpeed() const
 {
 	return m_speed;
+}
+
+int CSpectrumDisplay::getPosition() const
+{
+	return m_position;
 }

@@ -100,6 +100,7 @@ class CSDRParameters {
 	int          m_rxMeter;
 	int          m_txMeter;
 
+	int          m_spectrumPos;
 	int          m_spectrumType;
 	int          m_spectrumSpeed;
 

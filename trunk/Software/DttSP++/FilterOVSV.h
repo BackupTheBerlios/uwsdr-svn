@@ -41,7 +41,7 @@ Bridgewater, NJ 08807
 
 class CFilterOVSV {
     public:
-	CFilterOVSV(unsigned int ncoef, unsigned int pbits, REAL sampleRate);
+	CFilterOVSV(unsigned int bufLen, unsigned int pbits, REAL sampleRate, REAL lowFreq, REAL highFreq);
 	virtual ~CFilterOVSV();
 
 	virtual COMPLEX*     fetchPoint();
@@ -59,11 +59,9 @@ class CFilterOVSV {
 	virtual void filter();
 
     private:
-	unsigned int m_ncoef;
 	unsigned int m_pbits;
 	REAL         m_samprate;
 	unsigned int m_bufLen;
-	unsigned int m_fftLen;
 	COMPLEX*     m_zfvec;
 	COMPLEX*     m_zivec;
 	COMPLEX*     m_zovec;

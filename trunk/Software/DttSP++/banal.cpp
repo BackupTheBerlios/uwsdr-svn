@@ -50,8 +50,3 @@ unsigned int npoof2(unsigned int n)
 
 	return i;
 }
-
-unsigned int nblock2 (unsigned int n)
-{
-	return 1 << npoof2(n);
-}

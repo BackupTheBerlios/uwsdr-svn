@@ -148,9 +148,9 @@ REAL* CWindow::create(Windowtype type, unsigned int size, REAL* window)
 				const REAL a3 = 0.01168F;
 
 				for (i = 0; i < size; i++)
-					window[i] = REAL(a0 - a1 * ::cos(TWOPI * (REAL) (i + 0.5) /	REAL(size - 1)) +
-										  a2 * ::cos(2.0 * TWOPI * (REAL) (i + 0.5) / REAL(size - 1)) -
-										  a3 * ::cos(3.0 * TWOPI * (REAL) (i + 0.5) / REAL(size - 1)));
+					window[i] = REAL(a0 - a1 * (REAL)::cos(      TWOPI * REAL(i + 0.5F) / REAL(size - 1)) +
+										  a2 * (REAL)::cos(2.0 * TWOPI * REAL(i + 0.5F) / REAL(size - 1)) -
+										  a3 * (REAL)::cos(3.0 * TWOPI * REAL(i + 0.5F) / REAL(size - 1)));
 			}
 			break;
 
@@ -161,9 +161,9 @@ REAL* CWindow::create(Windowtype type, unsigned int size, REAL* window)
 				const REAL a3 = 0.0106411F;
 
 				for (i = 0; i < size; i++)
-					window[i] = REAL(a0 - a1 * ::cos(TWOPI * (REAL) (i + 0.5) /	REAL(size - 1)) +
-										  a2 * ::cos(2.0 * TWOPI * (REAL) (i + 0.5) / REAL(size - 1)) -
-										  a3 * ::cos(3.0 * TWOPI * (REAL) (i + 0.5) / REAL(size - 1)));
+					window[i] = REAL(a0 - a1 * (REAL)::cos(      TWOPI * REAL(i + 0.5) / REAL(size - 1)) +
+										  a2 * (REAL)::cos(2.0 * TWOPI * REAL(i + 0.5) / REAL(size - 1)) -
+										  a3 * (REAL)::cos(3.0 * TWOPI * REAL(i + 0.5) / REAL(size - 1)));
 			}
 			break;
 

@@ -72,6 +72,7 @@ const wxString KEY_SP_CTRL         = wxT("SpeechProcCtrl");
 const wxString KEY_SP_VALUE        = wxT("SpeechprocValue");
 const wxString KEY_RX_METER        = wxT("ReceiveMeter");
 const wxString KEY_TX_METER        = wxT("TransmitMeter");
+const wxString KEY_SPECTRUM_POS    = wxT("SpectrumPos");
 const wxString KEY_SPECTRUM_TYPE   = wxT("SpectrumType");
 const wxString KEY_SPECTRUM_SPEED  = wxT("SpectrumSpeed");
 const wxString KEY_RX_IQ_PHASE     = wxT("ReceiveIQPhase");
@@ -317,6 +318,7 @@ bool CUWSDRApp::readConfig()
 	profile->Read(KEY_RX_METER,        &m_parameters->m_rxMeter, METER_SIGNAL);
 	profile->Read(KEY_TX_METER,        &m_parameters->m_txMeter, METER_POWER);
 
+	profile->Read(KEY_SPECTRUM_POS,    &m_parameters->m_spectrumPos,   SPECTRUM_PRE_FILT);
 	profile->Read(KEY_SPECTRUM_TYPE,   &m_parameters->m_spectrumType,  SPECTRUM_PANADAPTER);
 	profile->Read(KEY_SPECTRUM_SPEED,  &m_parameters->m_spectrumSpeed, SPECTRUM_100MS);
 
@@ -389,6 +391,7 @@ void CUWSDRApp::writeConfig()
 	profile->Write(KEY_SP_VALUE,        int(m_parameters->m_spValue));
 	profile->Write(KEY_RX_METER,        m_parameters->m_rxMeter);
 	profile->Write(KEY_TX_METER,        m_parameters->m_txMeter);
+	profile->Write(KEY_SPECTRUM_POS,    m_parameters->m_spectrumPos);
 	profile->Write(KEY_SPECTRUM_TYPE,   m_parameters->m_spectrumType);
 	profile->Write(KEY_SPECTRUM_SPEED,  m_parameters->m_spectrumSpeed);
 	profile->Write(KEY_RX_IQ_PHASE,     m_parameters->m_rxIQphase);

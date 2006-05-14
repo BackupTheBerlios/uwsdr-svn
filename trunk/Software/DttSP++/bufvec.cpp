@@ -37,6 +37,8 @@ Bridgewater, NJ 08807
 #include "fromsys.h"
 #include "banal.h"
 
+#include <wx/wx.h>
+
 
 /*------------------------------------------------------------------------*/
 /* allocate/free just vectors */
@@ -154,7 +156,7 @@ void delRLB(RLB* p)
 REAL normalize_vec_REAL(REAL* v, unsigned int n)
 {
 	if (v != NULL && n > 0) {
-		REAL big = -REAL(MONDO);
+		REAL big = -MONDO;
 
 		for (unsigned int i = 0; i < n; i++) {
 			REAL a = abs(v[i]);
@@ -162,41 +164,63 @@ REAL normalize_vec_REAL(REAL* v, unsigned int n)
 		}
 
 		if (big > 0.0) {
-			REAL scl = REAL(1.0 / big);
+			REAL scl = 1.0F / big;
 
 			for (unsigned int i = 0; i < n; i++)
 				v[i] *= scl;
 
 			return scl;
 		} else {
-			return 0.0;
+			return 0.0F;
 		}
 	} else {
-		return 0.0;
+		return 0.0F;
 	}
 }
 
 REAL normalize_vec_COMPLEX(COMPLEX* z, unsigned int n)
 {
 	if (z != NULL && n > 0) {
-		REAL big = -REAL(MONDO);
+		REAL big = -MONDO;
 
 		for (unsigned int i = 0; i < n; i++) {
 			REAL a = Cabs(z[i]);
 			big = max(big, a);
 		}
 
-		if (big > 0.0) {
-			REAL scl = REAL(1.0 / big);
+		if (big > 0.0F) {
+			REAL scl = 1.0F / big;
 
 			for (unsigned int i = 0; i < n; i++)
 				z[i] = Cscl(z[i], scl);
 
 			return scl;
 		} else {
-			return 0.0;
+			return 0.0F;
 		}
 	} else {
-		return 0.0;
+		return 0.0F;
 	}
+}
+
+void dumpREAL(REAL* buf, unsigned int size, char* text)
+{
+	wxLogDebug(text);
+
+	for (unsigned int i = 0; i < size; i += 8)
+		wxLogDebug("%04X: %g %g %g %g %g %g %g %g", i,
+			buf[i + 0], buf[i + 1], buf[i + 2], buf[i + 3],
+			buf[i + 4], buf[i + 5], buf[i + 6], buf[i + 7]);
+}
+
+void dumpCOMPLEX(COMPLEX* buf, unsigned int size, char* text)
+{
+	wxLogDebug(text);
+
+	for (unsigned int i = 0; i < size; i += 8)
+		wxLogDebug("%04X: %g:%g %g:%g %g:%g %g:%g %g:%g %g:%g %g:%g %g:%g", i,
+			buf[i + 0].re, buf[i + 0].im, buf[i + 1].re, buf[i + 1].im,
+			buf[i + 2].re, buf[i + 2].im, buf[i + 3].re, buf[i + 3].im,
+			buf[i + 4].re, buf[i + 4].im, buf[i + 5].re, buf[i + 5].im,
+			buf[i + 6].re, buf[i + 6].im, buf[i + 7].re, buf[i + 7].im);
 }

@@ -31,6 +31,7 @@ ringb_float_t* ringb_float_create(size_t sz2)
 {
   ringb_float_t *rb = new ringb_float_t;
   rb->buf = new float[sz2];
+  ::memset(rb->buf, 0, sz2 * sizeof(float));
   rb->size = sz2;		// power-of-2-sized
   rb->mask = rb->size - 1;
   rb->wptr = rb->rptr = 0;

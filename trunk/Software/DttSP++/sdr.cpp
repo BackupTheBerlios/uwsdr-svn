@@ -52,19 +52,6 @@ void reset_counters()
 	tx.tick = 0UL;
 }
 
-float do_tap(CXB* buf)
-{
-	int i, len = CXBhave(buf);
-
-	float val = 0.0F;
-	for (i = 0; i < len; i++)
-		val += Csqrmag(CXBdata(buf, i));
-
-	val /= float(len);
-
-	return 10.0F * (float)log10(val + 1E-20);
-}
-
 /* global and general info,
    not specifically attached to
    tx, rx, or scheduling */
@@ -99,8 +86,7 @@ PRIVATE void setup_rx()
   /* conditioning */
   rx.iqfix = new CCorrectIQ();
 
-  rx.filt = new CFilterOVSV(uni.buflen + 1, uni.wisdom.bits, uni.samplerate);
-  rx.filt->setFilter(-4800.0F, 4800.0F);
+  rx.filt = new CFilterOVSV(uni.buflen, uni.wisdom.bits, uni.samplerate, -4800.0F, 4800.0F);
 
   /* buffers */
   /* note we overload the internal filter buffers
@@ -221,8 +207,7 @@ PRIVATE void setup_tx()
   /* conditioning */
   tx.iqfix = new CCorrectIQ();
 
-  tx.filt = new CFilterOVSV(uni.buflen + 1, uni.wisdom.bits, uni.samplerate);
-  tx.filt->setFilter(300.0F, 3000.0F);
+  tx.filt = new CFilterOVSV(uni.buflen, uni.wisdom.bits, uni.samplerate, 300.0F, 3000.0F);
 
   /* buffers */
   tx.buf.i = newCXB(tx.filt->fetchSize(), tx.filt->fetchPoint());
@@ -516,27 +501,19 @@ PRIVATE void do_rx_pre()
 	wxASSERT(rx.cpd.gen != NULL);
 	wxASSERT(rx.agc.gen != NULL);
 
-wxLogMessage("1: %f", do_tap(rx.buf.i));
-
 	if (rx.nb.flag)
 		rx.nb.gen->blank();
 
 	if (rx.nb_sdrom.flag)
 		rx.nb_sdrom.gen->sdromBlank();
 
-wxLogMessage("2: %f", do_tap(rx.buf.i));
-
 	// metering for uncorrected values here
 	do_rx_meter(rx.buf.i, RXMETER_PRE_CONV);
 
 	rx.iqfix->process(rx.buf.i);
 
-wxLogMessage("3: %f", do_tap(rx.buf.i));
-
 	/* 2nd IF conversion happens here */
 	rx.osc.gen->mix(rx.buf.i);
-
-wxLogMessage("4: %f", do_tap(rx.buf.i));
 
 	/* filtering, metering, spectrum, squelch, & AGC */
 	do_rx_spectrum(rx.buf.i, SPEC_PRE_FILT);
@@ -552,8 +529,6 @@ wxLogMessage("4: %f", do_tap(rx.buf.i));
 
 	CXBhave(rx.buf.o) = CXBhave(rx.buf.i);
 
-wxLogMessage("5: %f", do_tap(rx.buf.o));
-
 	do_rx_meter(rx.buf.o, RXMETER_POST_FILT);
 	do_rx_spectrum(rx.buf.o, SPEC_POST_FILT);
 
@@ -564,8 +539,6 @@ wxLogMessage("5: %f", do_tap(rx.buf.o));
 		do_squelch();
 	else
 		rx.agc.gen->process();
-
-wxLogMessage("6: %f", do_tap(rx.buf.o));
 
 	do_rx_meter(rx.buf.o,RXMETER_POST_AGC);
 	do_rx_spectrum(rx.buf.o, SPEC_POST_AGC);

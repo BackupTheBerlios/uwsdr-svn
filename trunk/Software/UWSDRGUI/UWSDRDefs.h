@@ -98,6 +98,9 @@ const int METER_MICROPHONE = 3;
 const int METER_POWER      = 4;
 const int METER_ALC        = 5;
 
+const int SPECTRUM_PRE_FILT   = 0;
+const int SPECTRUM_POST_FILT  = 1;
+
 const int SPECTRUM_PANADAPTER = 0;
 const int SPECTRUM_WATERFALL  = 1;
 

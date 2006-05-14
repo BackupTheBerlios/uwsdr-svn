@@ -285,15 +285,23 @@ float CDTTSPControl::getMeter(int type)
 			return ::Calculate_Meters(ALC);
 		default:
 			::wxLogError(_("Unknown meter type = %d"), type);
-			return 0.0F;
+			return -200.0F;
 	}
 }
 
-void CDTTSPControl::getSpectrum(float* spectrum)
+void CDTTSPControl::getSpectrum(float* spectrum, int pos)
 {
 	wxASSERT(spectrum != NULL);
 
-	::Process_Panadapter(spectrum);
+	switch (pos) {
+		case SPECTRUM_PRE_FILT:
+			::Process_Panadapter(spectrum);
+			break;
+
+		case SPECTRUM_POST_FILT:
+			::Process_Spectrum(spectrum);
+			break;
+	}
 }
 
 void CDTTSPControl::dataIO(const float* input, float* output, unsigned int nSamples)

@@ -32,9 +32,11 @@ class CSpectrumDisplay : public wxPanel {
 	virtual void showSpectrum(const float* spectrum, double scale = 1.0);
 
 	virtual void setType(int type);
+	virtual void setPosition(int pos);
 	virtual void setSpeed(int speed);
 
 	virtual int  getType() const;
+	virtual int  getPosition() const;
 	virtual int  getSpeed() const;
 
 	void onPaint(wxPaintEvent& event);
@@ -49,8 +51,11 @@ class CSpectrumDisplay : public wxPanel {
 	unsigned int m_sampleRate;
 	wxMenu*      m_menu;
 	wxMenu*      m_speedMenu;
+	wxMenu*      m_posMenu;
+	wxMenu*      m_typeMenu;
 	int          m_type;
 	int          m_speed;
+	int          m_position;
 	int          m_factor;
 	unsigned int m_ticks;
 

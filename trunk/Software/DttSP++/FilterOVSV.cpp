@@ -40,12 +40,10 @@ Bridgewater, NJ 08807
 #include <wx/wx.h>
 
 
-CFilterOVSV::CFilterOVSV(unsigned int ncoef, unsigned int pbits, REAL sampleRate) :
-m_ncoef(ncoef),
+CFilterOVSV::CFilterOVSV(unsigned int bufLen, unsigned int pbits, REAL sampleRate, REAL lowFreq, REAL highFreq) :
 m_pbits(pbits),
 m_samprate(sampleRate),
-m_bufLen(0),
-m_fftLen(0),
+m_bufLen(bufLen),
 m_zfvec(NULL),
 m_zivec(NULL),
 m_zovec(NULL),
@@ -56,31 +54,30 @@ m_scale(0.0F)
 {
 	wxASSERT(sampleRate > 0.0F);
 
-	m_bufLen = nblock2(ncoef - 1);
-	m_fftLen = 2 * m_bufLen;
+	unsigned int fftLen = 2 * m_bufLen;
 
-	m_zrvec = (COMPLEX*)::fftw_malloc(m_fftLen * sizeof(COMPLEX));
-	m_zfvec = (COMPLEX*)::fftw_malloc(m_fftLen * sizeof(COMPLEX));
-	m_zivec = (COMPLEX*)::fftw_malloc(m_fftLen * sizeof(COMPLEX));
-	m_zovec = (COMPLEX*)::fftw_malloc(m_fftLen * sizeof(COMPLEX));
+	m_zrvec = (COMPLEX*)::fftw_malloc(fftLen * sizeof(COMPLEX));
+	m_zfvec = (COMPLEX*)::fftw_malloc(fftLen * sizeof(COMPLEX));
+	m_zivec = (COMPLEX*)::fftw_malloc(fftLen * sizeof(COMPLEX));
+	m_zovec = (COMPLEX*)::fftw_malloc(fftLen * sizeof(COMPLEX));
 
 	wxASSERT(m_zrvec != NULL);
 	wxASSERT(m_zfvec != NULL);
 	wxASSERT(m_zivec != NULL);
 	wxASSERT(m_zovec != NULL);
 
-	::memset(m_zrvec, 0, m_fftLen * sizeof(COMPLEX));
-	::memset(m_zfvec, 0, m_fftLen * sizeof(COMPLEX));
-	::memset(m_zivec, 0, m_fftLen * sizeof(COMPLEX));
-	::memset(m_zovec, 0, m_fftLen * sizeof(COMPLEX));
+	::memset(m_zrvec, 0, fftLen * sizeof(COMPLEX));
+	::memset(m_zfvec, 0, fftLen * sizeof(COMPLEX));
+	::memset(m_zivec, 0, fftLen * sizeof(COMPLEX));
+	::memset(m_zovec, 0, fftLen * sizeof(COMPLEX));
 
-	/* prepare transforms for signal */
-	m_pfwd = ::fftwf_plan_dft_1d(m_fftLen, (fftwf_complex *)m_zrvec, (fftwf_complex *)m_zivec, FFTW_FORWARD, pbits);
-	m_pinv = ::fftwf_plan_dft_1d(m_fftLen, (fftwf_complex *)m_zivec, (fftwf_complex *)m_zovec, FFTW_BACKWARD, pbits);
+	// Prepare transforms for signal
+	m_pfwd = ::fftwf_plan_dft_1d(fftLen, (fftwf_complex *)m_zrvec, (fftwf_complex *)m_zivec, FFTW_FORWARD, m_pbits);
+	m_pinv = ::fftwf_plan_dft_1d(fftLen, (fftwf_complex *)m_zivec, (fftwf_complex *)m_zovec, FFTW_BACKWARD, m_pbits);
 
-	m_scale = 1.0F / REAL(m_fftLen);
+	m_scale = 1.0F / REAL(fftLen);
 
-	normalize_vec_COMPLEX(m_zfvec, m_fftLen);
+	setFilter(lowFreq, highFreq);
 }
 
 CFilterOVSV::~CFilterOVSV()
@@ -96,74 +93,85 @@ CFilterOVSV::~CFilterOVSV()
 
 void CFilterOVSV::setFilter(REAL lowFreq, REAL highFreq)
 {
-	ComplexFIR* coefs = newFIR_Bandpass_COMPLEX(lowFreq, highFreq, m_samprate, m_ncoef);
+	wxASSERT(::fabs(lowFreq) < 0.5 * m_samprate);
+	wxASSERT(::fabs(highFreq) < 0.5 * m_samprate);
+	wxASSERT((lowFreq + 10.0F) < highFreq);
 
-	COMPLEX* zcvec = (COMPLEX*)::fftw_malloc(m_fftLen * sizeof(COMPLEX));
+	unsigned int fftLen = 2 * m_bufLen;
+	unsigned int ncoef  =  m_bufLen + 1;
 
-	fftwf_plan ptmp = ::fftwf_plan_dft_1d(m_fftLen, (fftwf_complex *)zcvec, (fftwf_complex *)m_zfvec, FFTW_FORWARD, m_pbits);
+	ComplexFIR* coefs = newFIR_Bandpass_COMPLEX(lowFreq, highFreq, m_samprate, ncoef);
+
+	COMPLEX* zcvec = (COMPLEX*)::fftw_malloc(fftLen * sizeof(COMPLEX));
+	wxASSERT(zcvec != NULL);
+	::memset(zcvec, 0, fftLen * sizeof(COMPLEX));
+
+	fftwf_plan ptmp = ::fftwf_plan_dft_1d(fftLen, (fftwf_complex *)zcvec, (fftwf_complex *)m_zfvec, FFTW_FORWARD, m_pbits);
 
 #ifdef LHS
-	for (unsigned int i = 0; i < m_ncoef; i++)
+	for (unsigned int i = 0; i < ncoef; i++)
 		zcvec[i] = FIRtap(coefs, i);
 #else
-	for (unsigned int i = 0; i < m_ncoef; i++)
-		zcvec[m_fftLen - m_ncoef + i] = FIRtap(coefs, i);
+	for (unsigned int i = 0; i < ncoef; i++)
+		zcvec[fftLen - ncoef + i] = FIRtap(coefs, i);
 #endif
 
 	::fftwf_execute(ptmp);
+
 	::fftwf_destroy_plan(ptmp);
+
 	::fftw_free(zcvec);
 
 	delFIR_Bandpass_COMPLEX(coefs);
 
-	normalize_vec_COMPLEX(m_zfvec, m_fftLen);
+	normalize_vec_COMPLEX(m_zfvec, fftLen);
 }
 
 void CFilterOVSV::filter()
 {
 	unsigned int i, j;
 
-	/* input sig -> z */
+	unsigned int fftLen = 2 * m_bufLen;
+
+	// Input signal -> Z
 	::fftwf_execute(m_pfwd);
 
-	/* convolve in z */
-	unsigned int m = m_fftLen;
-	for (i = 0; i < m; i++)
+	// Convolve in z
+	for (i = 0; i < fftLen; i++)
 		m_zivec[i] = Cmul(m_zivec[i], m_zfvec[i]);
 
-	/* z convolved sig -> time output sig */
+	// Z convolved signal -> time output signal
 	::fftwf_execute(m_pinv);
 
-	/* scale */
-	unsigned int n = m_bufLen;
-	for (i = 0; i < n; i++) {
+	// Scale
+	for (i = 0; i < m_bufLen; i++) {
 		m_zovec[i].re *= m_scale;
 		m_zovec[i].im *= m_scale;
 	}
 
-	/* prepare input sig vec for next fill */
-	for (i = 0, j = n; i < n; i++, j++)
+	// Prepare input signal vector for next fill
+	for (i = 0, j = m_bufLen; i < m_bufLen; i++, j++)
 		m_zrvec[i] = m_zrvec[j];
 }
 
 void CFilterOVSV::reset()
 {
-	::memset(m_zrvec, 0, m_fftLen * sizeof(COMPLEX));
+	::memset(m_zrvec, 0, 2 * m_bufLen * sizeof(COMPLEX));
 }
 
-/* where to put next batch of samples to filter */
+// Where to put next batch of samples to filter
 COMPLEX* CFilterOVSV::fetchPoint()
 {
 	return m_zrvec + m_bufLen;
 }
 
-/* how many samples to put there */
+// How many samples to put there
 unsigned int CFilterOVSV::fetchSize()
 {
-	return m_fftLen - m_bufLen;
+	return m_bufLen;
 }
 
-/* where samples should be taken from after filtering */
+// Where samples should be taken from after filtering
 #ifdef LHS
 COMPLEX* CFilterOVSV::storePoint()
 {
@@ -176,13 +184,13 @@ COMPLEX* CFilterOVSV::storePoint()
 }
 #endif
 
-/* how many samples to take */
+// How many samples to take
 /* NB strategy. This is the number of good samples in the
    left half of the true buffer. Samples in right half
    are circular artifacts and are ignored. */
 unsigned int CFilterOVSV::storeSize()
 {
-	return m_fftLen - m_bufLen;
+	return m_bufLen;
 }
 
 COMPLEX* CFilterOVSV::getZFvec()

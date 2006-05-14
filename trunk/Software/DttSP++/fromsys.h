@@ -41,7 +41,7 @@ Bridgewater, NJ 08807
 #include <cmath>
 
 #ifndef M_PI
-const double M_PI = 3.14159265358928;
+const double M_PI = 3.14159265358979323846;
 #endif
 
 #ifndef TWOPI

@@ -36,14 +36,14 @@ Bridgewater, NJ 08807
 #include "bufvec.h"
 #include "Window.h"
 
+#include <wx/wx.h>		// FIXME
 
-const double onepi = M_PI;
-const double twopi = 2.0 * onepi;
 
 RealFIR* newFIR_REAL(unsigned int size)
 {
 	RealFIR* p = new RealFIR;
 	FIRcoef(p) = new REAL[size];
+	::memset(FIRcoef(p), 0, size * sizeof(REAL));
 
 	FIRsize(p) = size;
 	FIRtype(p) = FIR_Undef;
@@ -57,6 +57,7 @@ ComplexFIR* newFIR_COMPLEX(unsigned int size)
 {
 	ComplexFIR* p = new ComplexFIR;
 	FIRcoef(p) = new COMPLEX[size];
+	::memset(FIRcoef(p), 0, size * sizeof(COMPLEX));
 
 	FIRsize(p) = size;
 	FIRtype(p) = FIR_Undef;
@@ -102,11 +103,11 @@ RealFIR* newFIR_Lowpass_REAL(REAL cutoff, REAL sr, unsigned int size)
 
       for (unsigned int i = 1; i <= size; i++)
 	{
-	  int j = i - 1;
+	  unsigned int j = i - 1;
 	  if (i != midpoint)
 	    h[j] =
-	      (REAL) ((sin (twopi * (i - midpoint) * fc) /
-		       (onepi * (i - midpoint))) * w[j]);
+	      (REAL) ((sin (TWOPI * (i - midpoint) * fc) /
+		       (M_PI * (i - midpoint))) * w[j]);
 	  else
 	    h[midpoint - 1] = 2.0f * fc;
 	}
@@ -139,8 +140,8 @@ ComplexFIR* newFIR_Lowpass_COMPLEX(REAL cutoff, REAL sr, unsigned int size)
 	  unsigned int j = i - 1;
 	  if (i != midpoint)
 	    h[j].re =
-	      (REAL) ((sin (twopi * (i - midpoint) * fc) /
-		       (onepi * (i - midpoint))) * w[j]);
+	      (REAL) ((sin (TWOPI * (i - midpoint) * fc) /
+		       (M_PI * (i - midpoint))) * w[j]);
 	  else
 	    h[midpoint - 1].re = 2.0f * fc;
 	}
@@ -168,15 +169,15 @@ RealFIR* newFIR_Bandpass_REAL(REAL lo, REAL hi, REAL sr, unsigned int size)
 
       lo /= sr, hi /= sr;
       REAL fc = (hi - lo) / 2.0f;
-      REAL ff = (REAL) ((lo + hi) * onepi);
+      REAL ff = (REAL) ((lo + hi) * M_PI);
 
       for (unsigned int i = 1; i <= size; i++)
 	{
 	  unsigned int j = i - 1;
 	  if (i != midpoint)
 	    h[j] =
-	      (REAL) ((sin (twopi * (i - midpoint) * fc) /
-		       (onepi * (i - midpoint))) * w[j]);
+	      (REAL) ((sin (TWOPI * (i - midpoint) * fc) /
+		       (M_PI * (i - midpoint))) * w[j]);
 	  else
 	    h[midpoint - 1] = 2.0f * fc;
 	  h[j] *= (REAL) (2.0 * cos (ff * (i - midpoint)));
@@ -205,14 +206,15 @@ ComplexFIR* newFIR_Bandpass_COMPLEX(REAL lo, REAL hi, REAL sr, unsigned int size
 
       lo /= sr, hi /= sr;
       REAL fc = (REAL) ((hi - lo) / 2.0);
-      REAL ff = (REAL) ((lo + hi) * onepi);
+      REAL ff = (REAL) ((lo + hi) * M_PI);
 
       for (unsigned int i = 1; i <= size; i++)
 	{
-	  unsigned int j = i - 1, k = i - midpoint;
+	  unsigned int j = i - 1;
+	  REAL k = REAL(int(i) - int(midpoint));
 	  REAL tmp, phs = ff * k;
 	  if (i != midpoint)
-	    tmp = (REAL) ((sin (twopi * k * fc) / (onepi * k)) * w[j]);
+	    tmp = (REAL) ((sin (TWOPI * k * fc) / (M_PI * k)) * w[j]);
 	  else
 	    tmp = (REAL) (2.0 * fc);
 	  tmp *= 2.0;
@@ -249,8 +251,8 @@ RealFIR* newFIR_Highpass_REAL(REAL cutoff, REAL sr, unsigned int size)
 	  unsigned int j = i - 1;
 	  if (i != midpoint)
 	    h[j] =
-	      (REAL) ((sin (twopi * (i - midpoint) * fc) /
-		       (onepi * (i - midpoint))) * w[j]);
+	      (REAL) ((sin (TWOPI * (i - midpoint) * fc) /
+		       (M_PI * (i - midpoint))) * w[j]);
 	  else
 	    h[midpoint - 1] = (REAL) (2.0 * fc);
 	}
@@ -293,8 +295,8 @@ ComplexFIR* newFIR_Highpass_COMPLEX(REAL cutoff, REAL sr, unsigned int size)
 	  unsigned int j = i - 1;
 	  if (i != midpoint)
 	    h[j].re =
-	      (REAL) ((sin (twopi * (i - midpoint) * fc) /
-		       (onepi * (i - midpoint))) * w[j]);
+	      (REAL) ((sin (TWOPI * (i - midpoint) * fc) /
+		       (M_PI * (i - midpoint))) * w[j]);
 	  else
 	    h[midpoint - 1].re = (REAL) (2.0 * fc);
 	}
@@ -331,15 +333,15 @@ RealFIR* newFIR_Hilbert_REAL(REAL lo, REAL hi, REAL sr, unsigned int size)
 
       lo /= sr, hi /= sr;
       REAL fc = (REAL) ((hi - lo) / 2.0);
-      REAL ff = (REAL) ((lo + hi) * onepi);
+      REAL ff = (REAL) ((lo + hi) * M_PI);
 
       for (unsigned int i = 1; i <= size; i++)
 	{
 	  unsigned int j = i - 1;
 	  if (i != midpoint)
 	    h[j] =
-	      (REAL) ((sin (twopi * (i - midpoint) * fc) /
-		       (onepi * (i - midpoint))) * w[j]);
+	      (REAL) ((sin (TWOPI * (i - midpoint) * fc) /
+		       (M_PI * (i - midpoint))) * w[j]);
 	  else
 	    h[midpoint - 1] = (REAL) (2.0 * fc);
 	  h[j] *= (REAL) (2.0 * sin (ff * (i - midpoint)));
@@ -368,7 +370,7 @@ ComplexFIR* newFIR_Hilbert_COMPLEX(REAL lo, REAL hi, REAL sr, unsigned int size)
 
       lo /= sr, hi /= sr;
       REAL fc = (REAL) ((hi - lo) / 2.0);
-      REAL ff = (REAL) ((lo + hi) * onepi);
+      REAL ff = (REAL) ((lo + hi) * M_PI);
 
       for (unsigned int i = 1; i <= size; i++)
 	{
@@ -376,8 +378,8 @@ ComplexFIR* newFIR_Hilbert_COMPLEX(REAL lo, REAL hi, REAL sr, unsigned int size)
 	  REAL tmp, phs = ff * (i - midpoint);
 	  if (i != midpoint)
 	    tmp =
-	      (REAL) ((sin (twopi * (i - midpoint) * fc) /
-		       (onepi * (i - midpoint))) * w[j]);
+	      (REAL) ((sin (TWOPI * (i - midpoint) * fc) /
+		       (M_PI * (i - midpoint))) * w[j]);
 	  else
 	    tmp = (REAL) (2.0 * fc);
 	  tmp *= 2.0f;
@@ -408,7 +410,7 @@ RealFIR* newFIR_Bandstop_REAL(REAL lo, REAL hi, REAL sr, unsigned int size)
 
       lo /= sr, hi /= sr;
       REAL fc = (REAL) ((hi - lo) / 2.0);
-      REAL ff = (REAL) ((lo + hi) * onepi);
+      REAL ff = (REAL) ((lo + hi) * M_PI);
 
 	  unsigned int i;
       for (i = 1; i <= size; i++)
@@ -416,8 +418,8 @@ RealFIR* newFIR_Bandstop_REAL(REAL lo, REAL hi, REAL sr, unsigned int size)
 	  unsigned int j = i - 1;
 	  if (i != midpoint)
 	    h[j] =
-	      (REAL) ((sin (twopi * (i - midpoint) * fc) /
-		       (onepi * (i - midpoint))) * w[j]);
+	      (REAL) ((sin (TWOPI * (i - midpoint) * fc) /
+		       (M_PI * (i - midpoint))) * w[j]);
 	  else
 	    h[midpoint - 1] = (REAL) (2.0 * fc);
 	  h[j] *= (REAL) (2.0 * cos (ff * (i - midpoint)));
@@ -455,7 +457,7 @@ ComplexFIR* newFIR_Bandstop_COMPLEX(REAL lo, REAL hi, REAL sr, unsigned int size
 
       lo /= sr, hi /= sr;
       REAL fc = (REAL) ((hi - lo) / 2.0);
-      REAL ff = (REAL) ((lo + hi) * onepi);
+      REAL ff = (REAL) ((lo + hi) * M_PI);
 
 	  unsigned int i;
       for (i = 1; i <= size; i++)
@@ -464,8 +466,8 @@ ComplexFIR* newFIR_Bandstop_COMPLEX(REAL lo, REAL hi, REAL sr, unsigned int size
 	  REAL tmp, phs = ff * (i - midpoint);
 	  if (i != midpoint)
 	    tmp =
-	      (REAL) ((sin (twopi * (i - midpoint) * fc) /
-		       (onepi * (i - midpoint))) * w[j]);
+	      (REAL) ((sin (TWOPI * (i - midpoint) * fc) /
+		       (M_PI * (i - midpoint))) * w[j]);
 	  else
 	    tmp = (REAL) (2.0 * fc);
 	  tmp *= 2.0;

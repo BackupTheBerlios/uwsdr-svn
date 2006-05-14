@@ -455,6 +455,11 @@ PRIVATE void setup_local_audio()
 	top.hold.buf.r = new float[top.hold.size.frames];
 	top.hold.aux.l = new float[top.hold.size.frames];
 	top.hold.aux.r = new float[top.hold.size.frames];
+
+	::memset(top.hold.buf.l, 0, top.hold.size.frames * sizeof(float));
+	::memset(top.hold.buf.r, 0, top.hold.size.frames * sizeof(float));
+	::memset(top.hold.aux.l, 0, top.hold.size.frames * sizeof(float));
+	::memset(top.hold.aux.r, 0, top.hold.size.frames * sizeof(float));
 }
 
 PRIVATE void setup_system_audio()

@@ -49,7 +49,7 @@ class CDTTSPControl : public wxThread {
 	virtual void setTXIAndQ(int phase, int gain);
 
 	virtual float getMeter(int type);
-	virtual void  getSpectrum(float* spectrum);
+	virtual void  getSpectrum(float* spectrum, int pos);
 
 	virtual void dataIO(const float* input, float* output, unsigned int nSamples);
 
