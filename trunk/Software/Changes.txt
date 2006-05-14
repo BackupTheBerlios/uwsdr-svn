@@ -76,3 +76,25 @@ S Meter and spectrum display show data, the bad news is that they aren't working
 All of the knobs should work except for the squelch knob.
 
 Changes to the GUISetup program because of the way that sound cards are handled.
+
+
+Prototype 5 - May 2006
+===========================
+
+Lots of rework on the DttSP code, into C++ and cleanups.
+
+Many more preferences.
+
+Waterfall spectrum display and selectable update speed.
+
+Sound recording from the menu.
+
+Mousewheel tuning.
+
+GUISetup can also add icons to the Start Menu and/or the Desktop.
+
+Squelch knob works.
+
+Moved all of the source code to Berlios and put it under SVN.
+
+DttSP is now statically linked, not a DLL.

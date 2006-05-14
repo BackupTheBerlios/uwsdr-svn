@@ -8,12 +8,12 @@ CFG=SDR Emulator - Win32 Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
-!MESSAGE NMAKE /f "SDR Emulator.mak".
+!MESSAGE NMAKE /f "SDREmulator.mak".
 !MESSAGE 
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "SDR Emulator.mak" CFG="SDR Emulator - Win32 Debug"
+!MESSAGE NMAKE /f "SDREmulator.mak" CFG="SDR Emulator - Win32 Debug"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /W3 /GR /GX /O2 /Ob0 /I "C:\wxWidgets-2.6.3\lib\vc_dll\msw" /I "C:\wxWidgets-2.6.3\include" /I "..\UWSDR GUI" /D "WIN32" /D "__WXMSW__" /D "WXUSINGDLL" /D "_WINDOWS" /D "NOPCH" /FD /c
+# ADD CPP /nologo /W3 /GR /GX /O2 /Ob0 /I "C:\wxWidgets-2.6.3\lib\vc_dll\msw" /I "C:\wxWidgets-2.6.3\include" /I "..\UWSDRGUI" /D "WIN32" /D "__WXMSW__" /D "WXUSINGDLL" /D "_WINDOWS" /D "NOPCH" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
@@ -70,7 +70,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /GR /GX /ZI /Od /I "C:\wxWidgets-2.6.3\lib\vc_dll\mswd" /I "C:\wxWidgets-2.6.3\include" /I "..\UWSDR GUI" /D "WIN32" /D "_DEBUG" /D "__WXMSW__" /D "__WXDEBUG__" /D "WXUSINGDLL" /D "_WINDOWS" /D "NOPCH" /FD /GZ /c
+# ADD CPP /nologo /W3 /Gm /GR /GX /ZI /Od /I "C:\wxWidgets-2.6.3\lib\vc_dll\mswd" /I "C:\wxWidgets-2.6.3\include" /I "..\UWSDRGUI" /D "WIN32" /D "_DEBUG" /D "__WXMSW__" /D "__WXDEBUG__" /D "WXUSINGDLL" /D "_WINDOWS" /D "NOPCH" /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -94,7 +94,7 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE="..\UWSDR GUI\Frequency.cpp"
+SOURCE=..\UWSDRGUI\Frequency.cpp
 # End Source File
 # Begin Source File
 
@@ -110,7 +110,7 @@ SOURCE=.\SDREmulatorFrame.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE="..\UWSDR GUI\Frequency.h"
+SOURCE=..\UWSDRGUI\Frequency.h
 # End Source File
 # Begin Source File
 
