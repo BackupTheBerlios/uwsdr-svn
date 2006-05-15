@@ -48,8 +48,6 @@ BEGIN_EVENT_TABLE(CSpectrumDisplay, wxPanel)
 	EVT_MENU(MENU_1000MS, CSpectrumDisplay::onMenu)
 END_EVENT_TABLE()
 
-const double FREQ = 5000.0;
-
 const double DB_SCALE = 0.5;
 
 
@@ -60,6 +58,7 @@ m_height(size.GetHeight()),
 m_background(NULL),
 m_bitmap(NULL),
 m_sampleRate(0),
+m_bandwidth(0),
 m_menu(NULL),
 m_speedMenu(NULL),
 m_posMenu(NULL),
@@ -93,11 +92,6 @@ m_ticks(0)
 	m_menu->Append(-1, _("Position"), m_posMenu);
 	m_menu->Append(-1, _("Type"),     m_typeMenu);
 	m_menu->Append(-1, _("Refresh"),  m_speedMenu);
-
-	createPanadapter();
-
-	wxClientDC clientDC(this);
-	show(clientDC);
 }
 
 CSpectrumDisplay::~CSpectrumDisplay()
@@ -112,16 +106,25 @@ void CSpectrumDisplay::setSampleRate(unsigned int sampleRate)
 	m_sampleRate = sampleRate;
 }
 
-void CSpectrumDisplay::showSpectrum(const float* spectrum, double scale)
+void CSpectrumDisplay::setBandwidth(unsigned int bandwidth)
+{
+	m_bandwidth = bandwidth;
+
+	createPanadapter();
+
+	wxClientDC clientDC(this);
+	show(clientDC);
+}
+
+void CSpectrumDisplay::showSpectrum(const float* spectrum, float bottom)
 {
 	wxASSERT(spectrum != NULL);
-	wxASSERT(scale > 0.0 && scale <= 1.0);
 
 	if ((m_ticks % m_factor) == 0) {
 		if (m_type == SPECTRUM_PANADAPTER)
-			drawPanadapter(spectrum, scale);
+			drawPanadapter(spectrum, bottom);
 		else if (m_type == SPECTRUM_WATERFALL)
-			drawWaterfall(spectrum, scale);
+			drawWaterfall(spectrum, bottom);
 
 		wxClientDC clientDC(this);
 		show(clientDC);
@@ -183,7 +186,7 @@ void CSpectrumDisplay::createPanadapter()
 	dc.SetTextForeground(*wxCYAN);
 
 	wxString text;
-	text.Printf(wxT("-%.1f kHz"), FREQ / 1000.0);
+	text.Printf(wxT("-%.1f kHz"), float(m_bandwidth) / 2000.0F);
 	dc.DrawText(text, left, bottom);
 
 	text = wxT("0");
@@ -191,7 +194,7 @@ void CSpectrumDisplay::createPanadapter()
 	dc.GetTextExtent(text, &width, &height);
 	dc.DrawText(text, middleX - width / 2, bottom);
 
-	text.Printf(wxT("+%.1f kHz"), FREQ / 1000.0);
+	text.Printf(wxT("+%.1f kHz"), float(m_bandwidth) / 2000.0F);
 	dc.GetTextExtent(text, &width, &height);
 	dc.DrawText(text, right - width, bottom);
 
@@ -225,7 +228,7 @@ void CSpectrumDisplay::createWaterfall()
 	dc.SetTextForeground(*wxCYAN);
 
 	wxString text;
-	text.Printf(wxT("-%.1f kHz"), FREQ / 1000.0);
+	text.Printf(wxT("-%.1f kHz"), float(m_bandwidth) / 2000.0F);
 	dc.DrawText(text, left, bottom);
 
 	text = wxT("0");
@@ -233,14 +236,14 @@ void CSpectrumDisplay::createWaterfall()
 	dc.GetTextExtent(text, &width, &height);
 	dc.DrawText(text, middleX - width / 2, bottom);
 
-	text.Printf(wxT("+%.1f kHz"), FREQ / 1000.0);
+	text.Printf(wxT("+%.1f kHz"), float(m_bandwidth) / 2000.0F);
 	dc.GetTextExtent(text, &width, &height);
 	dc.DrawText(text, right - width, bottom);
 
 	dc.SelectObject(wxNullBitmap);
 }
 
-void CSpectrumDisplay::drawPanadapter(const float* spectrum, double scale)
+void CSpectrumDisplay::drawPanadapter(const float* spectrum, float bottom)
 {
 	wxMemoryDC dc, dcBack;
 
@@ -251,34 +254,20 @@ void CSpectrumDisplay::drawPanadapter(const float* spectrum, double scale)
 
 	dc.SetPen(*wxGREEN_PEN);
 
-	int firstBin = SPECTRUM_SIZE / 2 - int(FREQ * double(SPECTRUM_SIZE) / double(m_sampleRate) + 0.5);
-	int lastBin  = SPECTRUM_SIZE / 2 + int(FREQ * double(SPECTRUM_SIZE) / double(m_sampleRate) + 0.5);
-
-	double aveValue = 0.0;
-	for (int i = firstBin; i < lastBin; i++)
-		aveValue += spectrum[i] * scale;
-	aveValue /= double(lastBin - firstBin);
+	int firstBin = SPECTRUM_SIZE / 2 - int(m_bandwidth / 2 * double(SPECTRUM_SIZE) / double(m_sampleRate) + 0.5);
+	int lastBin  = SPECTRUM_SIZE / 2 + int(m_bandwidth / 2 * double(SPECTRUM_SIZE) / double(m_sampleRate) + 0.5);
 
 	int binsPerPixel = int(double(lastBin - firstBin) / double(m_width - 5) + 0.5);
 
 	int lastX, lastY;
 	int bin = firstBin;
 	for (int x = 2; x < (m_width - 3); x++) {
-/*
-		double value = -999.0;
-		for (int i = 0; i < binsPerPixel; i++) {
-			double val = spectrum[bin++] * scale;
-
-			if (val > value)
-				value = val;
-		}
-*/
-		double value = 0.0;
+		float value = 0.0F;
 		for (int i = 0; i < binsPerPixel; i++)
-			value += spectrum[bin++] * scale;
-		value /= double(binsPerPixel);
+			value += spectrum[bin++];
+		value /= float(binsPerPixel);
 
-		int y = int((value - aveValue) / DB_SCALE + 0.5);
+		int y = int((value - bottom) / DB_SCALE + 0.5);
 		if (y < 0)
 			y = 0;
 		if (y > (m_height - 12))
@@ -297,15 +286,10 @@ void CSpectrumDisplay::drawPanadapter(const float* spectrum, double scale)
 	dc.SelectObject(wxNullBitmap);
 }
 
-void CSpectrumDisplay::drawWaterfall(const float* spectrum, double scale)
+void CSpectrumDisplay::drawWaterfall(const float* spectrum, float bottom)
 {
-	int firstBin = SPECTRUM_SIZE / 2 - int(FREQ * double(SPECTRUM_SIZE) / double(m_sampleRate) + 0.5);
-	int lastBin  = SPECTRUM_SIZE / 2 + int(FREQ * double(SPECTRUM_SIZE) / double(m_sampleRate) + 0.5);
-
-	double aveValue = 0.0;
-	for (int i = firstBin; i < lastBin; i++)
-		aveValue += spectrum[i] * scale;
-	aveValue /= double(lastBin - firstBin);
+	int firstBin = SPECTRUM_SIZE / 2 - int(m_bandwidth / 2 * double(SPECTRUM_SIZE) / double(m_sampleRate) + 0.5);
+	int lastBin  = SPECTRUM_SIZE / 2 + int(m_bandwidth / 2 * double(SPECTRUM_SIZE) / double(m_sampleRate) + 0.5);
 
 	int binsPerPixel = int(double(lastBin - firstBin) / double(m_width - 5) + 0.5);
 
@@ -321,12 +305,12 @@ void CSpectrumDisplay::drawWaterfall(const float* spectrum, double scale)
 
 	int bin = firstBin;
 	for (int x = 2; x < (m_width - 3); x++) {
-		double value = 0.0;
+		float value = 0.0F;
 		for (int i = 0; i < binsPerPixel; i++)
-			value += spectrum[bin++] * scale;
-		value /= double(binsPerPixel);
+			value += spectrum[bin++];
+		value /= float(binsPerPixel);
 
-		double percent = (value - aveValue) / 40.0;
+		float percent = (value - bottom) / 40.0;
 		if (percent < 0.0)
 			percent = 0.0;
 		if (percent > 1.0)

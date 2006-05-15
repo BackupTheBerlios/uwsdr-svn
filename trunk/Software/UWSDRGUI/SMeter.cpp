@@ -51,7 +51,7 @@ m_rxMenu(NULL),
 m_txMenu(NULL),
 m_rxMeter(-1),
 m_txMeter(-1),
-m_lastLevel(99999.9)
+m_lastLevel(999.9F)
 {
 	m_bitmap     = new wxBitmap(m_width, m_height);
 	m_background = new wxBitmap(m_width, m_height);
@@ -81,10 +81,10 @@ CSMeter::~CSMeter()
 	delete m_menu;
 }
 
-void CSMeter::setLevel(double level)
+void CSMeter::setLevel(float level)
 {
-	if (level < 0.0)
-		level = 0.0;
+	if (level < 0.0F)
+		level = 0.0F;
 
 	if (level == m_lastLevel)
 		return;
@@ -108,14 +108,14 @@ void CSMeter::setLevel(double level)
 	int endX;
 	int endY;
 
-	if (level <= 54.0) {	// S0 to S9
-		double angle = (M_PI / 180.0) * (45.0 - level * 0.833333);
+	if (level <= 54.0F) {	// S0 to S9
+		double angle = (M_PI / 180.0) * double(45.0F - level * 0.833333F);
 		endX = centreX - int((SMETER_WIDTH + 15) * ::sin(angle) / 2.0 + 0.5);
 		endY = centreY - int((SMETER_WIDTH + 15) * ::cos(angle) / 2.0 + 0.5);
 	} else {			// dB over S9
-		if (level > 94.0)	// 40dB over S9
-			level = 94.0;
-		double angle = (M_PI / 180.0) * (level - 54.0) * 1.125;
+		if (level > 94.0F)	// 40dB over S9
+			level = 94.0F;
+		double angle = (M_PI / 180.0) * double(level - 54.0F) * 1.125;
 		endX = centreX + int((SMETER_WIDTH + 15) * ::sin(angle) / 2.0 + 0.5);
 		endY = centreY - int((SMETER_WIDTH + 15) * ::cos(angle) / 2.0 + 0.5);
 	}

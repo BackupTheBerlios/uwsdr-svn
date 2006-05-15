@@ -75,6 +75,7 @@ class CDTTSPControl : public wxThread {
 	int          m_txPhase;
 	int          m_txGain;
 	unsigned int m_squelch;
+	bool         m_started;
 
 	void normaliseFilter();
 };

@@ -28,8 +28,9 @@ class CSpectrumDisplay : public wxPanel {
 	virtual ~CSpectrumDisplay();
 
 	virtual void setSampleRate(unsigned int sampleRate);
+	virtual void setBandwidth(unsigned int hertz);
 
-	virtual void showSpectrum(const float* spectrum, double scale = 1.0);
+	virtual void showSpectrum(const float* spectrum, float bottom);
 
 	virtual void setType(int type);
 	virtual void setPosition(int pos);
@@ -49,6 +50,7 @@ class CSpectrumDisplay : public wxPanel {
 	wxBitmap*    m_background;
 	wxBitmap*    m_bitmap;
 	unsigned int m_sampleRate;
+	unsigned int m_bandwidth;
 	wxMenu*      m_menu;
 	wxMenu*      m_speedMenu;
 	wxMenu*      m_posMenu;
@@ -66,8 +68,8 @@ class CSpectrumDisplay : public wxPanel {
 	void createPanadapter();
 	void createWaterfall();
 
-	void drawPanadapter(const float* spectrum, double scale);
-	void drawWaterfall(const float* spectrum, double scale);
+	void drawPanadapter(const float* spectrum, float bottom);
+	void drawWaterfall(const float* spectrum, float bottom);
 };
 
 #endif

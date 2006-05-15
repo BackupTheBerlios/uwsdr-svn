@@ -231,6 +231,12 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_spectrumDisplay->setType(m_parameters->m_spectrumType);
 	m_spectrumDisplay->setSpeed(m_parameters->m_spectrumSpeed);
 
+	// Set the spectrum width depending on the step size, FIXME
+	if (m_parameters->m_hardwareStepSize >= 5000)
+		m_spectrumDisplay->setBandwidth(10000);
+	else
+		m_spectrumDisplay->setBandwidth(15000);
+
 	// FIXME
 	// (m_parameters->m_ipAddress, m_parameters->m_dataPort, m_parameters->m_hardwareProtocolVersion, m_parameters->m_sdrEnabled);
 
@@ -1138,10 +1144,10 @@ void CUWSDRFrame::onTimer(wxTimerEvent& event)
 		if (val != -200.0F) {
 			wxLogMessage("TX Meter = %f", val);
 
-			m_sMeter->setLevel(val * 94.0);
+			m_sMeter->setLevel(val * 94.0F);
 
 			m_dsp->getSpectrum(m_spectrum, m_parameters->m_spectrumPos);
-			m_spectrumDisplay->showSpectrum(m_spectrum, 0.25);
+			m_spectrumDisplay->showSpectrum(m_spectrum, 0.0F);
 		}
 	} else {
 		int meter = m_sMeter->getRXMeter();
@@ -1150,10 +1156,10 @@ void CUWSDRFrame::onTimer(wxTimerEvent& event)
 		float val = m_dsp->getMeter(meter);
 
 		if (val != -200.0F) {
-			m_sMeter->setLevel(val + 110.0);
+			m_sMeter->setLevel(val + 110.0F);
 
 			m_dsp->getSpectrum(m_spectrum, m_parameters->m_spectrumPos);
-			m_spectrumDisplay->showSpectrum(m_spectrum);
+			m_spectrumDisplay->showSpectrum(m_spectrum, -95.0F);
 		}
 	}
 }

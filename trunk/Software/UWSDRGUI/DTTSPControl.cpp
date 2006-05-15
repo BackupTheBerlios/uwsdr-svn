@@ -41,7 +41,8 @@ m_rxPhase(0),
 m_rxGain(0),
 m_txPhase(0),
 m_txGain(0),
-m_squelch(999999)
+m_squelch(999999),
+m_started(false)
 {
 }
 
@@ -79,7 +80,11 @@ void CDTTSPControl::open(unsigned int sampleRate, unsigned int blockSize)
 
 void* CDTTSPControl::Entry()
 {
+	m_started = true;
+
 	::process_samples_thread();
+
+	m_started = false;
 
 	return (void*)0;
 }
@@ -270,6 +275,9 @@ void CDTTSPControl::setSquelch(unsigned int value)
 
 float CDTTSPControl::getMeter(int type)
 {
+	if (!m_started)
+		return -200.0F;
+
 	switch (type) {
 		case METER_SIGNAL:
 			return ::Calculate_Meters(SIGNAL_STRENGTH);
@@ -293,20 +301,30 @@ void CDTTSPControl::getSpectrum(float* spectrum, int pos)
 {
 	wxASSERT(spectrum != NULL);
 
-	switch (pos) {
-		case SPECTRUM_PRE_FILT:
-			::Process_Panadapter(spectrum);
-			break;
+	if (!m_started)
+		return;
 
-		case SPECTRUM_POST_FILT:
-			::Process_Spectrum(spectrum);
-			break;
+	if (!m_transmit) {
+		switch (pos) {
+			case SPECTRUM_PRE_FILT:
+				::Process_Panadapter(spectrum);
+				break;
+			case SPECTRUM_POST_FILT:
+				::Process_Spectrum(spectrum);
+				break;
+			default:
+				::wxLogError(_("Unknown spectrum position = %d"), pos);
+				break;
+		}
+	} else {
+		::Process_Spectrum(spectrum);
 	}
 }
 
 void CDTTSPControl::dataIO(const float* input, float* output, unsigned int nSamples)
 {
-	::Audio_CallbackIL((float*)input, output, nSamples);
+	if (m_started)
+		::Audio_CallbackIL((float*)input, output, nSamples);
 }
 
 void CDTTSPControl::close()

@@ -27,7 +27,7 @@ class CSMeter : public wxPanel {
 	CSMeter(wxWindow* parent, int id, const wxPoint& pos, const wxSize& size, long style = 0L, const wxString& name = wxPanelNameStr);
 	virtual ~CSMeter();
 
-	virtual void setLevel(double level);
+	virtual void setLevel(float level);
 
 	virtual void setRXMeter(int meter);
 	virtual void setTXMeter(int meter);
@@ -49,7 +49,7 @@ class CSMeter : public wxPanel {
 	wxMenu*      m_txMenu;
 	int          m_rxMeter;
 	int          m_txMeter;
-	double       m_lastLevel;
+	float        m_lastLevel;
 
 	DECLARE_EVENT_TABLE()
 
