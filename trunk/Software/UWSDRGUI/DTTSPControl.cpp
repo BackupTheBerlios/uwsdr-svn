@@ -63,13 +63,7 @@ void CDTTSPControl::open(unsigned int sampleRate, unsigned int blockSize)
 
 	::SetSquelchState(true);
 
-	::SetPWSmode(SPEC_PRE_FILT);
-
-   ::SetWindow(HANN_WINDOW);
-
-	::SetSpectrumPolyphase(true);
-	::SetSpectrumPolyphase(false);
-	// ::SetSpectrumPolyphase(true);
+    ::SetWindow(HANN_WINDOW);
 
 	Create();
 

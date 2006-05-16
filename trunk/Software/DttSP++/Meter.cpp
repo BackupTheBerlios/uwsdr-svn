@@ -102,7 +102,7 @@ void CMeter::setRXMeter(RXMETERTAP tap, CXB* buf, REAL agcGain)
 			temp1 = 0.0F;
 			for (i = 0; i < len; i++)
 				temp1 += Csqrmag(vec[i]);
-			temp1 /= REAL(len);
+			// temp1 /= REAL(len);
 
 			m_rxval[RX_SIGNAL_STRENGTH] = REAL(10.0 * ::log10(temp1 + 1e-20));
 
