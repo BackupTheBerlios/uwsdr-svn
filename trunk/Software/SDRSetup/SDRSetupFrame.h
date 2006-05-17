@@ -36,7 +36,6 @@ class CSDRSetupFrame : public wxFrame {
 	wxTextCtrl* m_sdrControlPort;
 	wxTextCtrl* m_sdrDataPort;
 	wxTextCtrl* m_dspAddress;
-	wxTextCtrl* m_dspDataPort;
 
 	DECLARE_EVENT_TABLE()
 };

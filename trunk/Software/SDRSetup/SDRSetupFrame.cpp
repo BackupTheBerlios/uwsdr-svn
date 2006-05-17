@@ -19,10 +19,11 @@
 #include "SDRSetupFrame.h"
 
 #include <wx/file.h>
+#include <wx/socket.h>
 
 #include "SDRSetup.xpm"
 
-const int EXECUTE_BUTTON  = 47549;
+const int EXECUTE_BUTTON  = 4549;
 
 const int BORDER_SIZE     = 5;
 const int DATA_WIDTH      = 150;
@@ -38,8 +39,7 @@ m_oldSDRControlPort(NULL),
 m_sdrAddress(NULL),
 m_sdrControlPort(NULL),
 m_sdrDataPort(NULL),
-m_dspAddress(NULL),
-m_dspDataPort(NULL)
+m_dspAddress(NULL)
 {
 	SetIcon(wxIcon(SDRSetup_xpm));
 
@@ -49,7 +49,7 @@ m_dspDataPort(NULL)
 
 	wxFlexGridSizer* panelSizer = new wxFlexGridSizer(2);
 
-	wxStaticText* label1 = new wxStaticText(panel, -1, _("Old SDR Address:"));
+	wxStaticText* label1 = new wxStaticText(panel, -1, _("Old SDR IP Address:"));
 	panelSizer->Add(label1, 0, wxALL, BORDER_SIZE);
 
 	m_oldSDRAddress = new wxTextCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
@@ -79,6 +79,12 @@ m_dspDataPort(NULL)
 	m_sdrDataPort = new wxTextCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
 	panelSizer->Add(m_sdrDataPort, 0, wxALL, BORDER_SIZE);
 
+	wxStaticText* label7 = new wxStaticText(panel, -1, _("DSP Address:"));
+	panelSizer->Add(label7, 0, wxALL, BORDER_SIZE);
+
+	m_dspAddress = new wxTextCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	panelSizer->Add(m_dspAddress, 0, wxALL, BORDER_SIZE);
+
 	wxButton* execute = new wxButton(panel, EXECUTE_BUTTON, _("Execute"));
 	panelSizer->Add(execute, 0, wxALL, BORDER_SIZE);
 
@@ -97,82 +103,95 @@ CSDRSetupFrame::~CSDRSetupFrame()
 
 void CSDRSetupFrame::onExecute(wxCommandEvent& event)
 {
-/*
-	wxString name = m_name->GetValue();
-	if (name.IsEmpty()) {
-		::wxMessageBox(wxT("The Name is not allowed to be empty"));
+   wxASSERT(m_oldSDRAddress != NULL);
+   wxASSERT(m_oldSDRControlPort != NULL);
+   wxASSERT(m_sdrAddress != NULL);
+   wxASSERT(m_sdrControlPort != NULL);
+   wxASSERT(m_sdrDataPort != NULL);
+   wxASSERT(m_dspAddress != NULL);
+
+   wxIPV4address address;
+
+	wxString oldSDRAddress = m_oldSDRAddress->GetValue();
+	if (oldSDRAddress.IsEmpty()) {
+		::wxMessageBox(_("The old SDR IP address is not allowed to be empty"));
 		return;
 	}
 
-	wxString fileName = m_filename->GetValue();
-	if (fileName.IsEmpty()) {
-		::wxMessageBox(wxT("The SDR File Name is not allowed to be empty"));
-		return;
-	}
-	if (!wxFile::Exists(fileName.c_str())) {
-		::wxMessageBox(wxT("The SDR File does not exist"));
+   bool valid = address.Hostname(oldSDRAddress);
+	if (!valid) {
+		::wxMessageBox(_("The old SDR IP address is not valid"));
 		return;
 	}
 
-	wxString audioDev = m_audio->GetValue();
-	if (audioDev.IsEmpty()) {
-		::wxMessageBox(wxT("The Audio Device is not allowed to be empty"));
+   oldSDRAddress = address.IPAddress();
+
+	wxString oldSDRControlPort = m_oldSDRControlPort->GetValue();
+	if (oldSDRControlPort.IsEmpty()) {
+		::wxMessageBox(_("The old SDR control port is not allowed to be empty"));
 		return;
 	}
 
-	wxString ipAddress = m_address->GetValue();
-	if (ipAddress.IsEmpty()) {
-		::wxMessageBox(wxT("The SDR IP Address is not allowed to be empty"));
+   long port;
+   valid = oldSDRControlPort.ToLong(&port);
+   if (!valid || port < 1 || port > 65535) {
+		::wxMessageBox(_("The old SDR control port is not valid (1-65535)"));
 		return;
 	}
 
-	wxString control = m_control->GetValue();
-	if (control.IsEmpty()) {
-		::wxMessageBox(wxT("The SDR Control Port is not allowed to be empty"));
-		return;
-	}
-	int controlPort = ::atoi(control.c_str());
-	if (controlPort < 1 || controlPort > 65536) {
-		::wxMessageBox(wxT("The SDR Control Port must be between 1 and 65536"));
-		return;
-	}
-	
-	wxString data = m_data->GetValue();
-	if (data.IsEmpty()) {
-		::wxMessageBox(wxT("The SDR Data Port is not allowed to be empty"));
-		return;
-	}
-	int dataPort = ::atoi(data.c_str());
-	if (dataPort < 1 || dataPort > 65536) {
-		::wxMessageBox(wxT("The SDR Data Port must be between 1 and 65536"));
+	wxString sdrAddress = m_sdrAddress->GetValue();
+	if (sdrAddress.IsEmpty()) {
+		::wxMessageBox(_("The new SDR IP address is not allowed to be empty"));
 		return;
 	}
 
-	wxConfig* config = new wxConfig(wxT("UWSDR"));
-
-	wxString fileNameKey    = wxT("/") + name + wxT("/FileName");
-	wxString audioDevKey    = wxT("/") + name + wxT("/AudioDev");
-	wxString ipAddressKey   = wxT("/") + name + wxT("/IPAddress");
-	wxString controlPortKey = wxT("/") + name + wxT("/ControlPort");
-	wxString dataPortKey    = wxT("/") + name + wxT("/DataPort");
-
-	wxString test;
-	if (config->Read(fileNameKey, &test)) {
-		int ret = ::wxMessageBox(wxT("An SDR with the same name already exists. Overwrite?"), wxT("Overwrite confirmation"), wxYES_NO | wxICON_QUESTION);
-		if (ret == wxNO)
-			return;
+   valid = address.Hostname(sdrAddress);
+	if (!valid) {
+		::wxMessageBox(_("The new SDR IP address is not valid"));
+		return;
 	}
 
-	config->Write(fileNameKey,    fileName);
-	config->Write(audioDevKey,    audioDev);
-	config->Write(ipAddressKey,   ipAddress);
-	config->Write(controlPortKey, long(controlPort));
-	config->Write(dataPortKey,    long(dataPort));
-	config->Flush();
+   sdrAddress = address.IPAddress();
 
-	delete config;
+	wxString sdrControlPort = m_sdrControlPort->GetValue();
+	if (sdrControlPort.IsEmpty()) {
+		::wxMessageBox(_("The new SDR control port is not allowed to be empty"));
+		return;
+	}
 
-	::wxMessageBox(wxT("µWave SDR configuration written."));
-*/
+   valid = sdrControlPort.ToLong(&port);
+   if (!valid || port < 1 || port > 65535) {
+		::wxMessageBox(_("The new SDR control port is not valid (1-65535)"));
+		return;
+	}
+
+	wxString sdrDataPort = m_sdrDataPort->GetValue();
+	if (sdrDataPort.IsEmpty()) {
+		::wxMessageBox(_("The new SDR data port is not allowed to be empty"));
+		return;
+	}
+
+   valid = sdrDataPort.ToLong(&port);
+   if (!valid || port < 1 || port > 65535) {
+		::wxMessageBox(_("The new SDR data port is not valid (1-65535)"));
+		return;
+	}
+
+	wxString dspAddress = m_dspAddress->GetValue();
+	if (dspAddress.IsEmpty()) {
+		::wxMessageBox(_("The DSP IP address is not allowed to be empty"));
+		return;
+	}
+
+   valid = address.Hostname(dspAddress);
+	if (!valid) {
+		::wxMessageBox(_("The DSP IP address is not valid"));
+		return;
+	}
+
+   dspAddress = address.IPAddress();
+
+   // Everything is valid now, now to send the data to the SDR
+
 	Close(true);
 }
