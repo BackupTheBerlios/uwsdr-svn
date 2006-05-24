@@ -32,7 +32,6 @@ Bridgewater, NJ 08807
 */
 
 #include "AMDemod.h"
-#include "fastrig.h"
 
 #include <wx/wx.h>
 
@@ -124,7 +123,7 @@ void CAMDemod::pll(COMPLEX sig)
 	m_pllDelay.re =  z.re * sig.re + z.im * sig.im;
 	m_pllDelay.im = -z.im * sig.re + z.re * sig.im;
 
-	REAL diff = Cmag(sig) * ATAN2(m_pllDelay.im, m_pllDelay.re);
+	REAL diff = Cmag(sig) * (REAL)::atan2(m_pllDelay.im, m_pllDelay.re);
 
 	m_pllFreqF += m_pllBeta * diff;
 

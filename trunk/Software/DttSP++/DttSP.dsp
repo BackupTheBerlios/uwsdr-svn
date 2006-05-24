@@ -119,15 +119,11 @@ SOURCE=.\DCBlock.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\fastrig.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\filter.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\FilterOVSV.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\FIR.cpp
 # End Source File
 # Begin Source File
 
@@ -152,6 +148,14 @@ SOURCE=.\NoiseBlanker.cpp
 # Begin Source File
 
 SOURCE=.\Oscillator.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\Resample.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ResampleF.cpp
 # End Source File
 # Begin Source File
 
@@ -255,15 +259,11 @@ SOURCE=.\Demod.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\fastrig.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\filter.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\FilterOVSV.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\FIR.h
 # End Source File
 # Begin Source File
 
@@ -300,6 +300,14 @@ SOURCE=.\NoiseBlanker.h
 # Begin Source File
 
 SOURCE=.\Oscillator.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Resample.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ResampleF.h
 # End Source File
 # Begin Source File
 

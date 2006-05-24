@@ -41,7 +41,7 @@ Bridgewater, NJ 08807
 #include "bufvec.h"
 #include "CorrectIQ.h"
 #include "Oscillator.h"
-#include "filter.h"
+#include "FIR.h"
 #include "FilterOVSV.h"
 #include "NoiseBlanker.h"
 #include "lmadf.h"

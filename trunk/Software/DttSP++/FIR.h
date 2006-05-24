@@ -1,4 +1,4 @@
-/* filter.h
+/* FIR.h
 
 This file is part of a program that implements a Software-Defined Radio.
 
@@ -31,8 +31,8 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
-#ifndef _filter_h
-#define _filter_h
+#ifndef _fir_h
+#define _fir_h
 
 #include "datatypes.h"
 #include "complex.h"

@@ -54,5 +54,7 @@ const REAL BITSY = 1E-15F;
 
 extern INLINE REAL sqr(REAL);
 extern unsigned int npoof2(unsigned int);
+extern unsigned int nblock2(unsigned int);
+
 
 #endif

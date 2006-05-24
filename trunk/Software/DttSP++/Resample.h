@@ -1,4 +1,4 @@
-/* banal.cpp
+/* Resample.h
 
 This file is part of a program that implements a Software-Defined Radio.
 
@@ -31,28 +31,25 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
-#include "banal.h"
+#ifndef _RESAMPLE_H
+#define _RESAMPLE_H
 
+#include "FIR.h"
 
-REAL sqr(REAL x)
+typedef struct resample_state
 {
-	 return x * x;
-}
+  COMPLEX *input, *output, *filterMemoryBuff;
+  RealFIR* filter;
+  int filterMemoryBuffLength, inputArrayLength, numFiltTaps,
+    indexfiltMemBuf, interpFactor, filterPhaseNum, deciFactor,
+    numOutputSamples;
+  int MASK;
+} ResSt;
 
-unsigned int npoof2(unsigned int n)
-{
-	unsigned int i = 0;
-
-	--n;
-	while (n > 0) {
-		n >>= 1;
-		i++;
-	}
-
-	return i;
-}
-
-unsigned int nblock2(unsigned int n)
-{
-   return 1 << npoof2(n);
-}
+extern ResSt* newPolyPhaseFIR (int filterMemoryBuffLength,
+					int indexfiltMemBuf,
+					int interpFactor,
+					int filterPhaseNum, int deciFactor);
+extern void PolyPhaseFIR (ResSt* resst);
+extern void delpolyPhaseFIR (ResSt* resst);
+#endif

@@ -1,4 +1,4 @@
-/* filter.cpp
+/* FIR.cpp
 
 This file is part of a program that implements a Software-Defined Radio.
 
@@ -31,7 +31,7 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
-#include "filter.h"
+#include "FIR.h"
 #include "fromsys.h"
 #include "bufvec.h"
 #include "Window.h"
@@ -96,14 +96,14 @@ RealFIR* newFIR_Lowpass_REAL(REAL cutoff, REAL sr, unsigned int size)
 
       if (!(size & 01))
 	size++;
-      unsigned int midpoint = (size >> 01) | 01;
+      int midpoint = (size >> 01) | 01;
       RealFIR* p = newFIR_REAL(size);
       REAL* h = FIRcoef (p);
       REAL* w = CWindow::create(BLACKMANHARRIS_WINDOW, size);
 
-      for (unsigned int i = 1; i <= size; i++)
+      for (int i = 1; i <= int(size); i++)
 	{
-	  unsigned int j = i - 1;
+	  int j = i - 1;
 	  if (i != midpoint)
 	    h[j] =
 	      (REAL) ((sin (TWOPI * (i - midpoint) * fc) /
@@ -130,14 +130,14 @@ ComplexFIR* newFIR_Lowpass_COMPLEX(REAL cutoff, REAL sr, unsigned int size)
 
       if (!(size & 01))
 	size++;
-      unsigned int midpoint = (size >> 01) | 01;
+      int midpoint = (size >> 01) | 01;
       ComplexFIR* p = newFIR_COMPLEX(size);
       COMPLEX* h = FIRcoef (p);
       REAL* w = CWindow::create(BLACKMANHARRIS_WINDOW, size);
 
-      for (unsigned i = 1; i <= size; i++)
+      for (int i = 1; i <= int(size); i++)
 	{
-	  unsigned int j = i - 1;
+	  int j = i - 1;
 	  if (i != midpoint)
 	    h[j].re =
 	      (REAL) ((sin (TWOPI * (i - midpoint) * fc) /
@@ -162,7 +162,7 @@ RealFIR* newFIR_Bandpass_REAL(REAL lo, REAL hi, REAL sr, unsigned int size)
     {
       if (!(size & 01))
 	size++;
-      unsigned int midpoint = (size >> 01) | 01;
+      int midpoint = (size >> 01) | 01;
       RealFIR* p = newFIR_REAL(size);
       REAL* h = FIRcoef (p);
       REAL* w = CWindow::create(BLACKMANHARRIS_WINDOW, size);
@@ -171,9 +171,9 @@ RealFIR* newFIR_Bandpass_REAL(REAL lo, REAL hi, REAL sr, unsigned int size)
       REAL fc = (hi - lo) / 2.0f;
       REAL ff = (REAL) ((lo + hi) * M_PI);
 
-      for (unsigned int i = 1; i <= size; i++)
+      for (int i = 1; i <= int(size); i++)
 	{
-	  unsigned int j = i - 1;
+	  int j = i - 1;
 	  if (i != midpoint)
 	    h[j] =
 	      (REAL) ((sin (TWOPI * (i - midpoint) * fc) /
@@ -199,7 +199,7 @@ ComplexFIR* newFIR_Bandpass_COMPLEX(REAL lo, REAL hi, REAL sr, unsigned int size
     {
       if (!(size & 01))
 	size++;
-      unsigned int midpoint = (size >> 01) | 01;
+      int midpoint = (size >> 01) | 01;
       ComplexFIR* p = newFIR_COMPLEX(size);
       COMPLEX* h = FIRcoef (p);
       REAL* w = CWindow::create(BLACKMANHARRIS_WINDOW, size);
@@ -208,10 +208,10 @@ ComplexFIR* newFIR_Bandpass_COMPLEX(REAL lo, REAL hi, REAL sr, unsigned int size
       REAL fc = (REAL) ((hi - lo) / 2.0);
       REAL ff = (REAL) ((lo + hi) * M_PI);
 
-      for (unsigned int i = 1; i <= size; i++)
+      for (int i = 1; i <= int(size); i++)
 	{
-	  unsigned int j = i - 1;
-	  REAL k = REAL(int(i) - int(midpoint));
+	  int j = i - 1;
+	  REAL k = REAL(i - midpoint);
 	  REAL tmp, phs = ff * k;
 	  if (i != midpoint)
 	    tmp = (REAL) ((sin (TWOPI * k * fc) / (M_PI * k)) * w[j]);
@@ -240,15 +240,15 @@ RealFIR* newFIR_Highpass_REAL(REAL cutoff, REAL sr, unsigned int size)
 
       if (!(size & 01))
 	size++;
-      unsigned int midpoint = (size >> 01) | 01;
+      int midpoint = (size >> 01) | 01;
       RealFIR* p = newFIR_REAL(size);
       REAL* h = FIRcoef (p);
       REAL* w = CWindow::create(BLACKMANHARRIS_WINDOW, size);
 
-	  unsigned int i;
-      for (i = 1; i <= size; i++)
+	   int i;
+      for (i = 1; i <= int(size); i++)
 	{
-	  unsigned int j = i - 1;
+	  int j = i - 1;
 	  if (i != midpoint)
 	    h[j] =
 	      (REAL) ((sin (TWOPI * (i - midpoint) * fc) /
@@ -257,9 +257,9 @@ RealFIR* newFIR_Highpass_REAL(REAL cutoff, REAL sr, unsigned int size)
 	    h[midpoint - 1] = (REAL) (2.0 * fc);
 	}
 
-      for (i = 1; i <= size; i++)
+      for (i = 1; i <= int(size); i++)
 	{
-	  unsigned int j = i - 1;
+	  int j = i - 1;
 	  if (i != midpoint)
 	    h[j] = -h[j];
 	  else
@@ -284,15 +284,15 @@ ComplexFIR* newFIR_Highpass_COMPLEX(REAL cutoff, REAL sr, unsigned int size)
 
       if (!(size & 01))
 	size++;
-      unsigned int midpoint = (size >> 01) | 01;
+      int midpoint = (size >> 01) | 01;
       ComplexFIR* p = newFIR_COMPLEX(size);
       COMPLEX* h = FIRcoef (p);
       REAL* w = CWindow::create(BLACKMANHARRIS_WINDOW, size);
 
-	  unsigned int i;
-      for (i = 1; i <= size; i++)
+	   int i;
+      for (i = 1; i <= int(size); i++)
 	{
-	  unsigned int j = i - 1;
+	  int j = i - 1;
 	  if (i != midpoint)
 	    h[j].re =
 	      (REAL) ((sin (TWOPI * (i - midpoint) * fc) /
@@ -301,7 +301,7 @@ ComplexFIR* newFIR_Highpass_COMPLEX(REAL cutoff, REAL sr, unsigned int size)
 	    h[midpoint - 1].re = (REAL) (2.0 * fc);
 	}
 
-      for (i = 1; i <= size; i++)
+      for (i = 1; i <= int(size); i++)
 	{
 	  int j = i - 1;
 	  if (i != midpoint)
@@ -326,7 +326,7 @@ RealFIR* newFIR_Hilbert_REAL(REAL lo, REAL hi, REAL sr, unsigned int size)
     {
       if (!(size & 01))
 	size++;
-      unsigned int midpoint = (size >> 01) | 01;
+      int midpoint = (size >> 01) | 01;
       RealFIR* p = newFIR_REAL(size);
       REAL* h = FIRcoef (p);
       REAL* w = CWindow::create(BLACKMANHARRIS_WINDOW, size);
@@ -335,9 +335,9 @@ RealFIR* newFIR_Hilbert_REAL(REAL lo, REAL hi, REAL sr, unsigned int size)
       REAL fc = (REAL) ((hi - lo) / 2.0);
       REAL ff = (REAL) ((lo + hi) * M_PI);
 
-      for (unsigned int i = 1; i <= size; i++)
+      for (int i = 1; i <= int(size); i++)
 	{
-	  unsigned int j = i - 1;
+	  int j = i - 1;
 	  if (i != midpoint)
 	    h[j] =
 	      (REAL) ((sin (TWOPI * (i - midpoint) * fc) /
@@ -363,7 +363,7 @@ ComplexFIR* newFIR_Hilbert_COMPLEX(REAL lo, REAL hi, REAL sr, unsigned int size)
     {
       if (!(size & 01))
 	size++;
-      unsigned int midpoint = (size >> 01) | 01;
+      int midpoint = (size >> 01) | 01;
       ComplexFIR* p = newFIR_COMPLEX(size);
       COMPLEX* h = FIRcoef (p);
       REAL* w = CWindow::create(BLACKMANHARRIS_WINDOW, size);
@@ -372,9 +372,9 @@ ComplexFIR* newFIR_Hilbert_COMPLEX(REAL lo, REAL hi, REAL sr, unsigned int size)
       REAL fc = (REAL) ((hi - lo) / 2.0);
       REAL ff = (REAL) ((lo + hi) * M_PI);
 
-      for (unsigned int i = 1; i <= size; i++)
+      for (int i = 1; i <= int(size); i++)
 	{
-	  unsigned int j = i - 1;
+	  int j = i - 1;
 	  REAL tmp, phs = ff * (i - midpoint);
 	  if (i != midpoint)
 	    tmp =
@@ -403,7 +403,7 @@ RealFIR* newFIR_Bandstop_REAL(REAL lo, REAL hi, REAL sr, unsigned int size)
     {
       if (!(size & 01))
 	size++;
-      unsigned int midpoint = (size >> 01) | 01;
+      int midpoint = (size >> 01) | 01;
       RealFIR* p = newFIR_REAL(size);
       REAL* h = FIRcoef (p);
       REAL* w = CWindow::create(BLACKMANHARRIS_WINDOW, size);
@@ -412,10 +412,10 @@ RealFIR* newFIR_Bandstop_REAL(REAL lo, REAL hi, REAL sr, unsigned int size)
       REAL fc = (REAL) ((hi - lo) / 2.0);
       REAL ff = (REAL) ((lo + hi) * M_PI);
 
-	  unsigned int i;
-      for (i = 1; i <= size; i++)
+	   int i;
+      for (i = 1; i <= int(size); i++)
 	{
-	  unsigned int j = i - 1;
+	  int j = i - 1;
 	  if (i != midpoint)
 	    h[j] =
 	      (REAL) ((sin (TWOPI * (i - midpoint) * fc) /
@@ -425,7 +425,7 @@ RealFIR* newFIR_Bandstop_REAL(REAL lo, REAL hi, REAL sr, unsigned int size)
 	  h[j] *= (REAL) (2.0 * cos (ff * (i - midpoint)));
 	}
 
-      for (i = 1; i <= size; i++)
+      for (i = 1; i <= int(size); i++)
 	{
 	  int j = i - 1;
 	  if (i != midpoint)
@@ -450,7 +450,7 @@ ComplexFIR* newFIR_Bandstop_COMPLEX(REAL lo, REAL hi, REAL sr, unsigned int size
     {
       if (!(size & 01))
 	size++;
-      unsigned int midpoint = (size >> 01) | 01;
+      int midpoint = (size >> 01) | 01;
       ComplexFIR* p = newFIR_COMPLEX(size);
       COMPLEX* h = FIRcoef (p);
       REAL* w = CWindow::create(BLACKMANHARRIS_WINDOW, size);
@@ -459,10 +459,10 @@ ComplexFIR* newFIR_Bandstop_COMPLEX(REAL lo, REAL hi, REAL sr, unsigned int size
       REAL fc = (REAL) ((hi - lo) / 2.0);
       REAL ff = (REAL) ((lo + hi) * M_PI);
 
-	  unsigned int i;
-      for (i = 1; i <= size; i++)
+	   int i;
+      for (i = 1; i <= int(size); i++)
 	{
-	  unsigned int j = i - 1;
+	  int j = i - 1;
 	  REAL tmp, phs = ff * (i - midpoint);
 	  if (i != midpoint)
 	    tmp =
@@ -475,9 +475,9 @@ ComplexFIR* newFIR_Bandstop_COMPLEX(REAL lo, REAL hi, REAL sr, unsigned int size
 	  h[j].im *= (REAL) (tmp * sin (phs));
 	}
 
-      for (i = 1; i <= size; i++)
+      for (i = 1; i <= int(size); i++)
 	{
-	  unsigned int j = i - 1;
+	  int j = i - 1;
 	  if (i != midpoint)
 	    h[j] = Cmul (h[j], cxminusone);
 	  else

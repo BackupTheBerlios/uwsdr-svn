@@ -36,7 +36,7 @@ Bridgewater, NJ 08807
 
 #include "GraphicEQ.h"
 #include "fromsys.h"
-#include "filter.h"
+#include "FIR.h"
 
 #include <wx/wx.h>
 
