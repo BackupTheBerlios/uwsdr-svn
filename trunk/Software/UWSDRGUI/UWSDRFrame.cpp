@@ -20,6 +20,7 @@
 #include "UWSDRFrame.h"
 #include "UWSDRApp.h"
 #include "UWSDRDefs.h"
+#include "UWSDRControl.h"
 #include "FreqKeypad.h"
 
 #include "Nullreader.h"
@@ -121,8 +122,6 @@ m_spectrum(NULL)
 {
 	SetIcon(wxIcon(UWSDR_xpm));
 
-	m_sdr = new CSDRControl(this, -1);
-
 	m_spectrum = new float[SPECTRUM_SIZE];
 
 	// The top level sizer, graph, list box and then controls
@@ -214,7 +213,11 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_parameters = parameters;
 
-	bool ret = m_sdr->open(m_parameters->m_ipAddress, m_parameters->m_controlPort, m_parameters->m_hardwareProtocolVersion, m_parameters->m_sdrEnabled);
+	m_sdr = new CUWSDRControl(m_parameters->m_ipAddress, m_parameters->m_controlPort, m_parameters->m_hardwareProtocolVersion, m_parameters->m_sdrEnabled);
+
+	m_sdr->setCallback(this, -1);
+
+	bool ret = m_sdr->open();
 	if (!ret) {
 		::wxLogError(_("Problems communicating with the SDR"));
 		::wxMessageBox(_("Problems communicating with the SDR"), _("µWave SDR Error"), wxICON_ERROR);

@@ -39,7 +39,7 @@ Bridgewater, NJ 08807
 typedef struct resampleF_state
 {
   REAL *input, *output, *filterMemoryBuff;
-  RealFIR* filter;
+  REAL* filter;
   int filterMemoryBuffLength, inputArrayLength, numFiltTaps,
     indexfiltMemBuf, interpFactor, filterPhaseNum, deciFactor,
     numOutputSamples;

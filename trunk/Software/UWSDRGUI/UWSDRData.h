@@ -16,8 +16,8 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	SDRData_H
-#define	SDRData_H
+#ifndef	UWSDRData_H
+#define	UWSDRData_H
 
 #include <wx/wx.h>
 #include <wx/socket.h>
@@ -26,11 +26,11 @@
 #include "DataReader.h"
 #include "DataWriter.h"
 
-class CSDRData : public wxEvtHandler, public IDataReader, public IDataWriter {
+class CUWSDRData : public wxEvtHandler, public IDataReader, public IDataWriter {
 
     public:
-	CSDRData(const wxString& address, int port, unsigned int version, bool enable);
-	virtual ~CSDRData();
+	CUWSDRData(const wxString& address, int port, unsigned int version, bool enable);
+	virtual ~CUWSDRData();
 
 	virtual void setCallback(IDataCallback* callback, int id);
 
@@ -40,7 +40,7 @@ class CSDRData : public wxEvtHandler, public IDataReader, public IDataWriter {
 
 	virtual void close();
 
-	virtual void onSocket(wxSocketEvent& event);
+	void onSocket(wxSocketEvent& event);
 
     private:
 	wxString          m_address;

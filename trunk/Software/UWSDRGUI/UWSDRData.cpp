@@ -16,7 +16,7 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "SDRData.h"
+#include "UWSDRData.h"
 
 const int SOCKET_ID = 7896;
 
@@ -26,13 +26,13 @@ const int SOCK_BUFFER_SIZE = 1500;
 const int OUT_BUFFER_SIZE  = 500;
 const int PACKET_SIZE      = 200;
 
-BEGIN_EVENT_TABLE(CSDRData, wxEvtHandler)
-	EVT_SOCKET(SOCKET_ID, CSDRData::onSocket)
+BEGIN_EVENT_TABLE(CUWSDRData, wxEvtHandler)
+	EVT_SOCKET(SOCKET_ID, CUWSDRData::onSocket)
 END_EVENT_TABLE()
 
 // RingBuffer on receive for buffering XXX
 
-CSDRData::CSDRData(const wxString& address, int port, unsigned int version, bool enable) :
+CUWSDRData::CUWSDRData(const wxString& address, int port, unsigned int version, bool enable) :
 wxEvtHandler(),
 m_address(address),
 m_port(port),
@@ -53,17 +53,17 @@ m_txBuffer(1000)
 {
 }
 
-CSDRData::~CSDRData()
+CUWSDRData::~CUWSDRData()
 {
 }
 
-void CSDRData::setCallback(IDataCallback* callback, int id)
+void CUWSDRData::setCallback(IDataCallback* callback, int id)
 {
 	m_callback = callback;
 	m_id       = id;
 }
 
-bool CSDRData::open(unsigned int sampleRate, unsigned int blockSize)
+bool CUWSDRData::open(unsigned int sampleRate, unsigned int blockSize)
 {
 	if (!m_enabled)
 		return true;
@@ -96,7 +96,7 @@ bool CSDRData::open(unsigned int sampleRate, unsigned int blockSize)
 	return true;
 }
 
-void CSDRData::write(const float* buffer, unsigned int nSamples)
+void CUWSDRData::write(const float* buffer, unsigned int nSamples)
 {
 	if (!m_enabled)
 		return;
@@ -121,7 +121,7 @@ void CSDRData::write(const float* buffer, unsigned int nSamples)
 	}	
 }
 
-void CSDRData::writePacket(const float* buffer, unsigned int nSamples)
+void CUWSDRData::writePacket(const float* buffer, unsigned int nSamples)
 {
 	wxASSERT(m_socket != NULL);
 	wxASSERT(buffer != NULL);
@@ -157,7 +157,7 @@ void CSDRData::writePacket(const float* buffer, unsigned int nSamples)
 	m_socket->SendTo(m_ipAddress, m_outBuffer, len);
 }
 
-void CSDRData::close()
+void CUWSDRData::close()
 {
 	if (!m_enabled)
 		return;
@@ -176,7 +176,7 @@ void CSDRData::close()
 	m_sequenceIn = -1;
 }
 
-void CSDRData::onSocket(wxSocketEvent& event)
+void CUWSDRData::onSocket(wxSocketEvent& event)
 {
 	wxASSERT(m_socket != NULL);
 	wxASSERT(m_inBuffer != NULL);

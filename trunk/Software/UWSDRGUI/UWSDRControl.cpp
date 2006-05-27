@@ -16,21 +16,23 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "SDRControl.h"
+#include "UWSDRControl.h"
 
 const int SOCKET_ID = 7895;
 
-BEGIN_EVENT_TABLE(CSDRControl, wxEvtHandler)
-	EVT_SOCKET(SOCKET_ID, CSDRControl::onSocket)
+BEGIN_EVENT_TABLE(CUWSDRControl, wxEvtHandler)
+	EVT_SOCKET(SOCKET_ID, CUWSDRControl::onSocket)
 END_EVENT_TABLE()
 
-CSDRControl::CSDRControl(IControlInterface* callback, int id) :
+CUWSDRControl::CUWSDRControl(const wxString& address, int port, unsigned int version, bool enable) :
 wxEvtHandler(),
-m_id(id),
-m_enabled(false),
+m_address(address),
+m_port(port),
+m_id(0),
+m_enabled(enable),
 m_socket(wxSOCKET_NOWAIT),
-m_callback(callback),
-m_version(0),
+m_callback(NULL),
+m_version(version),
 m_txFreq(),
 m_rxFreq(),
 m_enableTX(false),
@@ -39,26 +41,30 @@ m_tx(false)
 {
 }
 
-CSDRControl::~CSDRControl()
+CUWSDRControl::~CUWSDRControl()
 {
 }
 
-bool CSDRControl::open(const wxString& address, int port, unsigned int version, bool enable)
+void CUWSDRControl::setCallback(IControlInterface* callback, int id)
 {
-	m_enabled = enable;
+	wxASSERT(callback != NULL);
 
+	m_callback = callback;
+	m_id       = id;
+}
+
+bool CUWSDRControl::open()
+{
 	if (!m_enabled)
 		return true;
 
 	wxIPV4address sockAddress;
-	sockAddress.Hostname(address);
-	sockAddress.Service(port);
+	sockAddress.Hostname(m_address);
+	sockAddress.Service(m_port);
 
 	bool ret = m_socket.Connect(sockAddress);
 	if (!ret)
 		return false;
-
-	m_version = version;
 
 	m_socket.SetEventHandler(*this, SOCKET_ID);
 	m_socket.SetNotify(wxSOCKET_INPUT_FLAG | wxSOCKET_LOST_FLAG);
@@ -67,7 +73,7 @@ bool CSDRControl::open(const wxString& address, int port, unsigned int version, 
 	return true;
 }
 
-void CSDRControl::enableTX(bool on)
+void CUWSDRControl::enableTX(bool on)
 {
 	if (!m_enabled)
 		return;
@@ -87,7 +93,7 @@ void CSDRControl::enableTX(bool on)
 	m_enableTX = on;;
 }
 
-void CSDRControl::enableRX(bool on)
+void CUWSDRControl::enableRX(bool on)
 {
 	if (!m_enabled)
 		return;
@@ -107,7 +113,7 @@ void CSDRControl::enableRX(bool on)
 	m_enableRX = on;
 }
 
-void CSDRControl::setTXAndFreq(bool transmit, const CFrequency& freq)
+void CUWSDRControl::setTXAndFreq(bool transmit, const CFrequency& freq)
 {
 	if (!m_enabled)
 		return;
@@ -163,7 +169,7 @@ void CSDRControl::setTXAndFreq(bool transmit, const CFrequency& freq)
 	m_tx = transmit;
 }
 
-void CSDRControl::sendCommand(const char* command)
+void CUWSDRControl::sendCommand(const char* command)
 {
 	if (!m_enabled)
 		return;
@@ -171,7 +177,7 @@ void CSDRControl::sendCommand(const char* command)
 	m_socket.Write(command, ::strlen(command));
 }
 
-void CSDRControl::close()
+void CUWSDRControl::close()
 {
 	if (!m_enabled)
 		return;
@@ -179,7 +185,7 @@ void CSDRControl::close()
 	m_socket.Close();
 }
 
-void CSDRControl::onSocket(wxSocketEvent& event)
+void CUWSDRControl::onSocket(wxSocketEvent& event)
 {
 	wxASSERT(m_callback != NULL);
 

@@ -19,40 +19,21 @@
 #ifndef	SDRControl_H
 #define	SDRControl_H
 
-#include <wx/wx.h>
-#include <wx/socket.h>
-
 #include "Frequency.h"
 #include "ControlInterface.h"
 
-class CSDRControl : public wxEvtHandler {
+class ISDRControl {
 
     public:
-	CSDRControl(IControlInterface* callback, int id);
-	virtual ~CSDRControl();
+	virtual void setCallback(IControlInterface* callback, int id) = 0;
 
-	virtual bool open(const wxString& address, int port, unsigned int version, bool enable);
-	virtual void enableTX(bool on);
-	virtual void enableRX(bool on);
-	virtual void setTXAndFreq(bool transmit, const CFrequency& freq);
-	virtual void sendCommand(const char* command);
-	virtual void close();
+	virtual bool open() = 0;
 
-	virtual void onSocket(wxSocketEvent& event);
+	virtual void enableTX(bool on) = 0;
+	virtual void enableRX(bool on) = 0;
+	virtual void setTXAndFreq(bool transmit, const CFrequency& freq) = 0;
 
-    private:
-	int                m_id;
-	bool               m_enabled;
-	wxSocketClient     m_socket;
-	IControlInterface* m_callback;
-	unsigned int       m_version;
-	CFrequency         m_txFreq;
-	CFrequency         m_rxFreq;
-	bool               m_enableTX;
-	bool               m_enableRX;
-	bool               m_tx;
-
-	DECLARE_EVENT_TABLE()
+	virtual void close() = 0;
 };
 
 #endif

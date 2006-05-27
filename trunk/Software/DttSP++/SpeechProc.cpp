@@ -99,5 +99,5 @@ void CSpeechProc::process()
 	m_lastCG = RLBdata(m_CG, m_size);	// save for next time 
 
 	for (i = 0; i < m_size; i++)	// multiply each sample by its gain constant 
-		CXBdata(m_buf, i) = Cscl(CXBdata(m_buf, i), REAL(RLBdata(m_CG, i) / (m_fac * ::pow(m_maxGain, 0.25))));
+		CXBdata(m_buf, i) = Cscl(CXBdata(m_buf, i), REAL(RLBdata(m_CG, i) / (m_fac * ::pow(m_maxGain, 0.25F))));
 }

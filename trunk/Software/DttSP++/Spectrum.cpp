@@ -128,11 +128,14 @@ void CSpectrum::setPolyphase(bool setit)
 			m_mask = (8 * m_size) - 1;
 
 			unsigned int i;
-			RealFIR* WOLAfir = newFIR_Lowpass_REAL(1.0F, REAL(m_size), 8 * m_size - 1);
-			::memset(m_window, 0, 8 * sizeof(REAL) * m_size);
-			::memcpy(m_window, FIRcoef(WOLAfir), sizeof(REAL) * (8 * m_size - 1));
 
-			REAL maxTap = 0.0;
+			COMPLEX* fir = CFIR::lowpass(1.0F, REAL(m_size), 8 * m_size - 1);
+			::memset(m_window, 0, 8 * sizeof(REAL) * m_size);
+			for (i = 0; i < 8 * m_size - 1; i++)
+				m_window[i] = fir[i].re;
+			delete[] fir;
+
+			REAL maxTap = 0.0F;
 			for (i = 0; i < 8 * m_size; i++)
 				maxTap = max(maxTap, (REAL)::fabs(m_window[i]));
 
@@ -140,8 +143,6 @@ void CSpectrum::setPolyphase(bool setit)
 
 			for (i = 0; i < 8 * m_size; i++)
 				m_window[i] *= maxTap;
-
-			delFIR_REAL(WOLAfir);
 		} else {
 			m_polyphase = false;
 			m_mask = m_size - 1;

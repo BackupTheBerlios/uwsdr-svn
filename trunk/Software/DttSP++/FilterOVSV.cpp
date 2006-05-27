@@ -100,7 +100,7 @@ void CFilterOVSV::setFilter(REAL lowFreq, REAL highFreq)
 	unsigned int fftLen = 2 * m_bufLen;
 	unsigned int ncoef  =  m_bufLen + 1;
 
-	ComplexFIR* coefs = newFIR_Bandpass_COMPLEX(lowFreq, highFreq, m_samprate, ncoef);
+	COMPLEX* coefs = CFIR::bandpass(lowFreq, highFreq, m_samprate, ncoef);
 
 	COMPLEX* zcvec = (COMPLEX*)::fftw_malloc(fftLen * sizeof(COMPLEX));
 	wxASSERT(zcvec != NULL);
@@ -110,10 +110,10 @@ void CFilterOVSV::setFilter(REAL lowFreq, REAL highFreq)
 
 #ifdef LHS
 	for (unsigned int i = 0; i < ncoef; i++)
-		zcvec[i] = FIRtap(coefs, i);
+		zcvec[i] = coefs[i];
 #else
 	for (unsigned int i = 0; i < ncoef; i++)
-		zcvec[fftLen - ncoef + i] = FIRtap(coefs, i);
+		zcvec[fftLen - ncoef + i] = coefs[i];
 #endif
 
 	::fftwf_execute(ptmp);
@@ -122,7 +122,7 @@ void CFilterOVSV::setFilter(REAL lowFreq, REAL highFreq)
 
 	::fftw_free(zcvec);
 
-	delFIR_Bandpass_COMPLEX(coefs);
+	delete[] coefs;
 
 	normalize_vec_COMPLEX(m_zfvec, fftLen);
 }

@@ -101,30 +101,30 @@ void CGraphicEQ::setEQ(REAL preamp, REAL gain0, REAL gain1, REAL gain2)
 	gain1  = dB2lin(gain1) * preamp;
 	gain2  = dB2lin(gain2) * preamp;
 
-	ComplexFIR* tmpfilt = newFIR_Bandpass_COMPLEX(-400.0F, 400.0F, m_sampleRate, 257);
+	COMPLEX* tmpfilt = CFIR::bandpass(-400.0F, 400.0F, m_sampleRate, 257);
 	for (i = 0; i < 257; i++)
-		tmpcoef[i] = Cscl(tmpfilt->coef[i], gain0);
-	delFIR_Bandpass_COMPLEX(tmpfilt);
+		tmpcoef[i] = Cscl(tmpfilt[i], gain0);
+	delete[] tmpfilt;
 
-	tmpfilt = newFIR_Bandpass_COMPLEX(400.0F, 1500.0F, m_sampleRate, 257);
+	tmpfilt = CFIR::bandpass(400.0F, 1500.0F, m_sampleRate, 257);
 	for (i = 0; i < 257; i++)
-		tmpcoef[i] = Cadd (tmpcoef[i], Cscl(tmpfilt->coef[i], gain1));
-	delFIR_Bandpass_COMPLEX(tmpfilt);
+		tmpcoef[i] = Cadd(tmpcoef[i], Cscl(tmpfilt[i], gain1));
+	delete[] tmpfilt;
 
-	tmpfilt = newFIR_Bandpass_COMPLEX(-1500.0F, -400.0F, m_sampleRate, 257);
+	tmpfilt = CFIR::bandpass(-1500.0F, -400.0F, m_sampleRate, 257);
 	for (i = 0; i < 257; i++)
-		tmpcoef[i] = Cadd(tmpcoef[i], Cscl(tmpfilt->coef[i], gain1));
-	delFIR_Bandpass_COMPLEX(tmpfilt);
+		tmpcoef[i] = Cadd(tmpcoef[i], Cscl(tmpfilt[i], gain1));
+	delete[] tmpfilt;
 
-	tmpfilt = newFIR_Bandpass_COMPLEX(1500.0F, 6000.0F, m_sampleRate, 257);
+	tmpfilt = CFIR::bandpass(1500.0F, 6000.0F, m_sampleRate, 257);
 	for (i = 0; i < 257; i++)
-		tmpcoef[i] = Cadd(tmpcoef[i], Cscl(tmpfilt->coef[i], gain2));
-	delFIR_Bandpass_COMPLEX (tmpfilt);
+		tmpcoef[i] = Cadd(tmpcoef[i], Cscl(tmpfilt[i], gain2));
+	delete[] tmpfilt;
 
-	tmpfilt = newFIR_Bandpass_COMPLEX(-6000.0F, -1500.0F, m_sampleRate, 257);
+	tmpfilt = CFIR::bandpass(-6000.0F, -1500.0F, m_sampleRate, 257);
 	for (i = 0; i < 257; i++)
-		tmpcoef[i] = Cadd(tmpcoef[i], Cscl(tmpfilt->coef[i], gain2));
-	delFIR_Bandpass_COMPLEX(tmpfilt);
+		tmpcoef[i] = Cadd(tmpcoef[i], Cscl(tmpfilt[i], gain2));
+	delete[] tmpfilt;
 
 	for (i = 0; i < 257; i++)
 		filtcoef[255 + i] = tmpcoef[i];

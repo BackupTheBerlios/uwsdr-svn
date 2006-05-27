@@ -49,7 +49,12 @@ ResSt* newPolyPhaseFIR(int filterMemoryBuffLength, int indexfiltMemBuf, int inte
    tmp->filterMemoryBuffLength = nblock2(max(filterMemoryBuffLength, tmp->numFiltTaps));
    tmp->MASK = tmp->filterMemoryBuffLength - 1;
    tmp->filterMemoryBuff = new COMPLEX[tmp->filterMemoryBuffLength];
-   tmp->filter = newFIR_Lowpass_REAL(0.45F / (REAL)deciFactor, (REAL)interpFactor, 31 * interpFactor);
+
+   tmp->filter = new REAL[31 * interpFactor];
+   COMPLEX* coefs = CFIR::lowpass(0.45F / (REAL)deciFactor, (REAL)interpFactor, 31 * interpFactor);
+   for (int i = 0; i < 31 * interpFactor; i++)
+	   tmp->filter[i] = coefs[i].re;
+   delete[] coefs;
 
    return tmp;
 }
@@ -58,7 +63,7 @@ void
 delPolyPhaseFIR (ResSt* resst)
 {
    if (resst != NULL) {
-      delFIR_Lowpass_REAL(resst->filter);
+      delete[] resst->filter;
       delete[] resst->filterMemoryBuff;
       delete   resst;
    }
@@ -151,7 +156,7 @@ void PolyPhaseFIR(ResSt* resst)
 	   */
 
 	  for (k = resst->filterPhaseNum; k < resst->numFiltTaps; k += resst->interpFactor) {
-	      *outptr = Cadd(*outptr, Cscl(resst->filterMemoryBuff[j], FIRtap(resst->filter, k)));
+	      *outptr = Cadd(*outptr, Cscl(resst->filterMemoryBuff[j], resst->filter[k]));
 	      /*
 	       * circular adressing
 	       */

@@ -37,79 +37,13 @@ Bridgewater, NJ 08807
 #include "datatypes.h"
 #include "complex.h"
 
-
-typedef enum {
-	FIR_Undef,
-	FIR_Lowpass,
-	FIR_Bandpass,
-	FIR_Highpass,
-	FIR_Hilbert,
-	FIR_Bandstop
-} FIR_response_type;
-
-typedef enum { FIR_Even, FIR_Odd } FIR_parity_type;
-
-typedef struct _real_FIR {
-  REAL *coef;
-  unsigned int size;
-  FIR_response_type type;
-  bool cplx;
-
-  struct {
-    REAL lo, hi;
-  } freq;
-} RealFIR;
-
-typedef struct _complex_FIR {
-  COMPLEX *coef;
-  unsigned int size;
-  FIR_response_type type;
-  bool cplx;
-
-  struct {
-    REAL lo, hi;
-  } freq;
-} ComplexFIR;
-
-#define FIRcoef(p) ((p)->coef)
-#define FIRtap(p, i) (FIRcoef(p)[(i)])
-#define FIRsize(p) ((p)->size)
-#define FIRtype(p) ((p)->type)
-#define FIRiscomplex(p) ((p)->cplx)
-#define FIRisreal(p) (!FIRiscomplex(p))
-#define FIRfqlo(p) ((p)->freq.lo)
-#define FIRfqhi(p) ((p)->freq.hi)
-
-#define delFIR_Lowpass_REAL(p) delFIR_REAL(p)
-#define delFIR_Lowpass_COMPLEX(p) delFIR_COMPLEX(p)
-#define delFIR_Bandpass_REAL(p) delFIR_REAL(p)
-#define delFIR_Bandpass_COMPLEX(p) delFIR_COMPLEX(p)
-#define delFIR_Highpass_REAL(p) delFIR_REAL(p)
-#define delFIR_Highpass_COMPLEX(p) delFIR_COMPLEX(p)
-#define delFIR_Hilbert_REAL(p) delFIR_REAL(p)
-#define delFIR_Hilbert_COMPLEX(p) delFIR_COMPLEX(p)
-#define delFIR_Bandstop_REAL(p) delFIR_REAL(p)
-#define delFIR_Bandstop_COMPLEX(p) delFIR_COMPLEX(p)
-
-extern RealFIR* newFIR_REAL(unsigned int size);
-extern ComplexFIR* newFIR_COMPLEX(unsigned int size);
-
-extern void delFIR_REAL(RealFIR* p);
-extern void delFIR_COMPLEX(ComplexFIR* p);
-
-extern RealFIR* newFIR_Lowpass_REAL(REAL cutoff, REAL sr, unsigned int size);
-extern ComplexFIR* newFIR_Lowpass_COMPLEX (REAL cutoff, REAL sr, unsigned int size);
-
-extern RealFIR* newFIR_Bandpass_REAL(REAL lo, REAL hi, REAL sr, unsigned int size);
-extern ComplexFIR* newFIR_Bandpass_COMPLEX(REAL lo, REAL hi, REAL sr, unsigned int size);
-
-extern RealFIR* newFIR_Highpass_REAL(REAL cutoff, REAL sr, unsigned int size);
-extern ComplexFIR* newFIR_Highpass_COMPLEX(REAL cutoff, REAL sr, unsigned int size);
-
-extern RealFIR* newFIR_Hilbert_REAL(REAL lo, REAL hi, REAL sr, unsigned int size);
-extern ComplexFIR* newFIR_Hilbert_COMPLEX(REAL lo, REAL hi, REAL sr, unsigned int size);
-
-extern RealFIR* newFIR_Bandstop_REAL(REAL lo, REAL hi, REAL sr, unsigned int size);
-extern ComplexFIR* newFIR_Bandstop_COMPLEX(REAL lo, REAL hi, REAL sr, unsigned int size);
+class CFIR {
+    public:
+	static COMPLEX* lowpass(REAL cutoff, REAL samprate, unsigned int size);
+	static COMPLEX* bandpass(REAL lo, REAL hi, REAL samprate, unsigned int size);
+	static COMPLEX* highpass(REAL cutoff, REAL samprate, unsigned int size);
+	static COMPLEX* hilbert(REAL lo, REAL hi, REAL samprate, unsigned int size);
+	static COMPLEX* bandstop(REAL lo, REAL hi, REAL samprate, unsigned int size);
+};
 
 #endif
