@@ -138,14 +138,6 @@ SOURCE=.\RingBuffer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\SDRControl.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\SDRData.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\SDRDescrFile.cpp
 # End Source File
 # Begin Source File
@@ -183,6 +175,14 @@ SOURCE=.\SpectrumDisplay.cpp
 # Begin Source File
 
 SOURCE=.\UWSDRApp.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\UWSDRControl.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\UWSDRData.cpp
 # End Source File
 # Begin Source File
 
@@ -278,10 +278,6 @@ SOURCE=.\SDRControl.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\SDRData.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\SDRDescrFile.h
 # End Source File
 # Begin Source File
@@ -319,6 +315,14 @@ SOURCE=.\SpectrumDisplay.h
 # Begin Source File
 
 SOURCE=.\UWSDRApp.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\UWSDRControl.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\UWSDRData.h
 # End Source File
 # Begin Source File
 
