@@ -191,7 +191,6 @@ m_spectrum(NULL)
 CUWSDRFrame::~CUWSDRFrame()
 {
 	delete[] m_spectrum;
-	delete   m_sdr;
 	delete   m_menu;
 }
 
@@ -209,7 +208,6 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	wxASSERT(m_afGain != NULL);
 	wxASSERT(m_squelch != NULL);
 	wxASSERT(m_sMeter != NULL);
-	wxASSERT(m_sdr != NULL);
 
 	m_parameters = parameters;
 
@@ -1151,6 +1149,7 @@ void CUWSDRFrame::onTimer(wxTimerEvent& event)
 
 			m_dsp->getSpectrum(m_spectrum, m_parameters->m_spectrumPos);
 			m_spectrumDisplay->showSpectrum(m_spectrum, 0.0F);
+         m_spectrumDisplay->getFreqPick();
 		}
 	} else {
 		int meter = m_sMeter->getRXMeter();
@@ -1163,6 +1162,10 @@ void CUWSDRFrame::onTimer(wxTimerEvent& event)
 
 			m_dsp->getSpectrum(m_spectrum, m_parameters->m_spectrumPos);
 			m_spectrumDisplay->showSpectrum(m_spectrum, -95.0F);
+
+         float offset = m_spectrumDisplay->getFreqPick();
+         if (offset != 0.0F)
+            freqChange(offset);
 		}
 	}
 }

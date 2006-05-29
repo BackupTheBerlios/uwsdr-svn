@@ -24,7 +24,7 @@ stepSize=10000
 # This is the sample rate of the CODEC, this is somewhat important. The value
 # is in samples per second.
 #
-sampleRate=44100
+sampleRate=96000
 
 #
 # Over time we may make changes to the ethernet protocol, so we specify which

@@ -35,7 +35,8 @@ const int MENU_1000MS     = 16540;
 
 BEGIN_EVENT_TABLE(CSpectrumDisplay, wxPanel)
 	EVT_PAINT(CSpectrumDisplay::onPaint)
-	EVT_RIGHT_DOWN(CSpectrumDisplay::onMouse)
+	EVT_LEFT_DOWN(CSpectrumDisplay::onLeftMouse)
+	EVT_RIGHT_DOWN(CSpectrumDisplay::onRightMouse)
 	EVT_MENU(MENU_PANADAPTER, CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_WATERFALL,  CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_PRE_FILT,   CSpectrumDisplay::onMenu)
@@ -58,7 +59,7 @@ m_height(size.GetHeight()),
 m_background(NULL),
 m_bitmap(NULL),
 m_sampleRate(0),
-m_bandwidth(0),
+m_bandwidth(0.0F),
 m_menu(NULL),
 m_speedMenu(NULL),
 m_posMenu(NULL),
@@ -67,7 +68,8 @@ m_type(0),
 m_speed(0),
 m_position(0),
 m_factor(1),
-m_ticks(0)
+m_ticks(0),
+m_pick(0.0F)
 {
 	m_bitmap     = new wxBitmap(m_width, m_height);
 	m_background = new wxBitmap(m_width, m_height);
@@ -108,7 +110,7 @@ void CSpectrumDisplay::setSampleRate(unsigned int sampleRate)
 
 void CSpectrumDisplay::setBandwidth(unsigned int bandwidth)
 {
-	m_bandwidth = bandwidth;
+	m_bandwidth = float(bandwidth);
 
 	createPanadapter();
 
@@ -186,7 +188,7 @@ void CSpectrumDisplay::createPanadapter()
 	dc.SetTextForeground(*wxCYAN);
 
 	wxString text;
-	text.Printf(wxT("-%.1f kHz"), float(m_bandwidth) / 2000.0F);
+	text.Printf(wxT("-%.1f kHz"), m_bandwidth / 2000.0F);
 	dc.DrawText(text, left, bottom);
 
 	text = wxT("0");
@@ -194,7 +196,7 @@ void CSpectrumDisplay::createPanadapter()
 	dc.GetTextExtent(text, &width, &height);
 	dc.DrawText(text, middleX - width / 2, bottom);
 
-	text.Printf(wxT("+%.1f kHz"), float(m_bandwidth) / 2000.0F);
+	text.Printf(wxT("+%.1f kHz"), m_bandwidth / 2000.0F);
 	dc.GetTextExtent(text, &width, &height);
 	dc.DrawText(text, right - width, bottom);
 
@@ -228,7 +230,7 @@ void CSpectrumDisplay::createWaterfall()
 	dc.SetTextForeground(*wxCYAN);
 
 	wxString text;
-	text.Printf(wxT("-%.1f kHz"), float(m_bandwidth) / 2000.0F);
+	text.Printf(wxT("-%.1f kHz"), m_bandwidth / 2000.0F);
 	dc.DrawText(text, left, bottom);
 
 	text = wxT("0");
@@ -236,7 +238,7 @@ void CSpectrumDisplay::createWaterfall()
 	dc.GetTextExtent(text, &width, &height);
 	dc.DrawText(text, middleX - width / 2, bottom);
 
-	text.Printf(wxT("+%.1f kHz"), float(m_bandwidth) / 2000.0F);
+	text.Printf(wxT("+%.1f kHz"), m_bandwidth / 2000.0F);
 	dc.GetTextExtent(text, &width, &height);
 	dc.DrawText(text, right - width, bottom);
 
@@ -254,8 +256,8 @@ void CSpectrumDisplay::drawPanadapter(const float* spectrum, float bottom)
 
 	dc.SetPen(*wxGREEN_PEN);
 
-	int firstBin = SPECTRUM_SIZE / 2 - int(m_bandwidth / 2 * double(SPECTRUM_SIZE) / double(m_sampleRate) + 0.5);
-	int lastBin  = SPECTRUM_SIZE / 2 + int(m_bandwidth / 2 * double(SPECTRUM_SIZE) / double(m_sampleRate) + 0.5);
+	int firstBin = SPECTRUM_SIZE / 2 - int(m_bandwidth / 2.0 * double(SPECTRUM_SIZE) / double(m_sampleRate) + 0.5);
+	int lastBin  = SPECTRUM_SIZE / 2 + int(m_bandwidth / 2.0 * double(SPECTRUM_SIZE) / double(m_sampleRate) + 0.5);
 
 	int binsPerPixel = int(double(lastBin - firstBin) / double(m_width - 5) + 0.5);
 
@@ -288,8 +290,8 @@ void CSpectrumDisplay::drawPanadapter(const float* spectrum, float bottom)
 
 void CSpectrumDisplay::drawWaterfall(const float* spectrum, float bottom)
 {
-	int firstBin = SPECTRUM_SIZE / 2 - int(m_bandwidth / 2 * double(SPECTRUM_SIZE) / double(m_sampleRate) + 0.5);
-	int lastBin  = SPECTRUM_SIZE / 2 + int(m_bandwidth / 2 * double(SPECTRUM_SIZE) / double(m_sampleRate) + 0.5);
+	int firstBin = SPECTRUM_SIZE / 2 - int(m_bandwidth / 2.0 * double(SPECTRUM_SIZE) / double(m_sampleRate) + 0.5);
+	int lastBin  = SPECTRUM_SIZE / 2 + int(m_bandwidth / 2.0 * double(SPECTRUM_SIZE) / double(m_sampleRate) + 0.5);
 
 	int binsPerPixel = int(double(lastBin - firstBin) / double(m_width - 5) + 0.5);
 
@@ -349,7 +351,21 @@ void CSpectrumDisplay::drawWaterfall(const float* spectrum, float bottom)
 	m_bitmap = new wxBitmap(image);
 }
 
-void CSpectrumDisplay::onMouse(wxMouseEvent& event)
+void CSpectrumDisplay::onLeftMouse(wxMouseEvent& event)
+{
+   float x     = float(event.GetX() - 2);
+   float width = float(m_width - 5);
+
+   m_pick = m_bandwidth * x / width - m_bandwidth / 2.0F;
+
+   if (m_pick < -m_bandwidth / 2.0F)
+      m_pick = 0.0F;
+
+   if (m_pick > m_bandwidth / 2.0F)
+      m_pick = 0.0F;
+}
+
+void CSpectrumDisplay::onRightMouse(wxMouseEvent& event)
 {
 	wxASSERT(m_menu != NULL);
 	wxASSERT(m_speedMenu != NULL);
@@ -520,4 +536,13 @@ int CSpectrumDisplay::getSpeed() const
 int CSpectrumDisplay::getPosition() const
 {
 	return m_position;
+}
+
+float CSpectrumDisplay::getFreqPick()
+{
+   float pick = m_pick;
+
+   m_pick = 0.0F;
+
+   return pick;
 }

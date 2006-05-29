@@ -40,8 +40,11 @@ class CSpectrumDisplay : public wxPanel {
 	virtual int  getPosition() const;
 	virtual int  getSpeed() const;
 
+   virtual float getFreqPick();
+
 	void onPaint(wxPaintEvent& event);
-	void onMouse(wxMouseEvent& event);
+	void onLeftMouse(wxMouseEvent& event);
+	void onRightMouse(wxMouseEvent& event);
 	void onMenu(wxCommandEvent& event);
 
     private:
@@ -50,7 +53,7 @@ class CSpectrumDisplay : public wxPanel {
 	wxBitmap*    m_background;
 	wxBitmap*    m_bitmap;
 	unsigned int m_sampleRate;
-	unsigned int m_bandwidth;
+	float        m_bandwidth;
 	wxMenu*      m_menu;
 	wxMenu*      m_speedMenu;
 	wxMenu*      m_posMenu;
@@ -60,6 +63,7 @@ class CSpectrumDisplay : public wxPanel {
 	int          m_position;
 	int          m_factor;
 	unsigned int m_ticks;
+   float        m_pick;
 
 	DECLARE_EVENT_TABLE()
 
