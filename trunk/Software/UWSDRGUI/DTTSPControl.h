@@ -33,7 +33,7 @@ class CDTTSPControl : public wxThread {
 
 	virtual void setFilter(int filter);
 	virtual void setMode(int mode);
-	virtual void setTXAndFreq(bool transmit, double freq);
+	virtual void setTXAndFreq(bool transmit, float freq);
 	virtual void setAGC(int agc);
 	virtual void setSquelch(unsigned int value);
 
@@ -60,8 +60,8 @@ class CDTTSPControl : public wxThread {
 	unsigned int m_blockSize;
 	int          m_filter;
 	int          m_mode;
-	double       m_rxFreq;
-	double       m_txFreq;
+	float        m_rxFreq;
+	float        m_txFreq;
 	bool         m_transmit;
 	int          m_agc;
 	bool         m_nb;

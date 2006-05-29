@@ -29,7 +29,7 @@
 
 class CDSPControl : public wxThread, public IDataCallback {
     public:
-	CDSPControl(unsigned int sampleRate, double centreFreq);
+	CDSPControl(unsigned int sampleRate, float centreFreq);
 	virtual ~CDSPControl();
 
 	virtual void  setTXReader(IDataReader* reader);
@@ -49,7 +49,7 @@ class CDSPControl : public wxThread, public IDataCallback {
 	virtual void setMode(int mode);
 	virtual void setFilter(int filter);
 	virtual void setAGC(int agc);
-	virtual void setTXAndFreq(bool transmit, double freq);
+	virtual void setTXAndFreq(bool transmit, float freq);
 
 	virtual void setNB(bool onOff);
 	virtual void setNBValue(unsigned int value);
@@ -75,7 +75,7 @@ class CDSPControl : public wxThread, public IDataCallback {
     private:
 	CDTTSPControl* m_dttsp;
 	unsigned int   m_sampleRate;
-	double         m_centreFreq;
+	float          m_centreFreq;
 
 	IDataReader*   m_txReader;
 	IDataWriter*   m_txWriter;

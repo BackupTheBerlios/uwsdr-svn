@@ -27,8 +27,8 @@ m_sampleRate(0),
 m_blockSize(0),
 m_filter(-1),
 m_mode(-1),
-m_rxFreq(9999999.9),
-m_txFreq(9999999.9),
+m_rxFreq(99999.9F),
+m_txFreq(99999.9F),
 m_transmit(false),
 m_agc(-1),
 m_nb(false),
@@ -123,7 +123,7 @@ void CDTTSPControl::setMode(int mode)
 	normaliseFilter();
 }
 
-void CDTTSPControl::setTXAndFreq(bool transmit, double freq)
+void CDTTSPControl::setTXAndFreq(bool transmit, float freq)
 {
 	if (transmit) {
 		if (freq != m_txFreq)
@@ -491,4 +491,5 @@ void CDTTSPControl::normaliseFilter()
 	}
 
 	::SetFilter(double(low), double(high), m_blockSize, RX);
+	::SetFilter(double(low), double(high), m_blockSize, TX);	// FIXME
 }

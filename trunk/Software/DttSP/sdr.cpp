@@ -145,7 +145,7 @@ setup_rx (int k)
 			"init rx[k].buf.o");
 
   /* conversion */
-  rx[k].osc.freq = -11025.0;
+  rx[k].osc.freq = -uni.samplerate / 4.0F;
   rx[k].osc.phase = 0.0;
   rx[k].osc.gen = newOSC (uni.buflen,
 			  ComplexTone,

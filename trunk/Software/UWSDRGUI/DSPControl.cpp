@@ -27,7 +27,7 @@ const int RX_READER = 88;
 const int RINGBUFFER_SIZE = 100001;
 const int BLOCK_SIZE      = 2048;		// XXXX
 
-CDSPControl::CDSPControl(unsigned int sampleRate, double centreFreq) :
+CDSPControl::CDSPControl(unsigned int sampleRate, float centreFreq) :
 wxThread(),
 m_dttsp(NULL),
 m_sampleRate(sampleRate),
@@ -273,7 +273,7 @@ void CDSPControl::setAGC(int agc)
 	m_dttsp->setAGC(agc);
 }
 
-void CDSPControl::setTXAndFreq(bool transmit, double freq)
+void CDSPControl::setTXAndFreq(bool transmit, float freq)
 {
 	wxASSERT(m_dttsp != NULL);
 

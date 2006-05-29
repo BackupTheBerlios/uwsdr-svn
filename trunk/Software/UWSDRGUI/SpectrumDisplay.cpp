@@ -108,9 +108,9 @@ void CSpectrumDisplay::setSampleRate(unsigned int sampleRate)
 	m_sampleRate = sampleRate;
 }
 
-void CSpectrumDisplay::setBandwidth(unsigned int bandwidth)
+void CSpectrumDisplay::setBandwidth(float bandwidth)
 {
-	m_bandwidth = float(bandwidth);
+	m_bandwidth = bandwidth;
 
 	createPanadapter();
 

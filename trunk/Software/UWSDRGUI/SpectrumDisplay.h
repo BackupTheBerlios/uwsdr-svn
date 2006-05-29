@@ -28,7 +28,7 @@ class CSpectrumDisplay : public wxPanel {
 	virtual ~CSpectrumDisplay();
 
 	virtual void setSampleRate(unsigned int sampleRate);
-	virtual void setBandwidth(unsigned int hertz);
+	virtual void setBandwidth(float hertz);
 
 	virtual void showSpectrum(const float* spectrum, float bottom);
 

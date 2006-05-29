@@ -95,7 +95,7 @@ PRIVATE void setup_rx()
   rx.buf.o = newCXB(rx.filt->storeSize(), rx.filt->storePoint());
 
   /* conversion */
-  rx.osc.gen = new COscillator(-11025.0,
+  rx.osc.gen = new COscillator(-uni.samplerate / 4.0F,
 			  0.0,
 			  uni.samplerate);
 

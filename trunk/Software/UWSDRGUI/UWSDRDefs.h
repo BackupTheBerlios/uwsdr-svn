@@ -117,8 +117,6 @@ const double FREQ_MEDIUM_STEP    = 100.0;
 const double FREQ_SLOW_STEP      = 10.0;
 const double FREQ_VERY_SLOW_STEP = 3.0;
 
-const double CENTRE_FREQ  = 11025.0;
-
 const int SPECTRUM_SIZE = 4096;
 
 #endif

@@ -232,23 +232,36 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_spectrumDisplay->setType(m_parameters->m_spectrumType);
 	m_spectrumDisplay->setSpeed(m_parameters->m_spectrumSpeed);
 
-	// Set the spectrum width depending on the step size, FIXME
-	if (m_parameters->m_hardwareStepSize >= 5000)
-		m_spectrumDisplay->setBandwidth(10000);
+	// Set the spectrum width depending on the step size and sample rate,
+	float lowFreq = float(m_parameters->m_hardwareSampleRate) / 4.0F -
+					float(m_parameters->m_hardwareStepSize) / 2.0F -
+					5000.0F;
+	wxASSERT(lowFreq > 0.0F);
+
+	if (lowFreq >= 15000.0F)
+		m_spectrumDisplay->setBandwidth(30000.0F);
+	else if (lowFreq >= 12500.0F)
+		m_spectrumDisplay->setBandwidth(25000.0F);
+	else if (lowFreq >= 10000.0F)
+		m_spectrumDisplay->setBandwidth(20000.0F);
+	else if (lowFreq >= 7500.0F)
+		m_spectrumDisplay->setBandwidth(15000.0F);
+	else if (lowFreq >= 5000.0F)
+		m_spectrumDisplay->setBandwidth(10000.0F);
 	else
-		m_spectrumDisplay->setBandwidth(15000);
+		m_spectrumDisplay->setBandwidth(5000.0F);
 
 	// FIXME
 	// (m_parameters->m_ipAddress, m_parameters->m_dataPort, m_parameters->m_hardwareProtocolVersion, m_parameters->m_sdrEnabled);
 
-	m_dsp = new CDSPControl(m_parameters->m_hardwareSampleRate, CENTRE_FREQ);
+	m_dsp = new CDSPControl(m_parameters->m_hardwareSampleRate, float(m_parameters->m_hardwareSampleRate) / 4.0F);
 
 	// m_dsp->setTXReader(new CNullReader());
 	// m_dsp->setTXReader(new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev));
 	m_dsp->setTXReader(new CSignalReader(750, 0.0F, 0.5F));
 	m_dsp->setTXWriter(new CNullWriter());
 
-	m_dsp->setRXReader(new CSignalReader(12000, 4.77E-7F, 5E-7F));
+	m_dsp->setRXReader(new CSignalReader(m_parameters->m_hardwareSampleRate / 4 + 1000, 4.77E-7F, 5E-7F));
 	// m_dsp->setRXWriter(new CSoundFileWriter("RX.wav", 16));
 	// m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
 	m_dsp->setRXWriter(new CNullWriter());
@@ -915,7 +928,7 @@ void CUWSDRFrame::normaliseFreq()
 	m_freqDisplay->setFrequency(freq);
 
 	// Subtract the IF frequency
-	freq -= CENTRE_FREQ;
+	freq -= float(m_parameters->m_hardwareSampleRate) / 4.0F;
 
 	// Now take into account the frequency steps of the SDR ...
 	double offset = 0.0;
