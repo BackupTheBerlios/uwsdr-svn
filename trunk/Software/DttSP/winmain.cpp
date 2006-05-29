@@ -609,7 +609,7 @@ setup_threading (void)
 {
   top.susp = false;
   top.sync.upd.sem = new wxSemaphore(0, 1);
-  top.sync.buf.sem = new wxSemaphore(0, 1);
+  top.sync.buf.sem = new wxSemaphore(0, 0);
 }
 
 //========================================================================
