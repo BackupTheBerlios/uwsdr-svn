@@ -49,7 +49,7 @@ BEGIN_EVENT_TABLE(CSpectrumDisplay, wxPanel)
 	EVT_MENU(MENU_1000MS, CSpectrumDisplay::onMenu)
 END_EVENT_TABLE()
 
-const double DB_SCALE = 0.5;
+const float DB_SCALE = 0.5F;
 
 
 CSpectrumDisplay::CSpectrumDisplay(wxWindow* parent, int id, const wxPoint& pos, const wxSize& size, long style, const wxString& name) :
@@ -256,20 +256,21 @@ void CSpectrumDisplay::drawPanadapter(const float* spectrum, float bottom)
 
 	dc.SetPen(*wxGREEN_PEN);
 
-	int firstBin = SPECTRUM_SIZE / 2 - int(m_bandwidth / 2.0 * double(SPECTRUM_SIZE) / double(m_sampleRate) + 0.5);
-	int lastBin  = SPECTRUM_SIZE / 2 + int(m_bandwidth / 2.0 * double(SPECTRUM_SIZE) / double(m_sampleRate) + 0.5);
+	int firstBin = int(float(SPECTRUM_SIZE) / 2.0F - m_bandwidth / 2.0F * float(SPECTRUM_SIZE) / float(m_sampleRate) + 0.5);
+	int lastBin  = int(float(SPECTRUM_SIZE) / 2.0F + m_bandwidth / 2.0F * float(SPECTRUM_SIZE) / float(m_sampleRate) + 0.5);
 
-	int binsPerPixel = int(double(lastBin - firstBin) / double(m_width - 5) + 0.5);
+	float binsPerPixel = float(lastBin - firstBin) / float(m_width - 5);
 
 	int lastX, lastY;
-	int bin = firstBin;
 	for (int x = 2; x < (m_width - 3); x++) {
-		float value = 0.0F;
-		for (int i = 0; i < binsPerPixel; i++)
-			value += spectrum[bin++];
-		value /= float(binsPerPixel);
+      int bin = firstBin + int(float(x - 2) * binsPerPixel + 0.5F);
 
-		int y = int((value - bottom) / DB_SCALE + 0.5);
+		float value = 0.0F;
+		for (int i = 0; i < int(binsPerPixel + 0.5F); i++)
+			value += spectrum[bin++];
+		value /= ::floor(binsPerPixel + 0.5F);
+
+		int y = int((value - bottom) / DB_SCALE + 0.5F);
 		if (y < 0)
 			y = 0;
 		if (y > (m_height - 12))
@@ -288,12 +289,15 @@ void CSpectrumDisplay::drawPanadapter(const float* spectrum, float bottom)
 	dc.SelectObject(wxNullBitmap);
 }
 
+/*
+ * Could we gain speed by storing the wxImage instead of the wxBitmap?
+ */
 void CSpectrumDisplay::drawWaterfall(const float* spectrum, float bottom)
 {
-	int firstBin = SPECTRUM_SIZE / 2 - int(m_bandwidth / 2.0 * double(SPECTRUM_SIZE) / double(m_sampleRate) + 0.5);
-	int lastBin  = SPECTRUM_SIZE / 2 + int(m_bandwidth / 2.0 * double(SPECTRUM_SIZE) / double(m_sampleRate) + 0.5);
+	int firstBin = int(float(SPECTRUM_SIZE) / 2.0F - m_bandwidth / 2.0F * float(SPECTRUM_SIZE) / float(m_sampleRate) + 0.5);
+	int lastBin  = int(float(SPECTRUM_SIZE) / 2.0F + m_bandwidth / 2.0F * float(SPECTRUM_SIZE) / float(m_sampleRate) + 0.5);
 
-	int binsPerPixel = int(double(lastBin - firstBin) / double(m_width - 5) + 0.5);
+	float binsPerPixel = float(lastBin - firstBin) / float(m_width - 5);
 
 	// Do all of the work on a wxImage
 	wxImage image = m_bitmap->ConvertToImage();
@@ -305,41 +309,42 @@ void CSpectrumDisplay::drawWaterfall(const float* spectrum, float bottom)
 
 	unsigned char* offset = data + m_width * (m_height - 16) * 3;
 
-	int bin = firstBin;
 	for (int x = 2; x < (m_width - 3); x++) {
-		float value = 0.0F;
-		for (int i = 0; i < binsPerPixel; i++)
-			value += spectrum[bin++];
-		value /= float(binsPerPixel);
+      int bin = firstBin + int(float(x - 2) * binsPerPixel + 0.5);
 
-		float percent = (value - bottom) / 40.0;
-		if (percent < 0.0)
-			percent = 0.0;
-		if (percent > 1.0)
-			percent = 1.0;
+		float value = 0.0F;
+		for (int i = 0; i < int(binsPerPixel + 0.5); i++)
+			value += spectrum[bin++];
+		value /= ::floor(binsPerPixel + 0.5F);
+
+		float percent = (value - bottom) / 40.0F;
+		if (percent < 0.0F)
+			percent = 0.0F;
+		if (percent > 1.0F)
+			percent = 1.0F;
 
 		unsigned char r;
 		unsigned char g;
 		unsigned char b;
 
-		if (percent <= 0.33333333) {			// use a gradient between low and mid colors
-			percent *= 3.0;
+		if (percent <= 0.33333333F) {			// use a gradient between low and mid colors
+			percent *= 3.0F;
 
-			r = (unsigned char)(percent * 255.0 + 0.5);
+			r = (unsigned char)(percent * 255.0F + 0.5F);
 			g = 0;
 			b = 0;
-		} else if (percent <= 0.66666666) {		// use a gradient between mid and high colors
-			percent = (percent - 0.33333333) * 3.0;
+		} else if (percent <= 0.66666666F) {		// use a gradient between mid and high colors
+			percent = (percent - 0.33333333F) * 3.0F;
 
 			r = 255;
-			g = (unsigned char)(percent * 255.0 + 0.5);
+			g = (unsigned char)(percent * 255.0F + 0.5F);
 			b = 0;
 		} else {
-			percent = (percent - 0.66666666) * 3.0;
+			percent = (percent - 0.66666666F) * 3.0F;
 
 			r = 255;
 			g = 255;
-			b = (unsigned char)(percent * 255.0 + 0.5);
+			b = (unsigned char)(percent * 255.0F + 0.5F);
 		}
 
 		*offset++ = r;
