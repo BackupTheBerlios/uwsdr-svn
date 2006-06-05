@@ -215,5 +215,8 @@ void CUWSDRControl::onSocket(wxSocketEvent& event)
 			m_callback->sdrConnectionLost(m_id);
 			sock->Destroy();
 			break;
+
+		default:
+			break;
 	}
 }

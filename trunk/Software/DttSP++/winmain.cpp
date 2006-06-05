@@ -57,7 +57,7 @@ extern void destroy_workspace();
 
 //========================================================================
 
-PRIVATE void gethold()
+static void gethold()
 {
   if (ringb_float_write_space (top.jack.ring.o.l) < top.hold.size.frames)
     {
@@ -111,7 +111,7 @@ PRIVATE void gethold()
     }
 }
 
-PRIVATE bool canhold()
+static bool canhold()
 {
 
   return (ringb_float_read_space (top.jack.ring.i.l) >=
@@ -122,7 +122,7 @@ PRIVATE bool canhold()
 
 //------------------------------------------------------------------------
 
-PRIVATE void run_mute()
+static void run_mute()
 {
 	::memset(top.hold.buf.l, 0, top.hold.size.bytes);
 	::memset(top.hold.buf.r, 0, top.hold.size.bytes);
@@ -131,12 +131,12 @@ PRIVATE void run_mute()
 	uni.tick++;
 }
 
-PRIVATE void run_pass()
+static void run_pass()
 {
 	uni.tick++;
 }
 
-PRIVATE void run_play()
+static void run_play()
 {
 	process_samples (top.hold.buf.l, top.hold.buf.r, top.hold.aux.l, top.hold.aux.r, top.hold.size.frames);
 }
@@ -144,7 +144,7 @@ PRIVATE void run_play()
 // NB do not set RUN_SWCH directly via setRunState;
 // use setSWCH instead
 
-PRIVATE void run_swch()
+static void run_swch()
 {
   if (top.swch.bfct.have == 0)
     {
@@ -171,7 +171,7 @@ PRIVATE void run_swch()
     {
       // last time
       // apply ramp up
-      int i, m = top.swch.fade, n = top.swch.tail;
+      int i, m = top.swch.fade;
       for (i = 0; i < m; i++)
 	{
 	  float w = (float) i / m;
@@ -440,13 +440,13 @@ void closeup()
 
 //........................................................................
 
-PRIVATE void setup_switching()
+static void setup_switching()
 {
 	top.swch.fade = (unsigned int)(0.2F * REAL(uni.buflen) + 0.5F);
 	top.swch.tail = top.hold.size.frames - top.swch.fade;
 }
 
-PRIVATE void setup_local_audio()
+static void setup_local_audio()
 {
 	top.hold.size.frames = uni.buflen;
 	top.hold.size.bytes = top.hold.size.frames * sizeof(float);
@@ -462,7 +462,7 @@ PRIVATE void setup_local_audio()
 	::memset(top.hold.aux.r, 0, top.hold.size.frames * sizeof(float));
 }
 
-PRIVATE void setup_system_audio()
+static void setup_system_audio()
 {
 	top.jack.size = 2048;
 
@@ -482,7 +482,7 @@ PRIVATE void setup_system_audio()
 	ringb_float_clear(top.jack.ring.o.r, top.jack.size);
 }
 
-PRIVATE void setup_threading()
+static void setup_threading()
 {
 	top.susp = false;
 
@@ -493,7 +493,7 @@ PRIVATE void setup_threading()
 //========================================================================
 // hard defaults, then environment
 
-PRIVATE void setup_defaults(REAL sampleRate, unsigned int audioSize)
+static void setup_defaults(REAL sampleRate, unsigned int audioSize)
 {
 	loc.def.rate = (sampleRate == 0.0F) ? DEFRATE : sampleRate;
 	loc.def.size = (audioSize == 0) ? DEFSIZE : audioSize;

@@ -256,7 +256,7 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 		return;
 	}
 
-	int stepFast = ::atof(text.c_str());
+	double stepFast = ::atof(text.c_str());
 
 	if (stepFast <= 0.0) {
 		::wxMessageBox(_("The Fast step size may not be zero or negative."));
@@ -270,7 +270,7 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 		return;
 	}
 
-	int stepMedium = ::atof(text.c_str());
+	double stepMedium = ::atof(text.c_str());
 
 	if (stepMedium <= 0.0) {
 		::wxMessageBox(_("The Medium step size may not be zero or negative."));
@@ -284,7 +284,7 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 		return;
 	}
 
-	int stepSlow = ::atof(text.c_str());
+	double stepSlow = ::atof(text.c_str());
 
 	if (stepSlow <= 0.0) {
 		::wxMessageBox(_("The Slow step size may not be zero or negative."));
@@ -298,7 +298,7 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 		return;
 	}
 
-	int stepVerySlow = ::atof(text.c_str());
+	double stepVerySlow = ::atof(text.c_str());
 
 	if (stepVerySlow <= 0.0) {
 		::wxMessageBox(_("The Very slow step size may not be zero or negative."));

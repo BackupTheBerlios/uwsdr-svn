@@ -37,11 +37,4 @@ Bridgewater, NJ 08807
 typedef float REAL;
 typedef float IMAG;
 
-#ifndef PRIVATE
-#define PRIVATE static
-#endif
-#ifndef INLINE
-#define INLINE _inline
-#endif
-
 #endif

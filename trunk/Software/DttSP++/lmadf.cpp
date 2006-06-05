@@ -85,7 +85,7 @@ void del_lmsr(LMSR* lms)
 #define wrap(n) (((n) + (lms->delay) + (lms->delay_line_ptr)) & (lms->mask))
 #define bump(n) (((n) + (lms->mask)) & (lms->mask))
 
-PRIVATE void lmsr_adapt_i(LMSR* lms)
+static void lmsr_adapt_i(LMSR* lms)
 {
 	REAL scl1 = REAL(1.0 - rate * leak);
 
@@ -116,7 +116,7 @@ PRIVATE void lmsr_adapt_i(LMSR* lms)
 	}
 }
 
-PRIVATE void lmsr_adapt_n(LMSR* lms)
+static void lmsr_adapt_n(LMSR* lms)
 {
 	REAL scl1 = REAL(1.0 - rate * leak);
 

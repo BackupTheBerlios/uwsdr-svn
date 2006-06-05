@@ -42,16 +42,16 @@ extern COMPLEX cxJ;
 extern COMPLEX cxminusone;
 extern COMPLEX cxminusJ;
 
-extern INLINE COMPLEX Cscl(COMPLEX, REAL);
-extern INLINE COMPLEX Cadd(COMPLEX, COMPLEX);
-extern INLINE COMPLEX Csub(COMPLEX, COMPLEX);
-extern INLINE COMPLEX Cmul(COMPLEX, COMPLEX);
-extern INLINE COMPLEX Cdiv(COMPLEX, COMPLEX);
-extern INLINE REAL Cmag(COMPLEX);
-extern INLINE REAL Cabs(COMPLEX);
-extern INLINE REAL Csqrmag(COMPLEX);
-extern INLINE COMPLEX Cmplx(REAL, IMAG);
-extern INLINE COMPLEX Conjg(COMPLEX);
-extern INLINE COMPLEX Cexp(COMPLEX);
+extern inline COMPLEX Cscl(COMPLEX, REAL);
+extern inline COMPLEX Cadd(COMPLEX, COMPLEX);
+extern inline COMPLEX Csub(COMPLEX, COMPLEX);
+extern inline COMPLEX Cmul(COMPLEX, COMPLEX);
+extern inline COMPLEX Cdiv(COMPLEX, COMPLEX);
+extern inline REAL Cmag(COMPLEX);
+extern inline REAL Cabs(COMPLEX);
+extern inline REAL Csqrmag(COMPLEX);
+extern inline COMPLEX Cmplx(REAL, IMAG);
+extern inline COMPLEX Conjg(COMPLEX);
+extern inline COMPLEX Cexp(COMPLEX);
 
 #endif

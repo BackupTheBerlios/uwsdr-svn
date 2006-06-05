@@ -55,7 +55,7 @@ void reset_counters()
 /* global and general info,
    not specifically attached to
    tx, rx, or scheduling */
-PRIVATE void setup_all(REAL rate, unsigned int buflen, SDRMODE mode, unsigned int specsize, unsigned int cpdsize)
+static void setup_all(REAL rate, unsigned int buflen, SDRMODE mode, unsigned int specsize, unsigned int cpdsize)
 {
   uni.samplerate = rate;
   uni.buflen = buflen;
@@ -81,7 +81,7 @@ PRIVATE void setup_all(REAL rate, unsigned int buflen, SDRMODE mode, unsigned in
 }
 
 /* purely rx */
-PRIVATE void setup_rx()
+static void setup_rx()
 {
   /* conditioning */
   rx.iqfix = new CCorrectIQ();
@@ -202,7 +202,7 @@ PRIVATE void setup_rx()
 }
 
 /* purely tx */
-PRIVATE void setup_tx()
+static void setup_tx()
 {
   /* conditioning */
   tx.iqfix = new CCorrectIQ();
@@ -326,7 +326,7 @@ void destroy_workspace()
 
 
 /* all */
-PRIVATE void do_rx_meter(CXB* buf, RXMETERTAP tap)
+static void do_rx_meter(CXB* buf, RXMETERTAP tap)
 {
 	wxASSERT(buf != NULL);
 
@@ -340,7 +340,7 @@ PRIVATE void do_rx_meter(CXB* buf, RXMETERTAP tap)
 	}
 }
 
-PRIVATE void do_tx_meter(CXB* buf, TXMETERTYPE type)
+static void do_tx_meter(CXB* buf, TXMETERTYPE type)
 {
 	wxASSERT(buf != NULL);
 
@@ -358,7 +358,7 @@ PRIVATE void do_tx_meter(CXB* buf, TXMETERTYPE type)
 	}
 }
 
-PRIVATE void do_rx_spectrum(CXB* buf, SPECTRUMtype type)
+static void do_rx_spectrum(CXB* buf, SPECTRUMtype type)
 {
 	wxASSERT(buf != NULL);
 
@@ -368,7 +368,7 @@ PRIVATE void do_rx_spectrum(CXB* buf, SPECTRUMtype type)
 	}
 }
 
-PRIVATE void do_tx_spectrum(CXB* buf)
+static void do_tx_spectrum(CXB* buf)
 {
 	wxASSERT(buf != NULL);
 
@@ -381,7 +381,7 @@ PRIVATE void do_tx_spectrum(CXB* buf)
 //========================================================================
 /* RX processing */
 
-PRIVATE bool should_do_rx_squelch()
+static bool should_do_rx_squelch()
 {
   if (rx.squelch.flag)
     {
@@ -399,7 +399,7 @@ PRIVATE bool should_do_rx_squelch()
     return rx.squelch.set = false;
 }
 
-PRIVATE bool should_do_tx_squelch()
+static bool should_do_tx_squelch()
 {
   if (tx.squelch.flag)
     {
@@ -420,7 +420,7 @@ PRIVATE bool should_do_tx_squelch()
 // apply squelch
 // slew into silence first time
 
-PRIVATE void do_squelch()
+static void do_squelch()
 {
   rx.squelch.set = true;
 
@@ -440,7 +440,7 @@ PRIVATE void do_squelch()
     memset ((void *) CXBbase (rx.buf.o),
 	    0, CXBhave (rx.buf.o) * sizeof (COMPLEX));
 }
-PRIVATE void do_tx_squelch()
+static void do_tx_squelch()
 {
   tx.squelch.set = true;
 
@@ -464,7 +464,7 @@ PRIVATE void do_tx_squelch()
 // lift squelch
 // slew out from silence to full scale
 
-PRIVATE void no_squelch()
+static void no_squelch()
 {
   if (rx.squelch.running)
     {
@@ -477,7 +477,7 @@ PRIVATE void no_squelch()
       rx.squelch.running = false;
     }
 }
-PRIVATE void no_tx_squelch()
+static void no_tx_squelch()
 {
   if (tx.squelch.running)
     {
@@ -491,7 +491,7 @@ PRIVATE void no_tx_squelch()
 }
 
 /* pre-condition for (nearly) all RX modes */
-PRIVATE void do_rx_pre()
+static void do_rx_pre()
 {
 	wxASSERT(rx.nb.gen != NULL);
 	wxASSERT(rx.nb_sdrom.gen != NULL);
@@ -544,7 +544,7 @@ PRIVATE void do_rx_pre()
 	do_rx_spectrum(rx.buf.o, SPEC_POST_AGC);
 }
 
-PRIVATE void do_rx_post()
+static void do_rx_post()
 {
 	wxASSERT(rx.spot.gen != NULL);
 	wxASSERT(rx.grapheq.gen != NULL);
@@ -570,7 +570,7 @@ PRIVATE void do_rx_post()
 
 /* demod processing */
 
-PRIVATE void do_rx_SBCW()
+static void do_rx_SBCW()
 {
   if (rx.bin.flag)
     {
@@ -597,7 +597,7 @@ PRIVATE void do_rx_SBCW()
     }
 }
 
-PRIVATE void do_rx_AM()
+static void do_rx_AM()
 {
 	wxASSERT(rx.am != NULL);
 
@@ -611,31 +611,24 @@ PRIVATE void do_rx_AM()
 	}
 }
 
-PRIVATE void do_rx_FM()
+static void do_rx_FM()
 {
 	wxASSERT(rx.fm != NULL);
 
 	rx.fm->demodulate();
 }
 
-PRIVATE void do_rx_DRM()
+static void do_rx_DRM()
 {
 }
 
-PRIVATE void do_rx_SPEC()
+static void do_rx_SPEC()
 {
-}
-
-PRIVATE void do_rx_NIL()
-{
-  int i, n = min (CXBhave (rx.buf.i), uni.buflen);
-  for (i = 0; i < n; i++)
-    CXBdata (rx.buf.o, i) = cxzero;
 }
 
 /* overall dispatch for RX processing */
 
-PRIVATE void do_rx()
+static void do_rx()
 {
   do_rx_pre();
 
@@ -668,7 +661,7 @@ PRIVATE void do_rx()
 }
 
 /* TX processing */
-PRIVATE void do_tx_pre()
+static void do_tx_pre()
 {
 	wxASSERT(tx.dcb.flag != NULL);
 	wxASSERT(tx.grapheq.gen != NULL);
@@ -715,14 +708,13 @@ PRIVATE void do_tx_pre()
 		} else {
 			do_tx_meter(tx.buf.i, TX_EQtap);
 			do_tx_meter(tx.buf.i, TX_LEVELER);
-			do_tx_meter(tx.buf.i, TX_LVL_G);
 			do_tx_meter(tx.buf.i, TX_COMP);
 			do_tx_meter(tx.buf.i, TX_CPDR);
 		}
 	}
 }
 
-PRIVATE void do_tx_post()
+static void do_tx_post()
 {
 	wxASSERT(tx.filt != NULL);
 	wxASSERT(tx.osc.gen != NULL);
@@ -747,10 +739,8 @@ PRIVATE void do_tx_post()
 
 /* modulator processing */
 
-PRIVATE void do_tx_SBCW()
+static void do_tx_SBCW()
 {
-  int n = min (CXBhave (tx.buf.i), uni.buflen);
-
   if (tx.alc.flag && (tx.mode != DIGU) && (tx.mode != DIGL))
     tx.alc.gen->process();
   do_tx_meter (tx.buf.i, TX_ALC);
@@ -758,7 +748,7 @@ PRIVATE void do_tx_SBCW()
     CXBscl (tx.buf.i, 2.0f);
 }
 
-PRIVATE void do_tx_AM()
+static void do_tx_AM()
 {
   int i, n = min (CXBhave (tx.buf.i), uni.buflen);
   if (tx.alc.flag)
@@ -776,7 +766,7 @@ PRIVATE void do_tx_AM()
     }
 }
 
-PRIVATE void do_tx_FM()
+static void do_tx_FM()
 {
   int i, n = min (CXBhave (tx.buf.i), uni.buflen);
   if (tx.alc.flag)
@@ -791,7 +781,7 @@ PRIVATE void do_tx_FM()
     }
 }
 
-PRIVATE void do_tx_NIL()
+static void do_tx_NIL()
 {
   int i, n = min (CXBhave (tx.buf.i), uni.buflen);
   for (i = 0; i < n; i++)
@@ -800,7 +790,7 @@ PRIVATE void do_tx_NIL()
 
 /* general TX processing dispatch */
 
-PRIVATE void do_tx()
+static void do_tx()
 {
   do_tx_pre ();
   switch (tx.mode)

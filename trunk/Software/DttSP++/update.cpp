@@ -43,14 +43,14 @@ Bridgewater, NJ 08807
 
 ////////////////////////////////////////////////////////////////////////////
 
-PRIVATE REAL INLINE
+static REAL inline
 dB2lin (REAL dB)
 {
   return (REAL) pow (10.0, (REAL) dB / 20.0);
 }
 
 #ifdef notdef
-PRIVATE int
+static int
 setTXALCAttack (int n, char **p)
 {
   REAL tmp = (REAL) atof (p[0]);
@@ -65,7 +65,7 @@ setTXALCAttack (int n, char **p)
   return 0;
 }
 
-PRIVATE int
+static int
 setTXALCDecay (int n, char **p)
 {
   REAL tmp = (REAL) atof (p[0]);
@@ -74,7 +74,7 @@ setTXALCDecay (int n, char **p)
   return 0;
 }
 
-PRIVATE int
+static int
 setTXALCHang (int n, char **p)
 {
   REAL hang = (REAL) atof (p[0]);
@@ -82,7 +82,7 @@ setTXALCHang (int n, char **p)
   return 0;
 }
 
-PRIVATE int
+static int
 setTXALCBot (int n, char **p)
 {
   REAL bot = (REAL) atof (p[0]);
@@ -90,7 +90,7 @@ setTXALCBot (int n, char **p)
   return 0;
 }
 
-PRIVATE int
+static int
 setTXLevelerAttack (int n, char **p)
 {
   REAL tmp = (REAL) atof (p[0]);
@@ -108,7 +108,7 @@ setTXLevelerAttack (int n, char **p)
   return 0;
 }
 
-PRIVATE int setTXLevelerDecay(int n, char **p)
+static int setTXLevelerDecay(int n, char **p)
 {
   REAL tmp = (REAL) atof (p[0]);
   tx.leveler.gen->decay =
@@ -117,13 +117,13 @@ PRIVATE int setTXLevelerDecay(int n, char **p)
   return 0;
 }
 
-PRIVATE int setTXLevelerTop(int n, char **p)
+static int setTXLevelerTop(int n, char **p)
 {
 	tx.leveler.gen->gain.top = REAL(::atof(p[0]));
 	return 0;
 }
 
-PRIVATE int setTXLevelerHang(int n, char **p)
+static int setTXLevelerHang(int n, char **p)
 {
   REAL hang = (REAL) atof (p[0]);
   tx.leveler.gen->hangtime = (REAL) 0.001 *hang;
@@ -131,7 +131,7 @@ PRIVATE int setTXLevelerHang(int n, char **p)
 }
 
 
-PRIVATE int
+static int
 setTXAGCLimit (int n, char **p)
 {
   REAL limit = (REAL) atof (p[0]);
@@ -140,7 +140,7 @@ setTXAGCLimit (int n, char **p)
 }
 #endif
 
-PRIVATE int
+static int
 setRingBufferReset (int n, char **p)
 {
   ringb_float_reset (top.jack.ring.i.l);
@@ -155,7 +155,7 @@ setRingBufferReset (int n, char **p)
 }
 
 // [pos]  0.0 <= pos <= 1.0
-PRIVATE int
+static int
 setRXPan (int n, char **p)
 {
   REAL pos, theta;
@@ -176,7 +176,7 @@ setRXPan (int n, char **p)
     }
 }
 
-PRIVATE int
+static int
 setAuxMixSt (int n, char **p)
 {
   if (n < 1)
@@ -207,7 +207,7 @@ setAuxMixSt (int n, char **p)
 }
 
 // [dB] NB both channels
-PRIVATE int
+static int
 setAuxMixGain (int n, char **p)
 {
   if (n < 1)
