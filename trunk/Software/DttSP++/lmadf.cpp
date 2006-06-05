@@ -204,27 +204,27 @@ BLMS* new_blms(CXB* signal, REAL adaptation_rate, REAL leak_rate, int filter_typ
 	tmp->signal = signal;
 	tmp->filter_type = filter_type;
 
-	tmp->Xplan = fftwf_plan_dft_1d(256,
+	tmp->Xplan = ::fftwf_plan_dft_1d(256,
 		(fftwf_complex *)tmp->delay_line,
 		(fftwf_complex *)tmp->Xhat,
 		FFTW_FORWARD, pbits);
 
-	tmp->Yplan = fftwf_plan_dft_1d(256,
+	tmp->Yplan = ::fftwf_plan_dft_1d(256,
 		(fftwf_complex *)tmp->Yhat,
 		(fftwf_complex *)tmp->y,
 		FFTW_BACKWARD, pbits);
 
-	tmp->Errhatplan = fftwf_plan_dft_1d(256,
+	tmp->Errhatplan = ::fftwf_plan_dft_1d(256,
 		(fftwf_complex *)tmp->error,
 		(fftwf_complex *)tmp->Errhat,
 		FFTW_FORWARD, pbits);
 
-	tmp->UPDplan = fftwf_plan_dft_1d(256,
+	tmp->UPDplan = ::fftwf_plan_dft_1d(256,
 		(fftwf_complex *)tmp->Errhat,
 		(fftwf_complex *)tmp->update,
 		FFTW_BACKWARD, pbits);
 
-	tmp->Wplan = fftwf_plan_dft_1d(256,
+	tmp->Wplan = ::fftwf_plan_dft_1d(256,
 		(fftwf_complex *)tmp->update,
 		(fftwf_complex *)tmp->Update,
 		FFTW_FORWARD, pbits);
@@ -243,7 +243,7 @@ void blms_adapt(BLMS* blms)
 		::memcpy(blms->delay_line, &blms->delay_line[128], sizeof(COMPLEX) * 128);	// do overlap move
 		::memcpy(&blms->delay_line[128], &CXBdata(blms->signal, sigidx), sizeof(COMPLEX) * 128);	// copy in new data
 
-		fftwf_execute(blms->Xplan);	// compute transform of input data
+		::fftwf_execute(blms->Xplan);	// compute transform of input data
 
 		int j;
 		for (j = 0; j < 256; j++) {
@@ -251,7 +251,7 @@ void blms_adapt(BLMS* blms)
 			blms->Xhat[j] = Conjg(blms->Xhat[j]);	// take input data's complex conjugate
 		}
 
-		fftwf_execute(blms->Yplan);	//compute output signal transform
+		::fftwf_execute(blms->Yplan);	//compute output signal transform
 
 		for (j = 128; j < 256; j++)
 			blms->y[j] = Cscl(blms->y[j], BLKSCL);
@@ -266,12 +266,12 @@ void blms_adapt(BLMS* blms)
 		else
 			::memcpy(&CXBdata(blms->signal, sigidx), &blms->error[128], 128 * sizeof(COMPLEX));	// if notch filter, output error
 
-		fftwf_execute(blms->Errhatplan);	// compute transform of the error signal
+		::fftwf_execute(blms->Errhatplan);	// compute transform of the error signal
 
 		for (j = 0; j < 256; j++)
 			blms->Errhat[j] = Cmul(blms->Errhat[j], blms->Xhat[j]);	// compute cross correlation transform
 
-		fftwf_execute(blms->UPDplan);	// compute inverse transform of cross correlation transform
+		::fftwf_execute(blms->UPDplan);	// compute inverse transform of cross correlation transform
 
 		for (j = 0; j < 128; j++)
 			blms->update[j] = Cscl(blms->update[j], BLKSCL);
@@ -279,7 +279,7 @@ void blms_adapt(BLMS* blms)
 		::memset(&blms->update[128], 0, sizeof (COMPLEX) * 128);	// zero the last block of the update, so we get
 
 		// filter coefficients only at front of buffer
-		fftwf_execute(blms->Wplan);
+		::fftwf_execute(blms->Wplan);
 
 		for (j = 0; j < 256; j++) {
 			blms->What[j] = Cadd(Cscl(blms->What[j], blms->leak_rate),	// leak the W away

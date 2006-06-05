@@ -173,6 +173,10 @@ void CMeter::setTXMeter(TXMETERTYPE type, CXB* buf, REAL alcGain, REAL levelerGa
 				m_cpdrSave = REAL(0.9995 * m_cpdrSave + 0.0005 * Csqrmag(vec[i]));
 			m_txval[TX_CPDR] = REAL(-10.0 * ::log10(m_cpdrSave + 1e-16));
 			break;
+
+		case TX_ALC_G:
+		case TX_LVL_G:
+			break;
 	}
 }
 

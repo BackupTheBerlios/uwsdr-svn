@@ -845,15 +845,15 @@ void process_samples(float* bufl, float* bufr, float* auxl, float* auxr, unsigne
 	    do_rx (), rx.tick++;
 	    // mix
 	    for (i = 0; i < n; i++)
-	      bufl[i] += (float) CXBimag (rx.buf.o, i),
-		bufr[i] += (float) CXBreal (rx.buf.o, i);
+	      bufl[i] += CXBimag (rx.buf.o, i),
+		bufr[i] += CXBreal (rx.buf.o, i);
 	    CXBhave (rx.buf.o) = n;
 
       // late mixing of aux buffers
       if (uni.mix.rx.flag)
 	for (i = 0; i < n; i++)
-	  bufl[i] += (float) (auxl[i] * uni.mix.rx.gain),
-	    bufr[i] += (float) (auxr[i] * uni.mix.rx.gain);
+	  bufl[i] += auxl[i] * uni.mix.rx.gain,
+	    bufr[i] += auxr[i] * uni.mix.rx.gain;
 
       break;
 
@@ -862,8 +862,8 @@ void process_samples(float* bufl, float* bufr, float* auxl, float* auxr, unsigne
       // early mixing of aux buffers
       if (uni.mix.tx.flag)
 	for (i = 0; i < n; i++)
-	  bufl[i] += (float) (auxl[i] * uni.mix.tx.gain),
-	    bufr[i] += (float) (auxr[i] * uni.mix.tx.gain);
+	  bufl[i] += auxl[i] * uni.mix.tx.gain,
+	    bufr[i] += auxr[i] * uni.mix.tx.gain;
 
       for (i = 0; i < n; i++)
 	CXBimag (tx.buf.i, i) = bufl[i], CXBreal (tx.buf.i, i) = bufr[i];
@@ -873,8 +873,8 @@ void process_samples(float* bufl, float* bufr, float* auxl, float* auxr, unsigne
       do_tx (), tx.tick++;
 
       for (i = 0; i < n; i++)
-	bufl[i] = (float) CXBimag (tx.buf.o, i), bufr[i] =
-	  (float) CXBreal (tx.buf.o, i);
+	bufl[i] = CXBimag (tx.buf.o, i), bufr[i] =
+	  CXBreal (tx.buf.o, i);
       CXBhave (tx.buf.o) = n;
 
       break;

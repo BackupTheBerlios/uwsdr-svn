@@ -41,7 +41,7 @@ Bridgewater, NJ 08807
 #include "cxops.h"
 
 
-typedef struct _complex_buffer_desc {
+typedef struct {
 	COMPLEX* data;
 	unsigned int size, have;
 	bool mine;
@@ -57,7 +57,7 @@ typedef struct _complex_buffer_desc {
 #define CXBhave(p) ((p)->have)
 #define CXBmine(p) ((p)->mine)
 
-typedef struct _real_buffer_desc {
+typedef struct {
 	REAL* data;
 	unsigned int size, have;
 	bool mine;
@@ -86,8 +86,5 @@ extern void delRLB(RLB* p);
 
 extern REAL normalize_vec_REAL(REAL*, unsigned int n);
 extern REAL normalize_vec_COMPLEX(COMPLEX*, unsigned int n);
-
-extern void dumpREAL(REAL* buf, unsigned int size, char* text);
-extern void dumpCOMPLEX(COMPLEX* buf, unsigned int size, char* text);
 
 #endif

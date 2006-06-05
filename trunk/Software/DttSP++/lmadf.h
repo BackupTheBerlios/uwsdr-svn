@@ -43,9 +43,6 @@ Bridgewater, NJ 08807
 const int LMADF_INTERFERENCE = 0;
 const int LMADF_NOISE        = 1;
 
-extern int lmadf_err;
-
-#define REALLMS
 typedef struct _BlockLMS {
   CXB* signal;
   COMPLEX* delay_line;
@@ -64,8 +61,6 @@ typedef struct _BlockLMS {
   fftwf_plan Xplan, Yplan, Wplan, Errhatplan, UPDplan;
 } BLMS;
 
-#ifdef REALLMS
-
 typedef struct _LMSR {
   CXB* signal;			/* Signal Buffer */
   int signal_size;		/* Number of samples in signal buffer */
@@ -81,24 +76,6 @@ typedef struct _LMSR {
   int mask;			/* Mask for circular buffer */
 } LMSR;
 
-#else
-
-typedef struct _LMSR {
-  CXB* signal;			/* Signal Buffer */
-  int signal_size;		/* Number of samples in signal buffer */
-  COMPLEX* delay_line;		/* Delay Line circular buffer for holding samples */
-  COMPLEX* adaptive_filter;	/* Filter coefficients */
-  REAL adaptation_rate;		/* Adaptation rate for the LMS stochastic gradient */
-  REAL leakage;			/* Exponential decay constant for filter coefficients */
-  int adaptive_filter_size;	/* number taps in adaptive filter */
-  int filter_type;		/* Filter type */
-  int delay;			/* Total delay between current sample and filter */
-  int delay_line_ptr;		/* Pointer for next sample into the delay line */
-  int size;			/* Delay line size */
-  int mask;			/* Mask for circular buffer */
-} LMSR;
-
-#endif
 
 extern LMSR* new_lmsr(CXB* signal,
 		      int delay,
