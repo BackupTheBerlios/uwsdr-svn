@@ -1,6 +1,6 @@
 all:		GUISetup
 
-CFLAGS := -I../UWSDRGUI -I../PortAudio/portaudio/pa_common $(CFLAGS)
+CFLAGS := -I../UWSDRGUI -I../PA19 $(CFLAGS)
 
 OBJS :=	GUISetupApp.o GUISetupFrame.o
 

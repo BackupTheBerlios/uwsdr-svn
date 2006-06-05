@@ -1,6 +1,6 @@
 all:		UWSDR
 
-CFLAGS := 	-I../PortAudio/portaudio/pa_common $(CFLAGS)
+CFLAGS := 	-I../FFTW -I../PA19 $(CFLAGS)
 
 OBJS :=	DSPControl.o DTTSPControl.o FreqDial.o FreqDisplay.o FreqKeypad.o Frequency.o \
 		InfoBox.o Log.o NullReader.o NullWriter.o RingBuffer.o \
@@ -57,10 +57,10 @@ SMeter.o:		SMeter.cpp SMeter.h UWSDRDefs.h
 SignalReader.o:	SignalReader.cpp SignalReader.h DataReader.h
 		$(CC) $(CFLAGS) -c SignalReader.cpp
 
-SoundCardReader.o: SoundCardReader.cpp SoundCardReader.h DataReader.h PAExports.h
+SoundCardReader.o: SoundCardReader.cpp SoundCardReader.h DataReader.h
 		$(CC) $(CFLAGS) -c SoundCardReader.cpp
 
-SoundCardWriter.o: SoundCardWriter.cpp SoundCardWriter.h DataWriter.h PAExports.h
+SoundCardWriter.o: SoundCardWriter.cpp SoundCardWriter.h DataWriter.h
 		$(CC) $(CFLAGS) -c SoundCardWriter.cpp
 
 SoundFileReader.o: SoundFileReader.cpp SoundFileReader.h DataReader.h

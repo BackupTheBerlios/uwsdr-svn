@@ -41,13 +41,13 @@ bool CSoundCardReader::open(unsigned int sampleRate, unsigned int blockSize)
 {
 	wxASSERT(m_callback != NULL);
 
-	PaError error = ::PA_Initialize();
+	PaError error = ::Pa_Initialize();
 	if (error != paNoError) {
-		::wxLogError(_("Received %d:%s from PA_Initialise() in SoundCardReader"), error, ::PA_GetErrorText(error));
+		::wxLogError(_("Received %d:%s from Pa_Initialise() in SoundCardReader"), error, ::Pa_GetErrorText(error));
 		return false;
 	}
 
-	PaDeviceIndex dev = ::PA_HostApiDeviceIndexToDeviceIndex(m_api, m_dev);
+	PaDeviceIndex dev = ::Pa_HostApiDeviceIndexToDeviceIndex(m_api, m_dev);
 
 	PaStreamParameters params;
 	params.device                    = dev;
@@ -56,18 +56,18 @@ bool CSoundCardReader::open(unsigned int sampleRate, unsigned int blockSize)
 	params.hostApiSpecificStreamInfo = NULL;
 	params.suggestedLatency          = PaTime(0);
 
-	error = ::PA_OpenStream(&m_stream, &params, NULL, double(sampleRate), blockSize, paNoFlag, cCallback, this);
+	error = ::Pa_OpenStream(&m_stream, &params, NULL, double(sampleRate), blockSize, paNoFlag, cCallback, this);
 	if (error != paNoError) {
-		::PA_Terminate();
-		::wxLogError(_("Received %d:%s from PA_OpenStream() in SoundCardReader"), error, ::PA_GetErrorText(error));
+		::Pa_Terminate();
+		::wxLogError(_("Received %d:%s from Pa_OpenStream() in SoundCardReader"), error, ::Pa_GetErrorText(error));
 		return false;
 	}
 
-	error = ::PA_StartStream(m_stream);
+	error = ::Pa_StartStream(m_stream);
 	if (error != paNoError) {
-		::PA_CloseStream(m_stream);
-		::PA_Terminate();
-		::wxLogError(_("Received %d:%s from PA_StartStream() in SoundCardReader"), error, ::PA_GetErrorText(error));
+		::Pa_CloseStream(m_stream);
+		::Pa_Terminate();
+		::wxLogError(_("Received %d:%s from Pa_StartStream() in SoundCardReader"), error, ::Pa_GetErrorText(error));
 		return false;
 	}
 
@@ -92,15 +92,15 @@ int CSoundCardReader::callback(const void* input, unsigned long nSamples, const 
 
 void CSoundCardReader::close()
 {
-	PaError error = ::PA_AbortStream(m_stream);
+	PaError error = ::Pa_AbortStream(m_stream);
 	if (error != paNoError)
-		::wxLogError(_("Received %d:%s from PA_AbortStream() in SoundCardReader"), error, ::PA_GetErrorText(error));
+		::wxLogError(_("Received %d:%s from Pa_AbortStream() in SoundCardReader"), error, ::Pa_GetErrorText(error));
 
-	error = ::PA_CloseStream(m_stream);
+	error = ::Pa_CloseStream(m_stream);
 	if (error != paNoError)
-		::wxLogError(_("Received %d:%s from PA_CloseStream() in SoundCardReader"), error, ::PA_GetErrorText(error));
+		::wxLogError(_("Received %d:%s from Pa_CloseStream() in SoundCardReader"), error, ::Pa_GetErrorText(error));
 
-	error = ::PA_Terminate();
+	error = ::Pa_Terminate();
 	if (error != paNoError)
-		::wxLogError(_("Received %d:%s from PA_Terminate() in SoundCardReader"), error, ::PA_GetErrorText(error));
+		::wxLogError(_("Received %d:%s from Pa_Terminate() in SoundCardReader"), error, ::Pa_GetErrorText(error));
 }

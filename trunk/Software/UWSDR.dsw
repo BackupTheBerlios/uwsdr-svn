@@ -23,21 +23,6 @@ Package=<5>
 
 Package=<4>
 {{{
-    Begin Project Dependency
-    Project_Dep_Name PA19
-    End Project Dependency
-}}}
-
-###############################################################################
-
-Project: "PA19"=".\PortAudio\PA19.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
 }}}
 
 ###############################################################################
@@ -74,9 +59,6 @@ Package=<5>
 
 Package=<4>
 {{{
-    Begin Project Dependency
-    Project_Dep_Name PA19
-    End Project Dependency
     Begin Project Dependency
     Project_Dep_Name DttSP
     End Project Dependency

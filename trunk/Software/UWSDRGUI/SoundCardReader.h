@@ -21,8 +21,9 @@
 
 #include <wx/wx.h>
 
-#include "PAExports.h"
 #include "DataReader.h"
+
+#include "portaudio.h"
 
 class CSoundCardReader : public IDataReader {
     public:

@@ -21,8 +21,9 @@
 
 #include <wx/wx.h>
 
-#include "PAExports.h"
 #include "DataWriter.h"
+
+#include "portaudio.h"
 
 class CSoundCardWriter : public IDataWriter {
     public:

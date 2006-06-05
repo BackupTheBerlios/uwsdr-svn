@@ -17,7 +17,7 @@
  */
 
 #include "GUISetupFrame.h"
-#include "PAExports.h"
+#include "portaudio.h"
 
 #include <wx/file.h>
 #include <wx/config.h>
@@ -397,31 +397,31 @@ void CGUISetupFrame::enumerateAPI()
 {
 	wxASSERT(m_apiChoice != NULL);
 
-	PaError error = ::PA_Initialize();
+	PaError error = ::Pa_Initialize();
 	if (error != paNoError) {
 		::wxMessageBox(_("Cannot initialise the sound access system."));
 		return;
 	}
 
-	PaHostApiIndex n = ::PA_GetHostApiCount();
+	PaHostApiIndex n = ::Pa_GetHostApiCount();
 
 	if (n <= 0) {
 		::wxMessageBox(_("There appear to be no audio APIs\navailable on your PC!"));
-		::PA_Terminate();
+		::Pa_Terminate();
 		return;
 	}
 
-	int defAPI = ::PA_GetDefaultHostApi();
+	int defAPI = ::Pa_GetDefaultHostApi();
 
 	for (PaHostApiIndex i = 0; i < n; i++) {
-		const PaHostApiInfo* hostAPI = ::PA_GetHostApiInfo(i);
+		const PaHostApiInfo* hostAPI = ::Pa_GetHostApiInfo(i);
 
 		m_apiChoice->Append(hostAPI->name);
 	}
 
 	m_apiChoice->SetSelection(defAPI);
 
-	::PA_Terminate();
+	::Pa_Terminate();
 
 	enumerateAudio(defAPI);
 }
@@ -431,22 +431,22 @@ void CGUISetupFrame::enumerateAudio(int api)
 	wxASSERT(m_inChoice != NULL);
 	wxASSERT(m_outChoice != NULL);
 
-	PaError error = ::PA_Initialize();
+	PaError error = ::Pa_Initialize();
 	if (error != paNoError) {
 		::wxMessageBox(_("Cannot initialise the sound access system."));
 		return;
 	}
 
-	PaDeviceIndex n = ::PA_GetDeviceCount();
+	PaDeviceIndex n = ::Pa_GetDeviceCount();
 
 	if (n <= 0) {
 		::wxMessageBox(_("There appear to be no audio devices\nattached to your PC!"));
-		::PA_Terminate();
+		::Pa_Terminate();
 		return;
 	}
 
 	for (PaDeviceIndex i = 0; i < n; i++) {
-		const PaDeviceInfo* device = ::PA_GetDeviceInfo(i);
+		const PaDeviceInfo* device = ::Pa_GetDeviceInfo(i);
 
 		if (device->maxInputChannels > 0 && device->hostApi == api) {
 			m_inChoice->Append(device->name, (void*)i);
@@ -464,7 +464,7 @@ void CGUISetupFrame::enumerateAudio(int api)
 		m_outChoice->SetSelection(0);
 	}
 
-	::PA_Terminate();
+	::Pa_Terminate();
 }
 
 #ifdef __WXMSW__
