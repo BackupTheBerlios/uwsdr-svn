@@ -32,7 +32,7 @@ Bridgewater, NJ 08807
 */
 
 #include "NoiseBlanker.h"
-#include "fromsys.h"
+#include "FromSys.h"
 
 #include <wx/wx.h>
 

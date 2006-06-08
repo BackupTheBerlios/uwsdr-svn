@@ -34,9 +34,9 @@ Bridgewater, NJ 08807
 #ifndef _amdemod_h
 #define _amdemod_h
 
-#include "fromsys.h"
-#include "datatypes.h"
-#include "complex.h"
+#include "FromSys.h"
+#include "DataTypes.h"
+#include "Complex.h"
 #include "bufvec.h"
 #include "Demod.h"
 

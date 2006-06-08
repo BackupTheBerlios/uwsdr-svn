@@ -1,4 +1,5 @@
-/* cxops.h
+/* DataTypes.h
+   local definitions and aliases for our data
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
@@ -30,28 +31,10 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
-#ifndef _cxops_h
-#define _cxops_h
+#ifndef _datatypes_h
+#define _datatypes_h
 
-#include "complex.h"
-#include "datatypes.h"
-
-extern COMPLEX cxzero;
-extern COMPLEX cxone;
-extern COMPLEX cxJ;
-extern COMPLEX cxminusone;
-extern COMPLEX cxminusJ;
-
-extern inline COMPLEX Cscl(COMPLEX, REAL);
-extern inline COMPLEX Cadd(COMPLEX, COMPLEX);
-extern inline COMPLEX Csub(COMPLEX, COMPLEX);
-extern inline COMPLEX Cmul(COMPLEX, COMPLEX);
-extern inline COMPLEX Cdiv(COMPLEX, COMPLEX);
-extern inline REAL Cmag(COMPLEX);
-extern inline REAL Cabs(COMPLEX);
-extern inline REAL Csqrmag(COMPLEX);
-extern inline COMPLEX Cmplx(REAL, IMAG);
-extern inline COMPLEX Conjg(COMPLEX);
-extern inline COMPLEX Cexp(COMPLEX);
+typedef float REAL;
+typedef float IMAG;
 
 #endif

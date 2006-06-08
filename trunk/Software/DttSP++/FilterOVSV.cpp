@@ -33,7 +33,7 @@ Bridgewater, NJ 08807
 
 #include "FilterOVSV.h"
 #include "FIR.h"
-#include "cxops.h"
+#include "CXOps.h"
 #include "banal.h"
 #include "bufvec.h"
 

@@ -33,7 +33,7 @@ Bridgewater, NJ 08807
 
 #include "Spectrum.h"
 #include "Window.h"
-#include "fromsys.h"
+#include "FromSys.h"
 #include "FIR.h"
 #include "banal.h"
 

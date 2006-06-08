@@ -1,6 +1,6 @@
 all:		SDRSetup
 
-OBJS :=	SDRSetupApp.o SDRSetupFrame.o
+OBJS :=		SDRSetupApp.o SDRSetupFrame.o Frequency.o
 
 SDRSetup:	$(OBJS)
 		$(CC) $(LDFLAGS) -o SDRSetup $(OBJS) $(LIBS)
@@ -8,8 +8,11 @@ SDRSetup:	$(OBJS)
 SDRSetupApp.o:	SDRSetupApp.cpp SDRSetupApp.h SDRSetupFrame.h SDRSetup.xpm
 		$(CC) $(CFLAGS) -c SDRSetupApp.cpp
 
-SDRSetupFrame.o:	SDRSetupFrame.cpp SDRSetupFrame.h
+SDRSetupFrame.o: SDRSetupFrame.cpp SDRSetupFrame.h
 		$(CC) $(CFLAGS) -c SDRSetupFrame.cpp
 
+Frequency.o:	../UWSDRGUI/Frequency.cpp ../UWSDRGUI/Frequency.h
+		$(CC) $(CFLAGS) -c ../UWSDRGUI/Frequency.cpp
+
 clean:
-		rm -f core *.o *~ *.bak
+		rm -f core SDRSetup *.o *~ *.bak

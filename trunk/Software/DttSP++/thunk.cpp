@@ -32,7 +32,7 @@ Bridgewater, NJ 08807
 */
 
 #include "thunk.h"
-#include "fromsys.h"
+#include "FromSys.h"
 
 
 /* somewhere along the line

@@ -34,7 +34,7 @@ Bridgewater, NJ 08807
 #ifndef _spottone_h
 #define _spottone_h
 
-#include "datatypes.h"
+#include "DataTypes.h"
 #include "bufvec.h"
 #include "Oscillator.h"
 

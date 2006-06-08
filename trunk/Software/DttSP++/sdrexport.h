@@ -34,8 +34,8 @@ Bridgewater, NJ 08807
 #ifndef _sdrexport_h
 #define _sdrexport_h
 
-#include "datatypes.h"
-#include "defs.h"
+#include "DataTypes.h"
+#include "Defs.h"
 #include "Meter.h"
 #include "Spectrum.h"
 #include "bufvec.h"

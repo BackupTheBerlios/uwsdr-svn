@@ -34,8 +34,8 @@ Bridgewater, NJ 08807
 #ifndef _filterovsv_h
 #define _filterovsv_h
 
-#include "datatypes.h"
-#include "complex.h"
+#include "DataTypes.h"
+#include "Complex.h"
 #include "fftw3.h"
 
 

@@ -61,6 +61,12 @@ void* CSoundFileReader::Entry()
 	return (void*)0;
 }
 
+void CSoundFileReader::setCallback(IDataCallback* callback, int id)
+{
+	m_callback = callback;
+	m_id       = id;
+}
+
 #ifdef __WINDOWS__
 
 CSoundFileReader::CSoundFileReader(const wxString& fileName) :
@@ -83,12 +89,6 @@ CSoundFileReader::~CSoundFileReader()
 {
 	delete[] m_buffer8;
 	delete[] m_buffer16;
-}
-
-void CSoundFileReader::setCallback(IDataCallback* callback, int id)
-{
-	m_callback = callback;
-	m_id       = id;
 }
 
 bool CSoundFileReader::open(unsigned int sampleRate, unsigned int blockSize)
@@ -225,7 +225,7 @@ void CSoundFileReader::closeFile()
 
 CSoundFileReader::CSoundFileReader(const wxString& fileName) :
 m_fileName(fileName),
-m_samplerate(0),
+m_sampleRate(0),
 m_blockSize(0),
 m_callback(NULL),
 m_id(0),
@@ -271,11 +271,10 @@ bool CSoundFileReader::readFile(float* buffer, unsigned int nSamples)
 {
 	wxASSERT(m_file != NULL);
 	wxASSERT(buffer != NULL);
-	wxASSERT(nSamples > 0);
 
-	int n = ::sf_read_float(m_file, sample, nSamples);
+	int n = ::sf_read_float(m_file, buffer, nSamples);
 
-	if (n < = 0)
+	if (n <= 0)
 		return false;
 
 	return true;

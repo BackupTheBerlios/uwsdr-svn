@@ -1,7 +1,6 @@
-/* fromsys.h
+/* Complex.h
 
-   stuff we need to import everywhere 
- This file is part of a program that implements a Software-Defined Radio.
+This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
 
@@ -32,20 +31,16 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
-#ifndef _fromsys_h
-#define _fromsys_h
+#ifndef _complex_h
+#define _complex_h
 
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <cmath>
+#include "DataTypes.h"
 
-#ifndef M_PI
-const double M_PI = 3.14159265358979323846;
+typedef struct {
+	REAL re, im;
+} COMPLEX;
+
+#define c_re(x) ((x).re)
+#define c_im(x) ((x).im)
+
 #endif
-
-#ifndef TWOPI
-const double TWOPI = 2.0 * M_PI;
-#endif
-
-#endif // _fromsys_h

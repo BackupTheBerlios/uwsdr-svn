@@ -32,7 +32,7 @@ Bridgewater, NJ 08807
 */
 
 #include "FMDemod.h"
-#include "fromsys.h"
+#include "FromSys.h"
 
 #include <wx/wx.h>
 

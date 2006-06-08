@@ -34,7 +34,7 @@ Bridgewater, NJ 08807
 #ifndef _spectrum_h
 #define _spectrum_h
 
-#include "datatypes.h"
+#include "DataTypes.h"
 #include "Window.h"
 #include "bufvec.h"
 #include "fftw3.h"

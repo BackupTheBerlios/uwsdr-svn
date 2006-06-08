@@ -35,7 +35,7 @@ Bridgewater, NJ 08807
 #ifndef _oscillator_h
 #define _oscillator_h
 
-#include "datatypes.h"
+#include "DataTypes.h"
 #include "bufvec.h"
 
 

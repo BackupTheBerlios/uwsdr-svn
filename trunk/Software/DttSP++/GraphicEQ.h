@@ -55,8 +55,8 @@ This is derived from equ.xmms:
 #ifndef GRPHEQ_H
 #define GRPHEQ_H
 
-#include "datatypes.h"
-#include "complex.h"
+#include "DataTypes.h"
+#include "Complex.h"
 #include "bufvec.h"
 #include "FilterOVSV.h"
 

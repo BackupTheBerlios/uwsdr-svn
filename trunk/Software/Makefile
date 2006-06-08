@@ -8,18 +8,18 @@ export LIBS := $(shell wx-config --libs)
 
 export CFLAGS := -O2 -Wall -march=pentium $(shell wx-config --cxxflags)
 
-all:		GUISetup/GUISetup.exe SDREmulator/SDREmulator.exe SDRSetup/SDRSetup.exe UWSDRGUI/UWSDR.exe
+all:		GUISetup/GUISetup SDREmulator/SDREmulator SDRSetup/SDRSetup UWSDRGUI/UWSDR
 
-GUISetup/GUISetup.exe:
+GUISetup/GUISetup:
 		make -C GUISetup
 
-SDREmulator/SDREmulator.exe:
+SDREmulator/SDREmulator:
 		make -C SDREmulator
 
-SDRSetup/SDRSetup.exe:
+SDRSetup/SDRSetup:
 		make -C SDRSetup
 
-UWSDRGUI/UWSDR.exe:	DttSP++/DttSP.a
+UWSDRGUI/UWSDR:	DttSP++/DttSP.a
 		make -C UWSDRGUI
 
 DttSP++/DttSP.a:
@@ -27,4 +27,8 @@ DttSP++/DttSP.a:
 
 clean:
 		rm -f core *~ *.bak
-		make -C DttSP++ GUISetup SDREmulator SDRSetup UWSDRGUI clean
+		make -C DttSP++ clean
+		make -C GUISetup clean
+		make -C SDREmulator clean
+		make -C SDRSetup clean
+		make -C UWSDRGUI clean

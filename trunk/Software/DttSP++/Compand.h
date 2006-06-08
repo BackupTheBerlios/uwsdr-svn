@@ -34,7 +34,7 @@ Bridgewater, NJ 08807
 #ifndef _compand_h
 #define _compand_h
 
-#include "datatypes.h"
+#include "DataTypes.h"
 #include "bufvec.h"
 
 

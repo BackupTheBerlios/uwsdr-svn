@@ -1,8 +1,9 @@
 all:		GUISetup
 
-CFLAGS := -I../UWSDRGUI -I../PA19 $(CFLAGS)
+CFLAGS := -I../UWSDRGUI $(CFLAGS)
+LIBS   := -lportaudio $(LIBS)
 
-OBJS :=	GUISetupApp.o GUISetupFrame.o
+OBJS :=		GUISetupApp.o GUISetupFrame.o
 
 GUISetup:	$(OBJS)
 		$(CC) $(LDFLAGS) -o GUISetup $(OBJS) $(LIBS)
@@ -10,8 +11,8 @@ GUISetup:	$(OBJS)
 GUISetupApp.o:	GUISetupApp.cpp GUISetupApp.h GUISetupFrame.h GUISetup.xpm
 		$(CC) $(CFLAGS) -c GUISetupApp.cpp
 
-GUISetupFrame.o:	GUISetupFrame.cpp GUISetupFrame.h
+GUISetupFrame.o: GUISetupFrame.cpp GUISetupFrame.h
 		$(CC) $(CFLAGS) -c GUISetupFrame.cpp
 
 clean:
-		rm -f core *.o *~ *.bak
+		rm -f core GUISetup *.o *~ *.bak

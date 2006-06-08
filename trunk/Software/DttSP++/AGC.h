@@ -34,8 +34,8 @@ Bridgewater, NJ 08807
 #ifndef _agc_h
 #define _agc_h
 
-#include "datatypes.h"
-#include "complex.h"
+#include "DataTypes.h"
+#include "Complex.h"
 #include "bufvec.h"
 
 

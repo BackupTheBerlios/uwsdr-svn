@@ -610,10 +610,10 @@ void CGUISetupFrame::writeDeskTop(const wxString& name, const wxString& dir)
 #ifdef __WXGTK__
 void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 {
-	wxString fileName = 
+	wxString fileName = "";
 
 	wxFile file;
-	bool ret = file.Open(fileName, wxFile:write);
+	bool ret = file.Open(fileName, wxFile::write);
 	if (!ret) {
 		::wxMessageBox(_("Cannot open file %s for writing"), fileName);
 		return;

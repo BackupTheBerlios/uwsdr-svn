@@ -34,7 +34,7 @@ Bridgewater, NJ 08807
 */
 
 #include "bufvec.h"
-#include "fromsys.h"
+#include "FromSys.h"
 #include "banal.h"
 
 #include <wx/wx.h>

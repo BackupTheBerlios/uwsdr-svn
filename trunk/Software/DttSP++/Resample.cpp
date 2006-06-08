@@ -35,7 +35,7 @@ Bridgewater, NJ 08807
 
 #include "Resample.h"
 #include "banal.h"
-#include "cxops.h"
+#include "CXOps.h"
 
 
 ResSt* newPolyPhaseFIR(int filterMemoryBuffLength, int indexfiltMemBuf, int interpFactor, int filterPhaseNum, int deciFactor)

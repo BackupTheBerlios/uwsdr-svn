@@ -32,7 +32,7 @@ Bridgewater, NJ 08807
 */
 
 #include "SpotTone.h"
-#include "fromsys.h"
+#include "FromSys.h"
 
 
 //------------------------------------------------------------------------

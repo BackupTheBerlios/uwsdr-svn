@@ -111,10 +111,6 @@ SOURCE=.\CorrectIQ.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\cxops.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\DCBlock.cpp
 # End Source File
 # Begin Source File
@@ -231,7 +227,7 @@ SOURCE=.\Compand.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\complex.h
+SOURCE=.\Complex.h
 # End Source File
 # Begin Source File
 
@@ -239,11 +235,11 @@ SOURCE=.\CorrectIQ.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\cxops.h
+SOURCE=.\CXOps.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\datatypes.h
+SOURCE=.\DataTypes.h
 # End Source File
 # Begin Source File
 
@@ -251,7 +247,7 @@ SOURCE=.\DCBlock.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\defs.h
+SOURCE=.\Defs.h
 # End Source File
 # Begin Source File
 
@@ -271,7 +267,7 @@ SOURCE=.\FMDemod.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\fromsys.h
+SOURCE=.\FromSys.h
 # End Source File
 # Begin Source File
 

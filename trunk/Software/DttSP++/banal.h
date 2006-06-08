@@ -35,16 +35,42 @@
 #ifndef _banal_h
 #define _banal_h
 
-#include "fromsys.h"
-#include "datatypes.h"
+#include "FromSys.h"
+#include "DataTypes.h"
 
 
-#ifndef min
-#define min(a, b) ((a) < (b) ? (a) : (b))
-#endif
+#ifdef NEED_MINMAX
 
-#ifndef max
-#define max(a, b) ((a) > (b) ? (a) : (b))
+inline unsigned int max(unsigned int val1, unsigned int val2)
+{
+	return (val1 > val2) ? val1 : val2;
+}
+
+inline int max(int val1, int val2)
+{
+	return (val1 > val2) ? val1 : val2;
+}
+
+inline double max(double val1, double val2)
+{
+	return (val1 > val2) ? val1 : val2;
+}
+
+inline unsigned int min(unsigned int val1, unsigned int val2)
+{
+	return (val1 < val2) ? val1 : val2;
+}
+
+inline int min(int val1, int val2)
+{
+	return (val1 < val2) ? val1 : val2;
+}
+
+inline double min(double val1, double val2)
+{
+	return (val1 < val2) ? val1 : val2;
+}
+
 #endif
 
 #define abs(a) ((a) >= 0 ? (a) : -(a))
@@ -52,9 +78,12 @@
 const REAL MONDO = 1E15F;
 const REAL BITSY = 1E-15F;
 
-extern inline   REAL sqr(REAL);
+inline REAL sqr(REAL x)
+{
+	return x * x;
+}
+
 extern unsigned int  npoof2(unsigned int);
 extern unsigned int  nblock2(unsigned int);
-
 
 #endif

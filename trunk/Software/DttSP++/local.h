@@ -36,8 +36,8 @@ Bridgewater, NJ 08807
 #ifndef _local_h
 #define _local_h
 
-#include "datatypes.h"
-#include "defs.h"
+#include "DataTypes.h"
+#include "Defs.h"
 
 
 extern struct _loc {

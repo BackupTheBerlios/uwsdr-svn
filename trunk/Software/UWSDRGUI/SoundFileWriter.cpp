@@ -186,7 +186,7 @@ bool CSoundFileWriter::open(unsigned int sampleRate, unsigned int blockSize)
 		return false;
 	}
 
-	::wxLogMessage(_("Opened the sound file in SoundFileWriter");
+	::wxLogMessage(_("Opened the sound file in SoundFileWriter"));
 
 	return true;
 }
@@ -195,7 +195,6 @@ void CSoundFileWriter::write(const float* buffer, unsigned int length)
 {
 	wxASSERT(m_file != NULL);
 	wxASSERT(buffer != NULL);
-	wxASSERT(length > 0);
 
 	::sf_write_float(m_file, buffer, length);
 }

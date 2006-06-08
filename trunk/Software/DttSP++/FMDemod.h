@@ -35,8 +35,8 @@ Bridgewater, NJ 08807
 #define _fmdemod_h
 
 
-#include "datatypes.h"
-#include "complex.h"
+#include "DataTypes.h"
+#include "Complex.h"
 #include "bufvec.h"
 #include "Demod.h"
 

@@ -32,7 +32,7 @@ Bridgewater, NJ 08807
 */
 
 #include "FIR.h"
-#include "fromsys.h"
+#include "FromSys.h"
 #include "bufvec.h"
 #include "Window.h"
 

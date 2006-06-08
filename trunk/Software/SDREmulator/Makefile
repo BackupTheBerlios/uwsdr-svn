@@ -1,10 +1,8 @@
 all:		SDREmulator
 
-CFLAGS :=	-I../UWSDRGUI $(CFLAGS)
+CFLAGS := -I../UWSDRGUI $(CFLAGS)
 
-LDFLAGS :=	-L../fftw $(LDFLAGS)
-
-OBJS :=	SDREmulatorApp.o SDREmulatorFrame.o
+OBJS :=		SDREmulatorApp.o SDREmulatorFrame.o Frequency.o
 
 SDREmulator:	$(OBJS)
 		$(CC) $(LDFLAGS) -o SDREmulator $(OBJS) $(LIBS)
@@ -15,5 +13,8 @@ SDREmulatorApp.o:	SDREmulatorApp.cpp SDREmulatorApp.h SDREmulatorFrame.h
 SDREmulatorFrame.o:	SDREmulatorFrame.cpp SDREmulatorFrame.h
 		$(CC) $(CFLAGS) -c SDREmulatorFrame.cpp
 
+Frequency.o:	../UWSDRGUI/Frequency.cpp ../UWSDRGUI/Frequency.h
+		$(CC) $(CFLAGS) -c ../UWSDRGUI/Frequency.cpp
+
 clean:
-		rm -f core *.o *~ *.bak
+		rm -f core SDREmulator *.o *~ *.bak

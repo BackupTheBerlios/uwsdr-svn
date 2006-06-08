@@ -36,9 +36,9 @@ Bridgewater, NJ 08807
 #ifndef _update_h
 #define _update_h
 
-#include <fromsys.h>
+#include <FromSys.h>
 #include <banal.h>
-#include <datatypes.h>
+#include <DataTypes.h>
 #include <thunk.h>
 
 #endif

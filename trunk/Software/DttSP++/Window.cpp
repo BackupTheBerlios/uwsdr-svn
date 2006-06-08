@@ -34,7 +34,7 @@ Bridgewater, NJ 08807
 
 #include "Window.h"
 #include "banal.h"
-#include "fromsys.h"
+#include "FromSys.h"
 
 
 /* shamelessly stolen from Bill Schottstaedt's clm.c */

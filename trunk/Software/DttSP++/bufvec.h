@@ -36,9 +36,9 @@ Bridgewater, NJ 08807
 #ifndef _bufvec_h
 #define _bufvec_h
 
-#include "datatypes.h"
-#include "complex.h"
-#include "cxops.h"
+#include "DataTypes.h"
+#include "Complex.h"
+#include "CXOps.h"
 
 
 typedef struct {

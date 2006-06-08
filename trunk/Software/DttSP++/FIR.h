@@ -34,8 +34,8 @@ Bridgewater, NJ 08807
 #ifndef _fir_h
 #define _fir_h
 
-#include "datatypes.h"
-#include "complex.h"
+#include "DataTypes.h"
+#include "Complex.h"
 
 class CFIR {
     public:

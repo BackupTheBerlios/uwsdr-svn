@@ -1,24 +1,24 @@
 all:		UWSDR
 
-CFLAGS := 	-I../FFTW -I../PA19 $(CFLAGS)
+LIBS := -lportaudio -lfftw3f -lfftw3 -lsndfile  $(LIBS)
 
 OBJS :=	DSPControl.o DTTSPControl.o FreqDial.o FreqDisplay.o FreqKeypad.o Frequency.o \
-		InfoBox.o Log.o NullReader.o NullWriter.o RingBuffer.o \
-		SDRDescrFile.o SDRParameters.o SMeter.o SignalReader.o SoundCardReader.o \
-		SoundCardWriter.o SoundFileReader.o SoundFileWriter.o SpectrumDisplay.o \
-		UWSDRApp.o UWSDRControl.o UWSDRData.o UWSDRFrame.o UWSDRPreferences.o \
-		VolumeDial.o
+	InfoBox.o Log.o NullReader.o NullWriter.o RingBuffer.o \
+	SDRDescrFile.o SDRParameters.o SMeter.o SignalReader.o SoundCardReader.o \
+	SoundCardWriter.o SoundFileReader.o SoundFileWriter.o SpectrumDisplay.o \
+	UWSDRApp.o UWSDRControl.o UWSDRData.o UWSDRFrame.o UWSDRPreferences.o \
+	VolumeDial.o
 
-UWSDR:	$(OBJS)
-		$(CC) $(LDFLAGS) -o UWSDR $(OBJS) $(LIBS)
+UWSDR:		$(OBJS)
+		$(CC) $(LDFLAGS) -o UWSDR $(OBJS) ../DttSP++/DttSP.a $(LIBS)
 
-DSPControl.o:	DSPControl.cpp DSPControl.h DataReader.h DataWriter.h DttSPControl.h RingBuffer.h SoundFileWriter.h 
+DSPControl.o:	DSPControl.cpp DSPControl.h DataReader.h DataWriter.h DTTSPControl.h RingBuffer.h SoundFileWriter.h 
 		$(CC) $(CFLAGS) -c DSPControl.cpp
 
 DTTSPControl.o:	DTTSPControl.cpp DTTSPControl.h DTTSPExports.h UWSDRDefs.h
 		$(CC) $(CFLAGS) -c DTTSPControl.cpp
 
-FreqDial.o:		FreqDial.cpp FreqDial.h DialInterface.h UWSDRDefs.h
+FreqDial.o:	FreqDial.cpp FreqDial.h DialInterface.h UWSDRDefs.h
 		$(CC) $(CFLAGS) -c FreqDial.cpp
 
 FreqDisplay.o:	FreqDisplay.cpp FreqDisplay.h Frequency.h UWSDRDefs.h
@@ -30,7 +30,7 @@ FreqKeypad.o:	FreqKeypad.cpp FreqKeypad.h Frequency.h UWSDRDefs.h
 Frequency.o:	Frequency.cpp Frequency.h
 		$(CC) $(CFLAGS) -c Frequency.cpp
 
-InfoBox.o:		InfoBox.cpp InfoBox.h UWSDRDefs.h
+InfoBox.o:	InfoBox.cpp InfoBox.h UWSDRDefs.h
 		$(CC) $(CFLAGS) -c InfoBox.cpp
 
 Log.o:		Log.cpp Log.h
@@ -48,10 +48,10 @@ RingBuffer.o:	RingBuffer.cpp RingBuffer.h Frequency.h
 SDRDescrFile.o:	SDRDescrFile.cpp SDRDescrFile.h Frequency.h
 		$(CC) $(CFLAGS) -c SDRDescrFile.cpp
 
-SDRParameters.o:	SDRParameters.cpp SDRParameters.h Frequency.h
+SDRParameters.o: SDRParameters.cpp SDRParameters.h Frequency.h
 		$(CC) $(CFLAGS) -c SDRParameters.cpp
 
-SMeter.o:		SMeter.cpp SMeter.h UWSDRDefs.h
+SMeter.o:	SMeter.cpp SMeter.h UWSDRDefs.h
 		$(CC) $(CFLAGS) -c SMeter.cpp
 
 SignalReader.o:	SignalReader.cpp SignalReader.h DataReader.h
@@ -72,7 +72,7 @@ SoundFileWriter.o: SoundFileWriter.cpp SoundFileWriter.h DataWriter.h
 SpectrumDisplay.o: SpectrumDisplay.cpp SpectrumDisplay.h UWSDRDefs.h
 		$(CC) $(CFLAGS) -c SpectrumDisplay.cpp
 
-UWSDRApp.o:		UWSDRApp.cpp UWSDRApp.h Log.h SDRDescrFile.h SDRParameters.h UWSDRDefs.h UWSDRFrame.h
+UWSDRApp.o:	UWSDRApp.cpp UWSDRApp.h Log.h SDRDescrFile.h SDRParameters.h UWSDRDefs.h UWSDRFrame.h
 		$(CC) $(CFLAGS) -c UWSDRApp.cpp
 
 UWSDRControl.o:	UWSDRControl.cpp UWSDRControl.h ControlInterface.h Frequency.h SDRControl.h
@@ -82,9 +82,9 @@ UWSDRData.o:	UWSDRData.cpp UWSDRData.h DataReader.h DataWriter.h RingBuffer.h
 		$(CC) $(CFLAGS) -c UWSDRData.cpp
 
 UWSDRFrame.o:	UWSDRFrame.cpp UWSDRFrame.h ControlInterface.h DialInterface.h DSPControl.h FreqDial.h FreqDisplay.h \
-			FreqKeypad.h Frequency.h InfoBox.h NullReader.h NullWriter.h SDRControl.h SDRParameters.h SignalReader.h \
-			SMeter.h SoundCardReader.h SoundCardWriter.h SoundFileReader.h SoundFileWriter.h SpectrumDisplay.h \
-			UWSDRApp.h UWSDRControl.h UWSDRData.h UWSDRDefs.h UWSDRPreferences.h UWSDR.xpm
+		FreqKeypad.h Frequency.h InfoBox.h NullReader.h NullWriter.h SDRControl.h SDRParameters.h SignalReader.h \
+		SMeter.h SoundCardReader.h SoundCardWriter.h SoundFileReader.h SoundFileWriter.h SpectrumDisplay.h \
+		UWSDRApp.h UWSDRControl.h UWSDRData.h UWSDRDefs.h UWSDRPreferences.h UWSDR.xpm
 		$(CC) $(CFLAGS) -c UWSDRFrame.cpp
 
 UWSDRPreferences.o: UWSDRPreferences.cpp UWSDRPreferences.h SDRParameters.h UWSDRApp.h UWSDRDefs.h
@@ -94,4 +94,4 @@ VolumeDial.o:	VolumeDial.cpp VolumeDial.h DialInterface.h UWSDRDefs.h
 		$(CC) $(CFLAGS) -c VolumeDial.cpp
 
 clean:
-		rm -f core *.o *~ *.bak
+		rm -f core UWSDR *.o *~ *.bak

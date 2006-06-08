@@ -34,11 +34,6 @@ Bridgewater, NJ 08807
 #include "banal.h"
 
 
-REAL sqr(REAL x)
-{
-	 return x * x;
-}
-
 unsigned int npoof2(unsigned int n)
 {
 	unsigned int i = 0;

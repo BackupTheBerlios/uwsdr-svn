@@ -35,8 +35,8 @@ Bridgewater, NJ 08807
 #ifndef _window_h
 #define _window_h
 
-#include "datatypes.h"
-#include "fromsys.h"
+#include "DataTypes.h"
+#include "FromSys.h"
 
 
 typedef enum {
