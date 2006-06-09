@@ -39,8 +39,6 @@
 #include "DataTypes.h"
 
 
-#ifdef NEED_MINMAX
-
 inline unsigned int max(unsigned int val1, unsigned int val2)
 {
 	return (val1 > val2) ? val1 : val2;
@@ -70,8 +68,6 @@ inline double min(double val1, double val2)
 {
 	return (val1 < val2) ? val1 : val2;
 }
-
-#endif
 
 #define abs(a) ((a) >= 0 ? (a) : -(a))
 

@@ -1,7 +1,5 @@
 all:		DttSP.a
 
-CFLAGS := -DNEED_MINMAX=1 $(CFLAGS)
-
 OBJS :=	AGC.o AMDemod.o Compand.o CorrectIQ.o DCBlock.o FIR.o FMDemod.o FilterOVSV.o GraphicEQ.o Meter.o \
 	NoiseBlanker.o Oscillator.o Resample.o ResampleF.o SSBDemod.o Spectrum.o SpeechProc.o SpotTone.o \
 	Squelch.o Window.o banal.o bufvec.o lmadf.o ringb.o sdr.o sdrexport.o thunk.o update.o \
