@@ -40,7 +40,7 @@ BEGIN_EVENT_TABLE(CSDREmulatorFrame, wxFrame)
 END_EVENT_TABLE()
 
 CSDREmulatorFrame::CSDREmulatorFrame(unsigned int port) :
-wxFrame(NULL, -1, wxString(wxT("µWave SDR Emulator")), wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX  | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN),
+wxFrame(NULL, -1, wxString(wxT("uWave SDR Emulator")), wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX  | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN),
 m_txFreq(),
 m_rxFreq(),
 m_txEnable(false),
@@ -328,8 +328,8 @@ void CSDREmulatorFrame::onClose(wxCloseEvent& event)
 		return;
 	}
 
-	int reply = ::wxMessageBox(wxT("Do you want to exit the µWave SDR Emulator"),
-		wxT("Exit µW SDR"),
+	int reply = ::wxMessageBox(wxT("Do you want to exit the uWave SDR Emulator"),
+		wxT("Exit uWSDR"),
 		wxOK | wxCANCEL | wxICON_QUESTION);
 
 	if (reply == wxOK)

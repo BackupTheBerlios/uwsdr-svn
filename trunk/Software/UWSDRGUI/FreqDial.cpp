@@ -68,9 +68,9 @@ void CFreqDial::drawDial()
 	wxMemoryDC dc;
 	dc.SelectObject(*m_bitmap);
 
-	wxColour colour(0xD0, 0xD0, 0xD0);
-	wxBrush brush0(colour);
-	wxPen pen0(colour);
+	wxColour bgColour = wxSystemSettings::GetColour(wxSYS_COLOUR_BACKGROUND);
+	wxBrush brush0(bgColour);
+	wxPen pen0(bgColour);
 
 	dc.SetPen(pen0);
 	dc.SetBrush(brush0);
@@ -82,12 +82,12 @@ void CFreqDial::drawDial()
 	dc.SetBrush(*wxLIGHT_GREY_BRUSH);
 	wxPen pen1(*wxBLACK, 2, wxSOLID);
 	dc.SetPen(pen1);
-	dc.DrawCircle(middleX, middleY, m_width / 2);
+	dc.DrawCircle(middleX, middleY, (m_width - 2) / 2);
 
 	wxPen pen3(*wxWHITE, 1, wxSOLID);
 	dc.SetPen(pen3);
-	dc.DrawCircle(middleX, middleY, m_width / 3);
-	dc.DrawCircle(middleX, middleY, m_width / 6);
+	dc.DrawCircle(middleX, middleY, (m_width - 2) / 3);
+	dc.DrawCircle(middleX, middleY, (m_width - 2) / 6);
 
 	int x = m_width / 2 - int(double(m_width / 2 - 25) * ::sin(m_angle * (M_PI / 180.0)) + 0.5);
 	int y = m_height / 2 + int(double(m_height / 2 - 25) * ::cos(m_angle * (M_PI / 180.0)) + 0.5);
@@ -141,11 +141,11 @@ void CFreqDial::onMouse(wxMouseEvent& event)
 			long diffY = event.GetY() - m_height / 2;
 			int   dist = int(::sqrt(double(diffX * diffX + diffY * diffY)) + 0.5);
 
-			if (dist <= m_width / 6)
+			if (dist <= (m_width - 2) / 6)
 				m_mult = 1;
-			else if (dist <= m_width / 3)
+			else if (dist <= (m_width - 2) / 3)
 				m_mult = 2;
-			else if (dist <= m_width / 2)
+			else if (dist <= (m_width - 2) / 2)
 				m_mult = 3;
 			else
 				return;

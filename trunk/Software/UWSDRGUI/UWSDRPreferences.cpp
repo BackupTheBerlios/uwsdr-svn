@@ -29,7 +29,7 @@ BEGIN_EVENT_TABLE(CUWSDRPreferences, wxDialog)
 END_EVENT_TABLE()
 
 CUWSDRPreferences::CUWSDRPreferences(wxWindow* parent, int id, CSDRParameters* parameters) :
-wxDialog(parent, id, wxString(_("µWave SDR Preferences"))),
+wxDialog(parent, id, wxString(_("uWave SDR Preferences"))),
 m_parameters(parameters),
 m_maxRXFreq(NULL),
 m_minRXFreq(NULL),

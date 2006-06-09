@@ -81,9 +81,9 @@ void CVolumeDial::drawDial()
 	wxMemoryDC dc;
 	dc.SelectObject(*m_bitmap);
 
-	wxColour colour(0xD0, 0xD0, 0xD0);
-	wxBrush brush0(colour);
-	wxPen pen0(colour);
+	wxColour bgColour = wxSystemSettings::GetColour(wxSYS_COLOUR_BACKGROUND);
+	wxBrush brush0(bgColour);
+	wxPen pen0(bgColour);
 
 	dc.SetPen(pen0);
 	dc.SetBrush(brush0);
@@ -92,7 +92,7 @@ void CVolumeDial::drawDial()
 	dc.SetBrush(*wxLIGHT_GREY_BRUSH);
 	wxPen pen1(*wxBLACK, 2, wxSOLID);
 	dc.SetPen(pen1);
-	dc.DrawEllipse(0, 0, m_width, m_height);
+	dc.DrawEllipse(1, 1, m_width - 2, m_height - 2);
 
 	double incr = 270.0 / double(m_max - m_min); 
 
@@ -155,7 +155,7 @@ void CVolumeDial::onMouse(wxMouseEvent& event)
 			long diffY = event.GetY() - m_height / 2;
 			int   dist = int(::sqrt(double(diffX * diffX + diffY * diffY)) + 0.5);
 
-			if (dist > m_width / 2)
+			if (dist > (m_width - 2) / 2)
 				return;
 
 			moveDial();

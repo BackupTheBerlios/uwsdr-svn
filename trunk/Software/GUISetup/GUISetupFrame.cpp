@@ -46,7 +46,7 @@ BEGIN_EVENT_TABLE(CGUISetupFrame, wxFrame)
 END_EVENT_TABLE()
 
 CGUISetupFrame::CGUISetupFrame() :
-wxFrame(NULL, -1, wxString(_("µWave SDR GUI Setup")), wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX  | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN),
+wxFrame(NULL, -1, wxString(_("uWave SDR GUI Setup")), wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX  | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN),
 m_name(NULL),
 m_filename(NULL),
 m_apiChoice(NULL),
@@ -321,7 +321,7 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 
 	delete config;
 
-	::wxMessageBox(_("µWave SDR configuration written."));
+	::wxMessageBox(_("uWave SDR configuration written."));
 
 	Close(true);
 }

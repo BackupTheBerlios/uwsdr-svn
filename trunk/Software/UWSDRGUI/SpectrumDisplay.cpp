@@ -161,7 +161,7 @@ void CSpectrumDisplay::createPanadapter()
 	int top     = 3;
 	int bottom  = m_height - 15;
 	int middleX = left + (right - left) / 2;
-	int lowY    = top + 13 * (bottom - top) / 15;
+	// int lowY    = top + 13 * (bottom - top) / 15;
 	double incrX = double(right - left) / 10.0;
 
 	dc.SetPen(*wxCYAN_PEN);
@@ -261,9 +261,9 @@ void CSpectrumDisplay::drawPanadapter(const float* spectrum, float bottom)
 
 	float binsPerPixel = float(lastBin - firstBin) / float(m_width - 5);
 
-	int lastX, lastY;
+	int lastX = 0, lastY = 0;
 	for (int x = 2; x < (m_width - 3); x++) {
-      int bin = firstBin + int(float(x - 2) * binsPerPixel + 0.5F);
+		int bin = firstBin + int(float(x - 2) * binsPerPixel + 0.5F);
 
 		float value = 0.0F;
 		for (int i = 0; i < int(binsPerPixel + 0.5F); i++)
@@ -310,7 +310,7 @@ void CSpectrumDisplay::drawWaterfall(const float* spectrum, float bottom)
 	unsigned char* offset = data + m_width * (m_height - 16) * 3;
 
 	for (int x = 2; x < (m_width - 3); x++) {
-      int bin = firstBin + int(float(x - 2) * binsPerPixel + 0.5);
+		int bin = firstBin + int(float(x - 2) * binsPerPixel + 0.5);
 
 		float value = 0.0F;
 		for (int i = 0; i < int(binsPerPixel + 0.5); i++)

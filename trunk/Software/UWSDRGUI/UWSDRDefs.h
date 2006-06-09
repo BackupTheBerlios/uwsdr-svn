@@ -20,35 +20,68 @@
 #define	UWSDRDefs_H
 
 // For the GUI
-const wxString VERSION     = wxT("µWave SDR 0.5");
-const wxString REL_DATE    = wxT("1 May 2006");
+const wxString VERSION     = wxT("uWave SDR 0.5");
+const wxString REL_DATE    = wxT("10 June 2006");
 
 const wxString APPNAME     = wxT("UWSDR");
 
 const int BORDER_SIZE      = 5;
 
-const int FREQUENCY_WIDTH  = 400;
-const int FREQUENCY_HEIGHT = 70;
-
-const int SPECTRUM_WIDTH   = 480;
-const int SPECTRUM_HEIGHT  = 100;
-
-const int INFO_WIDTH       = 80;
-const int INFO_HEIGHT      = 70;
-
-const int SMETER_WIDTH     = 195;
-const int SMETER_HEIGHT    = 70;
-
-const int VOLSQL_WIDTH     = 75;
-const int VOLSQL_HEIGHT    = 75;
+#if defined(__WXMSW__)
+const int BUTTON_HEIGHT    = -1;
 
 const int FREQDIAL_WIDTH   = 150;
 const int FREQDIAL_HEIGHT  = 150;
 
+const int VOLSQL_WIDTH     = 75;
+const int VOLSQL_HEIGHT    = 75;
+
+const int SPECTRUM_WIDTH   = 480;
+const int SPECTRUM_HEIGHT  = 100;
+
 const int FREQPAD_WIDTH    = 60;
 const int FREQPAD_HEIGHT   = 30;
 
+const int INFO_WIDTH       = 80;
+const int INFO_HEIGHT      = 70;
+
+const int FREQUENCY_WIDTH  = 400;
+const int FREQUENCY_HEIGHT = 70;
+
 const int CONTROL_WIDTH    = 100;
+
+const int SMETER_WIDTH     = 195;
+const int SMETER_HEIGHT    = 70;
+
+#elif defined(__WXGTK__)
+const int BUTTON_HEIGHT    = 22;
+
+const int FREQDIAL_WIDTH   = 165;
+const int FREQDIAL_HEIGHT  = 165;
+
+const int VOLSQL_WIDTH     = 85;
+const int VOLSQL_HEIGHT    = 85;
+
+const int SPECTRUM_WIDTH   = 500;
+const int SPECTRUM_HEIGHT  = 105;
+
+const int FREQPAD_WIDTH    = 70;
+const int FREQPAD_HEIGHT   = 25;
+
+const int INFO_WIDTH       = 90;
+const int INFO_HEIGHT      = 70;
+
+const int FREQUENCY_WIDTH  = 410;
+const int FREQUENCY_HEIGHT = 70;
+
+const int CONTROL_WIDTH    = 105;
+
+const int SMETER_WIDTH     = 210;
+const int SMETER_HEIGHT    = 70;
+
+#else
+#error "Unknown platform"
+#endif
 
 const int VFO_A            = 0;
 const int VFO_B            = 1;

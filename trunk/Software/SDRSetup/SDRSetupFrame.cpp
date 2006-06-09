@@ -33,7 +33,7 @@ BEGIN_EVENT_TABLE(CSDRSetupFrame, wxFrame)
 END_EVENT_TABLE()
 
 CSDRSetupFrame::CSDRSetupFrame() :
-wxFrame(NULL, -1, wxString(_("µWave SDR Setup")), wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX  | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN),
+wxFrame(NULL, -1, wxString(_("uWave SDR Setup")), wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX  | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN),
 m_oldSDRAddress(NULL),
 m_oldSDRControlPort(NULL),
 m_sdrAddress(NULL),

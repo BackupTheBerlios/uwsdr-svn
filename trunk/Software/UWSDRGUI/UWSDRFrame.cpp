@@ -218,7 +218,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	bool ret = m_sdr->open();
 	if (!ret) {
 		::wxLogError(_("Problems communicating with the SDR"));
-		::wxMessageBox(_("Problems communicating with the SDR"), _("µWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("Problems communicating with the SDR"), _("uWave SDR Error"), wxICON_ERROR);
 		Close(true);
 		return;
 	}
@@ -330,36 +330,36 @@ void CUWSDRFrame::createMenu()
 	m_menu->AppendSeparator();
 	m_menu->Append(wxID_HELP,            _("Help\tF1"));
 	m_menu->Append(MENU_HARDWARE_INFO,   _("Hardware Info"));
-	m_menu->Append(wxID_ABOUT,           _("About µWave SDR"));
+	m_menu->Append(wxID_ABOUT,           _("About uWave SDR"));
 	m_menu->AppendSeparator();
 	m_menu->Append(wxID_EXIT,            _("Exit\tALT-F4"));
 }
 
 wxButton* CUWSDRFrame::createMenuButton(wxWindow* window)
 {
-	return new wxButton(window, MENU_BUTTON, _("Menu"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH, -1));
+	return new wxButton(window, MENU_BUTTON, _("Menu"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH, BUTTON_HEIGHT));
 }
 
 wxSizer* CUWSDRFrame::createVFOButtons(wxWindow* window)
 {
 	wxSizer* grid = new wxGridSizer(2);
 
-	wxButton* vfoA = new wxButton(window, VFO_AB_BUTTON, _("VFO A/B"), wxDefaultPosition, wxSize(-1, -1));
+	wxButton* vfoA = new wxButton(window, VFO_AB_BUTTON, _("VFO A/B"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
 	grid->Add(vfoA);
 
-	wxButton* vfoB = new wxButton(window, VFO_CD_BUTTON, _("VFO C/D"), wxDefaultPosition, wxSize(-1, -1));
+	wxButton* vfoB = new wxButton(window, VFO_CD_BUTTON, _("VFO C/D"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
 	grid->Add(vfoB);
 
-	wxButton* swap = new wxButton(window, VFO_SWAP_BUTTON, _("SWAP"), wxDefaultPosition, wxSize(-1, -1));
+	wxButton* swap = new wxButton(window, VFO_SWAP_BUTTON, _("SWAP"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
 	grid->Add(swap);
 
-	wxButton* split = new wxButton(window, VFO_SPLIT_BUTTON, _("SPLIT"), wxDefaultPosition, wxSize(-1, -1));
+	wxButton* split = new wxButton(window, VFO_SPLIT_BUTTON, _("SPLIT"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
 	grid->Add(split);
 
-	wxButton* shift1 = new wxButton(window, VFO_SHIFT1_BUTTON, _("SHIFT -"), wxDefaultPosition, wxSize(-1, -1));
+	wxButton* shift1 = new wxButton(window, VFO_SHIFT1_BUTTON, _("SHIFT -"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
 	grid->Add(shift1);
 
-	wxButton* shift2 = new wxButton(window, VFO_SHIFT2_BUTTON, _("SHIFT +"), wxDefaultPosition, wxSize(-1, -1));
+	wxButton* shift2 = new wxButton(window, VFO_SHIFT2_BUTTON, _("SHIFT +"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
 	grid->Add(shift2);
 
 	grid->SetSizeHints(window);
@@ -378,10 +378,10 @@ wxSizer* CUWSDRFrame::createMHzButtons(wxWindow* window)
 {
 	wxSizer* grid = new wxGridSizer(2);
 
-	wxButton* mhzMinus = new wxButton(window, FREQ_MHZ1_BUTTON, _("MHz -"), wxDefaultPosition, wxSize(-1, -1));
+	wxButton* mhzMinus = new wxButton(window, FREQ_MHZ1_BUTTON, _("MHz -"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
 	grid->Add(mhzMinus);
 
-	wxButton* mhzPlus = new wxButton(window, FREQ_MHZ2_BUTTON, _("MHz +"), wxDefaultPosition, wxSize(-1, -1));
+	wxButton* mhzPlus = new wxButton(window, FREQ_MHZ2_BUTTON, _("MHz +"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
 	grid->Add(mhzPlus);
 
 	grid->SetSizeHints(window);
@@ -794,7 +794,7 @@ void CUWSDRFrame::onTXButton(wxCommandEvent& event)
 	wxASSERT(m_parameters != NULL);
 
 	if (!m_txOn && m_parameters->m_hardwareReceiveOnly) {
-		::wxMessageBox(_("This SDR is only a receiver!"), _("µWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("This SDR is only a receiver!"), _("uWave SDR Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -1075,7 +1075,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 				bool ret = m_dsp->setRecord(m_record);
 				if (!ret) {
 					m_record = false;
-					::wxMessageBox(_("Cannot open the sound file for recording"), _("µWave SDR Error"), wxICON_ERROR);
+					::wxMessageBox(_("Cannot open the sound file for recording"), _("uWave SDR Error"), wxICON_ERROR);
 				}
 			}
 			break;
@@ -1114,7 +1114,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 				"GUI:\t\tJonathan Naylor, ON/G4KLX\n"
 				"DTTSP:\t\tBob McGwier, N4HY\n"
 				"\t\tFrank Brickle, AB2KT"),
-				_("About µWave SDR"),
+				_("About uWave SDR"),
 				wxICON_INFORMATION);
 			break;
  		case wxID_EXIT:
@@ -1128,13 +1128,13 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 void CUWSDRFrame::sdrCommandNAK(int id)
 {
 	::wxLogError(_("Received a NAK from the SDR"));
-	::wxMessageBox(_("Received a NAK from the SDR"), _("µWave SDR Error"), wxICON_ERROR);
+	::wxMessageBox(_("Received a NAK from the SDR"), _("uWave SDR Error"), wxICON_ERROR);
 }
 
 void CUWSDRFrame::sdrConnectionLost(int id)
 {
 	::wxLogError(_("Connection to the SDR lost"));
-	::wxMessageBox(_("Connection to the SDR lost"), _("µWave SDR Error"), wxICON_ERROR);
+	::wxMessageBox(_("Connection to the SDR lost"), _("uWave SDR Error"), wxICON_ERROR);
 
 	Close(true);
 }
@@ -1162,7 +1162,7 @@ void CUWSDRFrame::onTimer(wxTimerEvent& event)
 
 			m_dsp->getSpectrum(m_spectrum, m_parameters->m_spectrumPos);
 			m_spectrumDisplay->showSpectrum(m_spectrum, 0.0F);
-         m_spectrumDisplay->getFreqPick();
+			m_spectrumDisplay->getFreqPick();
 		}
 	} else {
 		int meter = m_sMeter->getRXMeter();
@@ -1176,9 +1176,9 @@ void CUWSDRFrame::onTimer(wxTimerEvent& event)
 			m_dsp->getSpectrum(m_spectrum, m_parameters->m_spectrumPos);
 			m_spectrumDisplay->showSpectrum(m_spectrum, -95.0F);
 
-         float offset = m_spectrumDisplay->getFreqPick();
-         if (offset != 0.0F)
-            freqChange(offset);
+			float offset = m_spectrumDisplay->getFreqPick();
+			if (offset != 0.0F)
+				freqChange(offset);
 		}
 	}
 }
@@ -1198,8 +1198,8 @@ void CUWSDRFrame::onClose(wxCloseEvent& event)
 		return;
 	}
 
-	int reply = ::wxMessageBox(_("Do you want to exit µWave SDR"),
-		_("Exit µW SDR"),
+	int reply = ::wxMessageBox(_("Do you want to exit uWave SDR"),
+		_("Exit uWSDR"),
 		wxOK | wxCANCEL | wxICON_QUESTION);
 
 	if (reply == wxOK) {
