@@ -68,7 +68,15 @@ void CFreqDial::drawDial()
 	wxMemoryDC dc;
 	dc.SelectObject(*m_bitmap);
 
+// This needs fixing XXX
+#if defined(__WXMSW__)
+	wxColour bgColour(0xD0, 0xD0, 0xD0);
+#elif defined(__WXGTK__)
 	wxColour bgColour = wxSystemSettings::GetColour(wxSYS_COLOUR_BACKGROUND);
+#else
+#error "Unknown platform"
+#endif
+
 	wxBrush brush0(bgColour);
 	wxPen pen0(bgColour);
 

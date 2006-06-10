@@ -78,8 +78,8 @@ All of the knobs should work except for the squelch knob.
 Changes to the GUISetup program because of the way that sound cards are handled.
 
 
-Prototype 5 - May 2006
-===========================
+Prototype 5 - 10 June 2006
+==========================
 
 Lots of rework on the DttSP code, into C++ and cleanups.
 
@@ -98,3 +98,11 @@ Squelch knob works.
 Moved all of the source code to Berlios and put it under SVN.
 
 DttSP is now statically linked, not a DLL.
+
+Use standard PortAudio bindings.
+
+Linux/Unix version now works.
+
+Icons for all the programs.
+
+Windows versions exists as a proper install program.

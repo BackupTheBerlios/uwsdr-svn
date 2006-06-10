@@ -93,5 +93,8 @@ UWSDRPreferences.o: UWSDRPreferences.cpp UWSDRPreferences.h SDRParameters.h UWSD
 VolumeDial.o:	VolumeDial.cpp VolumeDial.h DialInterface.h UWSDRDefs.h
 		$(CC) $(CFLAGS) -c VolumeDial.cpp
 
+install:	UWSDR
+		install -g bin -o root -m 0775 UWSDR $(BINDIR)
+
 clean:
 		rm -f core UWSDR *.o *~ *.bak

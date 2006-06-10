@@ -14,5 +14,8 @@ GUISetupApp.o:	GUISetupApp.cpp GUISetupApp.h GUISetupFrame.h GUISetup.xpm
 GUISetupFrame.o: GUISetupFrame.cpp GUISetupFrame.h
 		$(CC) $(CFLAGS) -c GUISetupFrame.cpp
 
+install:	GUISetup
+		install -g bin -o root -m 0775 GUISetup $(BINDIR)
+
 clean:
 		rm -f core GUISetup *.o *~ *.bak

@@ -8,6 +8,9 @@ export LIBS := $(shell wx-config --libs)
 
 export CFLAGS := -O2 -Wall -march=pentium $(shell wx-config --cxxflags)
 
+export BINDIR  := /usr/local/bin
+export DATADIR := /usr/local/share/uwsdr
+
 all:		GUISetup/GUISetup SDREmulator/SDREmulator SDRSetup/SDRSetup UWSDRGUI/UWSDR
 
 GUISetup/GUISetup:
@@ -24,6 +27,13 @@ UWSDRGUI/UWSDR:	DttSP++/DttSP.a
 
 DttSP++/DttSP.a:
 		make -C DttSP++
+
+install:
+		make -C GUISetup install
+		make -C SDREmulator install
+		make -C SDRSetup install
+		make -C UWSDRGUI install
+		make -C meta install
 
 clean:
 		rm -f core *~ *.bak

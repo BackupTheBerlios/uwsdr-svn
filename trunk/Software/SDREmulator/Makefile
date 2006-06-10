@@ -16,5 +16,8 @@ SDREmulatorFrame.o:	SDREmulatorFrame.cpp SDREmulatorFrame.h
 Frequency.o:	../UWSDRGUI/Frequency.cpp ../UWSDRGUI/Frequency.h
 		$(CC) $(CFLAGS) -c ../UWSDRGUI/Frequency.cpp
 
+install:	SDREmulator
+		install -g bin -o root -m 0775 SDREmulator $(BINDIR)
+
 clean:
 		rm -f core SDREmulator *.o *~ *.bak
