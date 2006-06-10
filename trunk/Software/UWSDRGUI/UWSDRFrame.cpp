@@ -1078,7 +1078,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 			}
 			break;
 		case wxID_HELP:
-			::wxGetApp().showHelp(_("UWSDR"));
+			::wxGetApp().showHelp(wxT("UWSDR"));
 			break;
 		case MENU_HARDWARE_INFO: {
 				wxString stepSize;

@@ -20,6 +20,7 @@
 #define	UWSDRApp_H
 
 #include <wx/wx.h>
+#include <wx/html/helpctrl.h>
 
 #include "UWSDRFrame.h"
 #include "SDRParameters.h"
@@ -45,9 +46,13 @@ class CUWSDRApp : public wxApp {
 	virtual void OnAssert(const wxChar* file, int line, const wxChar* cond, const wxChar* msg);
 #endif
 
+    protected:
+	virtual wxString getHelpDir();
+
     private:
 	CUWSDRFrame*          m_frame;
 	CSDRParameters*       m_parameters;
+	wxHtmlHelpController* m_help;
 };
 
 DECLARE_APP(CUWSDRApp)

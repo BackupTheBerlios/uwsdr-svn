@@ -31,6 +31,7 @@ END_EVENT_TABLE()
 CUWSDRPreferences::CUWSDRPreferences(wxWindow* parent, int id, CSDRParameters* parameters) :
 wxDialog(parent, id, wxString(_("uWave SDR Preferences"))),
 m_parameters(parameters),
+m_noteBook(NULL),
 m_maxRXFreq(NULL),
 m_minRXFreq(NULL),
 m_maxTXFreq(NULL),
@@ -67,23 +68,23 @@ m_txIQGain(NULL)
 {
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
-	wxNotebook* noteBook = new wxNotebook(this, -1);
+	m_noteBook = new wxNotebook(this, -1);
 
-	noteBook->AddPage(createFrequencyTab(noteBook), _("Frequencies"), true);
+	m_noteBook->AddPage(createFrequencyTab(m_noteBook), _("Frequencies"), true);
 
-	noteBook->AddPage(createShiftTab(noteBook), _("Shift"), false);
+	m_noteBook->AddPage(createShiftTab(m_noteBook), _("Shift"), false);
 
-	noteBook->AddPage(createModeTab(noteBook), _("Modes"), false);
+	m_noteBook->AddPage(createModeTab(m_noteBook), _("Modes"), false);
 
-	noteBook->AddPage(createStepTab(noteBook), _("Step Size"), false);
+	m_noteBook->AddPage(createStepTab(m_noteBook), _("Step Size"), false);
 
-	noteBook->AddPage(createRXDSPTab(noteBook), _("RX DSP"), false);
+	m_noteBook->AddPage(createRXDSPTab(m_noteBook), _("RX DSP"), false);
 
-	noteBook->AddPage(createTXDSPTab(noteBook), _("TX DSP"), false);
+	m_noteBook->AddPage(createTXDSPTab(m_noteBook), _("TX DSP"), false);
 
-	noteBook->AddPage(createIQTab(noteBook), _("I + Q"), false);
+	m_noteBook->AddPage(createIQTab(m_noteBook), _("I + Q"), false);
 
-	mainSizer->Add(noteBook, 1, wxALL | wxGROW, BORDER_SIZE);
+	mainSizer->Add(m_noteBook, 1, wxALL | wxGROW, BORDER_SIZE);
 
 	mainSizer->Add(CreateButtonSizer(wxHELP | wxOK | wxCANCEL), 0, wxALL | wxALIGN_RIGHT, BORDER_SIZE);
 
@@ -352,7 +353,35 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 
 void CUWSDRPreferences::onHelp(wxCommandEvent& event)
 {
-	::wxGetApp().showHelp(_("Preferences"));
+	wxASSERT(m_noteBook != NULL);
+
+	int page = m_noteBook->GetSelection();
+	if (page == -1)
+		return;
+
+	switch (page) {
+		case 0:
+			::wxGetApp().showHelp(wxT("PrefFreq"));
+			break;
+		case 1:
+			::wxGetApp().showHelp(wxT("PrefShift"));
+			break;
+		case 2:
+			::wxGetApp().showHelp(wxT("PrefModes"));
+			break;
+		case 3:
+			::wxGetApp().showHelp(wxT("PrefStepSize"));
+			break;
+		case 4:
+			::wxGetApp().showHelp(wxT("PrefRXDSP"));
+			break;
+		case 5:
+			::wxGetApp().showHelp(wxT("PrefTXDSP"));
+			break;
+		case 6:
+			::wxGetApp().showHelp(wxT("PrefIQ"));
+			break;
+	}
 }
 
 wxPanel* CUWSDRPreferences::createFrequencyTab(wxNotebook* noteBook)

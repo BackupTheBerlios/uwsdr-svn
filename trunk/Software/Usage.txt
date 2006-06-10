@@ -19,7 +19,7 @@ VFO C/D - Selects VFO C or D to be the primary VFO. This information will be ref
 
 Swap - Swaps the values in VFO A and VFO B or VFO C and VFO D, depesning on which VFO is the current VFO.
 
-SPLIT - This will make the SDR receive on the frequency set by the main VFO selected by the user and transmit on the other VFO. The VFO in use as well as the SPLIT status is always displayed in the information panel.
+SPLIT - This will make the SDR receive on the frequency set by the main VFO selected by the user and transmit on the other VFO. The VFO in use as well as the SPLIT status is always displayed in the information panel. The splits available are TX A RX B, RX B TX A, TX C RX D and TX D RX C.
 
 SHIFT - - Subtracts a shift to the current VFO on transmit for accessing repeaters. This shift is set in the preferences panels. The SPLIT status is shown in the information panel.
 
@@ -33,7 +33,9 @@ MHz + - Adds one Megahertz from the current VFO frequency.
 
 The frequency display attempts to replicate that authentic black box experience.
 
-The spectrum display will eventually show a range of frequencies round the current operating frequency. The actual width seen will depend on the tuning steps of the hardware and the sample rate.
+The spectrum display shows a range of frequencies round the current operating frequency. The actual width seen will depend on the tuning steps of the hardware and the sample rate. It may also be used to view the signal after the filter. The display may be a standard spectrum display as well as a waterfall, the rate that it is refreshed can be changed also. This is done because the spectrum display is rather heavy on resources and may be a problem on older computers. All of these options are available by right clicking the mouse when over the spectrum display.
+
+It is possible to tune the SDR via the mouse and spectrum display by pointing and clicking with the left hand mouse button.
 
 Mode - Sets the SDR (actually the DSP code, the SDR knows nothing about the mode), to one of  CW Narrow, CW Wide , USB, LSB, FM and even AM. The setting of the mode can also affect the speed of tuning and the filter bandwidth, see the entries for Speed and Filter below.
 
@@ -47,7 +49,7 @@ RIT Knob - This is the knob that controls the actual RIT value. It can move betw
 
 TRANSMIT - This is the push-to-talk switch for the SDR. Pressing it will potentially cause the frequency display to change, as well as a nice red TRANSMIT appearing in the information box.
 
-S Meter - This is a pretty good replication of a real S Meter. It'll probably be calibrated correctly too!
+S Meter - This is a pretty good replication of a real S Meter. It'll probably be calibrated correctly too! This may be used to sample the levels at different locations within the transmitter and receiver, these are selected by clicking the right hand mouse button within the S meter window.
 
 Mic Gain, Power, AF Gain and Squelch Knobs - These knobs operate in the same manner as the RIT knob described above.
 

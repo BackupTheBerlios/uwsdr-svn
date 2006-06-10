@@ -44,7 +44,11 @@ bool CSDRHelpApp::OnInit()
 
 	m_help = new wxHtmlHelpController();
 
-	// m_help->SetIcon(wxIcon(SDRHelp_xpm));
+	wxFileName fileName;
+	fileName.AssignDir(getHelpDir());
+	fileName.SetFullName(wxT("test.zip"));		// XXX
+
+	m_help->AddBook(fileName);
 
 	m_help->DisplayContents();
 
@@ -56,4 +60,28 @@ int CSDRHelpApp::OnExit()
 	delete m_help;
 
 	return 0;
+}
+
+wxString CSDRHelpApp::getHelpDir()
+{
+#if defined(__WXMSW__)
+	wxConfig* config = new wxConfig(wxT("UWSDR"));
+	wxASSERT(config != NULL);
+
+	wxString dir;
+	bool ret = config->Read(wxT("/InstPath"), &dir);
+
+	if (!ret) {
+		delete config;
+		return wxEmptyString;
+	}
+
+	delete config;
+
+	return dir;
+#elif defined(__WXGTK__)
+	return DATA_DIR;
+#else
+#error "Unknown platform"
+#endif
 }

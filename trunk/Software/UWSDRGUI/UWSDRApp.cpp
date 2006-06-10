@@ -18,6 +18,7 @@
 
 #include <wx/config.h>
 #include <wx/cmdline.h>
+#include <wx/fs_zip.h>
 
 #include "UWSDRApp.h"
 #include "UWSDRDefs.h"
@@ -89,7 +90,8 @@ IMPLEMENT_APP(CUWSDRApp)
 CUWSDRApp::CUWSDRApp() :
 wxApp(),
 m_frame(NULL),
-m_parameters(NULL)
+m_parameters(NULL),
+m_help(NULL)
 {
 	m_parameters = new CSDRParameters();
 }
@@ -106,6 +108,15 @@ bool CUWSDRApp::OnInit()
 
 	wxLog* logger = new CLog(m_parameters->m_name + ".log");
 	wxLog::SetActiveTarget(logger);
+
+	wxFileSystem::AddHandler(new wxZipFSHandler);
+	m_help = new wxHtmlHelpController();
+
+	wxFileName fileName;
+	fileName.AssignDir(getHelpDir());
+	fileName.SetFullName(wxT("test.zip"));		// XXX
+
+	m_help->AddBook(fileName);
 
 	::wxLogMessage(_("Starting ") + VERSION);
 	::wxLogMessage(_("Using configuration: ") + m_parameters->m_name);
@@ -189,6 +200,8 @@ int CUWSDRApp::OnExit()
 	::wxLogMessage(_("Ending uWave SDR"));
 
 	writeConfig();
+
+	delete m_help;
 
 	return 0;
 }
@@ -519,6 +532,33 @@ void CUWSDRApp::writeConfig()
 
 void CUWSDRApp::showHelp(const wxString& chapter)
 {
+	wxASSERT(m_help != NULL);
+
+	m_help->Display(chapter);
+}
+
+wxString CUWSDRApp::getHelpDir()
+{
+#if defined(__WXMSW__)
+	wxConfig* config = new wxConfig(APPNAME);
+	wxASSERT(config != NULL);
+
+	wxString dir;
+	bool ret = config->Read(wxT("/InstPath"), &dir);
+
+	if (!ret) {
+		delete config;
+		return wxEmptyString;
+	}
+
+	delete config;
+
+	return dir;
+#elif defined(__WXGTK__)
+	return DATA_DIR;
+#else
+#error "Unknown platform"
+#endif
 }
 
 #ifdef __WXDEBUG__

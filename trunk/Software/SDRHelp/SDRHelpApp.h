@@ -32,6 +32,9 @@ class CSDRHelpApp : public wxApp {
 	virtual bool OnInit();
 	virtual int  OnExit();
 
+    protected:
+	virtual wxString getHelpDir();
+
     private:
 	wxHtmlHelpController* m_help;
 };

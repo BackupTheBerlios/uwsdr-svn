@@ -1,4 +1,5 @@
-BINDIR=/usr/local/bin
+export BINDIR  := /usr/local/bin
+export DATADIR := /usr/local/share/uwsdr
 
 export CC := $(shell wx-config --cxx)
 
@@ -6,10 +7,7 @@ export CC := $(shell wx-config --cxx)
 
 export LIBS := $(shell wx-config --libs)
 
-export CFLAGS := -O2 -Wall -march=pentium $(shell wx-config --cxxflags)
-
-export BINDIR  := /usr/local/bin
-export DATADIR := /usr/local/share/uwsdr
+export CFLAGS := -O2 -Wall -march=pentium -DDATA_DIR=$(DATADIR) -DBIN_DIR=$(BINDIR) $(shell wx-config --cxxflags)
 
 all:		GUISetup/GUISetup SDREmulator/SDREmulator SDRSetup/SDRSetup UWSDRGUI/UWSDR
 
