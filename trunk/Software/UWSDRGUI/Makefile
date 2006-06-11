@@ -87,7 +87,7 @@ UWSDRFrame.o:	UWSDRFrame.cpp UWSDRFrame.h ControlInterface.h DialInterface.h DSP
 		UWSDRApp.h UWSDRControl.h UWSDRData.h UWSDRDefs.h UWSDRPreferences.h UWSDR.xpm
 		$(CC) $(CFLAGS) -c UWSDRFrame.cpp
 
-UWSDRPreferences.o: UWSDRPreferences.cpp UWSDRPreferences.h SDRParameters.h UWSDRApp.h UWSDRDefs.h
+UWSDRPreferences.o: UWSDRPreferences.cpp UWSDRPreferences.h DSPControl.h SDRParameters.h UWSDRApp.h UWSDRDefs.h
 		$(CC) $(CFLAGS) -c UWSDRPreferences.cpp
 
 VolumeDial.o:	VolumeDial.cpp VolumeDial.h DialInterface.h UWSDRDefs.h

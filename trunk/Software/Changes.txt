@@ -106,3 +106,15 @@ Linux/Unix version now works.
 Icons for all the programs.
 
 Windows versions exists as a proper install program.
+
+
+Prototype 0.5.1 - June 2006
+==============================
+
+Real-time update of I+Q values from the preferences.
+
+Upgraded the Help page handling, but no help files yet.
+
+Used new wxWidgets DLL that fixes combo box bug.
+
+GUISetup now only asks for one audio device.

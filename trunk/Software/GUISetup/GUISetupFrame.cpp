@@ -50,8 +50,7 @@ wxFrame(NULL, -1, wxString(_("uWave SDR GUI Setup")), wxDefaultPosition, wxDefau
 m_name(NULL),
 m_filename(NULL),
 m_apiChoice(NULL),
-m_inChoice(NULL),
-m_outChoice(NULL),
+m_devChoice(NULL),
 m_address(NULL),
 m_control(NULL),
 m_data(NULL),
@@ -94,23 +93,14 @@ m_startMenu(NULL)
 	wxStaticText* dummy2 = new wxStaticText(panel, -1, wxEmptyString);
 	panelSizer->Add(dummy2, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label4 = new wxStaticText(panel, -1, _("Input Device:"));
+	wxStaticText* label4 = new wxStaticText(panel, -1, _("Audio Device:"));
 	panelSizer->Add(label4, 0, wxALL, BORDER_SIZE);
 
-	m_inChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
-	panelSizer->Add(m_inChoice, 0, wxALL, BORDER_SIZE);
+	m_devChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	panelSizer->Add(m_devChoice, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* dummy3 = new wxStaticText(panel, -1, wxEmptyString);
 	panelSizer->Add(dummy3, 0, wxALL, BORDER_SIZE);
-
-	wxStaticText* label5 = new wxStaticText(panel, -1, _("Output Device:"));
-	panelSizer->Add(label5, 0, wxALL, BORDER_SIZE);
-
-	m_outChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
-	panelSizer->Add(m_outChoice, 0, wxALL, BORDER_SIZE);
-
-	wxStaticText* dummy4 = new wxStaticText(panel, -1, wxEmptyString);
-	panelSizer->Add(dummy4, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label6 = new wxStaticText(panel, -1, _("SDR IP Address:"));
 	panelSizer->Add(label6, 0, wxALL, BORDER_SIZE);
@@ -230,19 +220,13 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 		return;
 	}
 
-	int inChoice = m_inChoice->GetSelection();
-	if (inChoice == wxNOT_FOUND) {
-		::wxMessageBox(_("The Input Device is not allowed to be empty"));
+	int devChoice = m_devChoice->GetSelection();
+	if (devChoice == wxNOT_FOUND) {
+		::wxMessageBox(_("The Audio Device is not allowed to be empty"));
 		return;
 	}
-	long audioInDev = long(m_inChoice->GetClientData(inChoice));
-
-	int outChoice = m_outChoice->GetSelection();
-	if (outChoice == wxNOT_FOUND) {
-		::wxMessageBox(_("The Output Device is not allowed to be empty"));
-		return;
-	}
-	long audioOutDev = long(m_outChoice->GetClientData(outChoice));
+	long audioInDev  = m_inDevs.at(devChoice);
+	long audioOutDev = m_outDevs.at(devChoice);
 
 	wxString ipAddress = m_address->GetValue();
 	if (ipAddress.IsEmpty()) {
@@ -350,7 +334,6 @@ void CGUISetupFrame::readConfig(const wxString& name)
 	wxString fileNameKey    = wxT("/") + name + wxT("/FileName");
 	wxString audioAPIKey    = wxT("/") + name + wxT("/AudioAPI");
 	wxString audioOutDevKey = wxT("/") + name + wxT("/AudioOutDev");
-	wxString audioInDevKey  = wxT("/") + name + wxT("/AudioInDev");
 	wxString ipAddressKey   = wxT("/") + name + wxT("/IPAddress");
 	wxString controlPortKey = wxT("/") + name + wxT("/ControlPort");
 	wxString dataPortKey    = wxT("/") + name + wxT("/DataPort");
@@ -369,14 +352,7 @@ void CGUISetupFrame::readConfig(const wxString& name)
 	unsigned int i;
 	for (i = 0; i < m_outDevs.size(); i++)
 		if (m_outDevs.at(i) == outDev)
-			m_outChoice->SetSelection(i);
-
-	long inDev;
-	config->Read(audioInDevKey, &inDev);
-
-	for (i = 0; i < m_inDevs.size(); i++)
-		if (m_inDevs.at(i) == inDev)
-			m_inChoice->SetSelection(i);
+			m_devChoice->SetSelection(i);
 
 	config->Read(ipAddressKey, &text);
 	m_address->SetValue(text);
@@ -428,8 +404,7 @@ void CGUISetupFrame::enumerateAPI()
 
 void CGUISetupFrame::enumerateAudio(int api)
 {
-	wxASSERT(m_inChoice != NULL);
-	wxASSERT(m_outChoice != NULL);
+	wxASSERT(m_devChoice != NULL);
 
 	PaError error = ::Pa_Initialize();
 	if (error != paNoError) {
@@ -449,20 +424,16 @@ void CGUISetupFrame::enumerateAudio(int api)
 		const PaDeviceInfo* device = ::Pa_GetDeviceInfo(i);
 
 		if (device->maxInputChannels > 0 && device->hostApi == api) {
-			m_inChoice->Append(device->name, (void*)i);
+			m_devChoice->Append(device->name);
 			m_inDevs.push_back(i);
 		}
 
-		if (device->maxOutputChannels > 0 && device->hostApi == api) {
-			m_outChoice->Append(device->name, (void*)i);
+		if (device->maxOutputChannels > 0 && device->hostApi == api)
 			m_outDevs.push_back(i);
-		}
 	}
 
-	if (n > 0) {
-		m_inChoice->SetSelection(0);
-		m_outChoice->SetSelection(0);
-	}
+	if (n > 0)
+		m_devChoice->SetSelection(0);
 
 	::Pa_Terminate();
 }
@@ -626,7 +597,7 @@ void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 	file.Write(wxT("Name=") + name + wxT("\n"));
 	file.Write(wxT("Comment=\n"));
 	file.Write(wxT("Icon=UWSDR.png\n"));
-	file.Write(wxT("Exec=/usr/local/bin/UWSDR -s ") + name + wxT("\n"));
+	file.Write(wxT("Exec=") + BIN_DIR + wxT("/UWSDR -s ") + name + wxT("\n"));
 	file.Write(wxT("Path=.\n"));
 	file.Write(wxT("Terminal=false\n"));
 

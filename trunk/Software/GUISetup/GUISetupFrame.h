@@ -39,8 +39,7 @@ class CGUISetupFrame : public wxFrame {
 	wxComboBox* m_name;
 	wxTextCtrl* m_filename;
 	wxChoice*   m_apiChoice;
-	wxChoice*   m_inChoice;
-	wxChoice*   m_outChoice;
+	wxChoice*   m_devChoice;
 	wxTextCtrl* m_address;
 	wxTextCtrl* m_control;
 	wxTextCtrl* m_data;

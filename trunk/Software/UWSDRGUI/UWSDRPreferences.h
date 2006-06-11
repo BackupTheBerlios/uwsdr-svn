@@ -23,18 +23,22 @@
 #include <wx/spinctrl.h>
 
 #include "SDRParameters.h"
+#include "DSPControl.h"
+
 
 class CUWSDRPreferences : public wxDialog {
 
     public:
-	CUWSDRPreferences(wxWindow* parent, int id, CSDRParameters* parameters);
+	CUWSDRPreferences(wxWindow* parent, int id, CSDRParameters* parameters, CDSPControl* dsp);
 	virtual ~CUWSDRPreferences();
 
+	void onIQChanged(wxSpinEvent& event);
 	void onOK(wxCommandEvent& event);
 	void onHelp(wxCommandEvent& event);
 
     private:
 	CSDRParameters* m_parameters;
+	CDSPControl*    m_dsp;
 	wxNotebook*     m_noteBook;
 	wxTextCtrl*     m_maxRXFreq;
 	wxTextCtrl*     m_minRXFreq;

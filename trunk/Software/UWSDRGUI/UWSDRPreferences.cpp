@@ -23,14 +23,24 @@
 const int SPIN_WIDTH   = 75;
 const int SLIDER_WIDTH = 225;
 
+const int RXIQ_PHASE = 8763;
+const int RXIQ_GAIN  = 8764;
+const int TXIQ_PHASE = 8765;
+const int TXIQ_GAIN  = 8766;
+
 BEGIN_EVENT_TABLE(CUWSDRPreferences, wxDialog)
-	EVT_BUTTON(wxID_OK,   CUWSDRPreferences::onOK)
-	EVT_BUTTON(wxID_HELP, CUWSDRPreferences::onHelp)
+	EVT_SPINCTRL(RXIQ_PHASE, CUWSDRPreferences::onIQChanged)
+	EVT_SPINCTRL(RXIQ_GAIN,  CUWSDRPreferences::onIQChanged)
+	EVT_SPINCTRL(TXIQ_PHASE, CUWSDRPreferences::onIQChanged)
+	EVT_SPINCTRL(TXIQ_GAIN,  CUWSDRPreferences::onIQChanged)
+	EVT_BUTTON(wxID_OK,      CUWSDRPreferences::onOK)
+	EVT_BUTTON(wxID_HELP,    CUWSDRPreferences::onHelp)
 END_EVENT_TABLE()
 
-CUWSDRPreferences::CUWSDRPreferences(wxWindow* parent, int id, CSDRParameters* parameters) :
+CUWSDRPreferences::CUWSDRPreferences(wxWindow* parent, int id, CSDRParameters* parameters, CDSPControl* dsp) :
 wxDialog(parent, id, wxString(_("uWave SDR Preferences"))),
 m_parameters(parameters),
+m_dsp(dsp),
 m_noteBook(NULL),
 m_maxRXFreq(NULL),
 m_minRXFreq(NULL),
@@ -752,28 +762,28 @@ wxPanel* CUWSDRPreferences::createIQTab(wxNotebook* noteBook)
 	wxStaticText* label1 = new wxStaticText(panel, -1, _("Receive phase"));
 	sizer->Add(label1, 0, wxALL, BORDER_SIZE);
 
-	m_rxIQPhase = new wxSpinCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxSize(SPIN_WIDTH, -1));
+	m_rxIQPhase = new wxSpinCtrl(panel, RXIQ_PHASE, wxEmptyString, wxDefaultPosition, wxSize(SPIN_WIDTH, -1));
 	m_rxIQPhase->SetRange(-400, 400);
 	sizer->Add(m_rxIQPhase, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label3 = new wxStaticText(panel, -1, _("Transmit phase"));
 	sizer->Add(label3, 0, wxALL, BORDER_SIZE);
 
-	m_txIQPhase = new wxSpinCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxSize(SPIN_WIDTH, -1));
+	m_txIQPhase = new wxSpinCtrl(panel, TXIQ_PHASE, wxEmptyString, wxDefaultPosition, wxSize(SPIN_WIDTH, -1));
 	m_txIQPhase->SetRange(-400, 400);
 	sizer->Add(m_txIQPhase, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label2 = new wxStaticText(panel, -1, _("Receive gain"));
 	sizer->Add(label2, 0, wxALL, BORDER_SIZE);
 
-	m_rxIQGain = new wxSpinCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxSize(SPIN_WIDTH, -1));
+	m_rxIQGain = new wxSpinCtrl(panel, RXIQ_GAIN, wxEmptyString, wxDefaultPosition, wxSize(SPIN_WIDTH, -1));
 	m_rxIQGain->SetRange(-500, 500);
 	sizer->Add(m_rxIQGain, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label4 = new wxStaticText(panel, -1, _("Transmit gain"));
 	sizer->Add(label4, 0, wxALL, BORDER_SIZE);
 
-	m_txIQGain = new wxSpinCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxSize(SPIN_WIDTH, -1));
+	m_txIQGain = new wxSpinCtrl(panel, TXIQ_GAIN, wxEmptyString, wxDefaultPosition, wxSize(SPIN_WIDTH, -1));
 	m_txIQGain->SetRange(-500, 500);
 	sizer->Add(m_txIQGain, 0, wxALL, BORDER_SIZE);
 
@@ -787,4 +797,31 @@ wxPanel* CUWSDRPreferences::createIQTab(wxNotebook* noteBook)
 	panel->SetSizer(mainSizer);
 
 	return panel;
+}
+
+void CUWSDRPreferences::onIQChanged(wxSpinEvent& event)
+{
+	wxASSERT(m_rxIQPhase != NULL);
+	wxASSERT(m_txIQPhase != NULL);
+	wxASSERT(m_rxIQGain != NULL);
+	wxASSERT(m_txIQGain != NULL);
+	wxASSERT(m_dsp != NULL);
+
+	switch (event.GetId()) {
+		case RXIQ_PHASE:
+		case RXIQ_GAIN: {
+			int phase = m_rxIQPhase->GetValue();
+			int gain  = m_rxIQGain->GetValue();
+			m_dsp->setRXIAndQ(phase, gain);
+			break;
+		}
+
+		case TXIQ_PHASE:
+		case TXIQ_GAIN: {
+			int phase = m_txIQPhase->GetValue();
+			int gain  = m_txIQGain->GetValue();
+			m_dsp->setTXIAndQ(phase, gain);
+			break;
+		}
+	}
 }

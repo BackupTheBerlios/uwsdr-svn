@@ -256,13 +256,13 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_dsp = new CDSPControl(m_parameters->m_hardwareSampleRate, float(m_parameters->m_hardwareSampleRate) / 4.0F);
 
-	m_dsp->setTXReader(new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev));
-	// m_dsp->setTXReader(new CSignalReader(750, 0.0F, 0.5F));
+	// m_dsp->setTXReader(new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev));
+	m_dsp->setTXReader(new CSignalReader(750, 0.0F, 0.5F));
 	m_dsp->setTXWriter(new CNullWriter());
 
 	m_dsp->setRXReader(new CSignalReader(m_parameters->m_hardwareSampleRate / 4 + 1000, 4.77E-7F, 5E-7F));
-	m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
-	// m_dsp->setRXWriter(new CNullWriter());
+	// m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
+	m_dsp->setRXWriter(new CNullWriter());
 
 	m_dsp->Create();
 	m_dsp->Run();
@@ -1027,7 +1027,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 
 	switch (event.GetId()) {
 		case MENU_PREFERENCES: {
-				CUWSDRPreferences preferences(this, -1, m_parameters);
+				CUWSDRPreferences preferences(this, -1, m_parameters, m_dsp);
 				int reply = preferences.ShowModal();
 				if (reply == wxID_OK) {
 					normaliseMode();
@@ -1039,10 +1039,12 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 
 					m_dsp->setSP(m_parameters->m_spOn);
 					m_dsp->setSPValue(m_parameters->m_spValue);
-
-					m_dsp->setRXIAndQ(m_parameters->m_rxIQphase, m_parameters->m_rxIQgain);
-					m_dsp->setTXIAndQ(m_parameters->m_txIQphase, m_parameters->m_txIQgain);
 				}
+
+				// These may have been set in the preferences and then cancel pressed
+				// so reset them to the saved values
+				m_dsp->setRXIAndQ(m_parameters->m_rxIQphase, m_parameters->m_rxIQgain);
+				m_dsp->setTXIAndQ(m_parameters->m_txIQphase, m_parameters->m_txIQgain);
 			}
 			break;
 		case MENU_KEYPAD: {
