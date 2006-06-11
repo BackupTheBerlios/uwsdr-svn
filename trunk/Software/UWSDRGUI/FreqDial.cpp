@@ -70,7 +70,7 @@ void CFreqDial::drawDial()
 
 // This needs fixing XXX
 #if defined(__WXMSW__)
-	wxColour bgColour(0xD0, 0xD0, 0xD0);
+	wxColour bgColour(0xD4, 0xD0, 0xC8);
 #elif defined(__WXGTK__)
 	wxColour bgColour = wxSystemSettings::GetColour(wxSYS_COLOUR_BACKGROUND);
 #else

@@ -111,11 +111,11 @@ bool CUWSDRApp::OnInit()
 
 	wxFileSystem::AddHandler(new wxZipFSHandler);
 	m_help = new wxHtmlHelpController();
+	m_help->SetTitleFormat(_("uWave SDR Help: %s"));
 
 	wxFileName fileName;
 	fileName.AssignDir(getHelpDir());
-	fileName.SetFullName(wxT("test.zip"));		// XXX
-
+	fileName.SetFullName(wxT("UWSDR.zip"));
 	m_help->AddBook(fileName);
 
 	::wxLogMessage(_("Starting ") + VERSION);

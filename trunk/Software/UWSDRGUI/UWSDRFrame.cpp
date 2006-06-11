@@ -256,13 +256,13 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_dsp = new CDSPControl(m_parameters->m_hardwareSampleRate, float(m_parameters->m_hardwareSampleRate) / 4.0F);
 
-	// m_dsp->setTXReader(new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev));
-	m_dsp->setTXReader(new CSignalReader(750, 0.0F, 0.5F));
+	m_dsp->setTXReader(new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev));
+	// m_dsp->setTXReader(new CSignalReader(750, 0.0F, 0.5F));
 	m_dsp->setTXWriter(new CNullWriter());
 
 	m_dsp->setRXReader(new CSignalReader(m_parameters->m_hardwareSampleRate / 4 + 1000, 4.77E-7F, 5E-7F));
-	// m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
-	m_dsp->setRXWriter(new CNullWriter());
+	m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
+	// m_dsp->setRXWriter(new CNullWriter());
 
 	m_dsp->Create();
 	m_dsp->Run();

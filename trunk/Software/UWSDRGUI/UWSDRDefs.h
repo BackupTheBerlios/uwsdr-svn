@@ -20,7 +20,7 @@
 #define	UWSDRDefs_H
 
 // For the GUI
-const wxString VERSION     = wxT("uWave SDR 0.5");
+const wxString VERSION     = wxT("uWave SDR 0.5.1");
 const wxString REL_DATE    = wxT("10 June 2006");
 
 const wxString APPNAME     = wxT("UWSDR");

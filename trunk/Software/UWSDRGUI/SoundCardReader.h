@@ -25,6 +25,12 @@
 
 #include "portaudio.h"
 
+
+extern "C" {
+	int cCallback(const void* input, void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void* userData);
+}
+
+
 class CSoundCardReader : public IDataReader {
     public:
 	CSoundCardReader(int api, int dev);
@@ -43,8 +49,6 @@ class CSoundCardReader : public IDataReader {
 	IDataCallback* m_callback;
 	int            m_id;
 	PaStream*      m_stream;
-
-	static int cCallback(const void* input, void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *userData);
 };
 
 #endif

@@ -68,6 +68,9 @@ void CLog::DoLog(wxLogLevel level, const wxChar *msg, time_t timestamp)
 
 	DoLogString(message.c_str(), timestamp);
 
+	if (level == wxLOG_FatalError || level == wxLOG_Error)
+		m_file->Flush();
+
 	if (level == wxLOG_FatalError)
 		::abort();
 }
@@ -79,5 +82,4 @@ void CLog::DoLogString(const wxChar* msg, time_t timestamp)
 	wxASSERT(msg != NULL);
 
 	m_file->Write(msg);
-	// m_file->Flush();
 }
