@@ -71,7 +71,8 @@ class CSDRParameters {
 	int          m_agcCW;
 
 	int          m_filter;
-	int          m_filterFM;
+	int          m_filterFMW;
+	int          m_filterFMN;
 	int          m_filterAM;
 	int          m_filterSSB;
 	int          m_filterCWW;

@@ -97,8 +97,13 @@ void CDTTSPControl::setMode(int mode)
 		return;
 
 	switch (mode) {
-		case MODE_FM:
+		case MODE_FMW:
+			::SetMode(FMN);      // XXX FIXME
+         ::SetDeviation(5000.0F);
+			break;
+		case MODE_FMN:
 			::SetMode(FMN);
+         ::SetDeviation(2500.0F);
 			break;
 		case MODE_AM:
 			::SetMode(AM);
@@ -333,6 +338,12 @@ void CDTTSPControl::normaliseFilter()
 
 	int width = 0;
 	switch (m_filter) {
+		case FILTER_20000:
+			width = 20000;
+			break;
+		case FILTER_15000:
+			width = 15000;
+			break;
 		case FILTER_10000:
 			width = 10000;
 			break;
@@ -374,13 +385,16 @@ void CDTTSPControl::normaliseFilter()
 	int low  = 0;
 	int high = 0;
 	switch (m_mode) {
-		case MODE_FM:
+		case MODE_FMW:
+      case MODE_FMN:
 		case MODE_AM:
 			high = width / 2;
 			low  = -width / 2;
 			break;
 		case MODE_USB:
 			switch (m_filter) {
+				case FILTER_20000:
+				case FILTER_15000:
 				case FILTER_10000:
 				case FILTER_6000:
 				case FILTER_4000:
@@ -417,6 +431,8 @@ void CDTTSPControl::normaliseFilter()
 			break;
 		case MODE_LSB:
 			switch (m_filter) {
+				case FILTER_20000:
+				case FILTER_15000:
 				case FILTER_10000:
 				case FILTER_6000:
 				case FILTER_4000:
@@ -454,6 +470,8 @@ void CDTTSPControl::normaliseFilter()
 		case MODE_CWW:
 		case MODE_CWN:
 			switch (m_filter) {
+				case FILTER_20000:
+				case FILTER_15000:
 				case FILTER_10000:
 				case FILTER_6000:
 				case FILTER_4000:

@@ -120,3 +120,5 @@ Upgraded the Help page handling, but no help files yet.
 Used new wxWidgets DLL that fixes combo box bug on Windows.
 
 GUISetup now only asks for one audio device.
+
+Implementation of wide FM.

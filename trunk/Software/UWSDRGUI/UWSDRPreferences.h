@@ -48,7 +48,8 @@ class CUWSDRPreferences : public wxDialog {
 	wxChoice*       m_agcAM;
 	wxChoice*       m_agcSSB;
 	wxChoice*       m_agcCW;
-	wxChoice*       m_filterFM;
+	wxChoice*       m_filterFMW;
+	wxChoice*       m_filterFMN;
 	wxChoice*       m_filterAM;
 	wxChoice*       m_filterSSB;
 	wxChoice*       m_filterCWW;

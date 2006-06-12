@@ -2151,6 +2151,11 @@ Process_Scope (float *results, int numpoints)
     }
 }
 
+void
+SetDeviation (float value)
+{
+}
+
 float
 Calculate_Meters (METERTYPE mt)
 {

@@ -850,3 +850,8 @@ float Calculate_Meters(METERTYPE mt)
 
 	return returnval;
 }
+
+void SetDeviation(float value)
+{
+	// TODO FIXME XXX
+}

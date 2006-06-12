@@ -50,7 +50,8 @@ m_shift(NULL),
 m_agcAM(NULL),
 m_agcSSB(NULL),
 m_agcCW(NULL),
-m_filterFM(NULL),
+m_filterFMW(NULL),
+m_filterFMN(NULL),
 m_filterAM(NULL),
 m_filterSSB(NULL),
 m_filterCWW(NULL),
@@ -119,7 +120,8 @@ m_txIQGain(NULL)
 	m_agcSSB->SetSelection(m_parameters->m_agcSSB);
 	m_agcCW->SetSelection(m_parameters->m_agcCW);
 
-	m_filterFM->SetSelection(m_parameters->m_filterFM);
+	m_filterFMW->SetSelection(m_parameters->m_filterFMW);
+	m_filterFMN->SetSelection(m_parameters->m_filterFMN);
 	m_filterAM->SetSelection(m_parameters->m_filterAM);
 	m_filterSSB->SetSelection(m_parameters->m_filterSSB);
 	m_filterCWW->SetSelection(m_parameters->m_filterCWW);
@@ -327,7 +329,8 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 	m_parameters->m_agcSSB = m_agcSSB->GetSelection();
 	m_parameters->m_agcCW  = m_agcCW->GetSelection();
 
-	m_parameters->m_filterFM  = m_filterFM->GetSelection();
+	m_parameters->m_filterFMW = m_filterFMW->GetSelection();
+	m_parameters->m_filterFMN = m_filterFMN->GetSelection();
 	m_parameters->m_filterAM  = m_filterAM->GetSelection();
 	m_parameters->m_filterSSB = m_filterSSB->GetSelection();
 	m_parameters->m_filterCWW = m_filterCWW->GetSelection();
@@ -500,17 +503,29 @@ wxPanel* CUWSDRPreferences::createModeTab(wxNotebook* noteBook)
 	wxStaticText* labelD = new wxStaticText(panel, -1, _("AGC"));
 	sizer->Add(labelD, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label2 = new wxStaticText(panel, -1, _("FM"));
-	sizer->Add(label2, 0, wxALL, BORDER_SIZE);
+	wxStaticText* label2a = new wxStaticText(panel, -1, _("FM Wide"));
+	sizer->Add(label2a, 0, wxALL, BORDER_SIZE);
 
-	m_filterFM = createFilterChoice(panel);
-	sizer->Add(m_filterFM, 0, wxALL, BORDER_SIZE);
+	m_filterFMW = createFilterChoice(panel);
+	sizer->Add(m_filterFMW, 0, wxALL, BORDER_SIZE);
 
  	m_tuningFM = createTuningChoice(panel);
 	sizer->Add(m_tuningFM, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* dummy2 = new wxStaticText(panel, -1, wxEmptyString);
-	sizer->Add(dummy2, 0, wxALL, BORDER_SIZE);
+	wxStaticText* dummy2a = new wxStaticText(panel, -1, wxEmptyString);
+	sizer->Add(dummy2a, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* label2b = new wxStaticText(panel, -1, _("FM Narrow"));
+	sizer->Add(label2b, 0, wxALL, BORDER_SIZE);
+
+	m_filterFMN = createFilterChoice(panel);
+	sizer->Add(m_filterFMN, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* dummy2b = new wxStaticText(panel, -1, wxEmptyString);
+	sizer->Add(dummy2b, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* dummy2c = new wxStaticText(panel, -1, wxEmptyString);
+	sizer->Add(dummy2c, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label3 = new wxStaticText(panel, -1, _("AM"));
 	sizer->Add(label3, 0, wxALL, BORDER_SIZE);
@@ -585,6 +600,8 @@ wxChoice* CUWSDRPreferences::createFilterChoice(wxPanel* panel)
 {
 	wxChoice* filter = new wxChoice(panel, -1, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
 
+	filter->Append(wxT("20.0 kHz"));
+	filter->Append(wxT("15.0 kHz"));
 	filter->Append(wxT("10.0 kHz"));
 	filter->Append(wxT("6.0 kHz"));
 	filter->Append(wxT("4.0 kHz"));

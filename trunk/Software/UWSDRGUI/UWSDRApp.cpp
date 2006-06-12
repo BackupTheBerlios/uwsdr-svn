@@ -52,7 +52,8 @@ const wxString KEY_AGC_AM          = wxT("/AGCAM");
 const wxString KEY_AGC_SSB         = wxT("/AGCSSB");
 const wxString KEY_AGC_CW          = wxT("/AGCCW");
 const wxString KEY_FILTER          = wxT("/Filter");
-const wxString KEY_FILTER_FM       = wxT("/FilterFM");
+const wxString KEY_FILTER_FMW      = wxT("/FilterFMW");
+const wxString KEY_FILTER_FMN      = wxT("/FilterFMN");
 const wxString KEY_FILTER_AM       = wxT("/FilterAM");
 const wxString KEY_FILTER_SSB      = wxT("/FilterSSB");
 const wxString KEY_FILTER_CWW      = wxT("/FilterCWW");
@@ -255,7 +256,8 @@ bool CUWSDRApp::readConfig()
 	wxString keyStepVerySlow  = wxT("/") + m_parameters->m_name + KEY_STEP_VERY_SLOW;
 	wxString keyMode          = wxT("/") + m_parameters->m_name + KEY_MODE;
 	wxString keyFilter        = wxT("/") + m_parameters->m_name + KEY_FILTER;
-	wxString keyFilterFM      = wxT("/") + m_parameters->m_name + KEY_FILTER_FM;
+	wxString keyFilterFMW     = wxT("/") + m_parameters->m_name + KEY_FILTER_FMW;
+	wxString keyFilterFMN     = wxT("/") + m_parameters->m_name + KEY_FILTER_FMN;
 	wxString keyFilterAM      = wxT("/") + m_parameters->m_name + KEY_FILTER_AM;
 	wxString keyFilterSSB     = wxT("/") + m_parameters->m_name + KEY_FILTER_SSB;
 	wxString keyFilterCWW     = wxT("/") + m_parameters->m_name + KEY_FILTER_CWW;
@@ -350,7 +352,8 @@ bool CUWSDRApp::readConfig()
 	profile->Read(keyMode,             &m_parameters->m_mode, MODE_USB);
 
 	profile->Read(keyFilter,           &m_parameters->m_filter,    FILTER_AUTO);
-	profile->Read(keyFilterFM,         &m_parameters->m_filterFM,  FILTER_10000);
+	profile->Read(keyFilterFMW,        &m_parameters->m_filterFMW, FILTER_20000);
+	profile->Read(keyFilterFMN,        &m_parameters->m_filterFMN, FILTER_10000);
 	profile->Read(keyFilterAM,         &m_parameters->m_filterAM,  FILTER_6000);
 	profile->Read(keyFilterSSB,        &m_parameters->m_filterSSB, FILTER_2100);
 	profile->Read(keyFilterCWW,        &m_parameters->m_filterCWW, FILTER_2100);
@@ -442,7 +445,8 @@ void CUWSDRApp::writeConfig()
 	wxString keyStepVerySlow  = wxT("/") + m_parameters->m_name + KEY_STEP_VERY_SLOW;
 	wxString keyMode          = wxT("/") + m_parameters->m_name + KEY_MODE;
 	wxString keyFilter        = wxT("/") + m_parameters->m_name + KEY_FILTER;
-	wxString keyFilterFM      = wxT("/") + m_parameters->m_name + KEY_FILTER_FM;
+	wxString keyFilterFMW     = wxT("/") + m_parameters->m_name + KEY_FILTER_FMW;
+	wxString keyFilterFMN     = wxT("/") + m_parameters->m_name + KEY_FILTER_FMN;
 	wxString keyFilterAM      = wxT("/") + m_parameters->m_name + KEY_FILTER_AM;
 	wxString keyFilterSSB     = wxT("/") + m_parameters->m_name + KEY_FILTER_SSB;
 	wxString keyFilterCWW     = wxT("/") + m_parameters->m_name + KEY_FILTER_CWW;
@@ -498,7 +502,8 @@ void CUWSDRApp::writeConfig()
 	profile->Write(keyStepVerySlow,     m_parameters->m_stepVerySlow);
 	profile->Write(keyMode,             m_parameters->m_mode);
 	profile->Write(keyFilter,           m_parameters->m_filter);
-	profile->Write(keyFilterFM,         m_parameters->m_filterFM);
+	profile->Write(keyFilterFMW,        m_parameters->m_filterFMW);
+	profile->Write(keyFilterFMN,        m_parameters->m_filterFMN);
 	profile->Write(keyFilterAM,         m_parameters->m_filterAM);
 	profile->Write(keyFilterSSB,        m_parameters->m_filterSSB);
 	profile->Write(keyFilterCWW,        m_parameters->m_filterCWW);

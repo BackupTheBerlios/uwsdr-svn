@@ -414,7 +414,8 @@ wxSizer* CUWSDRFrame::createModeChoice(wxWindow* window)
 	m_mode->Append(_("USB"));
 	m_mode->Append(_("LSB"));
 	m_mode->Append(_("AM"));
-	m_mode->Append(_("FM"));
+	m_mode->Append(_("FM Narrow"));
+	m_mode->Append(_("FM Wide"));
 
 	sizer->Add(m_mode, 0, wxALL, BORDER_SIZE);
 	sizer->SetSizeHints(window);
@@ -428,6 +429,8 @@ wxSizer* CUWSDRFrame::createFilterChoice(wxWindow* window)
 
 	m_filter = new wxChoice(window, FILTER_CHOICE, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
 
+	m_filter->Append(wxT("20.0 kHz"));
+	m_filter->Append(wxT("15.0 kHz"));
 	m_filter->Append(wxT("10.0 kHz"));
 	m_filter->Append(wxT("6.0 kHz"));
 	m_filter->Append(wxT("4.0 kHz"));
@@ -965,9 +968,14 @@ void CUWSDRFrame::normaliseMode()
 	int filter = m_parameters->m_filter;
 
 	switch (m_parameters->m_mode) {
-		case MODE_FM:
+		case MODE_FMW:
 			if (filter == FILTER_AUTO)
-				filter = m_parameters->m_filterFM;
+				filter = m_parameters->m_filterFMW;
+			speed = m_parameters->m_vfoSpeedFM;
+			break;
+		case MODE_FMN:
+			if (filter == FILTER_AUTO)
+				filter = m_parameters->m_filterFMN;
 			speed = m_parameters->m_vfoSpeedFM;
 			break;
 		case MODE_AM:
