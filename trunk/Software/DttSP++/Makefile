@@ -1,20 +1,20 @@
 all:		DttSP.a
 
 OBJS :=	AGC.o AMDemod.o Compand.o CorrectIQ.o DCBlock.o FIR.o FMDemod.o FilterOVSV.o GraphicEQ.o Meter.o \
-	NoiseBlanker.o Oscillator.o Resample.o ResampleF.o SSBDemod.o Spectrum.o SpeechProc.o SpotTone.o \
+	NoiseBlanker.o Oscillator.o Resample.o ResampleF.o RLB.o SSBDemod.o Spectrum.o SpeechProc.o SpotTone.o \
 	Squelch.o Window.o banal.o bufvec.o lmadf.o ringb.o sdr.o sdrexport.o thunk.o update.o \
 	winmain.o
 
 DttSP.a:	$(OBJS)
 		ar rcs DttSP.a $(OBJS)
 
-AGC.o:		AGC.cpp AGC.h banal.h bufvec.h Complex.h DataTypes.h FromSys.h
+AGC.o:	AGC.cpp AGC.h banal.h bufvec.h Complex.h DataTypes.h FromSys.h
 		$(CC) $(CFLAGS) -c AGC.cpp
 
 AMDemod.o:	AMDemod.cpp AMDemod.h bufvec.h Complex.h DataTypes.h Demod.h FromSys.h
 		$(CC) $(CFLAGS) -c AMDemod.cpp
 
-Compand.o:	Compand.cpp Compand.h bufvec.h DataTypes.h FromSys.h
+Compand.o:	Compand.cpp Compand.h bufvec.h DataTypes.h FromSys.h RLB.h
 		$(CC) $(CFLAGS) -c Compand.cpp
 
 CorrectIQ.o: 	CorrectIQ.cpp CorrectIQ.h bufvec.h
@@ -23,7 +23,7 @@ CorrectIQ.o: 	CorrectIQ.cpp CorrectIQ.h bufvec.h
 DCBlock.o:	DCBlock.cpp DCBlock.h bufvec.h Complex.h DataTypes.h FromSys.h
 		$(CC) $(CFLAGS) -c DCBlock.cpp
 
-FIR.o:		FIR.cpp FIR.h banal.h bufvec.h Complex.h DataTypes.h FromSys.h Window.h
+FIR.o:	FIR.cpp FIR.h banal.h bufvec.h Complex.h DataTypes.h FromSys.h Window.h
 		$(CC) $(CFLAGS) -c FIR.cpp
 
 FMDemod.o:	FMDemod.cpp FMDemod.h banal.h bufvec.h Complex.h DataTypes.h Demod.h FromSys.h
@@ -50,13 +50,16 @@ Resample.o:	Resample.cpp Resample.h banal.h CXOps.h FIR.h
 ResampleF.o: 	ResampleF.cpp ResampleF.h banal.h FIR.h
 		$(CC) $(CFLAGS) -c ResampleF.cpp
 
+RLB.o: 	RLB.cpp RLB.h DataTypes.h
+		$(CC) $(CFLAGS) -c RLB.cpp
+
 SSBDemod.o:	SSBDemod.cpp SSBDemod.h bufvec.h Demod.h
 		$(CC) $(CFLAGS) -c SSBDemod.cpp
 
 Spectrum.o:	Spectrum.cpp Spectrum.h banal.h bufvec.h DataTypes.h FIR.h FromSys.h Window.h
 		$(CC) $(CFLAGS) -c Spectrum.cpp
 
-SpeechProc.o: 	SpeechProc.cpp SpeechProc.h banal.h bufvec.h Complex.h DataTypes.h FromSys.h
+SpeechProc.o: 	SpeechProc.cpp SpeechProc.h banal.h bufvec.h Complex.h DataTypes.h FromSys.h RLB.h
 		$(CC) $(CFLAGS) -c SpeechProc.cpp
 
 SpotTone.o:	SpotTone.cpp SpotTone.h bufvec.h DataTypes.h FromSys.h Oscillator.h

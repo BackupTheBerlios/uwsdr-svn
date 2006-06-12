@@ -1,7 +1,5 @@
-/* bufvec.h
+/* RLB.h
 
-defs for vector and buffer data structures and utilities
-   
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
@@ -33,40 +31,54 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
-#ifndef _bufvec_h
-#define _bufvec_h
+#ifndef _rlb_h
+#define _rlb_h
 
 #include "DataTypes.h"
-#include "Complex.h"
-#include "CXOps.h"
+#include <wx/wx.h>
 
 
-typedef struct {
-	COMPLEX* data;
-	unsigned int size, have;
-	bool mine;
-} CXB;
+class CRLB {
+    public:
+	CRLB(size_t size, REAL* data = NULL);
+	~CRLB();
 
-/* all these should be OK rhs or lhs */
+	size_t size() const
+	{
+		return m_size;
+	}
 
-#define CXBbase(p) ((p)->data)
-#define CXBdata(p, i) (CXBbase(p)[(i)])
-#define CXBreal(p, i) (CXBbase(p)[(i)].re)
-#define CXBimag(p, i) (CXBbase(p)[(i)].im)
-#define CXBsize(p) ((p)->size)
-#define CXBhave(p) ((p)->have)
-#define CXBmine(p) ((p)->mine)
+	size_t have() const
+	{
+		return m_have;
+	}
 
-extern COMPLEX *newvec_COMPLEX(unsigned int size);
-extern void delvec_COMPLEX(COMPLEX* buf);
+	void have(size_t have)
+	{
+		wxASSERT(have <= m_size);
 
-extern CXB* newCXB(unsigned int size, COMPLEX* base);
-extern void delCXB(CXB* p);
+		m_have = have;
+	}
 
-extern void CXBscl(CXB* buff, REAL scl);
-extern REAL CXBpeak(CXB* buff);
+	void set(size_t n, REAL val)
+	{
+		wxASSERT(n < m_have);
 
-extern REAL normalize_vec_REAL(REAL*, unsigned int n);
-extern REAL normalize_vec_COMPLEX(COMPLEX*, unsigned int n);
+		m_data[n] = val;
+	}
+
+	REAL get(size_t n) const
+	{
+		wxASSERT(n < m_have);
+
+		return m_data[n];
+	}
+
+    private:
+	size_t m_size;
+	REAL*  m_data;
+	size_t m_have;
+	bool   m_mine;
+};
 
 #endif

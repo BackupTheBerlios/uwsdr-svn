@@ -36,6 +36,7 @@ Bridgewater, NJ 08807
 
 #include "DataTypes.h"
 #include "bufvec.h"
+#include "RLB.h"
 
 
 // fac < 0: compression
@@ -55,7 +56,7 @@ class CCompand {
 	unsigned int m_npts;
 	unsigned int m_nend;
 	REAL         m_fac;
-	REAL*        m_tbl;
+	CRLB*        m_tbl;
 	CXB*         m_buff;
 
 	REAL lookup(REAL x);

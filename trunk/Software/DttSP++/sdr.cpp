@@ -314,6 +314,7 @@ void destroy_workspace()
   delete rx.am;
   delete rx.fm;
   delete rx.osc.gen;
+  delete rx.rit.gen;
   delete rx.filt;
   delete rx.iqfix;
   delCXB(rx.buf.o);

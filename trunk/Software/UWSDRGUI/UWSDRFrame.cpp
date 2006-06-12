@@ -234,11 +234,12 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	// Set the spectrum width depending on the step size and sample rate,
 	float lowFreq = float(m_parameters->m_hardwareSampleRate) / 4.0F -
-					float(m_parameters->m_hardwareStepSize) / 2.0F -
-					5000.0F;
+					float(m_parameters->m_hardwareStepSize) / 2.0F;
 	wxASSERT(lowFreq > 0.0F);
 
-	if (lowFreq >= 15000.0F)
+	if (lowFreq >= 20000.0F)
+		m_spectrumDisplay->setBandwidth(40000.0F);
+	else if (lowFreq >= 15000.0F)
 		m_spectrumDisplay->setBandwidth(30000.0F);
 	else if (lowFreq >= 12500.0F)
 		m_spectrumDisplay->setBandwidth(25000.0F);

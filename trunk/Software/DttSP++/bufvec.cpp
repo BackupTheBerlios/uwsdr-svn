@@ -43,20 +43,6 @@ Bridgewater, NJ 08807
 /*------------------------------------------------------------------------*/
 /* allocate/free just vectors */
 
-REAL* newvec_REAL(unsigned int size)
-{
-	REAL* p = new REAL[size];
-
-	::memset(p, 0x00, size * sizeof(REAL));
-
-	return p;
-}
-
-void delvec_REAL(REAL* vec)
-{
-	delete[] vec;
-}
-
 COMPLEX* newvec_COMPLEX(unsigned int size)
 {
 	COMPLEX* p = new COMPLEX[size];
@@ -114,37 +100,6 @@ void delCXB(CXB* p)
 	if (p != NULL) {
 		if (CXBmine(p))
 			delvec_COMPLEX(CXBbase(p));
-
-		delete p;
-	}
-}
-
-/*------------------------------------------------------------------------*/
-/* real */
-
-RLB* newRLB(unsigned int size, REAL* base)
-{
-	RLB* p = new RLB;
-
-	if (base != NULL) {
-		RLBbase(p) = base;
-		RLBmine(p) = false;
-	} else {
-		RLBbase(p) = newvec_REAL(size);
-		RLBmine(p) = true;
-	}
-
-	RLBsize(p) = size;
-	RLBhave(p) = 0;
-
-	return p;
-}
-
-void delRLB(RLB* p)
-{
-	if (p != NULL) {
-		if (RLBmine(p))
-			delvec_REAL(RLBbase(p));
 
 		delete p;
 	}

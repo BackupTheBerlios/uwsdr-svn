@@ -50,7 +50,7 @@ m_fac(0.0F)
 {
 	wxASSERT(spdat != NULL);
 
-	m_CG  = newRLB(size + 1, NULL);
+	m_CG  = new CRLB(size + 1);
 	m_buf = newCXB(size, spdat);
 
 	setCompression(maxCompression);
@@ -58,7 +58,7 @@ m_fac(0.0F)
 
 CSpeechProc::~CSpeechProc()
 {
-	delRLB(m_CG);
+	delete m_CG;
 	delCXB(m_buf);
 }
 
@@ -71,9 +71,12 @@ void CSpeechProc::setCompression(REAL compression)
 
 void CSpeechProc::process()
 {
+	wxASSERT(m_CG != NULL);
+	wxASSERT(m_buf != NULL);
+
 	unsigned int i;
 
-	if (m_maxGain == 1.0)
+	if (m_maxGain == 1.0F)
 		return;
 
 	// K was 0.4 in VB version, this value is better, perhaps due to filters that follow?
@@ -81,23 +84,22 @@ void CSpeechProc::process()
 	for (i = 0; i < m_size; i++)
 		r = max(r, Cmag(CXBdata(m_buf, i)));	// find the peak magnitude value in the sample buffer 
 
-	RLBdata(m_CG, 0) = m_lastCG;	// restore from last time
+	m_CG->set(0, m_lastCG);	// restore from last time
 
 	for (i = 1; i <= m_size; i++) {
 		REAL mag = Cmag(CXBdata(m_buf, i - 1));
 
-		if (mag != 0.0) {
-			RLBdata (m_CG, i) = RLBdata(m_CG, i - 1) * (1 - m_k) + (m_k * r / mag);	// Frerking's formula
+		if (mag != 0.0F) {
+			REAL val = m_CG->get(i - 1) * (1.0F - m_k) + (m_k * r / mag);	// Frerking's formula
 
-			if (RLBdata(m_CG, i) > m_maxGain)
-				RLBdata(m_CG, i) = m_maxGain;
+			m_CG->set(i, (val > m_maxGain) ? m_maxGain : val);
 		} else {
-			RLBdata(m_CG, i) = m_maxGain;
+			m_CG->set(i, m_maxGain);
 		}
 	}
 
-	m_lastCG = RLBdata(m_CG, m_size);	// save for next time 
+	m_lastCG = m_CG->get(m_size);	// save for next time 
 
 	for (i = 0; i < m_size; i++)	// multiply each sample by its gain constant 
-		CXBdata(m_buf, i) = Cscl(CXBdata(m_buf, i), REAL(RLBdata(m_CG, i) / (m_fac * ::pow(m_maxGain, 0.25F))));
+		CXBdata(m_buf, i) = Cscl(CXBdata(m_buf, i), REAL(m_CG->get(i) / (m_fac * ::pow(m_maxGain, 0.25F))));
 }

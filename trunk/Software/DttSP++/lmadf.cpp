@@ -47,13 +47,16 @@ LMSR* new_lmsr(CXB* signal,
 	lms->delay = delay;
 	lms->size = 512;
 	lms->mask = lms->size - 1;
-	lms->delay_line = newvec_REAL(lms->size);
+	lms->delay_line = new REAL[lms->size];
 	lms->adaptation_rate = adaptation_rate;
 	lms->leakage = leakage;
 	lms->adaptive_filter_size = adaptive_filter_size;
-	lms->adaptive_filter = newvec_REAL(128);
+	lms->adaptive_filter = new REAL[128];
 	lms->filter_type = filter_type;
 	lms->delay_line_ptr = 0;
+
+	::memset(lms->delay_line, 0x00, lms->size * sizeof(REAL));
+	::memset(lms->adaptive_filter, 0x00, 128 * sizeof(REAL));
 
 	return lms;
 }
@@ -61,8 +64,8 @@ LMSR* new_lmsr(CXB* signal,
 void del_lmsr(LMSR* lms)
 {
 	if (lms != NULL) {
-		delvec_REAL(lms->delay_line);
-		delvec_REAL(lms->adaptive_filter);
+		delete[] lms->delay_line;
+		delete[] lms->adaptive_filter;
 		delete lms;
 	}
 }
@@ -87,12 +90,12 @@ void del_lmsr(LMSR* lms)
 
 static void lmsr_adapt_i(LMSR* lms)
 {
-	REAL scl1 = REAL(1.0 - rate * leak);
+	REAL scl1 = REAL(1.0F - rate * leak);
 
 	for (int i = 0; i < ssiz; i++) {
 		dlay(dptr) = ssig(i);
-		REAL accum = 0.0;
-		REAL sum_sq = 0.0;
+		REAL accum = 0.0F;
+		REAL sum_sq = 0.0F;
 
 		int j;
 		for (j = 0; j < asiz; j++) {
@@ -118,12 +121,12 @@ static void lmsr_adapt_i(LMSR* lms)
 
 static void lmsr_adapt_n(LMSR* lms)
 {
-	REAL scl1 = REAL(1.0 - rate * leak);
+	REAL scl1 = REAL(1.0F - rate * leak);
 
 	for (int i = 0; i < ssiz; i++) {
 		dlay(dptr) = ssig(i);
-		REAL accum = 0.0;
-		REAL sum_sq = 0.0;
+		REAL accum = 0.0F;
+		REAL sum_sq = 0.0F;
 
 		int j;
 		for (j = 0; j < asiz; j++) {
@@ -165,11 +168,11 @@ void lmsr_adapt(LMSR* lms)
 void del_blms(BLMS* blms)
 {
 	if (blms != NULL) {
-		fftwf_destroy_plan(blms->Xplan);
-		fftwf_destroy_plan(blms->Yplan);
-		fftwf_destroy_plan(blms->Errhatplan);
-		fftwf_destroy_plan(blms->UPDplan);
-		fftwf_destroy_plan(blms->Wplan);
+		::fftwf_destroy_plan(blms->Xplan);
+		::fftwf_destroy_plan(blms->Yplan);
+		::fftwf_destroy_plan(blms->Errhatplan);
+		::fftwf_destroy_plan(blms->UPDplan);
+		::fftwf_destroy_plan(blms->Wplan);
 
 		delvec_COMPLEX(blms->update);
 		delvec_COMPLEX(blms->Update);

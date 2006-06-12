@@ -1,8 +1,8 @@
-/* SpeechProc.h
-   
-  This file is part of a program that implements a Software-Defined Radio.
+/* RLB.cpp
 
-Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
+This file is part of a program that implements a Software-Defined Radio.
+
+Copyright (C) 2004,2005,2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -31,32 +31,24 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
-#ifndef _speechproc_h
-#define _speechproc_h
-
-#include "DataTypes.h"
-#include "Complex.h"
-#include "bufvec.h"
 #include "RLB.h"
 
 
-class CSpeechProc {
-    public:
-	CSpeechProc(REAL k, REAL maxCompression, COMPLEX* spdat, unsigned int size);
-	virtual ~CSpeechProc();
+CRLB::CRLB(size_t size, REAL* data) :
+m_size(size),
+m_data(data),
+m_have(size),
+m_mine(false)
+{
+	if (data == NULL) {
+		m_data = new REAL[size];
+		::memset(m_data, 0x00, size * sizeof(REAL));
+		m_mine = true;
+	}
+}
 
-	virtual void setCompression(REAL compression);
-
-	virtual void process();
-
-    private:
-	unsigned int m_size;
-	CRLB*        m_CG;
-	CXB*         m_buf;
-	REAL         m_lastCG;
-	REAL         m_k;
-	REAL         m_maxGain;
-	REAL         m_fac;
-};
-
-#endif
+CRLB::~CRLB()
+{
+	if (m_mine)
+		delete[] m_data;
+}

@@ -52,7 +52,7 @@ m_buff(NULL)
 	wxASSERT(npts > 1);
 	wxASSERT(buff != NULL);
 
-	m_tbl  = newvec_REAL(npts);
+	m_tbl  = new CRLB(npts);
 	m_buff = newCXB(CXBsize(buff), CXBbase(buff));
 
 	setFactor(fac);
@@ -60,7 +60,7 @@ m_buff(NULL)
 
 CCompand::~CCompand()
 {
-	delvec_REAL(m_tbl);
+	delete m_tbl;
 	delCXB(m_buff);
 }
 
@@ -85,15 +85,17 @@ REAL CCompand::getFactor() const
 
 void CCompand::setFactor(REAL fac)
 {
+	wxASSERT(m_tbl != NULL);
+
 	if (fac == 0.0F) {	// just linear
 		for (unsigned int i = 0; i < m_npts; i++)
-			m_tbl[i] = REAL(i) / REAL(m_nend);
+			m_tbl->set(i, REAL(i) / REAL(m_nend));
 	} else {				// exponential
 		REAL del = fac / REAL(m_nend);
 		REAL scl = REAL(1.0F - ::exp(fac));
 
 		for (unsigned int i = 0; i < m_npts; i++)
-			m_tbl[i] = REAL((1.0 - ::exp(REAL(i) * del)) / scl);
+			m_tbl->set(i, REAL((1.0 - ::exp(REAL(i) * del)) / scl));
 	}
 
 	m_fac = fac;
@@ -101,18 +103,20 @@ void CCompand::setFactor(REAL fac)
 
 REAL CCompand::lookup(REAL x)
 {
-	if (x <= 0.0) 
+	wxASSERT(m_tbl != NULL);
+
+	if (x <= 0.0F) 
 		return 0.0F;
 
-	REAL d = x - REAL(int(x));
-	REAL y;
+	REAL d = x - REAL(int(x));		// XXX
 
 	unsigned int i = (unsigned int)(x * m_npts);
 
+	REAL y;
 	if (i < m_nend)
-		y = m_tbl[i] + d * (m_tbl[i + 1] - m_tbl[i]);
+		y = m_tbl->get(i) + d * (m_tbl->get(i + 1) - m_tbl->get(i));
 	else
-		y = m_tbl[m_nend];
+		y = m_tbl->get(m_nend);
 
 	return y / x;
 }
