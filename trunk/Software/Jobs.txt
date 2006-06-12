@@ -18,7 +18,6 @@ Write Help
 Upgrade SDREmulator for more commands and data sending/receiving
 Get transmit working
 Set of screenshots for all platforms
-Add wide FM
 
 
 Future

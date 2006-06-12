@@ -49,8 +49,9 @@ class CDSPControl : public wxThread, public IDataCallback {
 	virtual void setMode(int mode);
 	virtual void setFilter(int filter);
 	virtual void setAGC(int agc);
-   virtual void setDeviation(int dev);
+	virtual void setDeviation(int dev);
 	virtual void setTXAndFreq(bool transmit, float freq);
+	virtual void setRIT(float freq);
 
 	virtual void setNB(bool onOff);
 	virtual void setNBValue(unsigned int value);

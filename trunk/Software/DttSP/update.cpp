@@ -2156,6 +2156,11 @@ SetDeviation (float value)
 {
 }
 
+void
+SetRIT (float freq)
+{
+}
+
 float
 Calculate_Meters (METERTYPE mt)
 {

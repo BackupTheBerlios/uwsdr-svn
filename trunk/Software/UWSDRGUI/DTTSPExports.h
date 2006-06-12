@@ -95,6 +95,7 @@ extern void    SetDCBlock(bool setit);
 extern void    SetFilter(double low_frequency, double high_frequency, int taps, TRXMODE trx);
 extern void    Release_Update();
 extern void    SetOsc(double newfreq);
+extern void    SetRIT(double newfreq);
 extern void    SetTXOsc(double newfreq);
 extern void    SetNR(bool setit);
 extern void    SetBlkNR(bool setit);

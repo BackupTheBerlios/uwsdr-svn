@@ -29,6 +29,7 @@ m_filter(-1),
 m_mode(-1),
 m_rxFreq(99999.9F),
 m_txFreq(99999.9F),
+m_rit(99999.9F),
 m_transmit(false),
 m_agc(-1),
 m_deviation(-1),
@@ -148,6 +149,16 @@ void CDTTSPControl::setTXAndFreq(bool transmit, float freq)
 		m_rxFreq   = freq;
 		m_transmit = false;
 	}
+}
+
+void CDTTSPControl::setRIT(float freq)
+{
+	if (freq == m_rit)
+		return;
+
+	::SetRIT(freq);
+
+	m_rit = freq;
 }
 
 void CDTTSPControl::setAGC(int agc)

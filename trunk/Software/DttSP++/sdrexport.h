@@ -119,6 +119,10 @@ extern struct _rx
   CFilterOVSV* filt;
 
   struct {
+	COscillator* gen;
+  } rit;
+
+  struct {
     CNoiseBlanker* gen;
     bool flag;
   } nb;

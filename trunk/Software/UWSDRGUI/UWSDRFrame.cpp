@@ -277,6 +277,8 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_ritCtrl->SetValue(m_parameters->m_ritOn);
 	m_rit->setValue(m_parameters->m_ritFreq);
+	if (m_ritCtrl)
+		m_dsp->setRIT(float(m_parameters->m_ritFreq));
 
 	m_micGain->setValue(m_parameters->m_micGain);
 	m_dsp->setMicGain(m_parameters->m_micGain);
@@ -918,15 +920,18 @@ void CUWSDRFrame::normaliseFreq()
 	else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn)
 		freq = m_parameters->m_vfoC;
 
-	if (m_parameters->m_ritOn && !m_txOn)
-		freq += m_parameters->m_ritFreq;
-
 	if (m_txOn && m_parameters->m_vfoSplitShift == VFO_SHIFT_1)
 		freq -= m_parameters->m_shift;
 	if (m_txOn && m_parameters->m_vfoSplitShift == VFO_SHIFT_2)
 		freq += m_parameters->m_shift;
 
-	m_freqDisplay->setFrequency(freq);
+	if (m_parameters->m_ritOn && !m_txOn) {
+		m_dsp->setRIT(float(m_parameters->m_ritFreq));
+		m_freqDisplay->setFrequency(freq + m_parameters->m_ritFreq);
+	} else {
+		m_dsp->setRIT(0.0F);
+		m_freqDisplay->setFrequency(freq);
+	}
 
 	// Subtract the IF frequency
 	freq -= float(m_parameters->m_hardwareSampleRate) / 4.0F;

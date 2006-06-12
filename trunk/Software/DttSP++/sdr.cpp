@@ -95,10 +95,10 @@ static void setup_rx()
   rx.buf.o = newCXB(rx.filt->storeSize(), rx.filt->storePoint());
 
   /* conversion */
-  rx.osc.gen = new COscillator(-uni.samplerate / 4.0F,
-			  0.0,
-			  uni.samplerate);
+  rx.osc.gen = new COscillator(-uni.samplerate / 4.0F, 0.0, uni.samplerate);
 
+  // RIT
+  rx.rit.gen = new COscillator(0.0F, 0.0, uni.samplerate);
 
   rx.agc.gen = new CAGC(agcLONG,	// mode kept around for control reasons alone
 				    CXBbase (rx.buf.o),	// input buffer
@@ -497,6 +497,7 @@ static void do_rx_pre()
 	wxASSERT(rx.nb_sdrom.gen != NULL);
 	wxASSERT(rx.iqfix != NULL);
 	wxASSERT(rx.osc.gen != NULL);
+	wxASSERT(rx.rit.gen != NULL);
 	wxASSERT(rx.filt != NULL);
 	wxASSERT(rx.cpd.gen != NULL);
 	wxASSERT(rx.agc.gen != NULL);
@@ -517,6 +518,9 @@ static void do_rx_pre()
 
 	/* filtering, metering, spectrum, squelch, & AGC */
 	do_rx_spectrum(rx.buf.i, SPEC_PRE_FILT);
+
+	/* IF shift */
+	rx.rit.gen->mix(rx.buf.i);
 
 	if (rx.mode != SPEC) {
 		if (rx.tick == 0UL)

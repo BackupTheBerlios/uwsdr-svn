@@ -305,6 +305,13 @@ void CDSPControl::setTXAndFreq(bool transmit, float freq)
 		m_dttsp->setTXAndFreq(false, -(freq + m_centreFreq));
 }
 
+void CDSPControl::setRIT(float freq)
+{
+	wxASSERT(m_dttsp != NULL);
+
+	m_dttsp->setRIT(freq);
+}
+
 void CDSPControl::setNB(bool onOff)
 {
 	wxASSERT(m_dttsp != NULL);

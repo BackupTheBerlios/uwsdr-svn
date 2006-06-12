@@ -121,4 +121,6 @@ Used new wxWidgets DLL that fixes combo box bug on Windows.
 
 GUISetup now only asks for one audio device.
 
-Implementation of wide FM.
+Implementation of wide FM and selectable deviations; new wider filters also.
+
+RIT now doesn't move the spectrum display.

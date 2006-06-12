@@ -386,6 +386,13 @@ void SetOsc(double newfreq)
 	rx.osc.gen->setFrequency(newfreq);
 }
 
+void SetRIT(double newfreq)
+{
+	wxASSERT(rx.rit.gen != NULL);
+
+	rx.rit.gen->setFrequency(newfreq);
+}
+
 void SetTXOsc(double newfreq)
 {
 	wxASSERT(tx.osc.gen != NULL);
