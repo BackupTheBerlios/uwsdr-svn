@@ -245,7 +245,10 @@ extern struct _tx
 //------------------------------------------------------------------------
 
 typedef enum _runmode {
-  RUN_MUTE, RUN_PASS, RUN_PLAY, RUN_SWCH
+   RUN_MUTE,
+   RUN_PASS,
+   RUN_PLAY,
+   RUN_SWCH
 } RUNMODE;
 
 extern struct _top {
@@ -278,16 +281,6 @@ extern struct _top {
 
     size_t reset_size;
     size_t size;
-
-    struct {
-      int cb;
-
-      struct {
-	int i, o;
-      } rb;
-
-      int xr;
-    } blow;
   } jack;
 
   // update io

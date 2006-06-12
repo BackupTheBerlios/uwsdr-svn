@@ -38,6 +38,7 @@ Bridgewater, NJ 08807
 
 
 CFMDemod::CFMDemod(REAL samprate, REAL f_initial, REAL f_lobound, REAL f_hibound, REAL f_bandwid, unsigned int size, COMPLEX* ivec, COMPLEX* ovec) :
+m_samprate(samprate),
 m_size(size),
 m_ibuf(NULL),
 m_obuf(NULL),
@@ -60,7 +61,7 @@ m_cvt(0.0F)
 	m_ibuf = newCXB(size, ivec);
 	m_obuf = newCXB(size, ovec);
 
-	REAL fac = REAL(TWOPI / samprate);
+	REAL fac = TWOPI / samprate;
 
 	m_pllFreqF = f_initial * fac;
 	m_pllFreqL = f_lobound * fac;
@@ -70,13 +71,35 @@ m_cvt(0.0F)
 	m_pllAlpha = m_iirAlpha * 0.3F;	/* pll bandwidth */
 	m_pllBeta  = m_pllAlpha * m_pllAlpha * 0.25F;	/* second order term */
 
-	m_cvt = REAL(0.45F * samprate / (M_PI * f_bandwid));
+	m_cvt = 0.45F * samprate / (M_PI * f_bandwid);
 }
 
 CFMDemod::~CFMDemod()
 {
 	delCXB(m_ibuf);
 	delCXB(m_obuf);
+}
+
+void CFMDemod::setBandwidth(REAL f_lobound, REAL f_hibound)
+{
+	REAL fac = TWOPI / m_samprate;
+
+	m_pllFreqF = 0.0F;
+	m_pllFreqL = f_lobound * fac;
+	m_pllFreqH = f_hibound * fac;
+}
+
+void CFMDemod::setDeviation(REAL f_bandwid)
+{
+	REAL fac = TWOPI / m_samprate;
+
+	m_pllFreqF = 0.0F;
+
+	m_iirAlpha = f_bandwid * fac;	/* arm filter */
+	m_pllAlpha = m_iirAlpha * 0.3F;	/* pll bandwidth */
+	m_pllBeta  = m_pllAlpha * m_pllAlpha * 0.25F;	/* second order term */
+
+	m_cvt = 0.45F * m_samprate / (M_PI * f_bandwid);
 }
 
 void CFMDemod::demodulate()

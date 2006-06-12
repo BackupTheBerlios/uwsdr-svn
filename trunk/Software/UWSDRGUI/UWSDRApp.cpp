@@ -48,6 +48,8 @@ const wxString KEY_STEP_MEDIUM     = wxT("/StepMedium");
 const wxString KEY_STEP_SLOW       = wxT("/StepSlow");
 const wxString KEY_STEP_VERY_SLOW  = wxT("/StepVerySlow");
 const wxString KEY_MODE            = wxT("/Mode");
+const wxString KEY_DEV_FMW         = wxT("/DeviationFMW");
+const wxString KEY_DEV_FMN         = wxT("/DeviationFMN");
 const wxString KEY_AGC_AM          = wxT("/AGCAM");
 const wxString KEY_AGC_SSB         = wxT("/AGCSSB");
 const wxString KEY_AGC_CW          = wxT("/AGCCW");
@@ -246,6 +248,8 @@ bool CUWSDRApp::readConfig()
 	wxString keyVfoSpeedSSB   = wxT("/") + m_parameters->m_name + KEY_VFO_SPEED_SSB;
 	wxString keyVfoSpeedCWW   = wxT("/") + m_parameters->m_name + KEY_VFO_SPEED_CWW;
 	wxString keyVfoSpeedCWN   = wxT("/") + m_parameters->m_name + KEY_VFO_SPEED_CWN;
+	wxString keyDevFMW        = wxT("/") + m_parameters->m_name + KEY_DEV_FMW;
+	wxString keyDevFMN        = wxT("/") + m_parameters->m_name + KEY_DEV_FMN;
 	wxString keyAgcAM         = wxT("/") + m_parameters->m_name + KEY_AGC_AM;
 	wxString keyAgcSSB        = wxT("/") + m_parameters->m_name + KEY_AGC_SSB;
 	wxString keyAgcCW         = wxT("/") + m_parameters->m_name + KEY_AGC_CW;
@@ -338,6 +342,9 @@ bool CUWSDRApp::readConfig()
 	profile->Read(keyVfoSpeedSSB,      &m_parameters->m_vfoSpeedSSB, SPEED_SLOW);
 	profile->Read(keyVfoSpeedCWW,      &m_parameters->m_vfoSpeedCWW, SPEED_SLOW);
 	profile->Read(keyVfoSpeedCWN,      &m_parameters->m_vfoSpeedCWN, SPEED_VERYSLOW);
+
+	profile->Read(keyDevFMW,           &m_parameters->m_deviationFMW, DEVIATION_5000);
+	profile->Read(keyDevFMN,           &m_parameters->m_deviationFMN, DEVIATION_2500);
 
 	profile->Read(keyAgcAM,            &m_parameters->m_agcAM,  AGC_SLOW);
 	profile->Read(keyAgcSSB,           &m_parameters->m_agcSSB, AGC_SLOW);
@@ -435,6 +442,8 @@ void CUWSDRApp::writeConfig()
 	wxString keyVfoSpeedSSB   = wxT("/") + m_parameters->m_name + KEY_VFO_SPEED_SSB;
 	wxString keyVfoSpeedCWW   = wxT("/") + m_parameters->m_name + KEY_VFO_SPEED_CWW;
 	wxString keyVfoSpeedCWN   = wxT("/") + m_parameters->m_name + KEY_VFO_SPEED_CWN;
+	wxString keyDevFMW        = wxT("/") + m_parameters->m_name + KEY_DEV_FMW;
+	wxString keyDevFMN        = wxT("/") + m_parameters->m_name + KEY_DEV_FMN;
 	wxString keyAgcAM         = wxT("/") + m_parameters->m_name + KEY_AGC_AM;
 	wxString keyAgcSSB        = wxT("/") + m_parameters->m_name + KEY_AGC_SSB;
 	wxString keyAgcCW         = wxT("/") + m_parameters->m_name + KEY_AGC_CW;
@@ -492,6 +501,8 @@ void CUWSDRApp::writeConfig()
 	profile->Write(keyVfoSpeedSSB,      m_parameters->m_vfoSpeedSSB);
 	profile->Write(keyVfoSpeedCWW,      m_parameters->m_vfoSpeedCWW);
 	profile->Write(keyVfoSpeedCWN,      m_parameters->m_vfoSpeedCWN);
+	profile->Write(keyDevFMW,           m_parameters->m_deviationFMW);
+	profile->Write(keyDevFMN,           m_parameters->m_deviationFMN);
 	profile->Write(keyAgcAM,            m_parameters->m_agcAM);
 	profile->Write(keyAgcSSB,           m_parameters->m_agcSSB);
 	profile->Write(keyAgcCW,            m_parameters->m_agcCW);

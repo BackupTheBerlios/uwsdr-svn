@@ -35,6 +35,7 @@ class CDTTSPControl : public wxThread {
 	virtual void setMode(int mode);
 	virtual void setTXAndFreq(bool transmit, float freq);
 	virtual void setAGC(int agc);
+   virtual void setDeviation(int value);
 	virtual void setSquelch(unsigned int value);
 
 	virtual void setNB(bool onOff);
@@ -63,6 +64,7 @@ class CDTTSPControl : public wxThread {
 	float        m_rxFreq;
 	float        m_txFreq;
 	bool         m_transmit;
+   int          m_deviation;
 	int          m_agc;
 	bool         m_nb;
 	unsigned int m_nbValue;

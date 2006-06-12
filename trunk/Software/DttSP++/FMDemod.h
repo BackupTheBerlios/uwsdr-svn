@@ -45,9 +45,13 @@ class CFMDemod : public IDemod {
 	CFMDemod(REAL samprate, REAL f_initial, REAL f_lobound, REAL f_hibound, REAL f_bandwid, unsigned int size, COMPLEX* ivec, COMPLEX* ovec);
 	virtual ~CFMDemod();
 
+	virtual void setBandwidth(REAL f_lobound, REAL f_hibound);
+	virtual void setDeviation(REAL f_bandwid);
+
 	virtual void demodulate();
 
     private:
+	REAL         m_samprate;
 	unsigned int m_size;
 	CXB*         m_ibuf;
 	CXB*         m_obuf;

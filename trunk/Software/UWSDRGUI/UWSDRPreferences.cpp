@@ -47,6 +47,8 @@ m_minRXFreq(NULL),
 m_maxTXFreq(NULL),
 m_minTXFreq(NULL),
 m_shift(NULL),
+m_deviationFMW(NULL),
+m_deviationFMN(NULL),
 m_agcAM(NULL),
 m_agcSSB(NULL),
 m_agcCW(NULL),
@@ -115,6 +117,9 @@ m_txIQGain(NULL)
 	m_maxRXFreq->SetValue(m_parameters->m_maxReceiveFreq.getString());
 	m_minTXFreq->SetValue(m_parameters->m_minTransmitFreq.getString());
 	m_maxTXFreq->SetValue(m_parameters->m_maxTransmitFreq.getString());
+
+	m_deviationFMW->SetSelection(m_parameters->m_deviationFMW);
+	m_deviationFMN->SetSelection(m_parameters->m_deviationFMN);
 
 	m_agcAM->SetSelection(m_parameters->m_agcAM);
 	m_agcSSB->SetSelection(m_parameters->m_agcSSB);
@@ -325,6 +330,9 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 	m_parameters->m_minTransmitFreq = minTXFreq;
 	m_parameters->m_maxTransmitFreq = maxTXFreq;
 
+	m_parameters->m_deviationFMW  = m_deviationFMW->GetSelection();
+	m_parameters->m_deviationFMN = m_deviationFMN->GetSelection();
+
 	m_parameters->m_agcAM  = m_agcAM->GetSelection();
 	m_parameters->m_agcSSB = m_agcSSB->GetSelection();
 	m_parameters->m_agcCW  = m_agcCW->GetSelection();
@@ -405,8 +413,8 @@ wxPanel* CUWSDRPreferences::createFrequencyTab(wxNotebook* noteBook)
 
 	wxStaticText* label = new wxStaticText(panel, -1,
 		_("These are the highest and lowest transmit and receive frequencies that the SDR\n"
-		    "may use. They may not be outside of the limits set for the hardware. The\n"
-			"transmit frequency range must be within the receive frequency range."));
+		  "may use. They may not be outside of the limits set for the hardware. The\n"
+		  "transmit frequency range must be within the receive frequency range."));
 	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(2);
@@ -455,7 +463,7 @@ wxPanel* CUWSDRPreferences::createShiftTab(wxNotebook* noteBook)
 
 	wxStaticText* label = new wxStaticText(panel, -1,
 		_("This is the frequency shift that is invoked by the Shift + and Shift - buttons on\n"
-		    "the main panel."));
+		  "the main panel."));
 	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(2);
@@ -486,7 +494,8 @@ wxPanel* CUWSDRPreferences::createModeTab(wxNotebook* noteBook)
 
 	wxStaticText* label = new wxStaticText(panel, -1,
 		_("Set the filter bandwidth, tuning rate and AGC speed for each mode. The AGC\n"
-		    "speed for CW Wide also applies to CW Narrow."));
+		  "speed for CW Wide also applies to CW Narrow. The tuning speed for FM Wide\n"
+        "also applies to FM Narrow. The maximum FM deviation values may be set."));
 	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(4);
@@ -500,7 +509,7 @@ wxPanel* CUWSDRPreferences::createModeTab(wxNotebook* noteBook)
 	wxStaticText* labelC = new wxStaticText(panel, -1, _("Tuning"));
 	sizer->Add(labelC, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* labelD = new wxStaticText(panel, -1, _("AGC"));
+	wxStaticText* labelD = new wxStaticText(panel, -1, _("AGC/Deviation"));
 	sizer->Add(labelD, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label2a = new wxStaticText(panel, -1, _("FM Wide"));
@@ -512,8 +521,8 @@ wxPanel* CUWSDRPreferences::createModeTab(wxNotebook* noteBook)
  	m_tuningFM = createTuningChoice(panel);
 	sizer->Add(m_tuningFM, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* dummy2a = new wxStaticText(panel, -1, wxEmptyString);
-	sizer->Add(dummy2a, 0, wxALL, BORDER_SIZE);
+   m_deviationFMW = createDeviationChoice(panel);
+	sizer->Add(m_deviationFMW, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label2b = new wxStaticText(panel, -1, _("FM Narrow"));
 	sizer->Add(label2b, 0, wxALL, BORDER_SIZE);
@@ -524,8 +533,8 @@ wxPanel* CUWSDRPreferences::createModeTab(wxNotebook* noteBook)
 	wxStaticText* dummy2b = new wxStaticText(panel, -1, wxEmptyString);
 	sizer->Add(dummy2b, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* dummy2c = new wxStaticText(panel, -1, wxEmptyString);
-	sizer->Add(dummy2c, 0, wxALL, BORDER_SIZE);
+   m_deviationFMN = createDeviationChoice(panel);
+	sizer->Add(m_deviationFMN, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label3 = new wxStaticText(panel, -1, _("AM"));
 	sizer->Add(label3, 0, wxALL, BORDER_SIZE);
@@ -596,6 +605,19 @@ wxChoice* CUWSDRPreferences::createAGCChoice(wxPanel* panel)
 	return agc;
 }
 
+wxChoice* CUWSDRPreferences::createDeviationChoice(wxPanel* panel)
+{
+	wxChoice* dev = new wxChoice(panel, -1, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
+
+	dev->Append(_("6 kHz"));
+	dev->Append(_("5 kHz"));
+	dev->Append(_("3 kHz"));
+	dev->Append(_("2.5 kHz"));
+	dev->Append(_("2 kHz"));
+
+	return dev;
+}
+
 wxChoice* CUWSDRPreferences::createFilterChoice(wxPanel* panel)
 {
 	wxChoice* filter = new wxChoice(panel, -1, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
@@ -638,8 +660,8 @@ wxPanel* CUWSDRPreferences::createStepTab(wxNotebook* noteBook)
 
 	wxStaticText* label = new wxStaticText(panel, -1,
 		_("These are the tuning step sizes for the VFO knob. Using the concentric bands,\n"
-		    "these can be increased by 1x, 4x, and 9x. The actual tuning step size used for\n"
-		    "each mode is set in the Modes tab."));
+		  "these can be increased by 1x, 4x, and 9x. The actual tuning step size used for\n"
+		  "each mode is set in the Modes tab."));
 	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(2);

@@ -45,6 +45,8 @@ class CUWSDRPreferences : public wxDialog {
 	wxTextCtrl*     m_maxTXFreq;
 	wxTextCtrl*     m_minTXFreq;
 	wxTextCtrl*     m_shift;
+   wxChoice*       m_deviationFMW;
+   wxChoice*       m_deviationFMN;
 	wxChoice*       m_agcAM;
 	wxChoice*       m_agcSSB;
 	wxChoice*       m_agcCW;
@@ -85,6 +87,7 @@ class CUWSDRPreferences : public wxDialog {
 	wxPanel* createTXDSPTab(wxNotebook* noteBook);
 	wxPanel* createIQTab(wxNotebook* noteBook);
 
+	wxChoice* createDeviationChoice(wxPanel* panel);
 	wxChoice* createAGCChoice(wxPanel* panel);
 	wxChoice* createFilterChoice(wxPanel* panel);
 	wxChoice* createTuningChoice(wxPanel* panel);

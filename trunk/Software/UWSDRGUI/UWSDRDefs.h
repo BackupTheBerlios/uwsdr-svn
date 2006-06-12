@@ -122,6 +122,12 @@ const int FILTER_50        = 11;
 const int FILTER_25        = 12;
 const int FILTER_AUTO      = 13;
 
+const int DEVIATION_6000   = 0;
+const int DEVIATION_5000   = 1;
+const int DEVIATION_3000   = 2;
+const int DEVIATION_2500   = 3;
+const int DEVIATION_2000   = 4;
+
 const int AGC_FAST         = 0;
 const int AGC_MEDIUM       = 1;
 const int AGC_SLOW         = 2;

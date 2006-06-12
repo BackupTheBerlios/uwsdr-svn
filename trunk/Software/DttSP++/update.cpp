@@ -351,6 +351,7 @@ void SetFilter(double low_frequency, double high_frequency, int taps, TRXMODE tr
 {
 	wxASSERT(tx.filt != NULL);
 	wxASSERT(rx.filt != NULL);
+	wxASSERT(rx.fm != NULL);
 	wxASSERT(top.sync.upd.sem != NULL);
 
 	top.sync.upd.sem->Wait();
@@ -361,6 +362,7 @@ void SetFilter(double low_frequency, double high_frequency, int taps, TRXMODE tr
 			break;
 		case RX:
 			rx.filt->setFilter(low_frequency, high_frequency);
+			rx.fm->setBandwidth(low_frequency, high_frequency);
 			break;
 	}
 
@@ -853,5 +855,9 @@ float Calculate_Meters(METERTYPE mt)
 
 void SetDeviation(float value)
 {
-	// TODO FIXME XXX
+	wxASSERT(rx.fm != NULL);
+
+	tx.fm.cvtmod2freq = value * M_PI / uni.samplerate;
+
+	rx.fm->setDeviation(value);
 }

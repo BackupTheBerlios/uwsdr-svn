@@ -31,6 +31,7 @@ m_rxFreq(99999.9F),
 m_txFreq(99999.9F),
 m_transmit(false),
 m_agc(-1),
+m_deviation(-1),
 m_nb(false),
 m_nbValue(0),
 m_nb2(false),
@@ -98,12 +99,10 @@ void CDTTSPControl::setMode(int mode)
 
 	switch (mode) {
 		case MODE_FMW:
-			::SetMode(FMN);      // XXX FIXME
-         ::SetDeviation(5000.0F);
+			::SetMode(FMN);
 			break;
 		case MODE_FMN:
 			::SetMode(FMN);
-         ::SetDeviation(2500.0F);
 			break;
 		case MODE_AM:
 			::SetMode(AM);
@@ -175,6 +174,35 @@ void CDTTSPControl::setAGC(int agc)
 	}
 
 	m_agc = agc;
+}
+
+void CDTTSPControl::setDeviation(int dev)
+{
+	if (dev == m_deviation)
+		return;
+
+	switch (dev) {
+		case DEVIATION_6000:
+			::SetDeviation(6000.0F);
+			break;
+		case DEVIATION_5000:
+			::SetDeviation(5000.0F);
+			break;
+		case DEVIATION_3000:
+			::SetDeviation(3000.0F);
+			break;
+		case DEVIATION_2500:
+			::SetDeviation(2500.0F);
+			break;
+		case DEVIATION_2000:
+			::SetDeviation(2000.0F);
+			break;
+		default:
+			::wxLogError(_("Unknown Deviation value = %d"), dev);
+			return;
+	}
+
+	m_deviation = dev;
 }
 
 void CDTTSPControl::setNB(bool onOff)

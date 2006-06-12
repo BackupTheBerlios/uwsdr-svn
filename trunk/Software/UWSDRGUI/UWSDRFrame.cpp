@@ -965,17 +965,20 @@ void CUWSDRFrame::normaliseMode()
 	m_dsp->setMode(m_parameters->m_mode);
 
 	int speed  = -1;
+   int dev    = -1;
 	int filter = m_parameters->m_filter;
 
 	switch (m_parameters->m_mode) {
 		case MODE_FMW:
 			if (filter == FILTER_AUTO)
 				filter = m_parameters->m_filterFMW;
+         dev   = m_parameters->m_deviationFMW;
 			speed = m_parameters->m_vfoSpeedFM;
 			break;
 		case MODE_FMN:
 			if (filter == FILTER_AUTO)
 				filter = m_parameters->m_filterFMN;
+         dev   = m_parameters->m_deviationFMN;
 			speed = m_parameters->m_vfoSpeedFM;
 			break;
 		case MODE_AM:
@@ -1008,6 +1011,9 @@ void CUWSDRFrame::normaliseMode()
 	}
 
 	m_dsp->setFilter(filter);
+
+   if (dev != -1)
+      m_dsp->setDeviation(dev);
 
 	switch (speed) {
 		case SPEED_VERYFAST:
@@ -1164,8 +1170,6 @@ void CUWSDRFrame::onTimer(wxTimerEvent& event)
 		float val = m_dsp->getMeter(meter);
 
 		if (val != -200.0F) {
-			wxLogMessage("TX Meter = %f", val);
-
 			m_sMeter->setLevel(val * 94.0F);
 
 			m_dsp->getSpectrum(m_spectrum, m_parameters->m_spectrumPos);

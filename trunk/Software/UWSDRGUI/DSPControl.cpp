@@ -273,6 +273,13 @@ void CDSPControl::setAGC(int agc)
 	m_dttsp->setAGC(agc);
 }
 
+void CDSPControl::setDeviation(int dev)
+{
+	wxASSERT(m_dttsp != NULL);
+
+	m_dttsp->setDeviation(dev);
+}
+
 void CDSPControl::setTXAndFreq(bool transmit, float freq)
 {
 	wxASSERT(m_dttsp != NULL);

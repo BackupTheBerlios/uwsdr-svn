@@ -122,29 +122,29 @@ static void setup_rx()
 
   /* demods */
   rx.am = new CAMDemod(uni.samplerate,	// REAL samprate
-			 0.0,	// REAL f_initial
-			 -500.0,	// REAL f_lobound,
-			 500.0,	// REAL f_hibound,
-			 400.0,	// REAL f_bandwid,
-			 CXBsize (rx.buf.o),	// int size,
-			 CXBbase (rx.buf.o),	// COMPLEX *ivec,
-			 CXBbase (rx.buf.o),	// COMPLEX *ovec,
+			 0.0F,	// REAL f_initial
+			 -500.0F,	// REAL f_lobound,
+			 500.0F,	// REAL f_hibound,
+			 400.0F,	// REAL f_bandwid,
+			 CXBsize(rx.buf.o),	// int size,
+			 CXBbase(rx.buf.o),	// COMPLEX *ivec,
+			 CXBbase(rx.buf.o),	// COMPLEX *ovec,
 			 AMdet		// AM Mode AMdet == rectifier,
 			 );			// SAMdet == synchronous detector
   rx.fm = new CFMDemod(uni.samplerate,	// REAL samprate
-			 0.0,	// REAL f_initial
-			 -6000.0,	// REAL f_lobound
-			 6000.0,	// REAL f_hibound
-			 5000.0,	// REAL f_bandwid
-			 CXBsize (rx.buf.o),	// int size
-			 CXBbase (rx.buf.o),	// COMPLEX *ivec
-			 CXBbase (rx.buf.o));	// COMPLEX *ovec
+			 0.0F,	// REAL f_initial
+			 -6000.0F,	// REAL f_lobound
+			 6000.0F,	// REAL f_hibound
+			 5000.0F,	// REAL f_bandwid
+			 CXBsize(rx.buf.o),	// int size
+			 CXBbase(rx.buf.o),	// COMPLEX *ivec
+			 CXBbase(rx.buf.o));	// COMPLEX *ovec
 
   /* noise reduction */
-  rx.anf.gen = new_lmsr (rx.buf.o,	// CXB signal,
+  rx.anf.gen = new_lmsr(rx.buf.o,	// CXB signal,
 			    64,	// int delay,
-			    0.01f,	// REAL adaptation_rate,
-			    0.00001f,	// REAL leakage,
+			    0.01F,	// REAL adaptation_rate,
+			    0.00001F,	// REAL leakage,
 			    45,	// int adaptive_filter_size,
 			    LMADF_INTERFERENCE);
 
@@ -829,56 +829,65 @@ void process_samples(float* bufl, float* bufr, float* auxl, float* auxr, unsigne
 	unsigned int i;
 
 	switch (uni.mode.trx) {
+	    case RX:
+		// make copies of the input for all receivers
+		for (i = 0; i < n; i++) {
+			CXBimag(rx.buf.i, i) = bufl[i];
+			CXBreal(rx.buf.i, i) = bufr[i];
+		}
+	    CXBhave(rx.buf.i) = n;
 
-    case RX:
+		// prepare buffers for mixing
+		::memset(bufl, 0, n * sizeof(float));
+		::memset(bufr, 0, n * sizeof(float));
 
-     // make copies of the input for all receivers
-	 for (i = 0; i < n; i++)
-	    CXBimag (rx.buf.i, i) =
-		bufl[i], CXBreal (rx.buf.i, i) = bufr[i];
-	    CXBhave (rx.buf.i) = n;
-      // prepare buffers for mixing
-      memset ((char *) bufl, 0, n * sizeof (float));
-      memset ((char *) bufr, 0, n * sizeof (float));
+		// run the receiver
+	    do_rx();
+		rx.tick++;
 
-      // run all receivers
-	    do_rx (), rx.tick++;
 	    // mix
-	    for (i = 0; i < n; i++)
-	      bufl[i] += CXBimag (rx.buf.o, i),
-		bufr[i] += CXBreal (rx.buf.o, i);
-	    CXBhave (rx.buf.o) = n;
+		for (i = 0; i < n; i++) {
+			bufl[i] += CXBimag(rx.buf.o, i);
+			bufr[i] += CXBreal(rx.buf.o, i);
+		}
+		CXBhave(rx.buf.o) = n;
 
-      // late mixing of aux buffers
-      if (uni.mix.rx.flag)
-	for (i = 0; i < n; i++)
-	  bufl[i] += auxl[i] * uni.mix.rx.gain,
-	    bufr[i] += auxr[i] * uni.mix.rx.gain;
+		// late mixing of aux buffers
+		if (uni.mix.rx.flag) {
+			for (i = 0; i < n; i++) {
+				bufl[i] += auxl[i] * uni.mix.rx.gain;
+				bufr[i] += auxr[i] * uni.mix.rx.gain;
+			}
+		}
+		break;
 
-      break;
+	case TX:
+		// early mixing of aux buffers
+		if (uni.mix.tx.flag) {
+			for (i = 0; i < n; i++) {
+				bufl[i] += auxl[i] * uni.mix.tx.gain;
+				bufr[i] += auxr[i] * uni.mix.tx.gain;
+			}
+		}
 
-    case TX:
+		for (i = 0; i < n; i++) {
+			CXBimag(tx.buf.i, i) = bufl[i];
+			CXBreal(tx.buf.i, i) = bufr[i];
+		}
+		CXBhave(tx.buf.i) = n;
 
-      // early mixing of aux buffers
-      if (uni.mix.tx.flag)
-	for (i = 0; i < n; i++)
-	  bufl[i] += auxl[i] * uni.mix.tx.gain,
-	    bufr[i] += auxr[i] * uni.mix.tx.gain;
+		tx.norm = CXBpeak(tx.buf.i);
 
-      for (i = 0; i < n; i++)
-	CXBimag (tx.buf.i, i) = bufl[i], CXBreal (tx.buf.i, i) = bufr[i];
-      CXBhave (tx.buf.i) = n;
-      tx.norm = CXBpeak (tx.buf.i);
+		do_tx ();
+		tx.tick++;
 
-      do_tx (), tx.tick++;
-
-      for (i = 0; i < n; i++)
-	bufl[i] = CXBimag (tx.buf.o, i), bufr[i] =
-	  CXBreal (tx.buf.o, i);
-      CXBhave (tx.buf.o) = n;
-
-      break;
-    }
+		for (i = 0; i < n; i++) {
+			bufl[i] = CXBimag(tx.buf.o, i);
+			bufr[i] = CXBreal(tx.buf.o, i);
+		}
+		CXBhave(tx.buf.o) = n;
+		break;
+	}
 
 	uni.tick++;
 }
