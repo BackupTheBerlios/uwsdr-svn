@@ -159,6 +159,10 @@ SOURCE=.\ringb.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\RLB.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\sdr.cpp
 # End Source File
 # Begin Source File
@@ -308,6 +312,10 @@ SOURCE=.\ResampleF.h
 # Begin Source File
 
 SOURCE=.\ringb.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\RLB.h
 # End Source File
 # Begin Source File
 
