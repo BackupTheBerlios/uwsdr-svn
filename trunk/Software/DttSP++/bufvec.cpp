@@ -52,11 +52,6 @@ COMPLEX* newvec_COMPLEX(unsigned int size)
 	return p;
 }
 
-void delvec_COMPLEX(COMPLEX* vec)
-{
-	delete[] vec;
-}
-
 void CXBscl(CXB* buff, REAL scl)
 {
 	for (unsigned int i = 0; i < CXBhave(buff); i++)
@@ -99,7 +94,7 @@ void delCXB(CXB* p)
 {
 	if (p != NULL) {
 		if (CXBmine(p))
-			delvec_COMPLEX(CXBbase(p));
+			delete[] CXBbase(p);
 
 		delete p;
 	}
@@ -107,31 +102,6 @@ void delCXB(CXB* p)
 
 //========================================================================
 // return normalization constant
-
-REAL normalize_vec_REAL(REAL* v, unsigned int n)
-{
-	if (v != NULL && n > 0) {
-		REAL big = -MONDO;
-
-		for (unsigned int i = 0; i < n; i++) {
-			REAL a = abs(v[i]);
-			big = max(big, a);
-		}
-
-		if (big > 0.0) {
-			REAL scl = 1.0F / big;
-
-			for (unsigned int i = 0; i < n; i++)
-				v[i] *= scl;
-
-			return scl;
-		} else {
-			return 0.0F;
-		}
-	} else {
-		return 0.0F;
-	}
-}
 
 REAL normalize_vec_COMPLEX(COMPLEX* z, unsigned int n)
 {

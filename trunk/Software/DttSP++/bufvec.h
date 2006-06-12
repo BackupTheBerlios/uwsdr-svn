@@ -58,7 +58,6 @@ typedef struct {
 #define CXBmine(p) ((p)->mine)
 
 extern COMPLEX *newvec_COMPLEX(unsigned int size);
-extern void delvec_COMPLEX(COMPLEX* buf);
 
 extern CXB* newCXB(unsigned int size, COMPLEX* base);
 extern void delCXB(CXB* p);
@@ -66,7 +65,6 @@ extern void delCXB(CXB* p);
 extern void CXBscl(CXB* buff, REAL scl);
 extern REAL CXBpeak(CXB* buff);
 
-extern REAL normalize_vec_REAL(REAL*, unsigned int n);
 extern REAL normalize_vec_COMPLEX(COMPLEX*, unsigned int n);
 
 #endif

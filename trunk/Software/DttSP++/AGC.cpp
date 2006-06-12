@@ -95,7 +95,7 @@ m_fastHang(0)			//wa6ahl:  added to structure
 CAGC::~CAGC()
 {
 	delCXB(m_buff);
-	delvec_COMPLEX(m_circ);
+	delete[] m_circ;
 }
 
 // FIXME check braces

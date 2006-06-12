@@ -137,7 +137,7 @@ void CGraphicEQ::setEQ(REAL preamp, REAL gain0, REAL gain1, REAL gain2)
 	::fftwf_destroy_plan(ptmp);
 	::fftw_free(filtcoef);
 
-	delvec_COMPLEX(tmpcoef);
+	delete[] tmpcoef;
 }
 
 void CGraphicEQ::equalise()

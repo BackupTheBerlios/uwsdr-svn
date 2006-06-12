@@ -174,15 +174,15 @@ void del_blms(BLMS* blms)
 		::fftwf_destroy_plan(blms->UPDplan);
 		::fftwf_destroy_plan(blms->Wplan);
 
-		delvec_COMPLEX(blms->update);
-		delvec_COMPLEX(blms->Update);
-		delvec_COMPLEX(blms->What);
-		delvec_COMPLEX(blms->Xhat);
-		delvec_COMPLEX(blms->error);
-		delvec_COMPLEX(blms->Errhat);
-		delvec_COMPLEX(blms->Yhat);
-		delvec_COMPLEX(blms->y);
-		delvec_COMPLEX(blms->delay_line);
+		delete[] blms->update;
+		delete[] blms->Update;
+		delete[] blms->What;
+		delete[] blms->Xhat;
+		delete[] blms->error;
+		delete[] blms->Errhat;
+		delete[] blms->Yhat;
+		delete[] blms->y;
+		delete[] blms->delay_line;
 
 		delete blms;
 	}

@@ -37,7 +37,6 @@ Bridgewater, NJ 08807
 #include "DataTypes.h"
 #include "Complex.h"
 #include "bufvec.h"
-#include "RLB.h"
 
 
 class CSpeechProc {
@@ -51,7 +50,7 @@ class CSpeechProc {
 
     private:
 	unsigned int m_size;
-	CRLB*        m_CG;
+	REAL*        m_CG;
 	CXB*         m_buf;
 	REAL         m_lastCG;
 	REAL         m_k;

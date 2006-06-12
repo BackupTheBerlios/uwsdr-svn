@@ -52,15 +52,17 @@ m_buff(NULL)
 	wxASSERT(npts > 1);
 	wxASSERT(buff != NULL);
 
-	m_tbl  = new CRLB(npts);
 	m_buff = newCXB(CXBsize(buff), CXBbase(buff));
+
+	m_tbl  = new REAL[npts];
+	::memset(m_tbl, 0x00, npts * sizeof(REAL));
 
 	setFactor(fac);
 }
 
 CCompand::~CCompand()
 {
-	delete m_tbl;
+	delete[] m_tbl;
 	delCXB(m_buff);
 }
 
@@ -89,13 +91,13 @@ void CCompand::setFactor(REAL fac)
 
 	if (fac == 0.0F) {	// just linear
 		for (unsigned int i = 0; i < m_npts; i++)
-			m_tbl->set(i, REAL(i) / REAL(m_nend));
+			m_tbl[i] = REAL(i) / REAL(m_nend);
 	} else {				// exponential
 		REAL del = fac / REAL(m_nend);
 		REAL scl = REAL(1.0F - ::exp(fac));
 
 		for (unsigned int i = 0; i < m_npts; i++)
-			m_tbl->set(i, REAL((1.0 - ::exp(REAL(i) * del)) / scl));
+			m_tbl[i] = REAL((1.0 - ::exp(REAL(i) * del)) / scl);
 	}
 
 	m_fac = fac;
@@ -114,9 +116,9 @@ REAL CCompand::lookup(REAL x)
 
 	REAL y;
 	if (i < m_nend)
-		y = m_tbl->get(i) + d * (m_tbl->get(i + 1) - m_tbl->get(i));
+		y = m_tbl[i] + d * (m_tbl[i + 1] - m_tbl[i]);
 	else
-		y = m_tbl->get(m_nend);
+		y = m_tbl[m_nend];
 
 	return y / x;
 }
