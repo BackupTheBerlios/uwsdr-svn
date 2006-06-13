@@ -65,10 +65,10 @@ m_polyphase(false)
 	wxASSERT(timebuf != NULL);
 	wxASSERT(freqbuf != NULL);
 
-	::memset(CXBbase(m_accum), 0, 16 * m_size * sizeof(COMPLEX));
-	::memset(m_window, 0, 16 * m_size * sizeof(REAL));
-	::memset(timebuf,  0, m_size * sizeof(COMPLEX));
-	::memset(freqbuf,  0, m_size * sizeof(COMPLEX));
+	::memset(CXBbase(m_accum), 0x00, 16 * m_size * sizeof(COMPLEX));
+	::memset(m_window, 0x00, 16 * m_size * sizeof(REAL));
+	::memset(timebuf,  0x00, m_size * sizeof(COMPLEX));
+	::memset(freqbuf,  0x00, m_size * sizeof(COMPLEX));
 
 	m_timebuf = newCXB(m_size, timebuf);
 	m_freqbuf = newCXB(m_size, freqbuf);
@@ -130,7 +130,7 @@ void CSpectrum::setPolyphase(bool setit)
 			unsigned int i;
 
 			COMPLEX* fir = CFIR::lowpass(1.0F, REAL(m_size), 8 * m_size - 1);
-			::memset(m_window, 0, 8 * sizeof(REAL) * m_size);
+			::memset(m_window, 0x00, 8 * sizeof(REAL) * m_size);
 			for (i = 0; i < 8 * m_size - 1; i++)
 				m_window[i] = fir[i].re;
 			delete[] fir;
@@ -146,7 +146,7 @@ void CSpectrum::setPolyphase(bool setit)
 		} else {
 			m_polyphase = false;
 			m_mask = m_size - 1;
-			::memset(m_window, 0, sizeof(REAL) * m_size);
+			::memset(m_window, 0x00, sizeof(REAL) * m_size);
 			CWindow::create(m_winType, m_size - 1, m_window);
 		}
 

@@ -66,10 +66,10 @@ m_scale(0.0F)
 	wxASSERT(m_zivec != NULL);
 	wxASSERT(m_zovec != NULL);
 
-	::memset(m_zrvec, 0, fftLen * sizeof(COMPLEX));
-	::memset(m_zfvec, 0, fftLen * sizeof(COMPLEX));
-	::memset(m_zivec, 0, fftLen * sizeof(COMPLEX));
-	::memset(m_zovec, 0, fftLen * sizeof(COMPLEX));
+	::memset(m_zrvec, 0x00, fftLen * sizeof(COMPLEX));
+	::memset(m_zfvec, 0x00, fftLen * sizeof(COMPLEX));
+	::memset(m_zivec, 0x00, fftLen * sizeof(COMPLEX));
+	::memset(m_zovec, 0x00, fftLen * sizeof(COMPLEX));
 
 	// Prepare transforms for signal
 	m_pfwd = ::fftwf_plan_dft_1d(fftLen, (fftwf_complex *)m_zrvec, (fftwf_complex *)m_zivec, FFTW_FORWARD, m_pbits);
@@ -104,7 +104,7 @@ void CFilterOVSV::setFilter(REAL lowFreq, REAL highFreq)
 
 	COMPLEX* zcvec = (COMPLEX*)::fftw_malloc(fftLen * sizeof(COMPLEX));
 	wxASSERT(zcvec != NULL);
-	::memset(zcvec, 0, fftLen * sizeof(COMPLEX));
+	::memset(zcvec, 0x00, fftLen * sizeof(COMPLEX));
 
 	fftwf_plan ptmp = ::fftwf_plan_dft_1d(fftLen, (fftwf_complex *)zcvec, (fftwf_complex *)m_zfvec, FFTW_FORWARD, m_pbits);
 
@@ -119,7 +119,6 @@ void CFilterOVSV::setFilter(REAL lowFreq, REAL highFreq)
 	::fftwf_execute(ptmp);
 
 	::fftwf_destroy_plan(ptmp);
-
 	::fftw_free(zcvec);
 
 	delete[] coefs;
@@ -156,7 +155,7 @@ void CFilterOVSV::filter()
 
 void CFilterOVSV::reset()
 {
-	::memset(m_zrvec, 0, 2 * m_bufLen * sizeof(COMPLEX));
+	::memset(m_zrvec, 0x00, 2 * m_bufLen * sizeof(COMPLEX));
 }
 
 // Where to put next batch of samples to filter

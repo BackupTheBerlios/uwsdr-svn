@@ -38,9 +38,8 @@ Bridgewater, NJ 08807
 #include "DataTypes.h"
 #include "Complex.h"
 #include "bufvec.h"
-#include "Demod.h"
 
-class CFMDemod : public IDemod {
+class CFMDemod {
     public:
 	CFMDemod(REAL samprate, REAL f_initial, REAL f_lobound, REAL f_hibound, REAL f_bandwid, unsigned int size, COMPLEX* ivec, COMPLEX* ovec);
 	virtual ~CFMDemod();

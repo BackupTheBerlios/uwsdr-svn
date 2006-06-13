@@ -38,7 +38,6 @@ Bridgewater, NJ 08807
 #include "DataTypes.h"
 #include "Complex.h"
 #include "bufvec.h"
-#include "Demod.h"
 
 
 typedef enum {
@@ -46,7 +45,7 @@ typedef enum {
 	SAMdet
 } AMMode;
 
-class CAMDemod : public IDemod {
+class CAMDemod {
     public:
 	CAMDemod(REAL samprate, REAL f_initial, REAL f_lobound, REAL f_hibound, REAL f_bandwid, unsigned int size, COMPLEX* ivec, COMPLEX* ovec, AMMode mode);
 	virtual ~CAMDemod();

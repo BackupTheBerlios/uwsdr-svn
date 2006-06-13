@@ -37,10 +37,8 @@ Bridgewater, NJ 08807
 #include "DataTypes.h"
 
 typedef struct {
-	REAL re, im;
+	REAL re;
+	REAL im;
 } COMPLEX;
-
-#define c_re(x) ((x).re)
-#define c_im(x) ((x).im)
 
 #endif

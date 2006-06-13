@@ -49,7 +49,7 @@ m_hangTime(0)
 {
 	wxASSERT(sigbuf != NULL);
 
-	::memset(m_delay, 0, 8 * sizeof(COMPLEX));
+	::memset(m_delay, 0x00, 8 * sizeof(COMPLEX));
 }
 
 CNoiseBlanker::~CNoiseBlanker()

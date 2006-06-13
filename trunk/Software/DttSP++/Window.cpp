@@ -68,7 +68,7 @@ REAL* CWindow::create(Windowtype type, unsigned int size, REAL* window)
 
 	if (window == NULL)
 		window = new REAL[size];
-	::memset(window, 0, size * sizeof(REAL));
+	::memset(window, 0x00, size * sizeof(REAL));
 
 	switch (type) {
 		case RECTANGULAR_WINDOW:

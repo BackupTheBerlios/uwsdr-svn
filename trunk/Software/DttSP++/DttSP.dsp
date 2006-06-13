@@ -251,10 +251,6 @@ SOURCE=.\Defs.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Demod.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\FilterOVSV.h
 # End Source File
 # Begin Source File
@@ -284,10 +280,6 @@ SOURCE=.\local.h
 # Begin Source File
 
 SOURCE=.\Meter.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\Mod.h
 # End Source File
 # Begin Source File
 

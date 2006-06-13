@@ -180,7 +180,7 @@ static void setup_rx()
     );
   rx.spot.flag = false;
 
-  ::memset(&rx.squelch, 0, sizeof(rx.squelch));
+  ::memset(&rx.squelch, 0x00, sizeof(rx.squelch));
   rx.squelch.thresh = -150.0;
   rx.squelch.power = 0.0;
   rx.squelch.flag = rx.squelch.running = rx.squelch.set = false;
@@ -242,7 +242,7 @@ static void setup_tx()
   tx.grapheq.flag = false;
 
 
-  ::memset(&tx.squelch, 0, sizeof(tx.squelch));
+  ::memset(&tx.squelch, 0x00, sizeof(tx.squelch));
   tx.squelch.thresh = -40.0;
   tx.squelch.power = 0.0;
   tx.squelch.flag = false;
@@ -433,13 +433,13 @@ static void do_squelch()
 	CXBdata (rx.buf.o, i) =
 	  Cscl (CXBdata (rx.buf.o, i), (REAL) (1.0 - (REAL) i / m));
 
-      memset ((void *) (CXBbase (rx.buf.o) + m), 0, n * sizeof (COMPLEX));
+      memset ((void *) (CXBbase (rx.buf.o) + m), 0x00, n * sizeof (COMPLEX));
       rx.squelch.running = true;
 
     }
   else
     memset ((void *) CXBbase (rx.buf.o),
-	    0, CXBhave (rx.buf.o) * sizeof (COMPLEX));
+	    0x00, CXBhave (rx.buf.o) * sizeof (COMPLEX));
 }
 static void do_tx_squelch()
 {
@@ -453,13 +453,13 @@ static void do_tx_squelch()
 	CXBdata (tx.buf.i, i) =
 	  Cscl (CXBdata (tx.buf.i, i), (REAL) (1.0 - (REAL) i / m));
 
-      memset ((void *) (CXBbase (tx.buf.i) + m), 0, n * sizeof (COMPLEX));
+      memset ((void *) (CXBbase (tx.buf.i) + m), 0x00, n * sizeof (COMPLEX));
       tx.squelch.running = true;
 
     }
   else
     memset ((void *) CXBbase (tx.buf.i),
-	    0, CXBhave (tx.buf.i) * sizeof (COMPLEX));
+	    0x00, CXBhave (tx.buf.i) * sizeof (COMPLEX));
 }
 
 // lift squelch
@@ -843,8 +843,8 @@ void process_samples(float* bufl, float* bufr, float* auxl, float* auxr, unsigne
 	    CXBhave(rx.buf.i) = n;
 
 		// prepare buffers for mixing
-		::memset(bufl, 0, n * sizeof(float));
-		::memset(bufr, 0, n * sizeof(float));
+		::memset(bufl, 0x00, n * sizeof(float));
+		::memset(bufr, 0x00, n * sizeof(float));
 
 		// run the receiver
 	    do_rx();

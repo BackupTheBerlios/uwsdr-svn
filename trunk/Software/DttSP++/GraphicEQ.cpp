@@ -64,8 +64,8 @@ m_notchFlag(false)
 	m_in  = newCXB(256, m_p->fetchPoint());
 	m_out = newCXB(256, m_p->storePoint());
 
-	::memset(m_num, 0, 9 * sizeof(COMPLEX));
-	::memset(m_den, 0, 6 * sizeof(COMPLEX));
+	::memset(m_num, 0x00, 9 * sizeof(COMPLEX));
+	::memset(m_den, 0x00, 6 * sizeof(COMPLEX));
 }
 
 CGraphicEQ::~CGraphicEQ()

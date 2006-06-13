@@ -76,7 +76,7 @@ void CSquelch::doSquelch(CXB* buf)
 		for (unsigned int i = 0; i < m; i++)
 			CXBdata(buf, i) = Cscl(CXBdata(buf, i), 1.0F - REAL(i) / REAL(m));
 
-		::memset((CXBbase(buf) + m), 0, n * sizeof(COMPLEX));
+		::memset((CXBbase(buf) + m), 0x00, n * sizeof(COMPLEX));
 		m_running = true;
 	} else {
 		::memset(CXBbase(buf), 0x00, CXBhave(buf) * sizeof(COMPLEX));

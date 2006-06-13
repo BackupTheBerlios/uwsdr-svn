@@ -1,4 +1,5 @@
 /* CXOps.h
+
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
@@ -50,64 +51,65 @@ const COMPLEX cxminusJ   = { 0.0, -1.0 };
 inline COMPLEX Cscl(COMPLEX x, REAL a)
 {
 	COMPLEX z;
-	c_re(z) = c_re(x) * a;
-	c_im(z) = c_im(x) * a;
+	z.re = x.re * a;
+	z.im = x.im * a;
 	return z;
 }
 
 inline COMPLEX Cadd(COMPLEX x, COMPLEX y)
 {
 	COMPLEX z;
-	c_re(z) = c_re(x) + c_re (y);
-	c_im(z) = c_im(x) + c_im (y);
+	z.re = x.re + y.re;
+	z.im = x.im + y.im;
 	return z;
 }
 
 inline COMPLEX Csub(COMPLEX x, COMPLEX y)
 {
 	COMPLEX z;
-	c_re(z) = c_re(x) - c_re(y);
-	c_im(z) = c_im(x) - c_im(y);
+	z.re = x.re - y.re;
+	z.im = x.im - y.im;
 	return z;
 }
 
 inline COMPLEX Cmul(COMPLEX x, COMPLEX y)
 {
 	COMPLEX z;
-	c_re(z) = c_re(x) * c_re(y) - c_im(x) * c_im(y);
-	c_im(z) = c_im(x) * c_re(y) + c_re(x) * c_im(y);
+	z.re = x.re * y.re - x.im * y.im;
+	z.im = x.im * y.re + x.re * y.im;
 	return z;
 }
 
 inline COMPLEX Cdiv(COMPLEX x, COMPLEX y)
 {
-	REAL d = sqr(c_re(y)) + sqr(c_im(y));
+	REAL d = sqr(y.re) + sqr(y.im);
 
 	COMPLEX z;
-	c_re(z) = (c_re(x) * c_re(y) + c_im(x) * c_im(y)) / d;
-	c_im(z) = (c_re(y) * c_im(x) - c_im(y) * c_re(x)) / d;
+	z.re = (x.re * y.re + x.im * y.im) / d;
+	z.im = (y.re * x.im - y.im * x.re) / d;
 	return z;
 }
 
 inline REAL Cmag(COMPLEX z)
 {
-	return REAL(sqrt(sqr(z.re) + sqr(z.im)));
+	return REAL(::sqrt(sqr(z.re) + sqr(z.im)));
 }
 
 inline REAL Cabs(COMPLEX z)
 {
-	return REAL(sqrt(sqr(z.re) + sqr(z.im)));
+	return REAL(::sqrt(sqr(z.re) + sqr(z.im)));
 }
 
 inline REAL Csqrmag(COMPLEX z)
 {
-	return REAL(sqr (z.re) + sqr (z.im));
+	return REAL(sqr(z.re) + sqr(z.im));
 }
 
 inline COMPLEX Cmplx(REAL x, IMAG y)
 {
 	COMPLEX z;
-	z.re = x, z.im = y;
+	z.re = x;
+	z.im = y;
 	return z;
 }
 
@@ -118,9 +120,9 @@ inline COMPLEX Conjg(COMPLEX z)
 
 inline COMPLEX Cexp(COMPLEX z)
 {
-	REAL r = REAL(exp (z.re));
+	REAL r = REAL(::exp(z.re));
 
-	return Cmplx(REAL(r * cos(z.im)), IMAG(r * sin(z.im)));
+	return Cmplx(REAL(r * ::cos(z.im)), IMAG(r * ::sin(z.im)));
 }
 
 #endif

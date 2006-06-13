@@ -2157,7 +2157,7 @@ SetDeviation (float value)
 }
 
 void
-SetRIT (float freq)
+SetRIT (double freq)
 {
 }
 

@@ -110,7 +110,7 @@ REAL CCompand::lookup(REAL x)
 	if (x <= 0.0F) 
 		return 0.0F;
 
-	REAL d = x - REAL(int(x));		// XXX
+	REAL d = x - ::floor(x);
 
 	unsigned int i = (unsigned int)(x * m_npts);
 

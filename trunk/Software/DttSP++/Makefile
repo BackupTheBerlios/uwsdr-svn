@@ -11,7 +11,7 @@ DttSP.a:	$(OBJS)
 AGC.o:	AGC.cpp AGC.h banal.h bufvec.h Complex.h DataTypes.h FromSys.h
 		$(CC) $(CFLAGS) -c AGC.cpp
 
-AMDemod.o:	AMDemod.cpp AMDemod.h bufvec.h Complex.h DataTypes.h Demod.h FromSys.h
+AMDemod.o:	AMDemod.cpp AMDemod.h bufvec.h Complex.h DataTypes.h FromSys.h
 		$(CC) $(CFLAGS) -c AMDemod.cpp
 
 Compand.o:	Compand.cpp Compand.h bufvec.h DataTypes.h FromSys.h
@@ -26,7 +26,7 @@ DCBlock.o:	DCBlock.cpp DCBlock.h bufvec.h Complex.h DataTypes.h FromSys.h
 FIR.o:	FIR.cpp FIR.h banal.h bufvec.h Complex.h DataTypes.h FromSys.h Window.h
 		$(CC) $(CFLAGS) -c FIR.cpp
 
-FMDemod.o:	FMDemod.cpp FMDemod.h banal.h bufvec.h Complex.h DataTypes.h Demod.h FromSys.h
+FMDemod.o:	FMDemod.cpp FMDemod.h banal.h bufvec.h Complex.h DataTypes.h FromSys.h
 		$(CC) $(CFLAGS) -c FMDemod.cpp
 
 FilterOVSV.o: 	FilterOVSV.cpp FilterOVSV.h banal.h bufvec.h Complex.h CXOps.h DataTypes.h FIR.h
@@ -50,7 +50,7 @@ Resample.o:	Resample.cpp Resample.h banal.h CXOps.h FIR.h
 ResampleF.o: 	ResampleF.cpp ResampleF.h banal.h FIR.h
 		$(CC) $(CFLAGS) -c ResampleF.cpp
 
-SSBDemod.o:	SSBDemod.cpp SSBDemod.h bufvec.h Demod.h
+SSBDemod.o:	SSBDemod.cpp SSBDemod.h bufvec.h
 		$(CC) $(CFLAGS) -c SSBDemod.cpp
 
 Spectrum.o:	Spectrum.cpp Spectrum.h banal.h bufvec.h DataTypes.h FIR.h FromSys.h Window.h

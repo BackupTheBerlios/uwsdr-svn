@@ -75,10 +75,10 @@ static void gethold()
 #endif
 	if (ringb_float_read_space (top.jack.ring.i.l) < top.hold.size.frames) {
 		// pathology
-		::memset(top.hold.buf.l, 0, top.hold.size.bytes);
-		::memset(top.hold.buf.r, 0, top.hold.size.bytes);
-		::memset(top.hold.aux.l, 0, top.hold.size.bytes);
-		::memset(top.hold.aux.r, 0, top.hold.size.bytes);
+		::memset(top.hold.buf.l, 0x00, top.hold.size.bytes);
+		::memset(top.hold.buf.r, 0x00, top.hold.size.bytes);
+		::memset(top.hold.aux.l, 0x00, top.hold.size.bytes);
+		::memset(top.hold.aux.r, 0x00, top.hold.size.bytes);
 		::wxLogError(_("Not enough data in left input ring buffer"));
 	} else {
 		ringb_float_read(top.jack.ring.i.l, top.hold.buf.l, top.hold.size.frames);
@@ -103,10 +103,10 @@ static bool canhold()
 
 static void run_mute()
 {
-	::memset(top.hold.buf.l, 0, top.hold.size.bytes);
-	::memset(top.hold.buf.r, 0, top.hold.size.bytes);
-	::memset(top.hold.aux.l, 0, top.hold.size.bytes);
-	::memset(top.hold.aux.r, 0, top.hold.size.bytes);
+	::memset(top.hold.buf.l, 0x00, top.hold.size.bytes);
+	::memset(top.hold.buf.r, 0x00, top.hold.size.bytes);
+	::memset(top.hold.aux.l, 0x00, top.hold.size.bytes);
+	::memset(top.hold.aux.r, 0x00, top.hold.size.bytes);
 	uni.tick++;
 }
 
@@ -117,50 +117,48 @@ static void run_pass()
 
 static void run_play()
 {
-	process_samples (top.hold.buf.l, top.hold.buf.r, top.hold.aux.l, top.hold.aux.r, top.hold.size.frames);
+	process_samples(top.hold.buf.l, top.hold.buf.r, top.hold.aux.l, top.hold.aux.r, top.hold.size.frames);
 }
 
 // NB do not set RUN_SWCH directly via setRunState;
 // use setSWCH instead
-
 static void run_swch()
 {
-  if (top.swch.bfct.have == 0)
-    {
-      // first time
-      // apply ramp down
-      int i, m = top.swch.fade, n = top.swch.tail;
-      for (i = 0; i < m; i++)
-	{
-	  float w = (float) 1.0 - (float) i / (float) m;
-	  top.hold.buf.l[i] *= w, top.hold.buf.r[i] *= w;
-	}
-      ::memset((top.hold.buf.l + m), 0, n);
-      ::memset((top.hold.buf.r + m), 0, n);
-      top.swch.bfct.have++;
-    }
-  else if (top.swch.bfct.have < top.swch.bfct.want)
-    {
-      // in medias res
-      ::memset(top.hold.buf.l, 0, top.hold.size.bytes);
-      ::memset(top.hold.buf.r, 0, top.hold.size.bytes);
-      top.swch.bfct.have++;
-    }
-  else
-    {
-      // last time
-      // apply ramp up
-      int i, m = top.swch.fade;
-      for (i = 0; i < m; i++)
-	{
-	  float w = (float) i / m;
-	  top.hold.buf.l[i] *= w, top.hold.buf.r[i] *= w;
-	}
-      uni.mode.trx = top.swch.trx.next;
-      top.state = top.swch.run.last;
-      top.swch.bfct.want = top.swch.bfct.have = 0;
+	if (top.swch.bfct.have == 0) {
+		// first time
+		// apply ramp down
+		unsigned int m = top.swch.fade;
+		unsigned int n = top.swch.tail;
+		for (unsigned int i = 0; i < m; i++) {
+			float w = 1.0F - float(i) / float(m);
+			top.hold.buf.l[i] *= w;
+			top.hold.buf.r[i] *= w;
+		}
 
-    }
+		::memset((top.hold.buf.l + m), 0x00, n);
+		::memset((top.hold.buf.r + m), 0x00, n);
+
+		top.swch.bfct.have++;
+	} else if (top.swch.bfct.have < top.swch.bfct.want) {
+		// in medias res
+		::memset(top.hold.buf.l, 0x00, top.hold.size.bytes);
+		::memset(top.hold.buf.r, 0x00, top.hold.size.bytes);
+
+		top.swch.bfct.have++;
+	} else {
+		// last time
+		// apply ramp up
+		unsigned int m = top.swch.fade;
+		for (unsigned int i = 0; i < m; i++) {
+			float w = float(i) / float(m);
+			top.hold.buf.l[i] *= w;
+			top.hold.buf.r[i] *= w;
+		}
+
+		uni.mode.trx = top.swch.trx.next;
+		top.state = top.swch.run.last;
+		top.swch.bfct.want = top.swch.bfct.have = 0;
+	}
 
 	process_samples(top.hold.buf.l, top.hold.buf.r, top.hold.aux.l, top.hold.aux.r, top.hold.size.frames);
 }
@@ -168,126 +166,61 @@ static void run_swch()
 //========================================================================
 
 
-void Audio_Callback (float *input_l, float *input_r, float *output_l,
-		float *output_r, unsigned int nframes)
+void Audio_Callback(float* input_l, float* input_r, float* output_l, float* output_r, unsigned int nframes)
 {
+	wxASSERT(input_l != NULL);
+	wxASSERT(input_r != NULL);
+	wxASSERT(output_l != NULL);
+	wxASSERT(output_r != NULL);
+	wxASSERT(top.sync.buf.sem != NULL);
+
 	if (top.susp) {
-		::memset(output_l, 0, nframes * sizeof(float));
-		::memset(output_r, 0, nframes * sizeof(float));
+		::memset(output_l, 0x00, nframes * sizeof(float));
+		::memset(output_r, 0x00, nframes * sizeof(float));
 		return;
 	}
 
-  if (ringb_float_read_space(top.jack.ring.o.l) >= nframes && ringb_float_read_space (top.jack.ring.o.r) >= nframes) {
-      ringb_float_read (top.jack.auxr.o.l, output_l, nframes);
-      ringb_float_read (top.jack.auxr.o.r, output_r, nframes);
-      ringb_float_read (top.jack.ring.o.l, output_l, nframes);
-      ringb_float_read (top.jack.ring.o.r, output_r, nframes);
-    } else {				// rb pathology
-      ringb_float_reset (top.jack.ring.i.l);
-      ringb_float_reset (top.jack.ring.i.r);
-      ringb_float_reset (top.jack.auxr.i.l);
-      ringb_float_reset (top.jack.auxr.i.r);
-      ringb_float_restart (top.jack.ring.o.r, nframes);
-      ringb_float_restart (top.jack.ring.o.l, nframes);
-      ringb_float_restart (top.jack.auxr.o.r, nframes);
-      ringb_float_restart (top.jack.auxr.o.l, nframes);
-      memset (output_l, 0, nframes * sizeof (float));
-      memset (output_r, 0, nframes * sizeof (float));
-      ::wxLogError(_("Not enough data in the output ring buffers"));
-    }
+	if (ringb_float_read_space(top.jack.ring.o.l) >= nframes && ringb_float_read_space (top.jack.ring.o.r) >= nframes) {
+		ringb_float_read(top.jack.auxr.o.l, output_l, nframes);
+		ringb_float_read(top.jack.auxr.o.r, output_r, nframes);
+		ringb_float_read(top.jack.ring.o.l, output_l, nframes);
+		ringb_float_read(top.jack.ring.o.r, output_r, nframes);
+	} else {				// rb pathology
+		ringb_float_reset(top.jack.ring.i.l);
+		ringb_float_reset(top.jack.ring.i.r);
+		ringb_float_reset(top.jack.auxr.i.l);
+		ringb_float_reset(top.jack.auxr.i.r);
 
-  // input: copy from port to ring
-  if (ringb_float_write_space (top.jack.ring.i.l) >= nframes && ringb_float_write_space(top.jack.ring.i.r) >= nframes) {
-      ringb_float_write (top.jack.ring.i.l, (float *) input_l, nframes);
-      ringb_float_write (top.jack.ring.i.r, (float *) input_r, nframes);
-      ringb_float_write (top.jack.auxr.i.l, (float *) input_l, nframes);
-      ringb_float_write (top.jack.auxr.i.r, (float *) input_r, nframes);
-  } else {				// rb pathology
-      ringb_float_reset (top.jack.ring.i.l);
-      ringb_float_reset (top.jack.ring.i.r);
-      ringb_float_reset (top.jack.auxr.i.l);
-      ringb_float_reset (top.jack.auxr.i.r);
-      ringb_float_restart (top.jack.ring.o.r, nframes);
-      ringb_float_restart (top.jack.ring.o.l, nframes);
-      ringb_float_restart (top.jack.auxr.o.r, nframes);
-      ringb_float_restart (top.jack.auxr.o.l, nframes);
-      ::wxLogError(_("Not enough space in the input ring buffers"));
-    }
+		ringb_float_restart(top.jack.ring.o.r, nframes);
+		ringb_float_restart(top.jack.ring.o.l, nframes);
+		ringb_float_restart(top.jack.auxr.o.r, nframes);
+		ringb_float_restart(top.jack.auxr.o.l, nframes);
 
-  // if enough accumulated in ring, fire dsp
-  if (ringb_float_read_space (top.jack.ring.i.l) != ringb_float_read_space (top.jack.ring.i.r)) {
-      ringb_float_reset (top.jack.ring.i.l);
-      ringb_float_reset (top.jack.ring.i.r);
-      ringb_float_reset (top.jack.auxr.i.l);
-      ringb_float_reset (top.jack.auxr.i.r);
-      ringb_float_restart (top.jack.ring.o.r, nframes);
-      ringb_float_restart (top.jack.ring.o.l, nframes);
-      ringb_float_restart (top.jack.auxr.o.r, nframes);
-      ringb_float_restart (top.jack.auxr.o.l, nframes);
-      ::wxLogError(_("Size mismatch in the input ring buffers"));
-    }
+		::memset(output_l, 0x00, nframes * sizeof(float));
+		::memset(output_r, 0x00, nframes * sizeof(float));
 
-	if (ringb_float_read_space (top.jack.ring.i.l) >= top.hold.size.frames)
-		top.sync.buf.sem->Post();
-}
-
-void Audio_CallbackIL(float *input, float *output, unsigned int nframes)
-{
-	if (top.susp) {
-		::memset(output, 0, 2 * nframes * sizeof (float));
-		return;
+		::wxLogError(_("Not enough data in the output ring buffers"));
 	}
 
-  if (ringb_float_read_space(top.jack.ring.o.l) >= nframes && ringb_float_read_space(top.jack.ring.o.r) >= nframes) {
-      unsigned int i, j;
-      /* The following code is broken up in this manner to minimize
-         cache hits */
+	// input: copy from port to ring
+	if (ringb_float_write_space(top.jack.ring.i.l) >= nframes && ringb_float_write_space(top.jack.ring.i.r) >= nframes) {
+		ringb_float_write(top.jack.ring.i.l, input_l, nframes);
+		ringb_float_write(top.jack.ring.i.r, input_r, nframes);
+		ringb_float_write(top.jack.auxr.i.l, input_l, nframes);
+		ringb_float_write(top.jack.auxr.i.r, input_r, nframes);
+	} else {				// rb pathology
+		ringb_float_reset(top.jack.ring.i.l);
+		ringb_float_reset(top.jack.ring.i.r);
+		ringb_float_reset(top.jack.auxr.i.l);
+		ringb_float_reset(top.jack.auxr.i.r);
 
-      for (i = 0, j = 0; i < nframes; i++, j += 2)
-  	ringb_float_read(top.jack.auxr.o.l, &output[j], 1);
-      for (i = 0, j = 1; i < nframes; i++, j += 2)
-	ringb_float_read(top.jack.auxr.o.r, &output[j], 1);
-      for (i = 0, j = 0; i < nframes; i++, j += 2)
-	ringb_float_read(top.jack.ring.o.l, &output[j], 1);
-      for (i = 0, j = 1; i < nframes; i++, j += 2)
-	ringb_float_read(top.jack.ring.o.r, &output[j], 1);
-    } else {				// rb pathology
-      ringb_float_reset(top.jack.ring.i.l);
-      ringb_float_reset(top.jack.ring.i.r);
-      ringb_float_reset(top.jack.auxr.i.l);
-      ringb_float_reset(top.jack.auxr.i.r);
-      ringb_float_restart(top.jack.ring.o.r, nframes);
-      ringb_float_restart(top.jack.ring.o.l, nframes);
-      ringb_float_restart(top.jack.auxr.o.r, nframes);
-      ringb_float_restart(top.jack.auxr.o.l, nframes);
-      memset (output, 0, 2 * nframes * sizeof (float));
-      ::wxLogError(_("Not enough data in the output ring buffers"));
-    }
+		ringb_float_restart(top.jack.ring.o.r, nframes);
+		ringb_float_restart(top.jack.ring.o.l, nframes);
+		ringb_float_restart(top.jack.auxr.o.r, nframes);
+		ringb_float_restart(top.jack.auxr.o.l, nframes);
 
-  // input: copy from port to ring
-  if (ringb_float_write_space(top.jack.ring.i.l) >= nframes && ringb_float_write_space(top.jack.ring.i.r) >= nframes) {
-      unsigned int i, j;
-      /* The following code is broken up in this manner to minimize
-         cache hits */
-      for (i = 0, j = 0; i < nframes; i++, j += 2)
-	ringb_float_write(top.jack.auxr.i.l, &input[j], 1);
-      for (i = 0, j = 1; i < nframes; i++, j += 2)
-	ringb_float_write(top.jack.auxr.i.r, &input[j], 1);
-      for (i = 0, j = 0; i < nframes; i++, j += 2)
-	ringb_float_write(top.jack.ring.i.l, &input[j], 1);
-      for (i = 0, j = 0; i < nframes; i++, j += 2)
-	ringb_float_write(top.jack.ring.i.r, &input[j], 1);
-    } else {				// rb pathology
-      ringb_float_reset(top.jack.ring.i.l);
-      ringb_float_reset(top.jack.ring.i.r);
-      ringb_float_reset(top.jack.auxr.i.l);
-      ringb_float_reset(top.jack.auxr.i.r);
-      ringb_float_restart(top.jack.ring.o.r, nframes);
-      ringb_float_restart(top.jack.ring.o.l, nframes);
-      ringb_float_restart(top.jack.auxr.o.r, nframes);
-      ringb_float_restart(top.jack.auxr.o.l, nframes);
-      ::wxLogError(_("Not enough space in the input ring buffers"));
-    }
+		::wxLogError(_("Not enough space in the input ring buffers"));
+	}
 
 	// if enough accumulated in ring, fire dsp
 	if (ringb_float_read_space(top.jack.ring.i.l) != ringb_float_read_space(top.jack.ring.i.r)) {
@@ -295,14 +228,102 @@ void Audio_CallbackIL(float *input, float *output, unsigned int nframes)
 		ringb_float_reset(top.jack.ring.i.r);
 		ringb_float_reset(top.jack.auxr.i.l);
 		ringb_float_reset(top.jack.auxr.i.r);
+
 		ringb_float_restart(top.jack.ring.o.r, nframes);
 		ringb_float_restart(top.jack.ring.o.l, nframes);
 		ringb_float_restart(top.jack.auxr.o.r, nframes);
 		ringb_float_restart(top.jack.auxr.o.l, nframes);
+
 		::wxLogError(_("Size mismatch in the input ring buffers"));
 	}
 
-	if (ringb_float_read_space (top.jack.ring.i.l) >= top.hold.size.frames)
+	if (ringb_float_read_space(top.jack.ring.i.l) >= top.hold.size.frames)
+		top.sync.buf.sem->Post();
+}
+
+void Audio_CallbackIL(float* input, float* output, unsigned int nframes)
+{
+	wxASSERT(input != NULL);
+	wxASSERT(output != NULL);
+	wxASSERT(top.sync.buf.sem != NULL);
+
+	if (top.susp) {
+		::memset(output, 0x00, 2 * nframes * sizeof (float));
+		return;
+	}
+
+	if (ringb_float_read_space(top.jack.ring.o.l) >= nframes && ringb_float_read_space(top.jack.ring.o.r) >= nframes) {
+		unsigned int i, j;
+		/* The following code is broken up in this manner to minimize
+		   cache hits */
+
+		for (i = 0, j = 0; i < nframes; i++, j += 2)
+			ringb_float_read(top.jack.auxr.o.l, &output[j], 1);
+		for (i = 0, j = 1; i < nframes; i++, j += 2)
+			ringb_float_read(top.jack.auxr.o.r, &output[j], 1);
+		for (i = 0, j = 0; i < nframes; i++, j += 2)
+			ringb_float_read(top.jack.ring.o.l, &output[j], 1);
+		for (i = 0, j = 1; i < nframes; i++, j += 2)
+			ringb_float_read(top.jack.ring.o.r, &output[j], 1);
+	} else {				// rb pathology
+		ringb_float_reset(top.jack.ring.i.l);
+		ringb_float_reset(top.jack.ring.i.r);
+		ringb_float_reset(top.jack.auxr.i.l);
+		ringb_float_reset(top.jack.auxr.i.r);
+
+		ringb_float_restart(top.jack.ring.o.r, nframes);
+		ringb_float_restart(top.jack.ring.o.l, nframes);
+		ringb_float_restart(top.jack.auxr.o.r, nframes);
+		ringb_float_restart(top.jack.auxr.o.l, nframes);
+
+		::memset(output, 0x00, 2 * nframes * sizeof (float));
+
+		::wxLogError(_("Not enough data in the output ring buffers"));
+	}
+
+	// input: copy from port to ring
+	if (ringb_float_write_space(top.jack.ring.i.l) >= nframes && ringb_float_write_space(top.jack.ring.i.r) >= nframes) {
+		unsigned int i, j;
+		/* The following code is broken up in this manner to minimize
+		   cache hits */
+		for (i = 0, j = 0; i < nframes; i++, j += 2)
+			ringb_float_write(top.jack.auxr.i.l, &input[j], 1);
+		for (i = 0, j = 1; i < nframes; i++, j += 2)
+			ringb_float_write(top.jack.auxr.i.r, &input[j], 1);
+		for (i = 0, j = 0; i < nframes; i++, j += 2)
+			ringb_float_write(top.jack.ring.i.l, &input[j], 1);
+		for (i = 0, j = 0; i < nframes; i++, j += 2)
+			ringb_float_write(top.jack.ring.i.r, &input[j], 1);
+	} else {				// rb pathology
+		ringb_float_reset(top.jack.ring.i.l);
+		ringb_float_reset(top.jack.ring.i.r);
+		ringb_float_reset(top.jack.auxr.i.l);
+		ringb_float_reset(top.jack.auxr.i.r);
+
+		ringb_float_restart(top.jack.ring.o.r, nframes);
+		ringb_float_restart(top.jack.ring.o.l, nframes);
+		ringb_float_restart(top.jack.auxr.o.r, nframes);
+		ringb_float_restart(top.jack.auxr.o.l, nframes);
+
+		::wxLogError(_("Not enough space in the input ring buffers"));
+	}
+
+	// if enough accumulated in ring, fire dsp
+	if (ringb_float_read_space(top.jack.ring.i.l) != ringb_float_read_space(top.jack.ring.i.r)) {
+		ringb_float_reset(top.jack.ring.i.l);
+		ringb_float_reset(top.jack.ring.i.r);
+		ringb_float_reset(top.jack.auxr.i.l);
+		ringb_float_reset(top.jack.auxr.i.r);
+
+		ringb_float_restart(top.jack.ring.o.r, nframes);
+		ringb_float_restart(top.jack.ring.o.l, nframes);
+		ringb_float_restart(top.jack.auxr.o.r, nframes);
+		ringb_float_restart(top.jack.auxr.o.l, nframes);
+
+		::wxLogError(_("Size mismatch in the input ring buffers"));
+	}
+
+	if (ringb_float_read_space(top.jack.ring.i.l) >= top.hold.size.frames)
 		top.sync.buf.sem->Post();
 }
 
@@ -394,10 +415,10 @@ static void setup_local_audio()
 	top.hold.aux.l = new float[top.hold.size.frames];
 	top.hold.aux.r = new float[top.hold.size.frames];
 
-	::memset(top.hold.buf.l, 0, top.hold.size.frames * sizeof(float));
-	::memset(top.hold.buf.r, 0, top.hold.size.frames * sizeof(float));
-	::memset(top.hold.aux.l, 0, top.hold.size.frames * sizeof(float));
-	::memset(top.hold.aux.r, 0, top.hold.size.frames * sizeof(float));
+	::memset(top.hold.buf.l, 0x00, top.hold.size.frames * sizeof(float));
+	::memset(top.hold.buf.r, 0x00, top.hold.size.frames * sizeof(float));
+	::memset(top.hold.aux.l, 0x00, top.hold.size.frames * sizeof(float));
+	::memset(top.hold.aux.r, 0x00, top.hold.size.frames * sizeof(float));
 }
 
 static void setup_system_audio()

@@ -50,8 +50,8 @@ m_buf(NULL)
 {
 	wxASSERT(buf != NULL);
 
-	::memset(m_input, 0, BLKMEM * sizeof(REAL));
-	::memset(m_output, 0, BLKMEM * sizeof(REAL));
+	::memset(m_input,  0x00, BLKMEM * sizeof(REAL));
+	::memset(m_output, 0x00, BLKMEM * sizeof(REAL));
 
 	m_buf = newCXB(CXBsize(buf), CXBbase(buf));
 }
@@ -106,7 +106,7 @@ void CDCBlock::block()
 REAL CDCBlock::butterworthHighpass_100_2(REAL xin)
 {
 	for (int i = 1; i < 2; i++) {
-		m_input[i - 1] = m_input[i];
+		m_input[i - 1]  = m_input[i];
 		m_output[i - 1] = m_output[i];
 	}
 
@@ -122,7 +122,7 @@ REAL CDCBlock::butterworthHighpass_100_2(REAL xin)
 REAL CDCBlock::butterworthHighpass_100_4(REAL xin)
 {
 	for (int i = 1; i < 4; i++) {
-		m_input[i - 1] = m_input[i];
+		m_input[i - 1]  = m_input[i];
 		m_output[i - 1] = m_output[i];
 	}
 
@@ -133,7 +133,8 @@ REAL CDCBlock::butterworthHighpass_100_4(REAL xin)
 		  + 6.0 * m_input[2]
 		  + -0.976340271 * m_output[0]
 		  + 3.928738552 * m_output[1]
-		  + -5.928454312 * m_output[2] + 3.976056024 * m_output[3]);
+		  + -5.928454312 * m_output[2]
+		  + 3.976056024 * m_output[3]);
 
 	return m_output[4];
 }
@@ -141,7 +142,7 @@ REAL CDCBlock::butterworthHighpass_100_4(REAL xin)
 REAL CDCBlock::butterworthHighpass_100_6(REAL xin)
 {
 	for (int i = 1; i < 6; i++) {
-		m_input[i - 1] = m_input[i];
+		m_input[i - 1]  = m_input[i];
 		m_output[i - 1] = m_output[i];
 	}
 
@@ -155,7 +156,8 @@ REAL CDCBlock::butterworthHighpass_100_6(REAL xin)
 		  + 5.7522090378 * m_output[1]
 		  + -14.5019247580 * m_output[2]
 		  + 19.4994114580 * m_output[3]
-		  + -14.7484389800 * m_output[4] + 5.9494324049 * m_output[5]);
+		  + -14.7484389800 * m_output[4]
+		  + 5.9494324049 * m_output[5]);
 
 	return m_output[6];
 }
@@ -163,7 +165,7 @@ REAL CDCBlock::butterworthHighpass_100_6(REAL xin)
 REAL CDCBlock::butterworthHighpass_100_8(REAL xin)
 {
 	for (int i = 1; i < 8; i++) {
-		m_input[i - 1] = m_input[i];
+		m_input[i - 1]  = m_input[i];
 		m_output[i - 1] = m_output[i];
 	}
 
@@ -180,7 +182,8 @@ REAL CDCBlock::butterworthHighpass_100_8(REAL xin)
 		  + 53.6964633920 * m_output[3]
 		  + -67.6854640540 * m_output[4]
 		  + 54.6046308830 * m_output[5]
-		  + -27.5326449810 * m_output[6] + 7.9329138172 * m_output[7]);
+		  + -27.5326449810 * m_output[6]
+		  + 7.9329138172 * m_output[7]);
 
 	return m_output[8];
 }

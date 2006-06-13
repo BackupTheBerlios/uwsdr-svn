@@ -35,10 +35,9 @@ Bridgewater, NJ 08807
 #define _ssbdemod_h
 
 #include "bufvec.h"
-#include "Demod.h"
 
 
-class CSSBDemod : public IDemod {
+class CSSBDemod {
     public:
 	CSSBDemod(unsigned int size, COMPLEX* ivec, COMPLEX* ovec);
 	virtual ~CSSBDemod();
