@@ -63,25 +63,25 @@ typedef struct _BlockLMS {
 
 typedef struct _LMSR {
   CXB* signal;			/* Signal Buffer */
-  int signal_size;		/* Number of samples in signal buffer */
+  unsigned int signal_size;		/* Number of samples in signal buffer */
   REAL* delay_line;		/* Delay Line circular buffer for holding samples */
   REAL* adaptive_filter;	/* Filter coefficients */
   REAL adaptation_rate;		/* Adaptation rate for the LMS stochastic gradient */
   REAL leakage;			/* Exponential decay constant for filter coefficients */
-  int adaptive_filter_size;	/* number taps in adaptive filter */
+  unsigned int adaptive_filter_size;	/* number taps in adaptive filter */
   int filter_type;		/* Filter type */
-  int delay;			/* Total delay between current sample and filter */
-  int delay_line_ptr;		/* Pointer for next sample into the delay line */
-  int size;			/* Delay line size */
-  int mask;			/* Mask for circular buffer */
+  unsigned int delay;			/* Total delay between current sample and filter */
+  unsigned int delay_line_ptr;		/* Pointer for next sample into the delay line */
+  unsigned int size;			/* Delay line size */
+  unsigned int mask;			/* Mask for circular buffer */
 } LMSR;
 
 
 extern LMSR* new_lmsr(CXB* signal,
-		      int delay,
+		      unsigned int delay,
 		      REAL adaptation_rate,
 		      REAL leakage,
-		      int adaptive_filter_size, int filter_type);
+		      unsigned int adaptive_filter_size, int filter_type);
 
 
 extern void del_lmsr(LMSR* lms);
@@ -89,7 +89,7 @@ extern void del_lmsr(LMSR* lms);
 extern void lmsr_adapt(LMSR* lms);
 
 extern BLMS* new_blms(CXB* signal, REAL adaptation_rate, REAL leak_rate,
-		      int filter_type, int pbits);
+		      int filter_type, unsigned int pbits);
 
 extern void blms_adapt(BLMS* blms);
 

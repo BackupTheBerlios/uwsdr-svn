@@ -88,7 +88,10 @@ m_fastHang(0)			//wa6ahl:  added to structure
 	m_sndex = (unsigned int)(samprate * attack * 0.003F);
 
 	m_buff = newCXB(bufSize, vec);
-	m_circ = newvec_COMPLEX(m_mask);
+
+	m_circ = new COMPLEX[m_mask];
+	::memset(m_circ, 0x00, m_mask * sizeof(COMPLEX));
+
 	m_mask -= 1;
 }
 

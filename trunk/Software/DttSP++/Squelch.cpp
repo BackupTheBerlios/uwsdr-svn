@@ -79,7 +79,7 @@ void CSquelch::doSquelch(CXB* buf)
 		::memset((CXBbase(buf) + m), 0, n * sizeof(COMPLEX));
 		m_running = true;
 	} else {
-		::memset(CXBbase(buf), 0, CXBhave(buf) * sizeof(COMPLEX));
+		::memset(CXBbase(buf), 0x00, CXBhave(buf) * sizeof(COMPLEX));
 	}
 }
 

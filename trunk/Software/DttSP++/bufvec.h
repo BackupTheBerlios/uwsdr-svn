@@ -57,8 +57,6 @@ typedef struct {
 #define CXBhave(p) ((p)->have)
 #define CXBmine(p) ((p)->mine)
 
-extern COMPLEX *newvec_COMPLEX(unsigned int size);
-
 extern CXB* newCXB(unsigned int size, COMPLEX* base);
 extern void delCXB(CXB* p);
 

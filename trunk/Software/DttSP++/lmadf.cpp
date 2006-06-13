@@ -36,9 +36,9 @@ Bridgewater, NJ 08807
 
 
 LMSR* new_lmsr(CXB* signal,
-	  int delay,
+	  unsigned int delay,
 	  REAL adaptation_rate,
-	  REAL leakage, int adaptive_filter_size, int filter_type)
+	  REAL leakage, unsigned int adaptive_filter_size, int filter_type)
 {
 	LMSR* lms = new LMSR;
 
@@ -55,7 +55,7 @@ LMSR* new_lmsr(CXB* signal,
 	lms->filter_type = filter_type;
 	lms->delay_line_ptr = 0;
 
-	::memset(lms->delay_line, 0x00, lms->size * sizeof(REAL));
+	::memset(lms->delay_line,      0x00, lms->size * sizeof(REAL));
 	::memset(lms->adaptive_filter, 0x00, 128 * sizeof(REAL));
 
 	return lms;
@@ -92,26 +92,26 @@ static void lmsr_adapt_i(LMSR* lms)
 {
 	REAL scl1 = REAL(1.0F - rate * leak);
 
-	for (int i = 0; i < ssiz; i++) {
+	for (unsigned int i = 0; i < ssiz; i++) {
 		dlay(dptr) = ssig(i);
 		REAL accum = 0.0F;
 		REAL sum_sq = 0.0F;
 
-		int j;
+		unsigned int j;
 		for (j = 0; j < asiz; j++) {
-			int k = wrap(j);
+			unsigned int k = wrap(j);
 			sum_sq += sqr(dlay(k));
 			accum += afil(j) * dlay(k);
 		}
 
 		REAL error = ssig(i) - accum;
-		ssig_i(i) = ssig(i) = error;
+		ssig_i(i)  = ssig(i) = error;
 
 		REAL scl2 = REAL(rate / (sum_sq + 1e-10));
 		error *= scl2;
 
 		for (j = 0; j < asiz; j++) {
-			int k = wrap(j);
+			unsigned int k = wrap(j);
 			afil(j) = afil(j) * scl1 + error * dlay(k);
 		}
 
@@ -123,26 +123,26 @@ static void lmsr_adapt_n(LMSR* lms)
 {
 	REAL scl1 = REAL(1.0F - rate * leak);
 
-	for (int i = 0; i < ssiz; i++) {
+	for (unsigned int i = 0; i < ssiz; i++) {
 		dlay(dptr) = ssig(i);
 		REAL accum = 0.0F;
 		REAL sum_sq = 0.0F;
 
-		int j;
+		unsigned int j;
 		for (j = 0; j < asiz; j++) {
-			int k = wrap(j);
+			unsigned int k = wrap(j);
 			sum_sq += sqr(dlay(k));
 			accum += afil(j) * dlay(k);
 		}
 
 		REAL error = ssig(i) - accum;
-		ssig_i (i) = ssig(i) = accum;
+		ssig_i(i)  = ssig(i) = accum;
 
 		REAL scl2 = REAL(rate / (sum_sq + 1e-10));
 		error *= scl2;
 
 		for (j = 0; j < asiz; j++) {
-			int k = wrap (j);
+			unsigned int k = wrap (j);
 			afil(j) = afil(j) * scl1 + error * dlay(k);
 		}
 
@@ -189,58 +189,50 @@ void del_blms(BLMS* blms)
 }
 
 BLMS* new_blms(CXB* signal, REAL adaptation_rate, REAL leak_rate, int filter_type,
-	  int pbits)
+	  unsigned int pbits)
 {
 	BLMS* tmp = new BLMS;
 
-	tmp->delay_line = newvec_COMPLEX(256);
-	tmp->y = newvec_COMPLEX(256);
-	tmp->Yhat = newvec_COMPLEX(256);
-	tmp->Errhat = newvec_COMPLEX(256);
-	tmp->error = newvec_COMPLEX(256);
-	tmp->Xhat = newvec_COMPLEX(256);
-	tmp->What = newvec_COMPLEX(256);
-	tmp->Update = newvec_COMPLEX(256);
-	tmp->update = newvec_COMPLEX(256);
+	tmp->delay_line = new COMPLEX[256];
+	tmp->y          = new COMPLEX[256];
+	tmp->Yhat       = new COMPLEX[256];
+	tmp->Errhat     = new COMPLEX[256];
+	tmp->error      = new COMPLEX[256];
+	tmp->Xhat       = new COMPLEX[256];
+	tmp->What       = new COMPLEX[256];
+	tmp->Update     = new COMPLEX[256];
+	tmp->update     = new COMPLEX[256];
+
+	::memset(tmp->delay_line, 0x00, 256 * sizeof(COMPLEX));
+	::memset(tmp->y, 0x00, 256 * sizeof(COMPLEX));
+	::memset(tmp->Yhat, 0x00, 256 * sizeof(COMPLEX));
+	::memset(tmp->Errhat, 0x00, 256 * sizeof(COMPLEX));
+	::memset(tmp->error, 0x00, 256 * sizeof(COMPLEX));
+	::memset(tmp->Xhat, 0x00, 256 * sizeof(COMPLEX));
+	::memset(tmp->What, 0x00, 256 * sizeof(COMPLEX));
+	::memset(tmp->Update, 0x00, 256 * sizeof(COMPLEX));
+	::memset(tmp->update, 0x00, 256 * sizeof(COMPLEX));
+
 	tmp->adaptation_rate = adaptation_rate;
-	tmp->leak_rate = 1.0f - leak_rate;
+	tmp->leak_rate = 1.0F - leak_rate;
 	tmp->signal = signal;
 	tmp->filter_type = filter_type;
 
-	tmp->Xplan = ::fftwf_plan_dft_1d(256,
-		(fftwf_complex *)tmp->delay_line,
-		(fftwf_complex *)tmp->Xhat,
-		FFTW_FORWARD, pbits);
-
-	tmp->Yplan = ::fftwf_plan_dft_1d(256,
-		(fftwf_complex *)tmp->Yhat,
-		(fftwf_complex *)tmp->y,
-		FFTW_BACKWARD, pbits);
-
-	tmp->Errhatplan = ::fftwf_plan_dft_1d(256,
-		(fftwf_complex *)tmp->error,
-		(fftwf_complex *)tmp->Errhat,
-		FFTW_FORWARD, pbits);
-
-	tmp->UPDplan = ::fftwf_plan_dft_1d(256,
-		(fftwf_complex *)tmp->Errhat,
-		(fftwf_complex *)tmp->update,
-		FFTW_BACKWARD, pbits);
-
-	tmp->Wplan = ::fftwf_plan_dft_1d(256,
-		(fftwf_complex *)tmp->update,
-		(fftwf_complex *)tmp->Update,
-		FFTW_FORWARD, pbits);
+	tmp->Xplan      = ::fftwf_plan_dft_1d(256, (fftwf_complex *)tmp->delay_line, (fftwf_complex *)tmp->Xhat, FFTW_FORWARD, pbits);
+	tmp->Yplan      = ::fftwf_plan_dft_1d(256, (fftwf_complex *)tmp->Yhat, (fftwf_complex *)tmp->y, FFTW_BACKWARD, pbits);
+	tmp->Errhatplan = ::fftwf_plan_dft_1d(256, (fftwf_complex *)tmp->error, (fftwf_complex *)tmp->Errhat, FFTW_FORWARD, pbits);
+	tmp->UPDplan    = ::fftwf_plan_dft_1d(256,	(fftwf_complex *)tmp->Errhat, (fftwf_complex *)tmp->update,	FFTW_BACKWARD, pbits);
+	tmp->Wplan      = ::fftwf_plan_dft_1d(256, (fftwf_complex *)tmp->update,	(fftwf_complex *)tmp->Update, FFTW_FORWARD, pbits);
 
 	return tmp;
 }
 
-const float BLKSCL = 1.0f / 256.0f;
+const float BLKSCL = 1.0F / 256.0F;
 
 void blms_adapt(BLMS* blms)
 {
-	int sigsize = CXBhave(blms->signal);
-	int sigidx = 0;
+	unsigned int sigsize = CXBhave(blms->signal);
+	unsigned int sigidx = 0;
 
 	do {
 		::memcpy(blms->delay_line, &blms->delay_line[128], sizeof(COMPLEX) * 128);	// do overlap move
@@ -248,7 +240,7 @@ void blms_adapt(BLMS* blms)
 
 		::fftwf_execute(blms->Xplan);	// compute transform of input data
 
-		int j;
+		unsigned int j;
 		for (j = 0; j < 256; j++) {
 			blms->Yhat[j] = Cmul(blms->What[j], blms->Xhat[j]);	// Filter new signal in freq. domain
 			blms->Xhat[j] = Conjg(blms->Xhat[j]);	// take input data's complex conjugate
@@ -259,7 +251,7 @@ void blms_adapt(BLMS* blms)
 		for (j = 128; j < 256; j++)
 			blms->y[j] = Cscl(blms->y[j], BLKSCL);
 
-		::memset(blms->y, 0, 128 * sizeof (COMPLEX));
+		::memset(blms->y, 0x00, 128 * sizeof (COMPLEX));
 
 		for (j = 128; j < 256; j++)
 			blms->error[j] = Csub(blms->delay_line[j], blms->y[j]);	// compute error signal
@@ -279,7 +271,7 @@ void blms_adapt(BLMS* blms)
 		for (j = 0; j < 128; j++)
 			blms->update[j] = Cscl(blms->update[j], BLKSCL);
 
-		::memset(&blms->update[128], 0, sizeof (COMPLEX) * 128);	// zero the last block of the update, so we get
+		::memset(&blms->update[128], 0x00, sizeof (COMPLEX) * 128);	// zero the last block of the update, so we get
 
 		// filter coefficients only at front of buffer
 		::fftwf_execute(blms->Wplan);

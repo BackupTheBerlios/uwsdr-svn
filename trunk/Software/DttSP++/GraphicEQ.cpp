@@ -90,11 +90,12 @@ void CGraphicEQ::setEQ(REAL preamp, REAL gain0, REAL gain1, REAL gain2)
 {
 	unsigned int i;
 
-	COMPLEX* tmpcoef = newvec_COMPLEX(257);
+	COMPLEX* tmpcoef = new COMPLEX[257];
+	::memset(tmpcoef, 0x00, 257 * sizeof(COMPLEX));
 
 	COMPLEX* filtcoef = (COMPLEX*)::fftw_malloc(512 * sizeof(COMPLEX));
 	wxASSERT(filtcoef != NULL);
-	::memset(filtcoef, 0, 512 * sizeof(COMPLEX));
+	::memset(filtcoef, 0x00, 512 * sizeof(COMPLEX));
 
 	preamp = dB2lin(preamp) * 0.5F;
 	gain0  = dB2lin(gain0) * preamp;

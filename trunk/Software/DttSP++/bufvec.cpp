@@ -40,18 +40,6 @@ Bridgewater, NJ 08807
 #include <wx/wx.h>
 
 
-/*------------------------------------------------------------------------*/
-/* allocate/free just vectors */
-
-COMPLEX* newvec_COMPLEX(unsigned int size)
-{
-	COMPLEX* p = new COMPLEX[size];
-
-	::memset(p, 0x00, size * sizeof(COMPLEX));
-
-	return p;
-}
-
 void CXBscl(CXB* buff, REAL scl)
 {
 	for (unsigned int i = 0; i < CXBhave(buff); i++)
@@ -80,7 +68,8 @@ CXB* newCXB(unsigned int size, COMPLEX* base)
 		CXBbase(p) = base;
 		CXBmine(p) = false;
 	} else {
-		CXBbase(p) = newvec_COMPLEX(size);
+		CXBbase(p) = new COMPLEX[size];
+		::memset(CXBbase(p), 0x00, size * sizeof(COMPLEX));
 		CXBmine(p) = true;
 	}
 
