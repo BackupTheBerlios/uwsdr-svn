@@ -66,20 +66,22 @@ static void gethold()
 		ringb_float_write(top.jack.ring.o.l, top.hold.buf.l, top.hold.size.frames);
 		ringb_float_write(top.jack.ring.o.r, top.hold.buf.r, top.hold.size.frames);
 #ifdef USE_AUXILIARY
-		ringb_float_write (top.jack.auxr.o.l, top.hold.aux.l, top.hold.size.frames);
+		ringb_float_write(top.jack.auxr.o.l, top.hold.aux.l, top.hold.size.frames);
 		ringb_float_write(top.jack.auxr.o.r, top.hold.aux.r, top.hold.size.frames);
 #else
 		ringb_float_write(top.jack.auxr.o.l, top.hold.buf.l, top.hold.size.frames);
 		ringb_float_write(top.jack.auxr.o.r, top.hold.buf.r, top.hold.size.frames);
-	}
 #endif
+	}
+
 	if (ringb_float_read_space (top.jack.ring.i.l) < top.hold.size.frames) {
 		// pathology
 		::memset(top.hold.buf.l, 0x00, top.hold.size.bytes);
 		::memset(top.hold.buf.r, 0x00, top.hold.size.bytes);
 		::memset(top.hold.aux.l, 0x00, top.hold.size.bytes);
 		::memset(top.hold.aux.r, 0x00, top.hold.size.bytes);
-		::wxLogError(_("Not enough data in left input ring buffer"));
+
+		::wxLogError(_("Not enough data in input ring buffers"));
 	} else {
 		ringb_float_read(top.jack.ring.i.l, top.hold.buf.l, top.hold.size.frames);
 		ringb_float_read(top.jack.ring.i.r, top.hold.buf.r, top.hold.size.frames);
@@ -95,7 +97,7 @@ static void gethold()
 
 static bool canhold()
 {
-	return (ringb_float_read_space(top.jack.ring.i.l) >= (size_t)top.hold.size.frames);
+	return ringb_float_read_space(top.jack.ring.i.l) >= (size_t)top.hold.size.frames;
 }
 
 
@@ -107,6 +109,7 @@ static void run_mute()
 	::memset(top.hold.buf.r, 0x00, top.hold.size.bytes);
 	::memset(top.hold.aux.l, 0x00, top.hold.size.bytes);
 	::memset(top.hold.aux.r, 0x00, top.hold.size.bytes);
+
 	uni.tick++;
 }
 
@@ -203,7 +206,7 @@ void Audio_Callback(float* input_l, float* input_r, float* output_l, float* outp
 	}
 
 	// input: copy from port to ring
-	if (ringb_float_write_space(top.jack.ring.i.l) >= nframes && ringb_float_write_space(top.jack.ring.i.r) >= nframes) {
+	if (ringb_float_write_space (top.jack.ring.i.l) >= nframes && ringb_float_write_space(top.jack.ring.i.r) >= nframes) {
 		ringb_float_write(top.jack.ring.i.l, input_l, nframes);
 		ringb_float_write(top.jack.ring.i.r, input_r, nframes);
 		ringb_float_write(top.jack.auxr.i.l, input_l, nframes);
@@ -223,7 +226,7 @@ void Audio_Callback(float* input_l, float* input_r, float* output_l, float* outp
 	}
 
 	// if enough accumulated in ring, fire dsp
-	if (ringb_float_read_space(top.jack.ring.i.l) != ringb_float_read_space(top.jack.ring.i.r)) {
+	if (ringb_float_read_space (top.jack.ring.i.l) != ringb_float_read_space (top.jack.ring.i.r)) {
 		ringb_float_reset(top.jack.ring.i.l);
 		ringb_float_reset(top.jack.ring.i.r);
 		ringb_float_reset(top.jack.auxr.i.l);
@@ -256,7 +259,6 @@ void Audio_CallbackIL(float* input, float* output, unsigned int nframes)
 		unsigned int i, j;
 		/* The following code is broken up in this manner to minimize
 		   cache hits */
-
 		for (i = 0, j = 0; i < nframes; i++, j += 2)
 			ringb_float_read(top.jack.auxr.o.l, &output[j], 1);
 		for (i = 0, j = 1; i < nframes; i++, j += 2)
@@ -276,7 +278,7 @@ void Audio_CallbackIL(float* input, float* output, unsigned int nframes)
 		ringb_float_restart(top.jack.auxr.o.r, nframes);
 		ringb_float_restart(top.jack.auxr.o.l, nframes);
 
-		::memset(output, 0x00, 2 * nframes * sizeof (float));
+		::memset(output, 0x00, 2 * nframes * sizeof(float));
 
 		::wxLogError(_("Not enough data in the output ring buffers"));
 	}
@@ -452,12 +454,12 @@ static void setup_threading()
 
 static void setup_defaults(REAL sampleRate, unsigned int audioSize)
 {
-	loc.def.rate = (sampleRate == 0.0F) ? DEFRATE : sampleRate;
-	loc.def.size = (audioSize == 0) ? DEFSIZE : audioSize;
-	loc.def.mode = DEFMODE;
-	loc.def.spec = DEFSPEC;
+	loc.def.rate  = (sampleRate == 0.0F) ? DEFRATE : sampleRate;
+	loc.def.size  = (audioSize == 0) ? DEFSIZE : audioSize;
+	loc.def.mode  = DEFMODE;
+	loc.def.spec  = DEFSPEC;
 	loc.mult.ring = RINGMULT;
-	loc.def.comp = DEFCOMP;
+	loc.def.comp  = DEFCOMP;
 }
 
 //========================================================================
@@ -465,7 +467,6 @@ void setup(REAL sampleRate, unsigned int audioSize)
 {
 	top.running = true;
 	top.state = RUN_PLAY;
-	top.jack.reset_size = 1024;
 
 	setup_defaults(sampleRate, audioSize);
 

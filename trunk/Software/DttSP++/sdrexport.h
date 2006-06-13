@@ -243,7 +243,6 @@ extern struct _tx
   SDRMODE mode;
 
   unsigned long tick;
-  REAL norm;
 } tx;
 
 //------------------------------------------------------------------------
@@ -283,7 +282,6 @@ extern struct _top {
       } i, o;
     } auxr;
 
-    size_t reset_size;
     size_t size;
   } jack;
 
