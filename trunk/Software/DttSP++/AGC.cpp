@@ -38,7 +38,7 @@ Bridgewater, NJ 08807
 #include <wx/wx.h>
 
 
-CAGC::CAGC(AGCMODE mode, COMPLEX* vec, unsigned int bufSize,  REAL limit, REAL attack,
+CAGC::CAGC(AGCMODE mode, CXB* buff, REAL limit, REAL attack,
 		   REAL decay, REAL slope, REAL hangtime, REAL samprate, REAL maxGain,
 		   REAL minGain, REAL curGain) :
 m_mode(mode),
@@ -62,16 +62,18 @@ m_hangTime(hangtime * 0.001F),
 m_hangThresh(minGain),
 m_fastHangTime(48.0F * 0.001F),		//wa6ahl:  added to structure
 m_circ(NULL),
-m_buff(NULL),
-m_mask(2 * bufSize),
+m_buff(buff),
+m_mask(0),
 m_index(0),
 m_sndex(0),
 m_hangIndex(0),
 m_fastIndex(FASTLEAD),
 m_fastHang(0)			//wa6ahl:  added to structure
 {
-	wxASSERT(vec != NULL);
+	wxASSERT(buff != NULL);
 	wxASSERT(samprate > 0.0F);
+
+	m_mask = 2 * CXBsize(buff);
 
 	m_attack     = REAL(1.0 - ::exp(-1000.0 / (attack * samprate)));
 	m_oneMAttack = (REAL)::exp(-1000.0 / (attack * samprate));
@@ -87,8 +89,6 @@ m_fastHang(0)			//wa6ahl:  added to structure
 
 	m_sndex = (unsigned int)(samprate * attack * 0.003F);
 
-	m_buff = newCXB(bufSize, vec);
-
 	m_circ = new COMPLEX[m_mask];
 	::memset(m_circ, 0x00, m_mask * sizeof(COMPLEX));
 
@@ -97,13 +97,14 @@ m_fastHang(0)			//wa6ahl:  added to structure
 
 CAGC::~CAGC()
 {
-	delCXB(m_buff);
 	delete[] m_circ;
 }
 
 // FIXME check braces
 void CAGC::process()
 {
+	unsigned int n = CXBhave(m_buff);
+
 	unsigned int hangTime     = (unsigned int)(m_samprate * m_hangTime);
 	unsigned int fastHangTime = (unsigned int)(m_samprate * m_fastHangTime);
 
@@ -113,13 +114,13 @@ void CAGC::process()
 		hangThresh = m_gainTop * m_hangThresh + m_gainBottom * (1.0F - m_hangThresh);
 
 	if (m_mode == agcOFF) {
-		for (unsigned int i = 0; i < CXBsize(m_buff); i++)
+		for (unsigned int i = 0; i < n; i++)
 			CXBdata(m_buff, i) = Cscl(CXBdata(m_buff, i), m_gainFix);
 
 		return;
 	}
 
-	for (unsigned int i = 0; i < CXBsize(m_buff); i++) {
+	for (unsigned int i = 0; i < n; i++) {
 		m_circ[m_index] = CXBdata(m_buff, i);	/* Drop sample into circular buffer */
 		REAL tmp = 1.1F * Cmag(m_circ[m_index]);
 

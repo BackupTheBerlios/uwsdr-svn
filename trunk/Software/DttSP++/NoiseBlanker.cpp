@@ -68,7 +68,9 @@ void CNoiseBlanker::setThreshold(REAL threshold)
 
 void CNoiseBlanker::blank()
 {
-	for (unsigned int i = 0; i < CXBsize(m_sigbuf); i++) {
+	unsigned int n = CXBhave(m_sigbuf);
+
+	for (unsigned int i = 0; i < n; i++) {
 		REAL cmag = Cmag(CXBdata(m_sigbuf, i));
 
 		m_delay[m_sigIndex] = CXBdata(m_sigbuf, i);
@@ -91,7 +93,9 @@ void CNoiseBlanker::blank()
 
 void CNoiseBlanker::sdromBlank()
 {
-	for (unsigned int i = 0; i < CXBsize(m_sigbuf); i++) {
+	unsigned int n = CXBhave(m_sigbuf);
+
+	for (unsigned int i = 0; i < n; i++) {
 		REAL cmag = Cmag(CXBdata(m_sigbuf, i));
 
 		m_aveSig = Cadd(Cscl(m_aveSig, 0.75),

@@ -51,7 +51,7 @@ typedef enum {
 
 class CAGC {
     public:
-	CAGC(AGCMODE mode, COMPLEX* vec, unsigned int bufSize, REAL limit, REAL attack,
+	CAGC(AGCMODE mode, CXB* buff, REAL limit, REAL attack,
 	     REAL decay, REAL slope, REAL hangtime, REAL samprate, REAL maxGain,
 		 REAL minGain, REAL curgain);
 	virtual ~CAGC();

@@ -53,7 +53,9 @@ void CCorrectIQ::process(CXB* sigbuf)
 {
 	wxASSERT(sigbuf != NULL);
 
-	for (unsigned int i = 0; i < CXBhave(sigbuf); i++) {
+	unsigned int n = CXBhave(sigbuf);
+
+	for (unsigned int i = 0; i < n; i++) {
 		CXBimag(sigbuf, i) += m_phase * CXBreal(sigbuf, i);
 		CXBreal(sigbuf, i) *= m_gain;
 	}

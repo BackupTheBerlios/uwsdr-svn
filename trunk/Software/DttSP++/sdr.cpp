@@ -97,8 +97,7 @@ static void setup_rx()
   rx.rit.gen = new COscillator(0.0F, 0.0, uni.samplerate);
 
   rx.agc.gen = new CAGC(agcLONG,	// mode kept around for control reasons alone
-				    CXBbase (rx.buf.o),	// input buffer
-				    CXBsize (rx.buf.o),	// output buffer
+				    rx.buf.o,	// input buffer
 				    1.0f,	// Target output 
 				    2.0f,	// Attack time constant in ms
 				    500,	// Decay time constant in ms
@@ -122,19 +121,18 @@ static void setup_rx()
 			 -500.0F,	// REAL f_lobound,
 			 500.0F,	// REAL f_hibound,
 			 400.0F,	// REAL f_bandwid,
-			 CXBsize(rx.buf.o),	// int size,
-			 CXBbase(rx.buf.o),	// COMPLEX *ivec,
-			 CXBbase(rx.buf.o),	// COMPLEX *ovec,
+			 rx.buf.o,	// COMPLEX *ivec,
+			 rx.buf.o,	// COMPLEX *ovec,
 			 AMdet		// AM Mode AMdet == rectifier,
 			 );			// SAMdet == synchronous detector
+
   rx.fm = new CFMDemod(uni.samplerate,	// REAL samprate
 			 0.0F,	// REAL f_initial
 			 -6000.0F,	// REAL f_lobound
 			 6000.0F,	// REAL f_hibound
 			 5000.0F,	// REAL f_bandwid
-			 CXBsize(rx.buf.o),	// int size
-			 CXBbase(rx.buf.o),	// COMPLEX *ivec
-			 CXBbase(rx.buf.o));	// COMPLEX *ovec
+			 rx.buf.o,	// COMPLEX *ivec
+			 rx.buf.o);	// COMPLEX *ovec
 
   /* noise reduction */
   rx.anf.gen = new_lmsr(rx.buf.o,	// CXB signal,
@@ -221,8 +219,7 @@ static void setup_tx()
   tx.fm = new CFMMod(5000.0F, uni.samplerate, tx.buf.i, tx.buf.i);
 
   tx.leveler.gen = new CAGC(agcLONG,	// mode kept around for control reasons
-				CXBbase (tx.buf.i),	// input buffer
-				CXBsize (tx.buf.i),	// output buffer
+				tx.buf.i,	// input buffer
 				1.1f,	// Target output
 				2,	// Attack time constant in ms
 				500,	// Decay time constant in ms
@@ -247,8 +244,7 @@ static void setup_tx()
   tx.squelch.num = uni.buflen - 48;
 
   tx.alc.gen = new CAGC(agcLONG,	// mode kept around for control reasons alone
-			    CXBbase (tx.buf.i),	// input buffer
-			    CXBsize (tx.buf.i),	// output buffer
+			    tx.buf.i,	// input buffer
 			    1.2f,	// Target output 
 			    2,	// Attack time constant in ms
 			    10,	// Decay time constant in ms
@@ -260,7 +256,7 @@ static void setup_tx()
     );
   tx.alc.flag = true;
 
-  tx.spr.gen = new CSpeechProc(0.4F, 3.0, CXBbase(tx.buf.i), CXBsize(tx.buf.o));
+  tx.spr.gen = new CSpeechProc(0.4F, 3.0, tx.buf.i);
   tx.spr.flag = false;
 
   tx.cpd.gen = new CCompand(uni.cpdlen, -3.0F, tx.buf.i);
@@ -383,7 +379,7 @@ static bool should_do_rx_squelch()
 {
   if (rx.squelch.flag)
     {
-      int i, n = CXBhave (rx.buf.o);
+      int i, n = CXBhave(rx.buf.o);
       rx.squelch.power = 0.0;
 
       for (i = 0; i < n; i++)
@@ -401,7 +397,7 @@ static bool should_do_tx_squelch()
 {
   if (tx.squelch.flag)
     {
-      int i, n = CXBsize (tx.buf.i);
+      int i, n = CXBhave(tx.buf.i);
       tx.squelch.power = 0.0;
 
       for (i = 0; i < n; i++)
@@ -574,29 +570,31 @@ static void do_rx_post()
 
 static void do_rx_SBCW()
 {
-  if (rx.bin.flag)
-    {
-      if ((rx.banr.flag) && (rx.anr.flag))
-	blms_adapt (rx.banr.gen);
-      if ((rx.banf.flag) && (rx.anf.flag))
-	blms_adapt (rx.banf.gen);
+	if (rx.bin.flag) {
+		if (rx.banr.flag && rx.anr.flag)
+			blms_adapt(rx.banr.gen);
 
-    }
-  else
-    {
-      if (rx.anr.flag)
-	if (rx.banr.flag)
-	  blms_adapt (rx.banr.gen);
-	else
-	  lmsr_adapt (rx.anr.gen);
-      if (rx.anf.flag)
-	if (rx.banf.flag)
-	  blms_adapt (rx.banf.gen);
-	else
-	  lmsr_adapt (rx.anf.gen);
-      for (unsigned int i = 0; i < CXBhave (rx.buf.o); i++)
-	CXBimag (rx.buf.o, i) = CXBreal (rx.buf.o, i);
-    }
+		if (rx.banf.flag && rx.anf.flag)
+			blms_adapt(rx.banf.gen);
+	} else {
+		if (rx.anr.flag) {
+			if (rx.banr.flag)
+				blms_adapt(rx.banr.gen);
+			else
+				lmsr_adapt(rx.anr.gen);
+		}
+
+		if (rx.anf.flag) {
+			if (rx.banf.flag)
+				blms_adapt(rx.banf.gen);
+			else
+				lmsr_adapt(rx.anf.gen);
+		}
+/*
+		for (unsigned int i = 0; i < CXBhave(rx.buf.o); i++)
+			CXBimag(rx.buf.o, i) = CXBreal(rx.buf.o, i);
+*/
+	}
 }
 
 static void do_rx_AM()
@@ -632,34 +630,39 @@ static void do_rx_SPEC()
 
 static void do_rx()
 {
-  do_rx_pre();
+	do_rx_pre();
 
-  switch (rx.mode) {
-    case DIGU:
-    case DIGL:
-    case USB:
-    case LSB:
-    case CWU:
-    case CWL:
-    case DSB:
-      do_rx_SBCW ();
-      break;
-    case AM:
-    case SAM:
-      do_rx_AM ();
-      break;
-    case FMN:
-      do_rx_FM ();
-      break;
-    case DRM:
-      do_rx_DRM ();
-      break;
-    case SPEC:
-    default:
-      do_rx_SPEC ();
-      break;
-    }
-  do_rx_post ();
+	switch (rx.mode) {
+		case DIGU:
+		case DIGL:
+		case USB:
+		case LSB:
+		case CWU:
+		case CWL:
+		case DSB:
+			do_rx_SBCW();
+			break;
+
+		case AM:
+		case SAM:
+			do_rx_AM();
+			break;
+
+		case FMN:
+			do_rx_FM();
+			break;
+
+		case DRM:
+			do_rx_DRM();
+			break;
+
+		case SPEC:
+		default:
+			do_rx_SPEC();
+			break;
+	}
+
+	do_rx_post ();
 }
 
 /* TX processing */
@@ -670,12 +673,12 @@ static void do_tx_pre()
 	wxASSERT(tx.leveler.gen != NULL);
 	wxASSERT(tx.spr.gen != NULL);
 	wxASSERT(tx.cpd.gen != NULL);
-
+/*
 	unsigned int n = CXBhave (tx.buf.i);
 
 	for (unsigned int i = 0; i < n; i++)
 		CXBdata(tx.buf.i, i) = Cmplx(CXBimag(tx.buf.i, i), 0.0F);
-
+*/
 	if (tx.dcb.flag)
 		tx.dcb.gen->block();
 
@@ -743,11 +746,13 @@ static void do_tx_post()
 
 static void do_tx_SBCW()
 {
-  if (tx.alc.flag && (tx.mode != DIGU) && (tx.mode != DIGL))
-    tx.alc.gen->process();
-  do_tx_meter (tx.buf.i, TX_ALC);
- if (tx.mode != DSB)
-    CXBscl (tx.buf.i, 2.0f);
+	if (tx.alc.flag && tx.mode != DIGU && tx.mode != DIGL)
+		tx.alc.gen->process();
+
+	do_tx_meter(tx.buf.i, TX_ALC);
+
+	if (tx.mode != DSB)
+		CXBscl(tx.buf.i, 2.0F);
 }
 
 static void do_tx_AM()
@@ -772,41 +777,46 @@ static void do_tx_FM()
 
 static void do_tx_NIL()
 {
-  int i, n = min (CXBhave (tx.buf.i), uni.buflen);
-  for (i = 0; i < n; i++)
-    CXBdata (tx.buf.i, i) = cxzero;
+	unsigned int n = CXBhave(tx.buf.i);
+
+	for (unsigned int i = 0; i < n; i++)
+		CXBdata(tx.buf.i, i) = cxzero;
 }
 
 /* general TX processing dispatch */
 
 static void do_tx()
 {
-  do_tx_pre ();
-  switch (tx.mode)
-    {
-    case USB:
-    case LSB:
-    case CWU:
-    case CWL:
-    case DIGU:
-    case DIGL:
-    case DSB:
-      do_tx_SBCW ();
-      break;
-    case AM:
-    case SAM:
-      do_tx_AM ();
-      break;
-    case FMN:
-      do_tx_FM ();
-      break;
-    case DRM:
-    case SPEC:
-    default:
-      do_tx_NIL ();
-      break;
-    }
-  do_tx_post ();
+	do_tx_pre();
+
+	switch (tx.mode) {
+		case USB:
+		case LSB:
+		case CWU:
+		case CWL:
+		case DIGU:
+		case DIGL:
+		case DSB:
+			do_tx_SBCW();
+			break;
+
+		case AM:
+		case SAM:
+			do_tx_AM();
+			break;
+
+		case FMN:
+			do_tx_FM();
+			break;
+
+		case DRM:
+		case SPEC:
+		default:
+			do_tx_NIL();
+			break;
+	}
+
+	do_tx_post();
 }
 
 //========================================================================
@@ -829,7 +839,7 @@ void process_samples(float* bufl, float* bufr, unsigned int n)
 			do_rx();
 			rx.tick++;
 
-			CXBhave(rx.buf.o) = n;
+			n = CXBhave(rx.buf.o);
 			for (i = 0; i < n; i++) {
 				bufl[i] = CXBimag(rx.buf.o, i);
 				bufr[i] = CXBreal(rx.buf.o, i);
@@ -846,7 +856,7 @@ void process_samples(float* bufl, float* bufr, unsigned int n)
 			do_tx();
 			tx.tick++;
 
-			CXBhave(tx.buf.o) = n;
+			n = CXBhave(tx.buf.o);
 			for (i = 0; i < n; i++) {
 				bufl[i] = CXBimag(tx.buf.o, i);
 				bufr[i] = CXBreal(tx.buf.o, i);

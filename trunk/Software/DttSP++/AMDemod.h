@@ -47,7 +47,7 @@ typedef enum {
 
 class CAMDemod {
     public:
-	CAMDemod(REAL samprate, REAL f_initial, REAL f_lobound, REAL f_hibound, REAL f_bandwid, unsigned int size, COMPLEX* ivec, COMPLEX* ovec, AMMode mode);
+	CAMDemod(REAL samprate, REAL f_initial, REAL f_lobound, REAL f_hibound, REAL f_bandwid, CXB* ivec, CXB* ovec, AMMode mode);
 	virtual ~CAMDemod();
 
 	virtual AMMode getMode() const;
@@ -56,23 +56,22 @@ class CAMDemod {
 	virtual void demodulate();
 
     private:
-	unsigned int m_size;
-	CXB*         m_ibuf;
-	CXB*         m_obuf;
-	REAL         m_pllAlpha;
-	REAL         m_pllBeta;
-	REAL         m_pllFastAlpha;
-	REAL         m_pllFreqF;
-	REAL         m_pllFreqL;
-	REAL         m_pllFreqH;
-	REAL         m_pllPhase;
-	REAL         m_pllIIRAlpha;
-	COMPLEX      m_pllDelay;
-    REAL         m_lockCurr;
-	REAL         m_lockPrev;
-	REAL         m_dc;
-	REAL         m_smooth;
-	AMMode       m_mode;
+	CXB*    m_ibuf;
+	CXB*    m_obuf;
+	REAL    m_pllAlpha;
+	REAL    m_pllBeta;
+	REAL    m_pllFastAlpha;
+	REAL    m_pllFreqF;
+	REAL    m_pllFreqL;
+	REAL    m_pllFreqH;
+	REAL    m_pllPhase;
+	REAL    m_pllIIRAlpha;
+	COMPLEX m_pllDelay;
+    REAL    m_lockCurr;
+	REAL    m_lockPrev;
+	REAL    m_dc;
+	REAL    m_smooth;
+	AMMode  m_mode;
 
 	void pll(COMPLEX sig);
 	REAL dem();

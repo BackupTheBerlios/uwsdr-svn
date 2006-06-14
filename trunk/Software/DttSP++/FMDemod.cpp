@@ -37,11 +37,10 @@ Bridgewater, NJ 08807
 #include <wx/wx.h>
 
 
-CFMDemod::CFMDemod(REAL samprate, REAL f_initial, REAL f_lobound, REAL f_hibound, REAL f_bandwid, unsigned int size, COMPLEX* ivec, COMPLEX* ovec) :
+CFMDemod::CFMDemod(REAL samprate, REAL f_initial, REAL f_lobound, REAL f_hibound, REAL f_bandwid, CXB* ivec, CXB* ovec) :
 m_samprate(samprate),
-m_size(size),
-m_ibuf(NULL),
-m_obuf(NULL),
+m_ibuf(ivec),
+m_obuf(ovec),
 m_pllAlpha(0.0F),
 m_pllBeta(0.0F),
 m_pllFreqF(0.0F),
@@ -58,9 +57,6 @@ m_cvt(0.0F)
 	wxASSERT(ovec != NULL);
 	wxASSERT(samprate > 0.0F);
 
-	m_ibuf = newCXB(size, ivec);
-	m_obuf = newCXB(size, ovec);
-
 	REAL fac = TWOPI / samprate;
 
 	m_pllFreqF = f_initial * fac;
@@ -76,8 +72,6 @@ m_cvt(0.0F)
 
 CFMDemod::~CFMDemod()
 {
-	delCXB(m_ibuf);
-	delCXB(m_obuf);
 }
 
 void CFMDemod::setBandwidth(REAL f_lobound, REAL f_hibound)
@@ -104,7 +98,9 @@ void CFMDemod::setDeviation(REAL f_bandwid)
 
 void CFMDemod::demodulate()
 {
-	for (unsigned int i = 0; i < m_size; i++) {
+	unsigned int n = CXBhave(m_ibuf);
+
+	for (unsigned int i = 0; i < n; i++) {
 		pll(CXBdata(m_ibuf, i));
 
 		m_afc = REAL(0.9999 * m_afc + 0.0001F * m_pllFreqF);

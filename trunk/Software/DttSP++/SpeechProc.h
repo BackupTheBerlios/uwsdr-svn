@@ -41,7 +41,7 @@ Bridgewater, NJ 08807
 
 class CSpeechProc {
     public:
-	CSpeechProc(REAL k, REAL maxCompression, COMPLEX* spdat, unsigned int size);
+	CSpeechProc(REAL k, REAL maxCompression, CXB* spdat);
 	virtual ~CSpeechProc();
 
 	virtual void setCompression(REAL compression);
@@ -49,13 +49,12 @@ class CSpeechProc {
 	virtual void process();
 
     private:
-	unsigned int m_size;
-	REAL*        m_CG;
-	CXB*         m_buf;
-	REAL         m_lastCG;
-	REAL         m_k;
-	REAL         m_maxGain;
-	REAL         m_fac;
+	REAL* m_CG;
+	CXB*  m_buf;
+	REAL  m_lastCG;
+	REAL  m_k;
+	REAL  m_maxGain;
+	REAL  m_fac;
 };
 
 #endif

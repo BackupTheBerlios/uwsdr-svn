@@ -46,28 +46,26 @@ CDCBlock::CDCBlock(DCBMode mode, CXB* buf) :
 m_mode(mode),
 m_input(),
 m_output(),
-m_buf(NULL)
+m_buf(buf)
 {
 	wxASSERT(buf != NULL);
 
 	::memset(m_input,  0x00, BLKMEM * sizeof(REAL));
 	::memset(m_output, 0x00, BLKMEM * sizeof(REAL));
-
-	m_buf = newCXB(CXBsize(buf), CXBbase(buf));
 }
 
 CDCBlock::~CDCBlock()
 {
-	delCXB(m_buf);
 }
 
 void CDCBlock::block()
 {
 	unsigned int i;
+	unsigned int n = CXBhave(m_buf);
 
 	switch (m_mode) {
 		case DCB_LOW:
-			for (i = 0; i < CXBsize(m_buf); i++) {
+			for (i = 0; i < n; i++) {
 				REAL x = CXBreal(m_buf, i);
 				REAL y = butterworthHighpass_100_2(x);
 				CXBdata(m_buf, i) = Cmplx(y, 0.0);
@@ -75,7 +73,7 @@ void CDCBlock::block()
 			break;
 
 		case DCB_MED:
-			for (i = 0; i < CXBsize(m_buf); i++) {
+			for (i = 0; i < n; i++) {
 				REAL x = CXBreal(m_buf, i);
 				REAL y = butterworthHighpass_100_4(x);
 				CXBdata(m_buf, i) = Cmplx(y, 0.0);
@@ -83,7 +81,7 @@ void CDCBlock::block()
 			break;
 
 		case DCB_HIGH:
-			for (i = 0; i < CXBsize(m_buf); i++) {
+			for (i = 0; i < n; i++) {
 				REAL x = CXBreal(m_buf, i);
 				REAL y = butterworthHighpass_100_6(x);
 				CXBdata(m_buf, i) = Cmplx(y, 0.0);
@@ -91,7 +89,7 @@ void CDCBlock::block()
 			break;
 
 		case DCB_SUPER:
-			for (i = 0; i < CXBsize(m_buf); i++) {
+			for (i = 0; i < n; i++) {
 				REAL x = CXBreal(m_buf, i);
 				REAL y = butterworthHighpass_100_8(x);
 				CXBdata(m_buf, i) = Cmplx(y, 0.0);

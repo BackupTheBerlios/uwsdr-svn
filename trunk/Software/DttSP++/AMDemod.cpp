@@ -36,10 +36,9 @@ Bridgewater, NJ 08807
 #include <wx/wx.h>
 
 
-CAMDemod::CAMDemod(REAL samprate, REAL f_initial, REAL f_lobound, REAL f_hibound, REAL f_bandwid, unsigned int size, COMPLEX* ivec, COMPLEX* ovec, AMMode mode) :
-m_size(size),
-m_ibuf(NULL),
-m_obuf(NULL),
+CAMDemod::CAMDemod(REAL samprate, REAL f_initial, REAL f_lobound, REAL f_hibound, REAL f_bandwid, CXB* ivec, CXB* ovec, AMMode mode) :
+m_ibuf(ivec),
+m_obuf(ovec),
 m_pllAlpha(0.0F),
 m_pllBeta(0.0F),
 m_pllFastAlpha(0.0F),
@@ -59,9 +58,6 @@ m_mode(mode)
 	wxASSERT(ivec != NULL);
 	wxASSERT(ovec != NULL);
 
-	m_ibuf = newCXB(size, ivec);
-	m_obuf = newCXB(size, ovec);
-
 	REAL fac = REAL(TWOPI / samprate);
 
 	m_pllFreqF = f_initial * fac;
@@ -76,8 +72,6 @@ m_mode(mode)
 
 CAMDemod::~CAMDemod()
 {
-	delCXB(m_ibuf);
-	delCXB(m_obuf);
 }
 
 AMMode CAMDemod::getMode() const
@@ -92,11 +86,12 @@ void CAMDemod::setMode(AMMode mode)
 
 void CAMDemod::demodulate()
 {
+	unsigned int n = CXBhave(m_ibuf);
 	unsigned int i;
 
 	switch (m_mode) {
 		case SAMdet:
-			for (i = 0; i < m_size; i++) {
+			for (i = 0; i < n; i++) {
 				pll(CXBdata(m_ibuf, i));
 				REAL demout = dem();
 
@@ -105,7 +100,7 @@ void CAMDemod::demodulate()
 			break;
 
 		case AMdet:
-			for (i = 0; i < m_size; i++) {
+			for (i = 0; i < n; i++) {
 				m_lockCurr = Cmag(CXBdata(m_ibuf, i));
 				m_dc = 0.9999F * m_dc + 0.0001F * m_lockCurr;
 				m_smooth = 0.5F * m_smooth + 0.5F * (m_lockCurr - m_dc);

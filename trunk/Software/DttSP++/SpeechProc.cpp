@@ -39,10 +39,9 @@ Bridgewater, NJ 08807
 #include <wx/wx.h>
 
 
-CSpeechProc::CSpeechProc(REAL k, REAL maxCompression, COMPLEX* spdat, unsigned int size) :
-m_size(size),
+CSpeechProc::CSpeechProc(REAL k, REAL maxCompression, CXB* spdat) :
 m_CG(NULL),
-m_buf(NULL),
+m_buf(spdat),
 m_lastCG(1.0F),
 m_k(k),
 m_maxGain(0.0F),
@@ -50,7 +49,7 @@ m_fac(0.0F)
 {
 	wxASSERT(spdat != NULL);
 
-	m_buf = newCXB(size, spdat);
+	unsigned int size = CXBsize(spdat);
 
 	m_CG  = new REAL[size + 1];
 	::memset(m_CG, 0x00, (size + 1) * sizeof(REAL));
@@ -61,7 +60,6 @@ m_fac(0.0F)
 CSpeechProc::~CSpeechProc()
 {
 	delete[] m_CG;
-	delCXB(m_buf);
 }
 
 void CSpeechProc::setCompression(REAL compression)
@@ -73,9 +71,7 @@ void CSpeechProc::setCompression(REAL compression)
 
 void CSpeechProc::process()
 {
-	wxASSERT(m_CG != NULL);
-	wxASSERT(m_buf != NULL);
-
+	unsigned int n = CXBhave(m_buf);
 	unsigned int i;
 
 	if (m_maxGain == 1.0F)
@@ -83,12 +79,12 @@ void CSpeechProc::process()
 
 	// K was 0.4 in VB version, this value is better, perhaps due to filters that follow?
 	REAL r = 0.0;
-	for (i = 0; i < m_size; i++)
+	for (i = 0; i < n; i++)
 		r = max(r, Cmag(CXBdata(m_buf, i)));	// find the peak magnitude value in the sample buffer 
 
 	m_CG[0] = m_lastCG;	// restore from last time
 
-	for (i = 1; i <= m_size; i++) {
+	for (i = 1; i <= n; i++) {
 		REAL mag = Cmag(CXBdata(m_buf, i - 1));
 
 		if (mag != 0.0F) {
@@ -100,8 +96,8 @@ void CSpeechProc::process()
 		}
 	}
 
-	m_lastCG = m_CG[m_size];	// save for next time 
+	m_lastCG = m_CG[n];	// save for next time 
 
-	for (i = 0; i < m_size; i++)	// multiply each sample by its gain constant 
+	for (i = 0; i < n; i++)	// multiply each sample by its gain constant 
 		CXBdata(m_buf, i) = Cscl(CXBdata(m_buf, i), REAL(m_CG[i] / (m_fac * ::pow(m_maxGain, 0.25F))));
 }

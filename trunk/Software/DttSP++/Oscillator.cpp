@@ -87,7 +87,9 @@ CXB* COscillator::oscillate(CXB* buf)
 	COMPLEX z     = Cmplx((REAL)::cos(m_phase), (IMAG)::sin(m_phase));
 	COMPLEX delta = Cmplx((REAL)::cos(m_delta), (IMAG)::sin(m_delta));
 
-	for (unsigned int i = 0; i < CXBsize(buf); i++) {
+	unsigned int n = CXBhave(buf);
+
+	for (unsigned int i = 0; i < n; i++) {
 		CXBdata(buf, i) = z = Cmul(z, delta);
 
 		m_phase += m_delta;

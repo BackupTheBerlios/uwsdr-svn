@@ -41,7 +41,7 @@ Bridgewater, NJ 08807
 
 class CFMDemod {
     public:
-	CFMDemod(REAL samprate, REAL f_initial, REAL f_lobound, REAL f_hibound, REAL f_bandwid, unsigned int size, COMPLEX* ivec, COMPLEX* ovec);
+	CFMDemod(REAL samprate, REAL f_initial, REAL f_lobound, REAL f_hibound, REAL f_bandwid, CXB* ivec, CXB* ovec);
 	virtual ~CFMDemod();
 
 	virtual void setBandwidth(REAL f_lobound, REAL f_hibound);
@@ -50,21 +50,20 @@ class CFMDemod {
 	virtual void demodulate();
 
     private:
-	REAL         m_samprate;
-	unsigned int m_size;
-	CXB*         m_ibuf;
-	CXB*         m_obuf;
-	REAL         m_pllAlpha;
-	REAL         m_pllBeta;
-	REAL         m_pllFreqF;
-	REAL         m_pllFreqL;
-	REAL         m_pllFreqH;
-	REAL         m_pllPhase;
-	COMPLEX      m_pllDelay;
-	REAL         m_iirAlpha;
-	REAL         m_lock;
-	REAL         m_afc;
-	REAL         m_cvt;
+	REAL    m_samprate;
+	CXB*    m_ibuf;
+	CXB*    m_obuf;
+	REAL    m_pllAlpha;
+	REAL    m_pllBeta;
+	REAL    m_pllFreqF;
+	REAL    m_pllFreqL;
+	REAL    m_pllFreqH;
+	REAL    m_pllPhase;
+	COMPLEX m_pllDelay;
+	REAL    m_iirAlpha;
+	REAL    m_lock;
+	REAL    m_afc;
+	REAL    m_cvt;
 
 	void pll(COMPLEX sig);
 };

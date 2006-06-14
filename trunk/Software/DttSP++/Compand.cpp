@@ -47,12 +47,10 @@ m_npts(npts),
 m_nend(npts - 1),
 m_fac(fac),
 m_tbl(NULL),
-m_buff(NULL)
+m_buff(buff)
 {
 	wxASSERT(npts > 1);
 	wxASSERT(buff != NULL);
-
-	m_buff = newCXB(CXBsize(buff), CXBbase(buff));
 
 	m_tbl  = new REAL[npts];
 	::memset(m_tbl, 0x00, npts * sizeof(REAL));
@@ -63,12 +61,11 @@ m_buff(NULL)
 CCompand::~CCompand()
 {
 	delete[] m_tbl;
-	delCXB(m_buff);
 }
 
 void CCompand::process()
 {
-	unsigned int n = CXBsize(m_buff);
+	unsigned int n = CXBhave(m_buff);
 
 	for (unsigned int i = 0; i < n; i++) {
 		COMPLEX val = CXBdata(m_buff, i);

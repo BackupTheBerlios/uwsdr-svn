@@ -158,9 +158,9 @@ void CSpectrum::setData(CXB* buf)
 {
 	wxASSERT(buf != NULL);
 
-	::memcpy(&CXBdata(m_accum, m_fill), CXBbase(buf), CXBsize(buf) * sizeof(COMPLEX));
+	::memcpy(&CXBdata(m_accum, m_fill), CXBbase(buf), CXBhave(buf) * sizeof(COMPLEX));
 
-	m_fill = (m_fill + CXBsize(buf)) & m_mask;
+	m_fill = (m_fill + CXBhave(buf)) & m_mask;
 }
 
 void CSpectrum::reinitSpectrum()
