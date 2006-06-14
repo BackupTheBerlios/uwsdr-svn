@@ -3,7 +3,7 @@ all:		DttSP.a
 OBJS :=	AGC.o AMDemod.o AMMod.o Compand.o CorrectIQ.o DCBlock.o FIR.o FMDemod.o FMMod.o \
 		FilterOVSV.o GraphicEQ.o Meter.o NoiseBlanker.o Oscillator.o Resample.o ResampleF.o \
 		Spectrum.o SpeechProc.o SpotTone.o Squelch.o Window.o banal.o bufvec.o lmadf.o \
-		ringb.o sdr.o sdrexport.o thunk.o update.o winmain.o
+		ringb.o sdr.o sdrexport.o SSBDemod.o SSBMod.o thunk.o update.o winmain.o
 
 DttSP.a:	$(OBJS)
 		ar rcs DttSP.a $(OBJS)
@@ -20,7 +20,7 @@ AMMod.o:	AMMod.cpp AMMod.h bufvec.h Complex.h DataTypes.h FromSys.h
 Compand.o:	Compand.cpp Compand.h bufvec.h DataTypes.h FromSys.h
 		$(CC) $(CFLAGS) -c Compand.cpp
 
-CorrectIQ.o: 	CorrectIQ.cpp CorrectIQ.h bufvec.h
+CorrectIQ.o: CorrectIQ.cpp CorrectIQ.h bufvec.h
 		$(CC) $(CFLAGS) -c CorrectIQ.cpp
 
 DCBlock.o:	DCBlock.cpp DCBlock.h bufvec.h Complex.h DataTypes.h FromSys.h
@@ -35,10 +35,10 @@ FMDemod.o:	FMDemod.cpp FMDemod.h banal.h bufvec.h Complex.h DataTypes.h FromSys.
 FMMod.o:	FMMod.cpp FMMod.h banal.h bufvec.h Complex.h DataTypes.h FromSys.h
 		$(CC) $(CFLAGS) -c FMMod.cpp
 
-FilterOVSV.o: 	FilterOVSV.cpp FilterOVSV.h banal.h bufvec.h Complex.h CXOps.h DataTypes.h FIR.h
+FilterOVSV.o: FilterOVSV.cpp FilterOVSV.h banal.h bufvec.h Complex.h CXOps.h DataTypes.h FIR.h
 		$(CC) $(CFLAGS) -c FilterOVSV.cpp
 
-GraphicEQ.o: 	GraphicEQ.cpp GraphicEQ.h bufvec.h Complex.h DataTypes.h FilterOVSV.h FIR.h FromSys.h
+GraphicEQ.o: GraphicEQ.cpp GraphicEQ.h bufvec.h Complex.h DataTypes.h FilterOVSV.h FIR.h FromSys.h
 		$(CC) $(CFLAGS) -c GraphicEQ.cpp
 
 Meter.o:	Meter.cpp Meter.h banal.h bufvec.h DataTypes.h FromSys.h
@@ -47,19 +47,19 @@ Meter.o:	Meter.cpp Meter.h banal.h bufvec.h DataTypes.h FromSys.h
 NoiseBlanker.o: NoiseBlanker.cpp NoiseBlanker.h bufvec.h FromSys.h
 		$(CC) $(CFLAGS) -c NoiseBlanker.cpp
 
-Oscillator.o: 	Oscillator.cpp Oscillator.h bufvec.h DataTypes.h FromSys.h
+Oscillator.o: Oscillator.cpp Oscillator.h bufvec.h DataTypes.h FromSys.h
 		$(CC) $(CFLAGS) -c Oscillator.cpp
 
 Resample.o:	Resample.cpp Resample.h banal.h CXOps.h FIR.h
 		$(CC) $(CFLAGS) -c Resample.cpp
 
-ResampleF.o: 	ResampleF.cpp ResampleF.h banal.h FIR.h
+ResampleF.o: ResampleF.cpp ResampleF.h banal.h FIR.h
 		$(CC) $(CFLAGS) -c ResampleF.cpp
 
 Spectrum.o:	Spectrum.cpp Spectrum.h banal.h bufvec.h DataTypes.h FIR.h FromSys.h Window.h
 		$(CC) $(CFLAGS) -c Spectrum.cpp
 
-SpeechProc.o: 	SpeechProc.cpp SpeechProc.h banal.h bufvec.h Complex.h DataTypes.h FromSys.h
+SpeechProc.o: SpeechProc.cpp SpeechProc.h banal.h bufvec.h Complex.h DataTypes.h FromSys.h
 		$(CC) $(CFLAGS) -c SpeechProc.cpp
 
 SpotTone.o:	SpotTone.cpp SpotTone.h bufvec.h DataTypes.h FromSys.h Oscillator.h
@@ -67,6 +67,12 @@ SpotTone.o:	SpotTone.cpp SpotTone.h bufvec.h DataTypes.h FromSys.h Oscillator.h
 
 Squelch.o:	Squelch.cpp Squelch.h bufvec.h
 		$(CC) $(CFLAGS) -c Squelch.cpp
+
+SSBDemod.o:	SSBDemod.cpp SSBDemod.h bufvec.h Complex.h DataTypes.h FromSys.h
+		$(CC) $(CFLAGS) -c SSBDemod.cpp
+
+SSBMod.o:	SSBMod.cpp SSBMod.h bufvec.h Complex.h DataTypes.h FromSys.h
+		$(CC) $(CFLAGS) -c SSBMod.cpp
 
 Window.o:	Window.cpp Window.h banal.h DataTypes.h FromSys.h
 		$(CC) $(CFLAGS) -c Window.cpp
@@ -83,10 +89,10 @@ lmadf.o:	lmadf.cpp lmadf.h banal.h bufvec.h CXOps.h DataTypes.h
 ringb.o:	ringb.cpp ringb.h FromSys.h
 		$(CC) $(CFLAGS) -c ringb.cpp
 
-sdr.o:		sdr.cpp AMDemod.h AMMod.h banal.h FMDemod.h FMMod.h sdrexport.h
+sdr.o:	sdr.cpp AMDemod.h AMMod.h banal.h FMDemod.h FMMod.h sdrexport.h SSBDemod.h SSBMod.h
 		$(CC) $(CFLAGS) -c sdr.cpp
 
-sdrexport.o: 	sdrexport.cpp sdrexport.h AGC.h AMDemod.h bufvec.h Compand.h CorrectIQ.h DataTypes.h DCBlock.h Defs.h \
+sdrexport.o: sdrexport.cpp sdrexport.h AGC.h AMDemod.h bufvec.h Compand.h CorrectIQ.h DataTypes.h DCBlock.h Defs.h \
 		FIR.h FilterOVSV.h FMDemod.h FromSys.h GraphicEQ.h lmadf.h Meter.h NoiseBlanker.h Oscillator.h ringb.h \
 		Spectrum.h SpeechProc.h SpotTone.h
 		$(CC) $(CFLAGS) -c sdrexport.cpp

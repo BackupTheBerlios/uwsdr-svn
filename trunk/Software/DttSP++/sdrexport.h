@@ -50,6 +50,8 @@ Bridgewater, NJ 08807
 #include "AMMod.h"
 #include "FMDemod.h"
 #include "FMMod.h"
+#include "SSBDemod.h"
+#include "SSBMod.h"
 #include "SpotTone.h"
 #include "Compand.h"
 #include "DCBlock.h"
@@ -142,8 +144,9 @@ extern struct _rx
     bool flag;
   } agc;
 
-  CAMDemod* am;
-  CFMDemod* fm;
+  CAMDemod*  am;
+  CFMDemod*  fm;
+  CSSBDemod* ssb;
 
   struct {
     bool flag;
@@ -201,8 +204,9 @@ extern struct _tx
 
   CFilterOVSV* filt;
 
-  CAMMod* am;
-  CFMMod* fm;
+  CAMMod*  am;
+  CFMMod*  fm;
+  CSSBMod* ssb;
 
   struct {
     REAL thresh, power;

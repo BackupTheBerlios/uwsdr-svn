@@ -109,6 +109,8 @@ void CAMDemod::demodulate()
 			}
 			break;
 	}
+
+	CXBhave(m_obuf) = n;
 }
 
 void CAMDemod::pll(COMPLEX sig)

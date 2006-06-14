@@ -134,6 +134,8 @@ static void setup_rx()
 			 rx.buf.o,	// COMPLEX *ivec
 			 rx.buf.o);	// COMPLEX *ovec
 
+  rx.ssb = new CSSBDemod(rx.buf.o, rx.buf.o);
+
   /* noise reduction */
   rx.anf.gen = new_lmsr(rx.buf.o,	// CXB signal,
 			    64,	// int delay,
@@ -214,9 +216,9 @@ static void setup_tx()
   tx.osc.phase = 0.0;
   tx.osc.gen = new COscillator(0.0, tx.osc.phase, uni.samplerate);
 
-  tx.am = new CAMMod(0.5F, tx.buf.i, tx.buf.i);
-
-  tx.fm = new CFMMod(5000.0F, uni.samplerate, tx.buf.i, tx.buf.i);
+  tx.am  = new CAMMod(0.5F, tx.buf.i, tx.buf.i);
+  tx.fm  = new CFMMod(5000.0F, uni.samplerate, tx.buf.i, tx.buf.i);
+  tx.ssb = new CSSBMod(tx.buf.i, tx.buf.i);
 
   tx.leveler.gen = new CAGC(agcLONG,	// mode kept around for control reasons
 				tx.buf.i,	// input buffer
@@ -570,6 +572,10 @@ static void do_rx_post()
 
 static void do_rx_SBCW()
 {
+	wxASSERT(rx.ssb != NULL);
+
+	rx.ssb->demodulate();
+
 	if (rx.bin.flag) {
 		if (rx.banr.flag && rx.anr.flag)
 			blms_adapt(rx.banr.gen);
@@ -746,10 +752,15 @@ static void do_tx_post()
 
 static void do_tx_SBCW()
 {
+	wxASSERT(tx.alc.gen != NULL);
+	wxASSERT(tx.ssb != NULL);
+
 	if (tx.alc.flag && tx.mode != DIGU && tx.mode != DIGL)
 		tx.alc.gen->process();
 
 	do_tx_meter(tx.buf.i, TX_ALC);
+
+	tx.ssb->modulate();
 
 	if (tx.mode != DSB)
 		CXBscl(tx.buf.i, 2.0F);
@@ -757,6 +768,9 @@ static void do_tx_SBCW()
 
 static void do_tx_AM()
 {
+	wxASSERT(tx.alc.gen != NULL);
+	wxASSERT(tx.am != NULL);
+
 	if (tx.alc.flag)
 		tx.alc.gen->process();
 
@@ -767,6 +781,9 @@ static void do_tx_AM()
 
 static void do_tx_FM()
 {
+	wxASSERT(tx.alc.gen != NULL);
+	wxASSERT(tx.fm != NULL);
+
 	if (tx.alc.flag)
 		tx.alc.gen->process();
 

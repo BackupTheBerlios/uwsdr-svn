@@ -107,6 +107,8 @@ void CFMDemod::demodulate()
 
 		CXBreal(m_obuf, i) = CXBimag(m_obuf, i) = (m_pllFreqF - m_afc) * m_cvt;
 	}
+
+	CXBhave(m_obuf) = n;
 }
 
 void CFMDemod::pll(COMPLEX sig)

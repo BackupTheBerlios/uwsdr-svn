@@ -191,6 +191,14 @@ SOURCE=.\Squelch.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\SSBDemod.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SSBMod.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\thunk.cpp
 # End Source File
 # Begin Source File
@@ -332,6 +340,14 @@ SOURCE=.\spottone.h
 # Begin Source File
 
 SOURCE=.\Squelch.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SSBDemod.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SSBMod.h
 # End Source File
 # Begin Source File
 
