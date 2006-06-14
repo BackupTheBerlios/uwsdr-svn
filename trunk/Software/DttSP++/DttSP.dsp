@@ -95,6 +95,10 @@ SOURCE=.\AMDemod.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\AMMod.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\banal.cpp
 # End Source File
 # Begin Source File
@@ -124,6 +128,10 @@ SOURCE=.\FIR.cpp
 # Begin Source File
 
 SOURCE=.\FMDemod.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\FMMod.cpp
 # End Source File
 # Begin Source File
 
@@ -183,10 +191,6 @@ SOURCE=.\Squelch.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\SSBDemod.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\thunk.cpp
 # End Source File
 # Begin Source File
@@ -212,6 +216,10 @@ SOURCE=.\AGC.h
 # Begin Source File
 
 SOURCE=.\AMDemod.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\AMMod.h
 # End Source File
 # Begin Source File
 
@@ -260,6 +268,10 @@ SOURCE=.\FIR.h
 # Begin Source File
 
 SOURCE=.\FMDemod.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\FMMod.h
 # End Source File
 # Begin Source File
 
@@ -320,10 +332,6 @@ SOURCE=.\spottone.h
 # Begin Source File
 
 SOURCE=.\Squelch.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SSBDemod.h
 # End Source File
 # Begin Source File
 

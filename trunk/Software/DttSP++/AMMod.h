@@ -1,4 +1,4 @@
-/* SSBDemod.h
+/* AMMod.h
 
 This file is part of a program that implements a Software-Defined Radio.
 
@@ -31,23 +31,28 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
-#ifndef _ssbdemod_h
-#define _ssbdemod_h
+#ifndef _ammod_h
+#define _ammod_h
 
+#include "FromSys.h"
+#include "DataTypes.h"
+#include "Complex.h"
 #include "bufvec.h"
 
 
-class CSSBDemod {
+class CAMMod {
     public:
-	CSSBDemod(unsigned int size, COMPLEX* ivec, COMPLEX* ovec);
-	virtual ~CSSBDemod();
+	CAMMod(REAL level, CXB* in, CXB* out);
+	virtual ~CAMMod();
 
-	virtual void demodulate();
+	virtual void setCarrierLevel(REAL level);
+
+	virtual void modulate();
 
     private:
-	unsigned int m_size;
-	CXB*         m_ibuf;
-	CXB*         m_obuf;
+	REAL m_carrierLevel;
+	CXB* m_input;
+	CXB* m_output;
 };
 
 #endif

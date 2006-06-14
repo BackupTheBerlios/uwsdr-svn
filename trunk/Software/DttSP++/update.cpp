@@ -443,7 +443,9 @@ SetTXALCAttack (int attack)
 
 void SetTXCarrierLevel(double setit)
 {
-	tx.am.carrier_level = setit;
+	wxASSERT(tx.am != NULL);
+
+	tx.am->setCarrierLevel(setit);
 }
 
 void
@@ -795,9 +797,9 @@ float Calculate_Meters(METERTYPE mt)
 
 void SetDeviation(float value)
 {
+	wxASSERT(tx.fm != NULL);
 	wxASSERT(rx.fm != NULL);
 
-	tx.fm.cvtmod2freq = value * M_PI / uni.samplerate;
-
+	tx.fm->setDeviation(value);
 	rx.fm->setDeviation(value);
 }

@@ -216,8 +216,9 @@ static void setup_tx()
   tx.osc.phase = 0.0;
   tx.osc.gen = new COscillator(0.0, tx.osc.phase, uni.samplerate);
 
-  tx.am.carrier_level = 0.5f;
-  tx.fm.cvtmod2freq = REAL(2500.0 * TWOPI / uni.samplerate);	//5 kHz deviation
+  tx.am = new CAMMod(0.5F, tx.buf.i, tx.buf.i);
+
+  tx.fm = new CFMMod(5000.0F, uni.samplerate, tx.buf.i, tx.buf.i);
 
   tx.leveler.gen = new CAGC(agcLONG,	// mode kept around for control reasons
 				CXBbase (tx.buf.i),	// input buffer
@@ -751,35 +752,22 @@ static void do_tx_SBCW()
 
 static void do_tx_AM()
 {
-  int i, n = min (CXBhave (tx.buf.i), uni.buflen);
-  if (tx.alc.flag)
-    tx.alc.gen->process();
-  do_tx_meter (tx.buf.i, TX_ALC);
+	if (tx.alc.flag)
+		tx.alc.gen->process();
 
+	do_tx_meter(tx.buf.i, TX_ALC);
 
-  for (i = 0; i < n; i++)
-    {
-      CXBdata (tx.buf.i, i) = Cmplx ((REAL)
-				     (tx.am.carrier_level +
-				      (1.0f -
-				       tx.am.carrier_level) *
-				      CXBreal (tx.buf.i, i)), 0.0);
-    }
+	tx.am->modulate();
 }
 
 static void do_tx_FM()
 {
-  int i, n = min (CXBhave (tx.buf.i), uni.buflen);
-  if (tx.alc.flag)
-    tx.alc.gen->process();
-  do_tx_meter(tx.buf.i, TX_ALC);
+	if (tx.alc.flag)
+		tx.alc.gen->process();
 
-  for (i = 0; i < n; i++)
-    {
-      tx.osc.phase += CXBreal (tx.buf.i, i) * tx.fm.cvtmod2freq;
-      CXBdata (tx.buf.i, i) =
-	Cmplx ((REAL) cos (tx.osc.phase), (IMAG) sin (tx.osc.phase));
-    }
+	do_tx_meter(tx.buf.i, TX_ALC);
+
+	tx.fm->modulate();
 }
 
 static void do_tx_NIL()

@@ -1,4 +1,4 @@
-/* SSBDemod.cpp
+/* FMMod.cpp
 
 This file is part of a program that implements a Software-Defined Radio.
 
@@ -31,31 +31,46 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
-#include "SSBDemod.h"
+#include "FMMod.h"
 
 #include <wx/wx.h>
 
 
-CSSBDemod::CSSBDemod(unsigned int size, COMPLEX* ivec, COMPLEX* ovec) :
-m_size(size),
-m_ibuf(NULL),
-m_obuf(NULL)
+CFMMod::CFMMod(REAL sampleRate, REAL deviation, CXB* input, CXB* output) :
+m_sampleRate(sampleRate),
+m_deviation(0.0F),
+m_input(input),
+m_output(output),
+m_phase(0.0F)
 {
-	wxASSERT(ivec != NULL);
-	wxASSERT(ovec != NULL);
+	wxASSERT(deviation >= 0.0F);
+	wxASSERT(input != NULL);
+	wxASSERT(output != NULL);
 
-	m_ibuf = newCXB(size, ivec);
-	m_obuf = newCXB(size, ovec);
+	m_deviation = REAL(deviation * M_PI / m_sampleRate);
 }
 
-CSSBDemod::~CSSBDemod()
+CFMMod::~CFMMod()
 {
-	delCXB(m_ibuf);
-	delCXB(m_obuf);
 }
 
-void CSSBDemod::demodulate()
+void CFMMod::setDeviation(REAL value)
 {
-	for (unsigned int i = 0; i < m_size; i++)
-		CXBdata(m_obuf, i) = CXBdata(m_ibuf, i);
+	wxASSERT(value >= 0.0F);
+
+	m_deviation = REAL(value * M_PI / m_sampleRate);
+}
+
+// FIXME m_phase should go to the main oscillator
+void CFMMod::modulate()
+{
+	unsigned int n = CXBhave(m_input);
+
+	for (unsigned int i = 0; i < n; i++) {
+		m_phase += CXBreal(m_input, i) * m_deviation;
+
+		CXBdata(m_output, i) = Cmplx((REAL)::cos(m_phase), (IMAG)::sin(m_phase));
+	}
+
+	CXBhave(m_output) = n;
 }

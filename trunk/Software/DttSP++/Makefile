@@ -1,9 +1,9 @@
 all:		DttSP.a
 
-OBJS :=	AGC.o AMDemod.o Compand.o CorrectIQ.o DCBlock.o FIR.o FMDemod.o FilterOVSV.o GraphicEQ.o Meter.o \
-	NoiseBlanker.o Oscillator.o Resample.o ResampleF.o SSBDemod.o Spectrum.o SpeechProc.o SpotTone.o \
-	Squelch.o Window.o banal.o bufvec.o lmadf.o ringb.o sdr.o sdrexport.o thunk.o update.o \
-	winmain.o
+OBJS :=	AGC.o AMDemod.o AMMod.o Compand.o CorrectIQ.o DCBlock.o FIR.o FMDemod.o FMMod.o \
+		FilterOVSV.o GraphicEQ.o Meter.o NoiseBlanker.o Oscillator.o Resample.o ResampleF.o \
+		Spectrum.o SpeechProc.o SpotTone.o Squelch.o Window.o banal.o bufvec.o lmadf.o \
+		ringb.o sdr.o sdrexport.o thunk.o update.o winmain.o
 
 DttSP.a:	$(OBJS)
 		ar rcs DttSP.a $(OBJS)
@@ -13,6 +13,9 @@ AGC.o:	AGC.cpp AGC.h banal.h bufvec.h Complex.h DataTypes.h FromSys.h
 
 AMDemod.o:	AMDemod.cpp AMDemod.h bufvec.h Complex.h DataTypes.h FromSys.h
 		$(CC) $(CFLAGS) -c AMDemod.cpp
+
+AMMod.o:	AMMod.cpp AMMod.h bufvec.h Complex.h DataTypes.h FromSys.h
+		$(CC) $(CFLAGS) -c AMMod.cpp
 
 Compand.o:	Compand.cpp Compand.h bufvec.h DataTypes.h FromSys.h
 		$(CC) $(CFLAGS) -c Compand.cpp
@@ -28,6 +31,9 @@ FIR.o:	FIR.cpp FIR.h banal.h bufvec.h Complex.h DataTypes.h FromSys.h Window.h
 
 FMDemod.o:	FMDemod.cpp FMDemod.h banal.h bufvec.h Complex.h DataTypes.h FromSys.h
 		$(CC) $(CFLAGS) -c FMDemod.cpp
+
+FMMod.o:	FMMod.cpp FMMod.h banal.h bufvec.h Complex.h DataTypes.h FromSys.h
+		$(CC) $(CFLAGS) -c FMMod.cpp
 
 FilterOVSV.o: 	FilterOVSV.cpp FilterOVSV.h banal.h bufvec.h Complex.h CXOps.h DataTypes.h FIR.h
 		$(CC) $(CFLAGS) -c FilterOVSV.cpp
@@ -49,9 +55,6 @@ Resample.o:	Resample.cpp Resample.h banal.h CXOps.h FIR.h
 
 ResampleF.o: 	ResampleF.cpp ResampleF.h banal.h FIR.h
 		$(CC) $(CFLAGS) -c ResampleF.cpp
-
-SSBDemod.o:	SSBDemod.cpp SSBDemod.h bufvec.h
-		$(CC) $(CFLAGS) -c SSBDemod.cpp
 
 Spectrum.o:	Spectrum.cpp Spectrum.h banal.h bufvec.h DataTypes.h FIR.h FromSys.h Window.h
 		$(CC) $(CFLAGS) -c Spectrum.cpp
@@ -80,7 +83,7 @@ lmadf.o:	lmadf.cpp lmadf.h banal.h bufvec.h CXOps.h DataTypes.h
 ringb.o:	ringb.cpp ringb.h FromSys.h
 		$(CC) $(CFLAGS) -c ringb.cpp
 
-sdr.o:		sdr.cpp banal.h sdrexport.h
+sdr.o:		sdr.cpp AMDemod.h AMMod.h banal.h FMDemod.h FMMod.h sdrexport.h
 		$(CC) $(CFLAGS) -c sdr.cpp
 
 sdrexport.o: 	sdrexport.cpp sdrexport.h AGC.h AMDemod.h bufvec.h Compand.h CorrectIQ.h DataTypes.h DCBlock.h Defs.h \

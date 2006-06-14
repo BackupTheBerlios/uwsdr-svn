@@ -47,7 +47,9 @@ Bridgewater, NJ 08807
 #include "lmadf.h"
 #include "SpeechProc.h"
 #include "AMDemod.h"
+#include "AMMod.h"
 #include "FMDemod.h"
+#include "FMMod.h"
 #include "SpotTone.h"
 #include "Compand.h"
 #include "DCBlock.h"
@@ -199,13 +201,8 @@ extern struct _tx
 
   CFilterOVSV* filt;
 
-  struct {
-    REAL carrier_level;
-  } am;
-
-  struct {
-    REAL cvtmod2freq;
-  } fm;
+  CAMMod* am;
+  CFMMod* fm;
 
   struct {
     REAL thresh, power;
