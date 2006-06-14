@@ -54,7 +54,7 @@ bool CSoundCardReader::open(unsigned int sampleRate, unsigned int blockSize)
 
 	PaError error = ::Pa_Initialize();
 	if (error != paNoError) {
-		::wxLogError(_("Received %d:%s from Pa_Initialise() in SoundCardReader"), error, ::Pa_GetErrorText(error));
+		::wxLogError(wxT("Received %d:%s from Pa_Initialise() in SoundCardReader"), error, ::Pa_GetErrorText(error));
 		return false;
 	}
 
@@ -70,7 +70,7 @@ bool CSoundCardReader::open(unsigned int sampleRate, unsigned int blockSize)
 	error = ::Pa_OpenStream(&m_stream, &params, NULL, double(sampleRate), blockSize, paNoFlag, &cCallback, this);
 	if (error != paNoError) {
 		::Pa_Terminate();
-		::wxLogError(_("Received %d:%s from Pa_OpenStream() in SoundCardReader"), error, ::Pa_GetErrorText(error));
+		::wxLogError(wxT("Received %d:%s from Pa_OpenStream() in SoundCardReader"), error, ::Pa_GetErrorText(error));
 		return false;
 	}
 
@@ -78,7 +78,7 @@ bool CSoundCardReader::open(unsigned int sampleRate, unsigned int blockSize)
 	if (error != paNoError) {
 		::Pa_CloseStream(m_stream);
 		::Pa_Terminate();
-		::wxLogError(_("Received %d:%s from Pa_StartStream() in SoundCardReader"), error, ::Pa_GetErrorText(error));
+		::wxLogError(wxT("Received %d:%s from Pa_StartStream() in SoundCardReader"), error, ::Pa_GetErrorText(error));
 		return false;
 	}
 
@@ -98,13 +98,13 @@ void CSoundCardReader::close()
 {
 	PaError error = ::Pa_AbortStream(m_stream);
 	if (error != paNoError)
-		::wxLogError(_("Received %d:%s from Pa_AbortStream() in SoundCardReader"), error, ::Pa_GetErrorText(error));
+		::wxLogError(wxT("Received %d:%s from Pa_AbortStream() in SoundCardReader"), error, ::Pa_GetErrorText(error));
 
 	error = ::Pa_CloseStream(m_stream);
 	if (error != paNoError)
-		::wxLogError(_("Received %d:%s from Pa_CloseStream() in SoundCardReader"), error, ::Pa_GetErrorText(error));
+		::wxLogError(wxT("Received %d:%s from Pa_CloseStream() in SoundCardReader"), error, ::Pa_GetErrorText(error));
 
 	error = ::Pa_Terminate();
 	if (error != paNoError)
-		::wxLogError(_("Received %d:%s from Pa_Terminate() in SoundCardReader"), error, ::Pa_GetErrorText(error));
+		::wxLogError(wxT("Received %d:%s from Pa_Terminate() in SoundCardReader"), error, ::Pa_GetErrorText(error));
 }

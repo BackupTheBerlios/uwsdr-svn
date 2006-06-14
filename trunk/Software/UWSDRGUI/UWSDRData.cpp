@@ -105,7 +105,7 @@ void CUWSDRData::write(const float* buffer, unsigned int nSamples)
 	wxASSERT(buffer != NULL);
 
 	if (m_version != 1) {
-		::wxLogError(_("Invalid version of the protocol = %u"), m_version);
+		::wxLogError(wxT("Invalid version of the protocol = %u"), m_version);
 		return;
 	}
 
@@ -186,7 +186,7 @@ void CUWSDRData::onSocket(wxSocketEvent& event)
 		m_socket->RecvFrom(addr, m_sockBuffer, SOCK_BUFFER_SIZE);
 
 		if (m_callback == NULL) {
-			::wxLogWarning(_("No callback set for the SDR data"));
+			::wxLogWarning(wxT("No callback set for the SDR data"));
 			return;
 		}
 
@@ -195,19 +195,19 @@ void CUWSDRData::onSocket(wxSocketEvent& event)
 
 		// Check if the data is for us
 		if (m_address.Cmp(address) != 0 || m_port != port) {
-			::wxLogWarning(_("SDR Data received from an invalid address or port"));
+			::wxLogWarning(wxT("SDR Data received from an invalid address or port"));
 			return;
 		}
 
 		wxUint32 len = m_socket->LastCount();
 
 		if (m_version != 1) {
-			::wxLogError(_("Invalid version of the protocol = %u"), m_version);
+			::wxLogError(wxT("Invalid version of the protocol = %u"), m_version);
 			return;
 		}
 
 		if (m_sockBuffer[0] != 'D' || m_sockBuffer[1] != 'A') {
-			::wxLogWarning(_("Received a badly formatted data packet"));
+			::wxLogWarning(wxT("Received a badly formatted data packet"));
 			return;
 		}
 

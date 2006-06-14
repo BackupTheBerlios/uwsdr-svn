@@ -219,7 +219,7 @@ void CSMeter::onMouse(wxMouseEvent& event)
 			m_rxMenu->Check(MENU_AGC, true);
 			break;
 		default:
-			::wxLogError(_("Unknown RX meter type = %d"), m_rxMeter);
+			::wxLogError(wxT("Unknown RX meter type = %d"), m_rxMeter);
 			break;
 	}
 
@@ -234,7 +234,7 @@ void CSMeter::onMouse(wxMouseEvent& event)
 			m_txMenu->Check(MENU_ALC, true);
 			break;
 		default:
-			::wxLogError(_("Unknown TX meter type = %d"), m_txMeter);
+			::wxLogError(wxT("Unknown TX meter type = %d"), m_txMeter);
 			break;
 	}
 
@@ -266,7 +266,7 @@ void CSMeter::onMenu(wxCommandEvent& event)
 			setTXMeter(METER_AGC);
 			break;
 		default:
-			::wxLogError(_("Unknown meter type = %d"), event.GetId());
+			::wxLogError(wxT("Unknown meter type = %d"), event.GetId());
 			break;
 	}
 }

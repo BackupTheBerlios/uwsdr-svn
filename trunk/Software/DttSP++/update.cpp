@@ -145,12 +145,10 @@ setRingBufferReset (int n, char **p)
 {
   ringb_float_reset (top.jack.ring.i.l);
   ringb_float_reset (top.jack.ring.i.r);
-  ringb_float_reset (top.jack.auxr.i.l);
-  ringb_float_reset (top.jack.auxr.i.r);
+
   ringb_float_restart (top.jack.ring.o.l, top.hold.size.frames);
   ringb_float_restart (top.jack.ring.o.r, top.hold.size.frames);
-  ringb_float_restart (top.jack.auxr.o.l, top.hold.size.frames);
-  ringb_float_restart (top.jack.auxr.o.r, top.hold.size.frames);
+
   return 0;
 }
 
@@ -172,67 +170,6 @@ setRXPan (int n, char **p)
 	return -1;
       theta = (REAL) ((1.0 - pos) * M_PI / 2.0);
       rx.azim = Cmplx ((REAL) cos (theta), (REAL) sin (theta));
-      return 0;
-    }
-}
-
-static int
-setAuxMixSt (int n, char **p)
-{
-  if (n < 1)
-    {
-      uni.mix.rx.flag = uni.mix.tx.flag = false;
-      return 0;
-    }
-  else
-    {
-      bool flag = ::atoi(p[0]) ? true : false;
-      if (n > 1)
-	{
-	  switch (atoi (p[1]))
-	    {
-	    case TX:
-	      uni.mix.tx.flag = flag;
-	      break;
-	    case RX:
-	    default:
-	      uni.mix.rx.flag = flag;
-	      break;
-	    }
-	}
-      else
-	uni.mix.rx.flag = uni.mix.tx.flag = flag;
-      return 0;
-    }
-}
-
-// [dB] NB both channels
-static int
-setAuxMixGain (int n, char **p)
-{
-  if (n < 1)
-    {
-      uni.mix.rx.gain = uni.mix.tx.gain = 1.0;
-      return 0;
-    }
-  else
-    {
-      REAL gain = dB2lin ((REAL) atof (p[0]));
-      if (n > 1)
-	{
-	  switch (atoi (p[1]))
-	    {
-	    case TX:
-	      uni.mix.tx.gain = gain;
-	      break;
-	    case RX:
-	    default:
-	      uni.mix.rx.gain = gain;
-	      break;
-	    }
-	}
-      else
-	uni.mix.rx.gain = uni.mix.tx.gain = gain;
       return 0;
     }
 }
@@ -263,10 +200,6 @@ const CTE update_cmds[] = {
   {"setRingBufferReset", setRingBufferReset}
   ,
   {"setRXPan", setRXPan}
-  ,
-  {"setAuxMixSt", setAuxMixSt}
-  ,
-  {"setAuxMixGain", setAuxMixGain}
   ,
   {NULL, (Thunk)NULL}
 };

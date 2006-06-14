@@ -120,7 +120,7 @@ void* CDSPControl::Entry()
 		if (m_transmit) {
 			unsigned int nSamples = m_txRingBuffer.getData(m_txBuffer, BLOCK_SIZE);
 			if (nSamples != BLOCK_SIZE)
-				::wxLogError(_("Underrun in TX ring buffer, wanted %u available %u"), BLOCK_SIZE, nSamples);
+				::wxLogError(wxT("Underrun in TX ring buffer, wanted %u available %u"), BLOCK_SIZE, nSamples);
 
 			if (nSamples > 0) {
 				scaleBuffer(m_txBuffer, nSamples, m_power);
@@ -129,7 +129,7 @@ void* CDSPControl::Entry()
 		} else {
 			unsigned int nSamples = m_rxRingBuffer.getData(m_rxBuffer, BLOCK_SIZE);
 			if (nSamples != BLOCK_SIZE)
-				::wxLogError(_("Underrun in RX ring buffer, wanted %u available %u"), BLOCK_SIZE, nSamples);
+				::wxLogError(wxT("Underrun in RX ring buffer, wanted %u available %u"), BLOCK_SIZE, nSamples);
 
 			if (nSamples > 0) {
 				scaleBuffer(m_rxBuffer, nSamples, m_afGain);
@@ -224,7 +224,7 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 
 				unsigned int n = m_rxRingBuffer.addData(m_outBuffer, nSamples);
 				if (n != nSamples)
-					::wxLogError(_("Overrun in RX ring buffer, needed %u available %u"), nSamples, n);
+					::wxLogError(wxT("Overrun in RX ring buffer, needed %u available %u"), nSamples, n);
 				else
 					m_waiting.Post();
 			}
@@ -240,14 +240,14 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 
 				unsigned int n = m_txRingBuffer.addData(m_outBuffer, nSamples);
 				if (n != nSamples)
-					::wxLogError(_("Overrun in TX ring buffer, needed %u available %u"), nSamples, n);
+					::wxLogError(wxT("Overrun in TX ring buffer, needed %u available %u"), nSamples, n);
 				else
 					m_waiting.Post();
 			}
 			break;
 
 		default:
-			::wxLogError(_("callback() from unknown source = %d"), id);
+			::wxLogError(wxT("callback() from unknown source = %d"), id);
 			break;
 	}
 }
@@ -414,14 +414,14 @@ bool CDSPControl::setRecord(bool record)
 
 		bool ret = sdfw->open(m_sampleRate, BLOCK_SIZE);
 		if (!ret) {
-			::wxLogError(_("Cannot open file %s for recording"), fileName.c_str());
+			::wxLogError(wxT("Cannot open file %s for recording"), fileName.c_str());
 			delete sdfw;
 			return false;
 		}
 
 		m_record = sdfw;
 
-		::wxLogMessage(_("Opened file %s for recording"), fileName.c_str());
+		::wxLogMessage(wxT("Opened file %s for recording"), fileName.c_str());
 	} else if (!record && m_record != NULL) {
 		CSoundFileWriter* sdfw = m_record;
 		m_record = NULL;
@@ -429,7 +429,7 @@ bool CDSPControl::setRecord(bool record)
 		sdfw->close();
 		delete sdfw;
 
-		::wxLogMessage(_("Closed sound file"));
+		::wxLogMessage(wxT("Closed sound file"));
 	}
 
 	return true;

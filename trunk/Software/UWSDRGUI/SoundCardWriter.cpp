@@ -33,7 +33,7 @@ bool CSoundCardWriter::open(unsigned int sampleRate, unsigned int blockSize)
 {
 	PaError error = ::Pa_Initialize();
 	if (error != paNoError) {
-		::wxLogError(_("Received %d:%s from Pa_Initialise() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
+		::wxLogError(wxT("Received %d:%s from Pa_Initialise() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
 		return false;
 	}
 
@@ -49,7 +49,7 @@ bool CSoundCardWriter::open(unsigned int sampleRate, unsigned int blockSize)
 	error = ::Pa_OpenStream(&m_stream, NULL, &params, double(sampleRate), blockSize, paNoFlag, NULL, NULL);
 	if (error != paNoError) {
 		::Pa_Terminate();
-		::wxLogError(_("Received %d:%s from Pa_OpenStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
+		::wxLogError(wxT("Received %d:%s from Pa_OpenStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
 		return false;
 	}
 
@@ -57,7 +57,7 @@ bool CSoundCardWriter::open(unsigned int sampleRate, unsigned int blockSize)
 	if (error != paNoError) {
 		::Pa_CloseStream(m_stream);
 		::Pa_Terminate();
-		::wxLogError(_("Received %d:%s from Pa_StartStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
+		::wxLogError(wxT("Received %d:%s from Pa_StartStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
 		return false;
 	}
 
@@ -72,20 +72,20 @@ void CSoundCardWriter::write(const float* buffer, unsigned int nSamples)
 
 	PaError error = ::Pa_WriteStream(m_stream, buffer, nSamples);
 	if (error != paNoError)
-		::wxLogError(_("Received %d:%s from Pa_WriteStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
+		::wxLogError(wxT("Received %d:%s from Pa_WriteStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
 }
 
 void CSoundCardWriter::close()
 {
 	PaError error = ::Pa_AbortStream(m_stream);
 	if (error != paNoError)
-		::wxLogError(_("Received %d:%s from Pa_AbortStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
+		::wxLogError(wxT("Received %d:%s from Pa_AbortStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
 
 	error = ::Pa_CloseStream(m_stream);
 	if (error != paNoError)
-		::wxLogError(_("Received %d:%s from Pa_CloseStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
+		::wxLogError(wxT("Received %d:%s from Pa_CloseStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
 
 	error = ::Pa_Terminate();
 	if (error != paNoError)
-		::wxLogError(_("Received %d:%s from Pa_Terminate() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
+		::wxLogError(wxT("Received %d:%s from Pa_Terminate() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
 }

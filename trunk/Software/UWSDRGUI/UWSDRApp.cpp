@@ -121,17 +121,17 @@ bool CUWSDRApp::OnInit()
 	fileName.SetFullName(wxT("UWSDR.zip"));
 	m_help->AddBook(fileName);
 
-	::wxLogMessage(_("Starting ") + VERSION);
-	::wxLogMessage(_("Using configuration: ") + m_parameters->m_name);
+	::wxLogMessage(wxT("Starting ") + VERSION);
+	::wxLogMessage(wxT("Using configuration: ") + m_parameters->m_name);
 
 	if (!readConfig()) {
-		::wxLogError(_("Cannot open the SDR configuration - ") + m_parameters->m_name);
+		::wxLogError(wxT("Cannot open the SDR configuration - ") + m_parameters->m_name);
 		::wxMessageBox(_("Cannot open the SDR configuration - ") + m_parameters->m_name);
 		return false;
 	}
 
 	if (!readDescrFile()) {
-		::wxLogError(_("Cannot open the SDR description file - ") + m_parameters->m_fileName);
+		::wxLogError(wxT("Cannot open the SDR description file - ") + m_parameters->m_fileName);
 		::wxMessageBox(_("Cannot open the SDR description file - ") + m_parameters->m_fileName);
 		return false;
 	}
@@ -200,7 +200,7 @@ bool CUWSDRApp::OnCmdLineParsed(wxCmdLineParser& parser)
 
 int CUWSDRApp::OnExit()
 {
-	::wxLogMessage(_("Ending uWave SDR"));
+	::wxLogMessage(wxT("Ending uWave SDR"));
 
 	writeConfig();
 
@@ -580,6 +580,6 @@ wxString CUWSDRApp::getHelpDir()
 #ifdef __WXDEBUG__
 void CUWSDRApp::OnAssert(const wxChar* file, int line, const wxChar* cond, const wxChar* msg)
 {
-	::wxLogFatalError(_("Assertion failed on line %d in file %s: %s %s"), line, file, cond, msg);
+	::wxLogFatalError(wxT("Assertion failed on line %d in file %s: %s %s"), line, file, cond, msg);
 }
 #endif

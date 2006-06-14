@@ -46,7 +46,7 @@ bool CSoundFileWriter::open(unsigned int sampleRate, unsigned int blockSize)
 
 	m_handle = ::mmioOpen((CHAR *)m_fileName.c_str(), 0, MMIO_WRITE | MMIO_CREATE | MMIO_ALLOCBUF);
 	if (m_handle == NULL) {
-		::wxLogError(_("Could not open the file %s in SoundFileWriter"), m_fileName.c_str());
+		::wxLogError(wxT("Could not open the file %s in SoundFileWriter"), m_fileName.c_str());
 		return false;
 	}
 
@@ -55,7 +55,7 @@ bool CSoundFileWriter::open(unsigned int sampleRate, unsigned int blockSize)
 
 	MMRESULT res = ::mmioCreateChunk(m_handle, &m_parent, MMIO_CREATERIFF);
 	if (res != MMSYSERR_NOERROR) {
-		::wxLogError(_("Could not write to file %s in SoundFileWriter"), m_fileName.c_str());
+		::wxLogError(wxT("Could not write to file %s in SoundFileWriter"), m_fileName.c_str());
 		return false;
 	}
 
@@ -64,7 +64,7 @@ bool CSoundFileWriter::open(unsigned int sampleRate, unsigned int blockSize)
 
 	res = ::mmioCreateChunk(m_handle, &m_child, 0);
 	if (res != MMSYSERR_NOERROR) {
-		::wxLogError(_("Could not write to the file %s in SoundFileWriter"), m_fileName.c_str());
+		::wxLogError(wxT("Could not write to the file %s in SoundFileWriter"), m_fileName.c_str());
 		return false;
 	}
 
@@ -79,7 +79,7 @@ bool CSoundFileWriter::open(unsigned int sampleRate, unsigned int blockSize)
 
 	LONG n = ::mmioWrite(m_handle, (CHAR *)&format, sizeof(WAVEFORMATEX));
 	if (n != sizeof(WAVEFORMATEX)) {
-		::wxLogError(_("Could not write to the file %s in SoundFileWriter"), m_fileName.c_str());
+		::wxLogError(wxT("Could not write to the file %s in SoundFileWriter"), m_fileName.c_str());
 		return false;
 	}
 
@@ -90,7 +90,7 @@ bool CSoundFileWriter::open(unsigned int sampleRate, unsigned int blockSize)
 
 	res = ::mmioCreateChunk(m_handle, &m_child, 0);
 	if (res != MMSYSERR_NOERROR) {
-		::wxLogError(_("Could not write to the file %s in SoundFileWriter"), m_fileName.c_str());
+		::wxLogError(wxT("Could not write to the file %s in SoundFileWriter"), m_fileName.c_str());
 		return false;
 	}
 
@@ -118,7 +118,7 @@ void CSoundFileWriter::write(const float* buffer, unsigned int length)
 
 		LONG n = ::mmioWrite(m_handle, (char *)m_buffer8, bytes);
 		if (n != bytes)
-			::wxLogError(_("Error from mmioWrite(), wanted %ld available %ld"), bytes, n);
+			::wxLogError(wxT("Error from mmioWrite(), wanted %ld available %ld"), bytes, n);
 	} else {
 		wxASSERT(m_buffer16 != NULL);
 
@@ -129,7 +129,7 @@ void CSoundFileWriter::write(const float* buffer, unsigned int length)
 
 		LONG n = ::mmioWrite(m_handle, (char *)m_buffer16, bytes);
 		if (n != bytes)
-			::wxLogError(_("Error from mmioWrite(), wanted %ld available %ld"), bytes, n);
+			::wxLogError(wxT("Error from mmioWrite(), wanted %ld available %ld"), bytes, n);
 	}
 }
 
@@ -182,11 +182,11 @@ bool CSoundFileWriter::open(unsigned int sampleRate, unsigned int blockSize)
 
 	m_file = ::sf_open(m_fileName.mb_str(), SFM_WRITE, &info);
 	if (m_file == NULL) {
-		::wxLogError(_("Could not open the file %s in SoundFileWriter"), m_fileName.c_str());
+		::wxLogError(wxT("Could not open the file %s in SoundFileWriter"), m_fileName.c_str());
 		return false;
 	}
 
-	::wxLogMessage(_("Opened the sound file in SoundFileWriter"));
+	::wxLogMessage(wxT("Opened the sound file in SoundFileWriter"));
 
 	return true;
 }

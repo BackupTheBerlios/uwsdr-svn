@@ -34,6 +34,8 @@ Bridgewater, NJ 08807
 #include "lmadf.h"
 #include "banal.h"
 
+#include <wx/wx.h>
+
 
 LMSR* new_lmsr(CXB* signal,
 	  unsigned int delay,
@@ -174,15 +176,15 @@ void del_blms(BLMS* blms)
 		::fftwf_destroy_plan(blms->UPDplan);
 		::fftwf_destroy_plan(blms->Wplan);
 
-		delete[] blms->update;
-		delete[] blms->Update;
-		delete[] blms->What;
-		delete[] blms->Xhat;
-		delete[] blms->error;
-		delete[] blms->Errhat;
-		delete[] blms->Yhat;
-		delete[] blms->y;
-		delete[] blms->delay_line;
+		::fftw_free(blms->update);
+		::fftw_free(blms->Update);
+		::fftw_free(blms->What);
+		::fftw_free(blms->Xhat);
+		::fftw_free(blms->error);
+		::fftw_free(blms->Errhat);
+		::fftw_free(blms->Yhat);
+		::fftw_free(blms->y);
+		::fftw_free(blms->delay_line);
 
 		delete blms;
 	}
@@ -193,15 +195,25 @@ BLMS* new_blms(CXB* signal, REAL adaptation_rate, REAL leak_rate, int filter_typ
 {
 	BLMS* tmp = new BLMS;
 
-	tmp->delay_line = new COMPLEX[256];
-	tmp->y          = new COMPLEX[256];
-	tmp->Yhat       = new COMPLEX[256];
-	tmp->Errhat     = new COMPLEX[256];
-	tmp->error      = new COMPLEX[256];
-	tmp->Xhat       = new COMPLEX[256];
-	tmp->What       = new COMPLEX[256];
-	tmp->Update     = new COMPLEX[256];
-	tmp->update     = new COMPLEX[256];
+	tmp->delay_line = (COMPLEX*)::fftw_malloc(256 * sizeof(COMPLEX));
+	tmp->y          = (COMPLEX*)::fftw_malloc(256 * sizeof(COMPLEX));
+	tmp->Yhat       = (COMPLEX*)::fftw_malloc(256 * sizeof(COMPLEX));
+	tmp->Errhat     = (COMPLEX*)::fftw_malloc(256 * sizeof(COMPLEX));
+	tmp->error      = (COMPLEX*)::fftw_malloc(256 * sizeof(COMPLEX));
+	tmp->Xhat       = (COMPLEX*)::fftw_malloc(256 * sizeof(COMPLEX));
+	tmp->What       = (COMPLEX*)::fftw_malloc(256 * sizeof(COMPLEX));
+	tmp->Update     = (COMPLEX*)::fftw_malloc(256 * sizeof(COMPLEX));
+	tmp->update     = (COMPLEX*)::fftw_malloc(256 * sizeof(COMPLEX));
+
+	wxASSERT(tmp->delay_line != NULL);
+	wxASSERT(tmp->y != NULL);
+	wxASSERT(tmp->Yhat != NULL);
+	wxASSERT(tmp->Errhat != NULL);
+	wxASSERT(tmp->error != NULL);
+	wxASSERT(tmp->Xhat != NULL);
+	wxASSERT(tmp->What != NULL);
+	wxASSERT(tmp->Update != NULL);
+	wxASSERT(tmp->update != NULL);
 
 	::memset(tmp->delay_line, 0x00, 256 * sizeof(COMPLEX));
 	::memset(tmp->y, 0x00, 256 * sizeof(COMPLEX));
@@ -219,10 +231,10 @@ BLMS* new_blms(CXB* signal, REAL adaptation_rate, REAL leak_rate, int filter_typ
 	tmp->filter_type = filter_type;
 
 	tmp->Xplan      = ::fftwf_plan_dft_1d(256, (fftwf_complex *)tmp->delay_line, (fftwf_complex *)tmp->Xhat, FFTW_FORWARD, pbits);
-	tmp->Yplan      = ::fftwf_plan_dft_1d(256, (fftwf_complex *)tmp->Yhat, (fftwf_complex *)tmp->y, FFTW_BACKWARD, pbits);
-	tmp->Errhatplan = ::fftwf_plan_dft_1d(256, (fftwf_complex *)tmp->error, (fftwf_complex *)tmp->Errhat, FFTW_FORWARD, pbits);
-	tmp->UPDplan    = ::fftwf_plan_dft_1d(256,	(fftwf_complex *)tmp->Errhat, (fftwf_complex *)tmp->update,	FFTW_BACKWARD, pbits);
-	tmp->Wplan      = ::fftwf_plan_dft_1d(256, (fftwf_complex *)tmp->update,	(fftwf_complex *)tmp->Update, FFTW_FORWARD, pbits);
+	tmp->Yplan      = ::fftwf_plan_dft_1d(256, (fftwf_complex *)tmp->Yhat,   (fftwf_complex *)tmp->y, FFTW_BACKWARD, pbits);
+	tmp->Errhatplan = ::fftwf_plan_dft_1d(256, (fftwf_complex *)tmp->error,  (fftwf_complex *)tmp->Errhat, FFTW_FORWARD, pbits);
+	tmp->UPDplan    = ::fftwf_plan_dft_1d(256, (fftwf_complex *)tmp->Errhat, (fftwf_complex *)tmp->update,	FFTW_BACKWARD, pbits);
+	tmp->Wplan      = ::fftwf_plan_dft_1d(256, (fftwf_complex *)tmp->update, (fftwf_complex *)tmp->Update, FFTW_FORWARD, pbits);
 
 	return tmp;
 }
@@ -235,7 +247,7 @@ void blms_adapt(BLMS* blms)
 	unsigned int sigidx = 0;
 
 	do {
-		::memcpy(blms->delay_line, &blms->delay_line[128], sizeof(COMPLEX) * 128);	// do overlap move
+		::memcpy(blms->delay_line,       &blms->delay_line[128],         sizeof(COMPLEX) * 128);	// do overlap move
 		::memcpy(&blms->delay_line[128], &CXBdata(blms->signal, sigidx), sizeof(COMPLEX) * 128);	// copy in new data
 
 		::fftwf_execute(blms->Xplan);	// compute transform of input data
@@ -257,7 +269,7 @@ void blms_adapt(BLMS* blms)
 			blms->error[j] = Csub(blms->delay_line[j], blms->y[j]);	// compute error signal
 
 		if (blms->filter_type)
-			::memcpy(&CXBdata(blms->signal, sigidx), &blms->y[128], 128 * sizeof(COMPLEX));	// if noise filter, output y
+			::memcpy(&CXBdata(blms->signal, sigidx), &blms->y[128],     128 * sizeof(COMPLEX));	// if noise filter, output y
 		else
 			::memcpy(&CXBdata(blms->signal, sigidx), &blms->error[128], 128 * sizeof(COMPLEX));	// if notch filter, output error
 

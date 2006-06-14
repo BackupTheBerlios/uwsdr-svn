@@ -99,7 +99,7 @@ bool CSoundFileReader::open(unsigned int sampleRate, unsigned int blockSize)
 	m_handle = ::mmioOpen((CHAR *)m_fileName.c_str(), 0, MMIO_READ | MMIO_ALLOCBUF);
 
 	if (m_handle == NULL) {
-		::wxLogError(_("Could not open the file %s in SoundFileReader"), m_fileName.c_str());
+		::wxLogError(wxT("Could not open the file %s in SoundFileReader"), m_fileName.c_str());
 		return false;
 	}
 
@@ -109,7 +109,7 @@ bool CSoundFileReader::open(unsigned int sampleRate, unsigned int blockSize)
 	MMRESULT res = ::mmioDescend(m_handle, &parent, 0, MMIO_FINDRIFF);
 
 	if (res != MMSYSERR_NOERROR) {
-		::wxLogError(_("%s is corrupt in SoundFileReader"), m_fileName.c_str());
+		::wxLogError(wxT("%s is corrupt in SoundFileReader"), m_fileName.c_str());
 		return false;
 	}
 
@@ -119,7 +119,7 @@ bool CSoundFileReader::open(unsigned int sampleRate, unsigned int blockSize)
 	res = ::mmioDescend(m_handle, &child, &parent, MMIO_FINDCHUNK);
 
 	if (res != MMSYSERR_NOERROR) {
-		::wxLogError(_("%s is corrupt in SoundFileReader"), m_fileName.c_str());
+		::wxLogError(wxT("%s is corrupt in SoundFileReader"), m_fileName.c_str());
 		return false;
 	}
 
@@ -128,36 +128,36 @@ bool CSoundFileReader::open(unsigned int sampleRate, unsigned int blockSize)
 	LONG len = ::mmioRead(m_handle, (char *)&format, child.cksize);
 
 	if (len != LONG(child.cksize)) {
-		::wxLogError(_("%s is corrupt in SoundFileReader"), m_fileName.c_str());
+		::wxLogError(wxT("%s is corrupt in SoundFileReader"), m_fileName.c_str());
 		return false;
 	}
 
 	if (format.wFormatTag != WAVE_FORMAT_PCM) {
-		::wxLogError(_("%s is corrupt in SoundFileReader"), m_fileName.c_str());
+		::wxLogError(wxT("%s is corrupt in SoundFileReader"), m_fileName.c_str());
 		return false;
 	}
 
 	if (int(format.nSamplesPerSec) != sampleRate) {
-		::wxLogError(_("%s is corrupt in SoundFileReader"), m_fileName.c_str());
+		::wxLogError(wxT("%s is corrupt in SoundFileReader"), m_fileName.c_str());
 		return false;
 	}
 
 	if (format.nChannels != 2) {
-		::wxLogError(_("%s is corrupt in SoundFileReader"), m_fileName.c_str());
+		::wxLogError(wxT("%s is corrupt in SoundFileReader"), m_fileName.c_str());
 		return false;
 	}
 
 	m_sampleWidth = format.wBitsPerSample;
 
 	if (m_sampleWidth != 8 && m_sampleWidth != 16) {
-		::wxLogError(_("%s is corrupt in SoundFileReader"), m_fileName.c_str());
+		::wxLogError(wxT("%s is corrupt in SoundFileReader"), m_fileName.c_str());
 		return false;
 	}
 
 	res = ::mmioAscend(m_handle, &child, 0);
 
 	if (res != MMSYSERR_NOERROR) {
-		::wxLogError(_("%s is corrupt in SoundFileReader"), m_fileName.c_str());
+		::wxLogError(wxT("%s is corrupt in SoundFileReader"), m_fileName.c_str());
 		return false;
 	}
 
@@ -166,7 +166,7 @@ bool CSoundFileReader::open(unsigned int sampleRate, unsigned int blockSize)
 	res = ::mmioDescend(m_handle, &child, &parent, MMIO_FINDCHUNK);
 
 	if (res != MMSYSERR_NOERROR) {
-		::wxLogError(_("%s is corrupt in SoundFileReader"), m_fileName.c_str());
+		::wxLogError(wxT("%s is corrupt in SoundFileReader"), m_fileName.c_str());
 		return false;
 	}
 
@@ -247,17 +247,17 @@ bool CSoundFileReader::open(unsigned int sampleRate, unsigned int blockSize)
 	m_file = ::sf_open(m_fileName.mb_str(), SFM_READ, &info);
 
 	if (m_file == NULL) {
-		::wxLogError(_("Could not open the file %s in SoundFileReader"), m_fileName.c_str());
+		::wxLogError(wxT("Could not open the file %s in SoundFileReader"), m_fileName.c_str());
 		return false;
 	}
 
 	if (info.samplerate != sampleRate) {
-		::wxLogError(_("%s is corrupt in SoundFileReader"), m_fileName.c_str());
+		::wxLogError(wxT("%s is corrupt in SoundFileReader"), m_fileName.c_str());
 		return false;
 	}
 
 	if (info.channels != 2) {
-		::wxLogError(_("%s is corrupt in SoundFileReader"), m_fileName.c_str());
+		::wxLogError(wxT("%s is corrupt in SoundFileReader"), m_fileName.c_str());
 		return false;
 	}
 

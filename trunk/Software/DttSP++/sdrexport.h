@@ -88,13 +88,6 @@ extern struct _uni
     unsigned int bits;
   } wisdom;
 
-  struct {
-    struct {
-      bool flag;
-      REAL gain;
-    } rx, tx;
-  } mix;
-
   unsigned int cpdlen;
   unsigned long tick;
 } uni;
@@ -262,7 +255,7 @@ extern struct _top {
   struct {
     struct {
       float *l, *r;
-    } aux, buf;
+    } buf;
 
     struct {
       unsigned int frames, bytes;
@@ -275,12 +268,6 @@ extern struct _top {
 	ringb_float_t *l, *r;
       } i, o;
     } ring;
-
-    struct {
-      struct {
-	ringb_float_t *l, *r;
-      } i, o;
-    } auxr;
 
     size_t size;
   } jack;

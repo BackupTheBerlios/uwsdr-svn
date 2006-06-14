@@ -119,7 +119,7 @@ void CDTTSPControl::setMode(int mode)
 			::SetMode(CWU);
 			break;
 		default:
-			::wxLogError(_("Unknown mode value = %d"), mode);
+			::wxLogError(wxT("Unknown mode value = %d"), mode);
 			return;
 	}
 
@@ -180,7 +180,7 @@ void CDTTSPControl::setAGC(int agc)
 			::SetRXAGC(agcOFF);
 			break;
 		default:
-			::wxLogError(_("Unknown AGC value = %d"), agc);
+			::wxLogError(wxT("Unknown AGC value = %d"), agc);
 			return;
 	}
 
@@ -209,7 +209,7 @@ void CDTTSPControl::setDeviation(int dev)
 			::SetDeviation(2000.0F);
 			break;
 		default:
-			::wxLogError(_("Unknown Deviation value = %d"), dev);
+			::wxLogError(wxT("Unknown Deviation value = %d"), dev);
 			return;
 	}
 
@@ -330,7 +330,7 @@ float CDTTSPControl::getMeter(int type)
 		case METER_ALC:
 			return ::Calculate_Meters(ALC);
 		default:
-			::wxLogError(_("Unknown meter type = %d"), type);
+			::wxLogError(wxT("Unknown meter type = %d"), type);
 			return -200.0F;
 	}
 }
@@ -351,7 +351,7 @@ void CDTTSPControl::getSpectrum(float* spectrum, int pos)
 				::Process_Spectrum(spectrum);
 				break;
 			default:
-				::wxLogError(_("Unknown spectrum position = %d"), pos);
+				::wxLogError(wxT("Unknown spectrum position = %d"), pos);
 				break;
 		}
 	} else {
@@ -417,7 +417,7 @@ void CDTTSPControl::normaliseFilter()
 			width = 25;
 			break;
 		default:
-			::wxLogError(_("Unknown filter value = %d"), m_filter);
+			::wxLogError(wxT("Unknown filter value = %d"), m_filter);
 			return;
 	}
 

@@ -71,10 +71,6 @@ static void setup_all(REAL rate, unsigned int buflen, SDRMODE mode, unsigned int
   uni.spec.type = SPEC_POST_FILT;
   uni.spec.flag = true;
 
-  // set mixing of input from aux ports
-  uni.mix.rx.flag = uni.mix.tx.flag = false;
-  uni.mix.rx.gain = uni.mix.tx.gain = 1.0;
-
   uni.cpdlen = cpdsize;
 
   uni.tick = 0UL;
@@ -829,7 +825,7 @@ static void do_tx()
 /* overall buffer processing;
    come here when there are buffers to work on */
 
-void process_samples(float* bufl, float* bufr, float* auxl, float* auxr, unsigned int n)
+void process_samples(float* bufl, float* bufr, unsigned int n)
 {
 	unsigned int i;
 
@@ -845,31 +841,14 @@ void process_samples(float* bufl, float* bufr, float* auxl, float* auxr, unsigne
 			do_rx();
 			rx.tick++;
 
-			// mix
 			CXBhave(rx.buf.o) = n;
 			for (i = 0; i < n; i++) {
 				bufl[i] = CXBimag(rx.buf.o, i);
 				bufr[i] = CXBreal(rx.buf.o, i);
 			}
-
-			// late mixing of aux buffers
-			if (uni.mix.rx.flag) {
-				for (i = 0; i < n; i++) {
-					bufl[i] += auxl[i] * uni.mix.rx.gain;
-					bufr[i] += auxr[i] * uni.mix.rx.gain;
-				}
-			}
 			break;
 
 		case TX:
-			// early mixing of aux buffers
-			if (uni.mix.tx.flag) {
-				for (i = 0; i < n; i++) {
-					bufl[i] += auxl[i] * uni.mix.tx.gain;
-					bufr[i] += auxr[i] * uni.mix.tx.gain;
-				}
-			}
-
 			for (i = 0; i < n; i++) {
 				CXBimag(tx.buf.i, i) = bufl[i];
 				CXBreal(tx.buf.i, i) = bufr[i];

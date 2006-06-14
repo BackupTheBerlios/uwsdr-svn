@@ -217,7 +217,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	bool ret = m_sdr->open();
 	if (!ret) {
-		::wxLogError(_("Problems communicating with the SDR"));
+		::wxLogError(wxT("Problems communicating with the SDR"));
 		::wxMessageBox(_("Problems communicating with the SDR"), _("uWave SDR Error"), wxICON_ERROR);
 		Close(true);
 		return;
@@ -1147,13 +1147,13 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 
 void CUWSDRFrame::sdrCommandNAK(int id)
 {
-	::wxLogError(_("Received a NAK from the SDR"));
+	::wxLogError(wxT("Received a NAK from the SDR"));
 	::wxMessageBox(_("Received a NAK from the SDR"), _("uWave SDR Error"), wxICON_ERROR);
 }
 
 void CUWSDRFrame::sdrConnectionLost(int id)
 {
-	::wxLogError(_("Connection to the SDR lost"));
+	::wxLogError(wxT("Connection to the SDR lost"));
 	::wxMessageBox(_("Connection to the SDR lost"), _("uWave SDR Error"), wxICON_ERROR);
 
 	Close(true);

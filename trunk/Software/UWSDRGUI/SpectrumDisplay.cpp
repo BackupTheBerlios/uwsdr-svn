@@ -383,7 +383,7 @@ void CSpectrumDisplay::onRightMouse(wxMouseEvent& event)
 			m_typeMenu->Check(MENU_WATERFALL, true);
 			break;
 		default:
-			::wxLogError(_("Unknown spectrum type = %d"), m_type);
+			::wxLogError(wxT("Unknown spectrum type = %d"), m_type);
 			break;
 	}
 
@@ -395,7 +395,7 @@ void CSpectrumDisplay::onRightMouse(wxMouseEvent& event)
 			m_posMenu->Check(MENU_POST_FILT, true);
 			break;
 		default:
-			::wxLogError(_("Unknown spectrum position = %d"), m_type);
+			::wxLogError(wxT("Unknown spectrum position = %d"), m_type);
 			break;
 	}
 
@@ -419,7 +419,7 @@ void CSpectrumDisplay::onRightMouse(wxMouseEvent& event)
 			m_speedMenu->Check(MENU_1000MS, true);
 			break;
 		default:
-			::wxLogError(_("Unknown spectrum speed = %d"), m_speed);
+			::wxLogError(wxT("Unknown spectrum speed = %d"), m_speed);
 			break;
 	}
 
@@ -463,7 +463,7 @@ void CSpectrumDisplay::onMenu(wxCommandEvent& event)
 			setSpeed(SPECTRUM_1000MS);
 			break;
 		default:
-			::wxLogError(_("Unknown spectrum menu item = %d"), event.GetId());
+			::wxLogError(wxT("Unknown spectrum menu item = %d"), event.GetId());
 			break;
 	}
 }
@@ -481,7 +481,7 @@ void CSpectrumDisplay::setType(int type)
 			createWaterfall();
 			break;
 		default:
-			::wxLogError(_("Unknown spectrum type = %d"), type);
+			::wxLogError(wxT("Unknown spectrum type = %d"), type);
 			break;
 	}
 
@@ -516,7 +516,7 @@ void CSpectrumDisplay::setSpeed(int speed)
 			m_factor = 10;
 			break;
 		default:
-			::wxLogError(_("Unknown spectrum speed = %d"), speed);
+			::wxLogError(wxT("Unknown spectrum speed = %d"), speed);
 			break;
 	}
 
