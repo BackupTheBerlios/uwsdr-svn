@@ -22,6 +22,8 @@
 
 #include <cmath>
 
+const int MENU_I_INPUT    = 7863;
+const int MENU_Q_INPUT    = 7864;
 const int MENU_SIGNAL     = 7865;
 const int MENU_AVG_SIGNAL = 7866;
 const int MENU_AGC        = 7867;
@@ -31,12 +33,14 @@ const int MENU_ALC        = 7870;
 
 BEGIN_EVENT_TABLE(CSMeter, wxPanel)
 	EVT_RIGHT_DOWN(CSMeter::onMouse)
-	EVT_MENU(MENU_SIGNAL, CSMeter::onMenu)
+	EVT_MENU(MENU_I_INPUT,    CSMeter::onMenu)
+	EVT_MENU(MENU_Q_INPUT,    CSMeter::onMenu)
+	EVT_MENU(MENU_SIGNAL,     CSMeter::onMenu)
 	EVT_MENU(MENU_AVG_SIGNAL, CSMeter::onMenu)
-	EVT_MENU(MENU_AGC, CSMeter::onMenu)
+	EVT_MENU(MENU_AGC,        CSMeter::onMenu)
 	EVT_MENU(MENU_MICROPHONE, CSMeter::onMenu)
-	EVT_MENU(MENU_POWER, CSMeter::onMenu)
-	EVT_MENU(MENU_ALC, CSMeter::onMenu)
+	EVT_MENU(MENU_POWER,      CSMeter::onMenu)
+	EVT_MENU(MENU_ALC,        CSMeter::onMenu)
 	EVT_PAINT(CSMeter::onPaint)
 END_EVENT_TABLE()
 
@@ -57,6 +61,8 @@ m_lastLevel(999.9F)
 	m_background = new wxBitmap(m_width, m_height);
 
 	m_rxMenu = new wxMenu();
+	m_rxMenu->AppendRadioItem(MENU_I_INPUT,    _("I Input"));
+	m_rxMenu->AppendRadioItem(MENU_Q_INPUT,    _("Q Input"));
 	m_rxMenu->AppendRadioItem(MENU_SIGNAL,     _("Strength"));
 	m_rxMenu->AppendRadioItem(MENU_AVG_SIGNAL, _("Avg Strength"));
 	m_rxMenu->AppendRadioItem(MENU_AGC,        _("AGC"));
@@ -209,6 +215,12 @@ void CSMeter::onMouse(wxMouseEvent& event)
 	wxASSERT(m_txMenu != NULL);
 
 	switch (m_rxMeter) {
+		case METER_I_INPUT:
+			m_rxMenu->Check(MENU_I_INPUT, true);
+			break;
+		case METER_Q_INPUT:
+			m_rxMenu->Check(MENU_Q_INPUT, true);
+			break;
 		case METER_SIGNAL:
 			m_rxMenu->Check(MENU_SIGNAL, true);
 			break;
@@ -247,6 +259,12 @@ void CSMeter::onMouse(wxMouseEvent& event)
 void CSMeter::onMenu(wxCommandEvent& event)
 {
 	switch (event.GetId()) {
+		case MENU_I_INPUT:
+			setRXMeter(METER_I_INPUT);
+			break;
+		case MENU_Q_INPUT:
+			setRXMeter(METER_Q_INPUT);
+			break;
 		case MENU_SIGNAL:
 			setRXMeter(METER_SIGNAL);
 			break;

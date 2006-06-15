@@ -143,11 +143,11 @@ setTXAGCLimit (int n, char **p)
 static int
 setRingBufferReset (int n, char **p)
 {
-  ringb_float_reset (top.jack.ring.i.l);
-  ringb_float_reset (top.jack.ring.i.r);
+  ringb_float_reset(top.jack.ring.i.i);
+  ringb_float_reset(top.jack.ring.i.q);
 
-  ringb_float_restart (top.jack.ring.o.l, top.hold.size.frames);
-  ringb_float_restart (top.jack.ring.o.r, top.hold.size.frames);
+  ringb_float_restart(top.jack.ring.o.i, top.hold.size.frames);
+  ringb_float_restart(top.jack.ring.o.q, top.hold.size.frames);
 
   return 0;
 }

@@ -142,12 +142,12 @@ extern void    SetTRX(TRXMODE setit);
 extern void    SetTXAGCLimit(double limit);
 extern void    Process_Spectrum(float* results);
 extern void    Process_Panadapter(float* results);
-extern void    Process_Phase(float* results, int numpoints);
-extern void    Process_Scope(float* results, int numpoints);
+extern void    Process_Phase(float* results, unsigned int numpoints);
+extern void    Process_Scope(float* results, unsigned int numpoints);
 extern float   Calculate_Meters(METERTYPE mt);
 extern void    SetDeviation(float value);
 
-extern void    Audio_Callback(float* input_l, float* input_r, float* output_l, float* output_r, unsigned int nframes);
+extern void    Audio_Callback(float* input_i, float* input_q, float* output_i, float* output_q, unsigned int nframes);
 extern void    Audio_CallbackIL(float* input, float* output, unsigned int nframes);
 extern void    process_samples_thread(void);
 

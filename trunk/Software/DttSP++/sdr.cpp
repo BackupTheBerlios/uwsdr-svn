@@ -840,15 +840,15 @@ static void do_tx()
 /* overall buffer processing;
    come here when there are buffers to work on */
 
-void process_samples(float* bufl, float* bufr, unsigned int n)
+void process_samples(float* bufi, float* bufq, unsigned int n)
 {
 	unsigned int i;
 
 	switch (uni.mode.trx) {
 		case RX:
 			for (i = 0; i < n; i++) {
-				CXBimag(rx.buf.i, i) = bufl[i];
-				CXBreal(rx.buf.i, i) = bufr[i];
+				CXBreal(rx.buf.i, i) = bufi[i];
+				CXBimag(rx.buf.i, i) = bufq[i];
 			}
 			CXBhave(rx.buf.i) = n;
 
@@ -858,15 +858,15 @@ void process_samples(float* bufl, float* bufr, unsigned int n)
 
 			n = CXBhave(rx.buf.o);
 			for (i = 0; i < n; i++) {
-				bufl[i] = CXBimag(rx.buf.o, i);
-				bufr[i] = CXBreal(rx.buf.o, i);
+				bufi[i] = CXBreal(rx.buf.o, i);
+				bufq[i] = CXBimag(rx.buf.o, i);
 			}
 			break;
 
 		case TX:
 			for (i = 0; i < n; i++) {
-				CXBimag(tx.buf.i, i) = bufl[i];
-				CXBreal(tx.buf.i, i) = bufr[i];
+				CXBreal(tx.buf.i, i) = bufi[i];
+				CXBimag(tx.buf.i, i) = bufq[i];
 			}
 			CXBhave(tx.buf.i) = n;
 
@@ -875,8 +875,8 @@ void process_samples(float* bufl, float* bufr, unsigned int n)
 
 			n = CXBhave(tx.buf.o);
 			for (i = 0; i < n; i++) {
-				bufl[i] = CXBimag(tx.buf.o, i);
-				bufr[i] = CXBreal(tx.buf.o, i);
+				bufi[i] = CXBreal(tx.buf.o, i);
+				bufq[i] = CXBimag(tx.buf.o, i);
 			}
 			break;
 	}

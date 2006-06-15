@@ -133,15 +133,18 @@ const int AGC_MEDIUM       = 1;
 const int AGC_SLOW         = 2;
 const int AGC_NONE         = 3;
 
-const int METER_SIGNAL     = 0;
-const int METER_AVG_SIGNAL = 1;
-const int METER_AGC        = 2;
-const int METER_MICROPHONE = 3;
-const int METER_POWER      = 4;
-const int METER_ALC        = 5;
+const int METER_I_INPUT    = 0;
+const int METER_Q_INPUT    = 1;
+const int METER_SIGNAL     = 2;
+const int METER_AVG_SIGNAL = 3;
+const int METER_AGC        = 4;
+const int METER_MICROPHONE = 5;
+const int METER_POWER      = 6;
+const int METER_ALC        = 7;
 
 const int SPECTRUM_PRE_FILT   = 0;
 const int SPECTRUM_POST_FILT  = 1;
+const int SPECTRUM_POST_AGC   = 2;
 
 const int SPECTRUM_PANADAPTER = 0;
 const int SPECTRUM_WATERFALL  = 1;

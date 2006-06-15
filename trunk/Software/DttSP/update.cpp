@@ -2118,7 +2118,7 @@ Process_Panadapter (float *results)
 }
 
 void
-Process_Phase (float *results, int numpoints)
+Process_Phase (float *results, unsigned int numpoints)
 {
   int i, j;
   top.sync.upd.sem->Wait();
@@ -2135,7 +2135,7 @@ Process_Phase (float *results, int numpoints)
 }
 
 void
-Process_Scope (float *results, int numpoints)
+Process_Scope (float *results, unsigned int numpoints)
 {
   int i;
   top.sync.upd.sem->Wait();

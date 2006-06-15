@@ -255,7 +255,7 @@ extern struct _top {
   // audio io
   struct {
     struct {
-      float *l, *r;
+      float *i, *q;
     } buf;
 
     struct {
@@ -266,7 +266,7 @@ extern struct _top {
   struct {
     struct {
       struct {
-	ringb_float_t *l, *r;
+	ringb_float_t *i, *q;
       } i, o;
     } ring;
 

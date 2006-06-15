@@ -317,6 +317,10 @@ float CDTTSPControl::getMeter(int type)
 		return -200.0F;
 
 	switch (type) {
+		case METER_I_INPUT:
+			return ::Calculate_Meters(ADC_REAL);
+		case METER_Q_INPUT:
+			return ::Calculate_Meters(ADC_IMAG);
 		case METER_SIGNAL:
 			return ::Calculate_Meters(SIGNAL_STRENGTH);
 		case METER_AVG_SIGNAL:
@@ -349,6 +353,9 @@ void CDTTSPControl::getSpectrum(float* spectrum, int pos)
 				break;
 			case SPECTRUM_POST_FILT:
 				::Process_Spectrum(spectrum);
+				break;
+			case SPECTRUM_POST_AGC:
+				::Process_Scope(spectrum, SPECTRUM_SIZE);
 				break;
 			default:
 				::wxLogError(wxT("Unknown spectrum position = %d"), pos);

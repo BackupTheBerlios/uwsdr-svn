@@ -105,8 +105,8 @@ void* CSignalReader::Entry()
 			sinVal = cosVal * sinDelta + sinVal * cosDelta;
 			cosVal = tmpVal;
 
-			buffer[i * 2 + 0] = awgn[awgnN++] + sinVal * m_signalAmplitude;
-			buffer[i * 2 + 1] = awgn[awgnN++] + cosVal * m_signalAmplitude;
+			buffer[i * 2 + 0] = awgn[awgnN++] + cosVal * m_signalAmplitude;
+			buffer[i * 2 + 1] = awgn[awgnN++] + sinVal * m_signalAmplitude;
 
 			if (awgnN >= noiseSize)
 				awgnN = 0;

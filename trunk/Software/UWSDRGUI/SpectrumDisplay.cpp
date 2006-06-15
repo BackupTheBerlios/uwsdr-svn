@@ -26,12 +26,13 @@ const int MENU_PANADAPTER = 16531;
 const int MENU_WATERFALL  = 16532;
 const int MENU_PRE_FILT   = 16533;
 const int MENU_POST_FILT  = 16534;
-const int MENU_100MS      = 16535;
-const int MENU_200MS      = 16536;
-const int MENU_300MS      = 16537;
-const int MENU_400MS      = 16538;
-const int MENU_500MS      = 16539;
-const int MENU_1000MS     = 16540;
+const int MENU_POST_AGC   = 16535;
+const int MENU_100MS      = 16536;
+const int MENU_200MS      = 16537;
+const int MENU_300MS      = 16538;
+const int MENU_400MS      = 16539;
+const int MENU_500MS      = 16540;
+const int MENU_1000MS     = 16541;
 
 BEGIN_EVENT_TABLE(CSpectrumDisplay, wxPanel)
 	EVT_PAINT(CSpectrumDisplay::onPaint)
@@ -41,6 +42,7 @@ BEGIN_EVENT_TABLE(CSpectrumDisplay, wxPanel)
 	EVT_MENU(MENU_WATERFALL,  CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_PRE_FILT,   CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_POST_FILT,  CSpectrumDisplay::onMenu)
+	EVT_MENU(MENU_POST_AGC,  CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_100MS,  CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_200MS,  CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_300MS,  CSpectrumDisplay::onMenu)
@@ -83,8 +85,9 @@ m_pick(0.0F)
 	m_speedMenu->AppendRadioItem(MENU_1000MS, wxT("1 s"));
 
 	m_posMenu = new wxMenu();
-	m_posMenu->AppendRadioItem(MENU_PRE_FILT,  _("Pre-Filter"));
-	m_posMenu->AppendRadioItem(MENU_POST_FILT, _("Post-Filter"));
+	m_posMenu->AppendRadioItem(MENU_PRE_FILT,  _("Pre Filter"));
+	m_posMenu->AppendRadioItem(MENU_POST_FILT, _("Post Filter"));
+	m_posMenu->AppendRadioItem(MENU_POST_AGC,  _("Post AGC"));
 
 	m_typeMenu = new wxMenu();
 	m_typeMenu->AppendRadioItem(MENU_PANADAPTER, _("Panadapter"));
@@ -388,11 +391,14 @@ void CSpectrumDisplay::onRightMouse(wxMouseEvent& event)
 	}
 
 	switch (m_position) {
-		case SPECTRUM_PANADAPTER:
+		case SPECTRUM_PRE_FILT:
 			m_posMenu->Check(MENU_PRE_FILT, true);
 			break;
-		case SPECTRUM_WATERFALL:
+		case SPECTRUM_POST_FILT:
 			m_posMenu->Check(MENU_POST_FILT, true);
+			break;
+		case SPECTRUM_POST_AGC:
+			m_posMenu->Check(MENU_POST_AGC, true);
 			break;
 		default:
 			::wxLogError(wxT("Unknown spectrum position = %d"), m_type);
@@ -443,6 +449,9 @@ void CSpectrumDisplay::onMenu(wxCommandEvent& event)
 			break;
 		case MENU_POST_FILT:
 			setPosition(SPECTRUM_POST_FILT);
+			break;
+		case MENU_POST_AGC:
+			setPosition(SPECTRUM_POST_AGC);
 			break;
 		case MENU_100MS:
 			setSpeed(SPECTRUM_100MS);
