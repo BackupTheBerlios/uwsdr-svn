@@ -34,7 +34,7 @@ Bridgewater, NJ 08807
 #ifndef _correctIQ_h
 #define _correctIQ_h
 
-#include "bufvec.h"
+#include "CXB.h"
 
 
 class CCorrectIQ {

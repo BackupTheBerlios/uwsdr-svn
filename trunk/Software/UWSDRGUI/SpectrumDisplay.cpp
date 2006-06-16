@@ -22,27 +22,29 @@
 
 #include <wx/image.h>
 
-const int MENU_PANADAPTER = 16531;
-const int MENU_WATERFALL  = 16532;
-const int MENU_PRE_FILT   = 16533;
-const int MENU_POST_FILT  = 16534;
-const int MENU_POST_AGC   = 16535;
-const int MENU_100MS      = 16536;
-const int MENU_200MS      = 16537;
-const int MENU_300MS      = 16538;
-const int MENU_400MS      = 16539;
-const int MENU_500MS      = 16540;
-const int MENU_1000MS     = 16541;
+const int MENU_PANADAPTER1 = 16531;
+const int MENU_PANADAPTER2 = 16532;
+const int MENU_WATERFALL   = 16533;
+const int MENU_PRE_FILT    = 16534;
+const int MENU_POST_FILT   = 16535;
+const int MENU_POST_AGC    = 16536;
+const int MENU_100MS       = 16537;
+const int MENU_200MS       = 16538;
+const int MENU_300MS       = 16539;
+const int MENU_400MS       = 16540;
+const int MENU_500MS       = 16541;
+const int MENU_1000MS      = 16542;
 
 BEGIN_EVENT_TABLE(CSpectrumDisplay, wxPanel)
 	EVT_PAINT(CSpectrumDisplay::onPaint)
 	EVT_LEFT_DOWN(CSpectrumDisplay::onLeftMouse)
 	EVT_RIGHT_DOWN(CSpectrumDisplay::onRightMouse)
-	EVT_MENU(MENU_PANADAPTER, CSpectrumDisplay::onMenu)
-	EVT_MENU(MENU_WATERFALL,  CSpectrumDisplay::onMenu)
-	EVT_MENU(MENU_PRE_FILT,   CSpectrumDisplay::onMenu)
-	EVT_MENU(MENU_POST_FILT,  CSpectrumDisplay::onMenu)
-	EVT_MENU(MENU_POST_AGC,  CSpectrumDisplay::onMenu)
+	EVT_MENU(MENU_PANADAPTER1, CSpectrumDisplay::onMenu)
+	EVT_MENU(MENU_PANADAPTER2, CSpectrumDisplay::onMenu)
+	EVT_MENU(MENU_WATERFALL,   CSpectrumDisplay::onMenu)
+	EVT_MENU(MENU_PRE_FILT,    CSpectrumDisplay::onMenu)
+	EVT_MENU(MENU_POST_FILT,   CSpectrumDisplay::onMenu)
+	EVT_MENU(MENU_POST_AGC,    CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_100MS,  CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_200MS,  CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_300MS,  CSpectrumDisplay::onMenu)
@@ -90,8 +92,9 @@ m_pick(0.0F)
 	m_posMenu->AppendRadioItem(MENU_POST_AGC,  _("Post AGC"));
 
 	m_typeMenu = new wxMenu();
-	m_typeMenu->AppendRadioItem(MENU_PANADAPTER, _("Panadapter"));
-	m_typeMenu->AppendRadioItem(MENU_WATERFALL,  _("Waterfall"));
+	m_typeMenu->AppendRadioItem(MENU_PANADAPTER1, _("Panadapter 1"));
+	m_typeMenu->AppendRadioItem(MENU_PANADAPTER2, _("Panadapter 2"));
+	m_typeMenu->AppendRadioItem(MENU_WATERFALL,   _("Waterfall"));
 
 	m_menu = new wxMenu();
 	m_menu->Append(-1, _("Position"), m_posMenu);
@@ -126,10 +129,17 @@ void CSpectrumDisplay::showSpectrum(const float* spectrum, float bottom)
 	wxASSERT(spectrum != NULL);
 
 	if ((m_ticks % m_factor) == 0) {
-		if (m_type == SPECTRUM_PANADAPTER)
-			drawPanadapter(spectrum, bottom);
-		else if (m_type == SPECTRUM_WATERFALL)
-			drawWaterfall(spectrum, bottom);
+		switch (m_type) {
+			case SPECTRUM_PANADAPTER1:
+				drawPanadapter1(spectrum, bottom);
+				break;
+			case SPECTRUM_PANADAPTER2:
+				drawPanadapter2(spectrum, bottom);
+				break;
+			case SPECTRUM_WATERFALL:
+				drawWaterfall(spectrum, bottom);
+				break;
+		}
 
 		wxClientDC clientDC(this);
 		show(clientDC);
@@ -248,7 +258,7 @@ void CSpectrumDisplay::createWaterfall()
 	dc.SelectObject(wxNullBitmap);
 }
 
-void CSpectrumDisplay::drawPanadapter(const float* spectrum, float bottom)
+void CSpectrumDisplay::drawPanadapter1(const float* spectrum, float bottom)
 {
 	wxMemoryDC dc, dcBack;
 
@@ -268,10 +278,13 @@ void CSpectrumDisplay::drawPanadapter(const float* spectrum, float bottom)
 	for (int x = 2; x < (m_width - 3); x++) {
 		int bin = firstBin + int(float(x - 2) * binsPerPixel + 0.5F);
 
-		float value = 0.0F;
-		for (int i = 0; i < int(binsPerPixel + 0.5F); i++)
-			value += spectrum[bin++];
-		value /= ::floor(binsPerPixel + 0.5F);
+		float value = -200.0F;
+		for (int i = 0; i < int(binsPerPixel + 0.5F); i++) {
+			float val = spectrum[bin++];
+
+			if (val > value)
+				value = val;
+		}
 
 		int y = int((value - bottom) / DB_SCALE + 0.5F);
 		if (y < 0)
@@ -286,6 +299,48 @@ void CSpectrumDisplay::drawPanadapter(const float* spectrum, float bottom)
 
 		lastX = x;
 		lastY = y;
+	}
+
+	dcBack.SelectObject(wxNullBitmap);
+	dc.SelectObject(wxNullBitmap);
+}
+
+void CSpectrumDisplay::drawPanadapter2(const float* spectrum, float bottom)
+{
+	wxMemoryDC dc, dcBack;
+
+	dc.SelectObject(*m_bitmap);
+	dcBack.SelectObject(*m_background);
+
+	dc.Blit(0, 0, m_width, m_height, &dcBack, 0, 0);
+
+	dc.SetPen(*wxGREEN_PEN);
+
+	int firstBin = int(float(SPECTRUM_SIZE) / 2.0F - m_bandwidth / 2.0F * float(SPECTRUM_SIZE) / float(m_sampleRate) + 0.5);
+	int lastBin  = int(float(SPECTRUM_SIZE) / 2.0F + m_bandwidth / 2.0F * float(SPECTRUM_SIZE) / float(m_sampleRate) + 0.5);
+
+	float binsPerPixel = float(lastBin - firstBin) / float(m_width - 5);
+
+	for (int x = 2; x < (m_width - 3); x++) {
+		int bin = firstBin + int(float(x - 2) * binsPerPixel + 0.5F);
+
+		float value = -200.0F;
+		for (int i = 0; i < int(binsPerPixel + 0.5F); i++) {
+			float val = spectrum[bin++];
+
+			if (val > value)
+				value = val;
+		}
+
+		int y = int((value - bottom) / DB_SCALE + 0.5F);
+		if (y < 0)
+			y = 0;
+		if (y > (m_height - 12))
+			y = m_height - 12;
+
+		y = m_height - 15 - y;
+
+		dc.DrawLine(x, m_height - 15, x, y);
 	}
 
 	dcBack.SelectObject(wxNullBitmap);
@@ -315,10 +370,13 @@ void CSpectrumDisplay::drawWaterfall(const float* spectrum, float bottom)
 	for (int x = 2; x < (m_width - 3); x++) {
 		int bin = firstBin + int(float(x - 2) * binsPerPixel + 0.5);
 
-		float value = 0.0F;
-		for (int i = 0; i < int(binsPerPixel + 0.5); i++)
-			value += spectrum[bin++];
-		value /= ::floor(binsPerPixel + 0.5F);
+		float value = -200.0F;
+		for (int i = 0; i < int(binsPerPixel + 0.5); i++) {
+			float val = spectrum[bin++];
+
+			if (value > val)
+				value = val;
+		}
 
 		float percent = (value - bottom) / 40.0F;
 		if (percent < 0.0F)
@@ -379,8 +437,11 @@ void CSpectrumDisplay::onRightMouse(wxMouseEvent& event)
 	wxASSERT(m_speedMenu != NULL);
 
 	switch (m_type) {
-		case SPECTRUM_PANADAPTER:
-			m_typeMenu->Check(MENU_PANADAPTER, true);
+		case SPECTRUM_PANADAPTER1:
+			m_typeMenu->Check(MENU_PANADAPTER1, true);
+			break;
+		case SPECTRUM_PANADAPTER2:
+			m_typeMenu->Check(MENU_PANADAPTER2, true);
 			break;
 		case SPECTRUM_WATERFALL:
 			m_typeMenu->Check(MENU_WATERFALL, true);
@@ -438,8 +499,11 @@ void CSpectrumDisplay::onRightMouse(wxMouseEvent& event)
 void CSpectrumDisplay::onMenu(wxCommandEvent& event)
 {
 	switch (event.GetId()) {
-		case MENU_PANADAPTER:
-			setType(SPECTRUM_PANADAPTER);
+		case MENU_PANADAPTER1:
+			setType(SPECTRUM_PANADAPTER1);
+			break;
+		case MENU_PANADAPTER2:
+			setType(SPECTRUM_PANADAPTER2);
 			break;
 		case MENU_WATERFALL:
 			setType(SPECTRUM_WATERFALL);
@@ -483,7 +547,8 @@ void CSpectrumDisplay::setType(int type)
 		return;
 
 	switch (type) {
-		case SPECTRUM_PANADAPTER:
+		case SPECTRUM_PANADAPTER1:
+		case SPECTRUM_PANADAPTER2:
 			createPanadapter();
 			break;
 		case SPECTRUM_WATERFALL:

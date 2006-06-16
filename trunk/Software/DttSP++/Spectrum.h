@@ -36,7 +36,7 @@ Bridgewater, NJ 08807
 
 #include "DataTypes.h"
 #include "Window.h"
-#include "bufvec.h"
+#include "CXB.h"
 #include "fftw3.h"
 
 

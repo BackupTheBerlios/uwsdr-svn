@@ -2120,7 +2120,7 @@ Process_Panadapter (float *results)
 void
 Process_Phase (float *results, unsigned int numpoints)
 {
-  int i, j;
+  unsigned int i, j;
   top.sync.upd.sem->Wait();
   uni.spec.type = SPEC_POST_AGC;
   uni.spec.scale = SPEC_PWR;
@@ -2137,7 +2137,7 @@ Process_Phase (float *results, unsigned int numpoints)
 void
 Process_Scope (float *results, unsigned int numpoints)
 {
-  int i;
+  unsigned int i;
   top.sync.upd.sem->Wait();
   uni.spec.type = SPEC_POST_AGC;
   uni.spec.scale = SPEC_PWR;

@@ -35,7 +35,7 @@ Bridgewater, NJ 08807
 #include "FIR.h"
 #include "CXOps.h"
 #include "banal.h"
-#include "bufvec.h"
+#include "CXB.h"
 
 #include <wx/wx.h>
 

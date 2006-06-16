@@ -38,7 +38,7 @@ Bridgewater, NJ 08807
 #include "Defs.h"
 #include "Meter.h"
 #include "Spectrum.h"
-#include "bufvec.h"
+#include "CXB.h"
 #include "CorrectIQ.h"
 #include "Oscillator.h"
 #include "FIR.h"

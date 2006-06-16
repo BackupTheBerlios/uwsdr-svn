@@ -48,11 +48,12 @@ BEGIN_EVENT_TABLE(CFreqKeypad, wxDialog)
 	EVT_BUTTON(wxID_OK,      CFreqKeypad::onOK)
 END_EVENT_TABLE()
 
-CFreqKeypad::CFreqKeypad(wxWindow* parent, int id, const CFrequency& minFreq, const CFrequency& maxFreq) :
+CFreqKeypad::CFreqKeypad(wxWindow* parent, int id, const CFrequency& vfo, const CFrequency& minFreq, const CFrequency& maxFreq) :
 wxDialog(parent, id, wxString(_("Frequency Keypad"))),
+m_vfo(vfo),
 m_minFreq(minFreq),
 m_maxFreq(maxFreq),
-m_frequency(0, 0),
+m_frequency(0, 0.0F),
 m_text(NULL)
 {
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
@@ -121,7 +122,6 @@ CFrequency CFreqKeypad::getFrequency() const
 	return m_frequency;
 }
 
-
 void CFreqKeypad::onButton(wxCommandEvent& event)
 {
 	switch (event.GetId()) {
@@ -168,12 +168,24 @@ void CFreqKeypad::onButton(wxCommandEvent& event)
 
 void CFreqKeypad::onOK(wxCommandEvent& event)
 {
-	wxString freq = m_text->GetValue();
+	wxString text = m_text->GetValue();
 
-	if (!m_frequency.setFrequency(freq)) {
+	if (text.Length() == 0) {
 		::wxBell();
 		return;
-	} else if (m_frequency >= m_maxFreq || m_frequency < m_minFreq) {
+	}
+
+	if (text.GetChar(0) == wxT('.')) {
+		wxString mhz = m_vfo.getString().BeforeFirst(wxT('.'));
+		text.Prepend(mhz);
+	}
+
+	if (!m_frequency.setFrequency(text)) {
+		::wxBell();
+		return;
+	}
+
+	if (m_frequency >= m_maxFreq || m_frequency < m_minFreq) {
 		::wxBell();
 		return;
 	}

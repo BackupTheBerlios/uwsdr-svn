@@ -72,7 +72,8 @@ class CSpectrumDisplay : public wxPanel {
 	void createPanadapter();
 	void createWaterfall();
 
-	void drawPanadapter(const float* spectrum, float bottom);
+	void drawPanadapter1(const float* spectrum, float bottom);
+	void drawPanadapter2(const float* spectrum, float bottom);
 	void drawWaterfall(const float* spectrum, float bottom);
 };
 

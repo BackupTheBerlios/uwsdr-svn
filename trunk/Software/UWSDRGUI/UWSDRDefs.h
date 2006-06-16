@@ -146,8 +146,9 @@ const int SPECTRUM_PRE_FILT   = 0;
 const int SPECTRUM_POST_FILT  = 1;
 const int SPECTRUM_POST_AGC   = 2;
 
-const int SPECTRUM_PANADAPTER = 0;
-const int SPECTRUM_WATERFALL  = 1;
+const int SPECTRUM_PANADAPTER1 = 0;
+const int SPECTRUM_PANADAPTER2 = 1;
+const int SPECTRUM_WATERFALL   = 2;
 
 const int SPECTRUM_100MS      = 0;
 const int SPECTRUM_200MS      = 1;

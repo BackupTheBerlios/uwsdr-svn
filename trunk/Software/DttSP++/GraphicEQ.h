@@ -57,7 +57,7 @@ This is derived from equ.xmms:
 
 #include "DataTypes.h"
 #include "Complex.h"
-#include "bufvec.h"
+#include "CXB.h"
 #include "FilterOVSV.h"
 
 

@@ -1,4 +1,4 @@
-/* bufvec.h
+/* CXB.h
 
 defs for vector and buffer data structures and utilities
    
@@ -33,8 +33,8 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
-#ifndef _bufvec_h
-#define _bufvec_h
+#ifndef _cxb_h
+#define _cxb_h
 
 #include "DataTypes.h"
 #include "Complex.h"
@@ -42,9 +42,10 @@ Bridgewater, NJ 08807
 
 
 typedef struct {
-	COMPLEX* data;
-	unsigned int size, have;
-	bool mine;
+	COMPLEX*     data;
+	unsigned int size;
+	unsigned int have;
+	bool         mine;
 } CXB;
 
 /* all these should be OK rhs or lhs */

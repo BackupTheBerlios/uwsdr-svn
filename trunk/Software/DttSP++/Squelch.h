@@ -34,7 +34,7 @@ Bridgewater, NJ 08807
 #ifndef _squelch_h
 #define _squelch_h
 
-#include "bufvec.h"
+#include "CXB.h"
 
 
 class CSquelch {

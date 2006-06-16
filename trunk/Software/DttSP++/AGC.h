@@ -36,7 +36,7 @@ Bridgewater, NJ 08807
 
 #include "DataTypes.h"
 #include "Complex.h"
-#include "bufvec.h"
+#include "CXB.h"
 
 
 const int FASTLEAD = 72;

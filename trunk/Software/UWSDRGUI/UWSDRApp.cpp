@@ -397,7 +397,7 @@ bool CUWSDRApp::readConfig()
 	profile->Read(keyTxMeter,          &m_parameters->m_txMeter, METER_POWER);
 
 	profile->Read(keySpectrumPos,      &m_parameters->m_spectrumPos,   SPECTRUM_PRE_FILT);
-	profile->Read(keySpectrumType,     &m_parameters->m_spectrumType,  SPECTRUM_PANADAPTER);
+	profile->Read(keySpectrumType,     &m_parameters->m_spectrumType,  SPECTRUM_PANADAPTER1);
 	profile->Read(keySpectrumSpeed,    &m_parameters->m_spectrumSpeed, SPECTRUM_100MS);
 
 	profile->Read(keyRxIqPhase,        &m_parameters->m_rxIQphase, 0);

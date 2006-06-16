@@ -1,4 +1,4 @@
-/* bufvec.c
+/* CXB.c
 
    creation, deletion, management for vectors and buffers 
    
@@ -33,7 +33,7 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
-#include "bufvec.h"
+#include "CXB.h"
 #include "FromSys.h"
 #include "banal.h"
 

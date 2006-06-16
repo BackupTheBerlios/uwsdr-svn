@@ -37,7 +37,7 @@ Bridgewater, NJ 08807
 #include "FromSys.h"
 #include "DataTypes.h"
 #include "Complex.h"
-#include "bufvec.h"
+#include "CXB.h"
 
 
 class CSSBMod {

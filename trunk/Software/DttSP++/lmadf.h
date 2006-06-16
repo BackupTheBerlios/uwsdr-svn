@@ -35,7 +35,7 @@ Bridgewater, NJ 08807
 #define _lmadf_h
 
 #include "DataTypes.h"
-#include "bufvec.h"
+#include "CXB.h"
 #include "CXOps.h"
 #include "fftw3.h"
 

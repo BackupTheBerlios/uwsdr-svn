@@ -7,7 +7,7 @@ Menu - this will provide a drop down menu where configuration panels can be acce
 
 The menu currently has four options:
 
-The Frequency Keypad is what the names suggests, a calculator type entry of frequency, making quick changes of frequency relatively easy.
+The Frequency Keypad is what the names suggests, a calculator type entry of frequency, making quick changes of frequency relatively easy. The frequency can be entered in two ways, the complete frequency, or if the text starts with a dot, then only the kilohertz needs to be entered and the current VFO megahertz is used.
 
 The Preferences allows for the setting of the maximum and minimum frequencies for the SDR which must be within the limits set for the hardware which is held in the SDR file. The Shift value in kHz is also set here. You can also set the different step sizes for tuning and also the different filters and AGC values for each mode.
 
@@ -46,17 +46,17 @@ MHz + - Adds one Megahertz from the current VFO frequency.
 
 The frequency display attempts to replicate that authentic black box experience.
 
-The spectrum display shows a range of frequencies round the current operating frequency. The actual width seen will depend on the tuning steps of the hardware and the sample rate. It may also be used to view the signal after the filter. The display may be a standard spectrum display as well as a waterfall, the rate that it is refreshed can be changed also. This is done because the spectrum display is rather heavy on resources and may be a problem on older computers. All of these options are available by right clicking the mouse when over the spectrum display.
+The spectrum display shows a range of frequencies round the current operating frequency. The actual width seen will depend on the tuning steps of the hardware and the sample rate. It may also be used to view the signal after the filter. The display may be one of two different spectrum displays or a waterfall, the rate that it is refreshed can be changed also. This is done because the spectrum display is rather heavy on resources and may be a problem on older computers. All of these options are available by right clicking the mouse when over the spectrum display.
 
 It is possible to tune the SDR via the mouse and spectrum display by pointing and clicking with the left hand mouse button.
 
-Mode - Sets the SDR (actually the DSP code, the SDR knows nothing about the mode), to one of  CW Narrow, CW Wide , USB, LSB, FM and even AM. The setting of the mode can also affect the speed of tuning and the filter bandwidth, see the entries for Speed and Filter below.
+Mode - Sets the SDR (actually the DSP code, the SDR knows nothing about the mode), to one of  CW Narrow, CW Wide, USB, LSB, FM Narrow, FM Wide and even AM. The setting of the mode can also affect the speed of tuning and the filter bandwidth, see the entries for Speed and Filter below.
 
 RIT - Switches the RIT on and off. The status of the RIT is seen in the informaion box.
 
 Mute - Turns the SDR receiver off when not in use, transmit is still available.
 
-Filter - This sets the IF bandwidth of the SDR (really the DSP). It can be one of many values between 15 kHz and 25 Hz. When in the Auto mode the bandwidth will be dependent on the mode in use. In Auto mode the value used is that which is set in the preferences section.
+Filter - This sets the IF bandwidth of the SDR (really the DSP). It can be one of many values between 20 kHz and 25 Hz. When in the Auto mode the bandwidth will be dependent on the mode in use. In Auto mode the value used is that which is set in the preferences section.
 
 RIT Knob - This is the knob that controls the actual RIT value. It can move between -5 kHz and +5 kHz. This knob is controled in exactly the same way as the tuning knob, see above. This control has end stops however.
 

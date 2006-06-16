@@ -376,8 +376,8 @@ static void setup_threading()
 {
 	top.susp = false;
 
-	top.sync.upd.sem = new wxSemaphore(0, 1);
-	top.sync.buf.sem = new wxSemaphore(0, 0);
+	top.sync.upd.sem = new wxSemaphore();
+	top.sync.buf.sem = new wxSemaphore();
 }
 
 //========================================================================

@@ -34,7 +34,7 @@ Bridgewater, NJ 08807
 #ifndef _noiseblanker_h
 #define _noiseblanker_h
 
-#include "bufvec.h"
+#include "CXB.h"
 
 class CNoiseBlanker {
     public:

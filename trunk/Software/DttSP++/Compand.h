@@ -35,7 +35,7 @@ Bridgewater, NJ 08807
 #define _compand_h
 
 #include "DataTypes.h"
-#include "bufvec.h"
+#include "CXB.h"
 
 
 // fac < 0: compression

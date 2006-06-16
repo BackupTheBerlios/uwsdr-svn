@@ -1070,8 +1070,20 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 		case MENU_KEYPAD: {
 				if (m_txOn)
 					return;
-				CFreqKeypad keypad(this, -1, m_parameters->m_minReceiveFreq, m_parameters->m_maxReceiveFreq);
+
+				CFrequency freq;
+				if (m_parameters->m_vfoChoice == VFO_A)
+					freq = m_parameters->m_vfoA;
+				else if (m_parameters->m_vfoChoice == VFO_B)
+					freq = m_parameters->m_vfoB;
+				else if (m_parameters->m_vfoChoice == VFO_C)
+					freq = m_parameters->m_vfoC;
+				else if (m_parameters->m_vfoChoice == VFO_D)
+					freq = m_parameters->m_vfoD;
+
+				CFreqKeypad keypad(this, -1, freq, m_parameters->m_minReceiveFreq, m_parameters->m_maxReceiveFreq);
 				int reply = keypad.ShowModal();
+
 				if (reply == wxID_OK) {
 					CFrequency freq = keypad.getFrequency();
 
