@@ -213,6 +213,17 @@ setOsc (int n, char **p)
 }
 
 PRIVATE int
+setRIT (int n, char **p)
+{
+  double freq = (REAL) atof (p[0]);
+  if (fabs (freq) > 5000.0)
+    return -1;
+  freq *= 2.0 * M_PI / uni.samplerate;
+  rx[RL].rit.gen->Frequency = freq;
+  return 0;
+}
+
+PRIVATE int
 setBlkNR (int n, char **p)
 {
   rx[RL].banr.flag = atoi (p[0]) ? true : false;
@@ -1384,6 +1395,8 @@ CTE update_cmds[] = {
   ,
   {"setOsc", setOsc}
   ,
+  {"setRIT", setRIT}
+  ,
   {"setRXAGC", setRXAGC}
   ,
   {"setRXAGCAttack", setRXAGCAttack}
@@ -2159,6 +2172,9 @@ SetDeviation (float value)
 void
 SetRIT (double freq)
 {
+  char buffer[64];
+  sprintf (buffer, "!setRIT %lf 0\n", freq);
+  sendcommand (buffer);
 }
 
 float

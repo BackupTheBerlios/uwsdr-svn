@@ -153,6 +153,14 @@ setup_rx (int k)
 			  rx[k].osc.phase,
 			  uni.samplerate, "SDR RX Oscillator");
 
+  /* RIT */
+  rx[k].rit.freq = 0.0;
+  rx[k].rit.phase = 0.0;
+  rx[k].rit.gen = newOSC (uni.buflen,
+			  ComplexTone,
+			  rx[k].rit.freq,
+			  rx[k].rit.phase,
+			  uni.samplerate, "SDR RIT Oscillator");
 
   rx[k].dttspagc.gen = newDttSPAgc (agcLONG,	// mode kept around for control reasons alone
 				    CXBbase (rx[k].buf.o),	// input buffer
@@ -417,6 +425,7 @@ destroy_workspace (void)
       delAMD (rx[k].am.gen);
       delFMD (rx[k].fm.gen);
       delOSC (rx[k].osc.gen);
+      delOSC (rx[k].rit.gen);
       delvec_COMPLEX (rx[k].filt.save);
       delFiltOvSv (rx[k].filt.ovsv);
       delFIR_Bandpass_COMPLEX (rx[k].filt.coef);
@@ -687,7 +696,6 @@ do_rx_pre (int k)
   correctIQ (rx[k].buf.i, rx[k].iqfix);
 
   /* 2nd IF conversion happens here */
-
   if (rx[k].osc.gen->Frequency != 0.0)
     {
       ComplexOSC (rx[k].osc.gen);
@@ -697,10 +705,17 @@ do_rx_pre (int k)
     }
 
   /* filtering, metering, spectrum, squelch, & AGC */
-
-
   //do_rx_meter (k, rx[k].buf.i, RXMETER_PRE_FILT);
   do_rx_spectrum (k, rx[k].buf.i, SPEC_PRE_FILT);
+
+  if (rx[k].rit.gen->Frequency != 0.0)
+    {
+      ComplexOSC (rx[k].rit.gen);
+      for (i = 0; i < n; i++)
+	CXBdata (rx[k].buf.i, i) = Cmul (CXBdata (rx[k].buf.i, i),
+					 OSCCdata (rx[k].rit.gen, i));
+    }
+
   if (rx[k].mode != SPEC)
     {
       if (rx[k].tick == 0)

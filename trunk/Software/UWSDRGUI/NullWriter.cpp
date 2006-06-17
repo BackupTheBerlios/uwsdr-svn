@@ -35,6 +35,15 @@ void CNullWriter::write(const float* buffer, unsigned int nSamples)
 {
 	wxASSERT(buffer != NULL);
 	wxASSERT(nSamples > 0);
+
+	float isq = 0.0F;
+	float qsq = 0.0F;
+	for (unsigned int i = 0; i < nSamples; i++) {
+		isq += buffer[i * 2 + 0] * buffer[i * 2 + 0];
+		qsq += buffer[i * 2 + 1] * buffer[i * 2 + 1];
+	}
+
+	::wxLogMessage(wxT("I squared=%f, Q squared=%f"), isq, qsq);
 }
 
 void CNullWriter::close()

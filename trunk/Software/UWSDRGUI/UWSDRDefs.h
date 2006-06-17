@@ -21,7 +21,7 @@
 
 // For the GUI
 const wxString VERSION     = wxT("uWave SDR 0.5.1");
-const wxString REL_DATE    = wxT("10 June 2006");
+const wxString REL_DATE    = wxT("17 June 2006");
 
 const wxString APPNAME     = wxT("UWSDR");
 
@@ -156,6 +156,8 @@ const int SPECTRUM_300MS      = 2;
 const int SPECTRUM_400MS      = 3;
 const int SPECTRUM_500MS      = 4;
 const int SPECTRUM_1000MS     = 5;
+
+const int CW_OFFSET           = 800;
 
 const double FREQ_VERY_FAST_STEP = 500.0;
 const double FREQ_FAST_STEP      = 300.0;

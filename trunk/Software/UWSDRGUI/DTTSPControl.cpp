@@ -432,7 +432,7 @@ void CDTTSPControl::normaliseFilter()
 	int high = 0;
 	switch (m_mode) {
 		case MODE_FMW:
-      case MODE_FMN:
+		case MODE_FMN:
 		case MODE_AM:
 			high = width / 2;
 			low  = -width / 2;
@@ -527,28 +527,28 @@ void CDTTSPControl::normaliseFilter()
 					low  = 100;
 					break;
 				case FILTER_1000:
-					high = 1300;
-					low  = 300;
+					high = CW_OFFSET + 500;
+					low  = CW_OFFSET - 500;
 					break;
 				case FILTER_500:
-					high = 1050;
-					low  = 550;
+					high = CW_OFFSET + 250;
+					low  = CW_OFFSET - 250;
 					break;
 				case FILTER_250:
-					high = 925;
-					low  = 675;
+					high = CW_OFFSET + 125;
+					low  = CW_OFFSET - 125;
 					break;
 				case FILTER_100:
-					high = 850;
-					low  = 750;
+					high = CW_OFFSET + 50;
+					low  = CW_OFFSET - 50;
 					break;
 				case FILTER_50:
-					high = 825;
-					low  = 775;
+					high = CW_OFFSET + 25;
+					low  = CW_OFFSET - 25;
 					break;
 				case FILTER_25:
-					high = 813;
-					low  = 788;
+					high = CW_OFFSET + 13;
+					low  = CW_OFFSET - 12;
 					break;
 			}
 			break;

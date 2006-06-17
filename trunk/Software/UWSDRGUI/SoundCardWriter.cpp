@@ -70,6 +70,11 @@ void CSoundCardWriter::write(const float* buffer, unsigned int nSamples)
 	wxASSERT(buffer != NULL);
 	wxASSERT(nSamples > 0);
 
+	for (unsigned int i = 0; i < nSamples * 2; i++) {
+		if (::fabs(buffer[i]) >= 1.0)
+			::wxLogError(wxT("Invalid value in SoundCardWriter: %f"), buffer[i]);
+	}
+
 	PaError error = ::Pa_WriteStream(m_stream, buffer, nSamples);
 	if (error != paNoError)
 		::wxLogError(wxT("Received %d:%s from Pa_WriteStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));

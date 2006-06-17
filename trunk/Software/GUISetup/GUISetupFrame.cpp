@@ -291,16 +291,18 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 	if (!found) {
 		::wxMessageBox(_("Cannot find the registry key for the\ninstallation directory. Cannot create\nthe start menu entry."));
 	} else {
-#endif
 		bool create = m_startMenu->GetValue();
 		if (create)
-			writeStartMenu(name, wxEmptyString);
+			writeStartMenu(name, dir);
 
-#ifdef __WXMSW__
 		create = m_deskTop->GetValue();
 		if (create)
 			writeDeskTop(name, dir);
 	}
+#else
+	bool create = m_startMenu->GetValue();
+	if (create)
+		writeStartMenu(name, wxEmptyString);
 #endif
 
 	delete config;

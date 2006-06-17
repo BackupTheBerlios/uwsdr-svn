@@ -130,6 +130,11 @@ extern struct _rx
   } osc;
   struct
   {
+    double freq, phase;
+    OSC gen;
+  } rit;
+  struct
+  {
     ComplexFIR coef;
     FiltOvSv ovsv;
     COMPLEX *save;

@@ -289,8 +289,8 @@ void CSpectrumDisplay::drawPanadapter1(const float* spectrum, float bottom)
 		int y = int((value - bottom) / DB_SCALE + 0.5F);
 		if (y < 0)
 			y = 0;
-		if (y > (m_height - 12))
-			y = m_height - 12;
+		if (y > (m_height - 18))
+			y = m_height - 18;
 
 		y = m_height - 15 - y;
 
@@ -335,8 +335,8 @@ void CSpectrumDisplay::drawPanadapter2(const float* spectrum, float bottom)
 		int y = int((value - bottom) / DB_SCALE + 0.5F);
 		if (y < 0)
 			y = 0;
-		if (y > (m_height - 12))
-			y = m_height - 12;
+		if (y > (m_height - 18))
+			y = m_height - 18;
 
 		y = m_height - 15 - y;
 

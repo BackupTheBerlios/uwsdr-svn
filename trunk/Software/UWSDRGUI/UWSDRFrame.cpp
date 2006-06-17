@@ -261,9 +261,9 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_dsp->setTXReader(new CSignalReader(750, 0.0F, 0.5F));
 	m_dsp->setTXWriter(new CNullWriter());
 
-	m_dsp->setRXReader(new CSignalReader(m_parameters->m_hardwareSampleRate / 4 + 1000, 4.77E-7F, 5E-7F));
-	// m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
-	m_dsp->setRXWriter(new CNullWriter());
+	m_dsp->setRXReader(new CSignalReader(m_parameters->m_hardwareSampleRate / 4 + 1000, 0.0008F, 0.001F));
+	m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
+	// m_dsp->setRXWriter(new CNullWriter());
 
 	m_dsp->Create();
 	m_dsp->Run();
@@ -757,6 +757,8 @@ void CUWSDRFrame::onModeChoice(wxCommandEvent& event)
 	m_parameters->m_mode = int(event.GetSelection());
 
 	normaliseMode();
+
+	normaliseFreq();
 }
 
 void CUWSDRFrame::onFilterChoice(wxCommandEvent& event)
@@ -926,13 +928,22 @@ void CUWSDRFrame::normaliseFreq()
 	if (m_txOn && m_parameters->m_vfoSplitShift == VFO_SHIFT_2)
 		freq += m_parameters->m_shift;
 
-	if (m_parameters->m_ritOn && !m_txOn) {
+	// Set the RIT
+	if (m_parameters->m_ritOn && !m_txOn)
 		m_dsp->setRIT(float(m_parameters->m_ritFreq));
-		m_freqDisplay->setFrequency(freq + m_parameters->m_ritFreq);
-	} else {
+	else
 		m_dsp->setRIT(0.0F);
-		m_freqDisplay->setFrequency(freq);
-	}
+
+	CFrequency dispFreq = freq;
+
+	// Adjust the display ONLY frequency
+	if (m_parameters->m_ritOn && !m_txOn)
+		dispFreq += m_parameters->m_ritFreq;
+
+	if (m_parameters->m_mode == MODE_CWW || m_parameters->m_mode == MODE_CWN)
+		dispFreq += CW_OFFSET;
+
+	m_freqDisplay->setFrequency(dispFreq);
 
 	// Subtract the IF frequency
 	freq -= float(m_parameters->m_hardwareSampleRate) / 4.0F;
@@ -971,20 +982,19 @@ void CUWSDRFrame::normaliseMode()
 	m_dsp->setMode(m_parameters->m_mode);
 
 	int speed  = -1;
-   int dev    = -1;
 	int filter = m_parameters->m_filter;
 
 	switch (m_parameters->m_mode) {
 		case MODE_FMW:
 			if (filter == FILTER_AUTO)
 				filter = m_parameters->m_filterFMW;
-         dev   = m_parameters->m_deviationFMW;
+			m_dsp->setDeviation(m_parameters->m_deviationFMW);
 			speed = m_parameters->m_vfoSpeedFM;
 			break;
 		case MODE_FMN:
 			if (filter == FILTER_AUTO)
 				filter = m_parameters->m_filterFMN;
-         dev   = m_parameters->m_deviationFMN;
+			m_dsp->setDeviation(m_parameters->m_deviationFMN);
 			speed = m_parameters->m_vfoSpeedFM;
 			break;
 		case MODE_AM:
@@ -1017,9 +1027,6 @@ void CUWSDRFrame::normaliseMode()
 	}
 
 	m_dsp->setFilter(filter);
-
-   if (dev != -1)
-      m_dsp->setDeviation(dev);
 
 	switch (speed) {
 		case SPEED_VERYFAST:
@@ -1201,10 +1208,10 @@ void CUWSDRFrame::onTimer(wxTimerEvent& event)
 		float val = m_dsp->getMeter(meter);
 
 		if (val != -200.0F) {
-			m_sMeter->setLevel(val + 110.0F);
+			m_sMeter->setLevel(val + 40.0F);
 
 			m_dsp->getSpectrum(m_spectrum, m_parameters->m_spectrumPos);
-			m_spectrumDisplay->showSpectrum(m_spectrum, -95.0F);
+			m_spectrumDisplay->showSpectrum(m_spectrum, -30.0F);
 
 			float offset = m_spectrumDisplay->getFreqPick();
 			if (offset != 0.0F)
