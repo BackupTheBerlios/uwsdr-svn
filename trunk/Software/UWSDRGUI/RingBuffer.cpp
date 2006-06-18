@@ -39,7 +39,7 @@ CRingBuffer::~CRingBuffer()
 	delete[] m_buffer;
 }
 
-unsigned int CRingBuffer::addData(float* buffer, unsigned int nSamples)
+unsigned int CRingBuffer::addData(const float* buffer, unsigned int nSamples)
 {
 	unsigned int space = freeSpace();
 

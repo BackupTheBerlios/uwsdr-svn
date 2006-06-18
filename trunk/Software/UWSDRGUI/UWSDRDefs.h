@@ -21,7 +21,7 @@
 
 // For the GUI
 const wxString VERSION     = wxT("uWave SDR 0.5.1");
-const wxString REL_DATE    = wxT("17 June 2006");
+const wxString REL_DATE    = wxT("18 June 2006");
 
 const wxString APPNAME     = wxT("UWSDR");
 

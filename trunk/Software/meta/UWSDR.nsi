@@ -25,7 +25,7 @@
 ;--------------------------------
 ;Interface Settings
 
-  !define MUI_ABORTWARNING
+  !define MUI_ABORTWARNI3NG
 
 ;--------------------------------
 ;Pages
@@ -61,6 +61,9 @@ Section "UWSDR Program Files" SecProgram
   File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Release\wxmsw26_core_vc_custom.dll"
   File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Release\wxmsw26_html_vc_custom.dll"
   File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Copying.txt"
+  File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Changes.txt"
+  File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Jobs.txt"
+  File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Usage.txt"
   File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\meta\UWSDR.ico"
   File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\meta\GUISetup.ico"
   File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\meta\SDRSetup.ico"
@@ -72,7 +75,10 @@ Section "UWSDR Program Files" SecProgram
   CreateShortCut "$SMPROGRAMS\UWSDR\GUISetup.lnk"  "$INSTDIR\GUISetup.exe"   "" "$INSTDIR\GUISetup.ico"
   CreateShortCut "$SMPROGRAMS\UWSDR\SDRHelp.lnk"   "$INSTDIR\SDRHelp.exe"    "" "$INSTDIR\SDRHelp.ico"
   CreateShortCut "$SMPROGRAMS\UWSDR\SDRSetup.lnk"  "$INSTDIR\SDRSetup.exe"   "" "$INSTDIR\SDRSetup.ico"
-  CreateShortCut "$SMPROGRAMS\UWSDR\Licence.lnk"   "$INSTDIR\Licence.txt"
+  CreateShortCut "$SMPROGRAMS\UWSDR\Licence.lnk"   "$INSTDIR\Copying.txt"
+  CreateShortCut "$SMPROGRAMS\UWSDR\Changes.lnk"   "$INSTDIR\Changes.txt"
+  CreateShortCut "$SMPROGRAMS\UWSDR\TODO.lnk"      "$INSTDIR\Jobs.txt"
+  CreateShortCut "$SMPROGRAMS\UWSDR\Usage.lnk"     "$INSTDIR\Usage.txt"
   CreateShortCut "$SMPROGRAMS\UWSDR\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
 
   ;Store install folder

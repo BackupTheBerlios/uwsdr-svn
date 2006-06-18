@@ -293,7 +293,7 @@ Audio_Callback (float *input_l, float *input_r, float *output_l,
 
   if (ringb_float_read_space (top.jack.ring.i.l) >= top.hold.size.frames)
     top.sync.buf.sem->Post();
-
+/*
   // check for blowups
   if ((top.jack.blow.cb > 0) ||
       (top.jack.blow.rb.i > 0) || (top.jack.blow.rb.o > 0))
@@ -301,6 +301,7 @@ Audio_Callback (float *input_l, float *input_r, float *output_l,
 	       uni.tick,
 	       top.jack.blow.cb,
 	       top.jack.blow.rb.i, top.jack.blow.rb.o, top.jack.blow.xr);
+*/
 }
 
 
@@ -390,7 +391,7 @@ Audio_Callback4IL (float *input, float *output, unsigned int nframes)
 
   if (ringb_float_read_space (top.jack.ring.i.l) >= top.hold.size.frames)
     top.sync.buf.sem->Post();
-
+/*
   // check for blowups
   if ((top.jack.blow.cb > 0) ||
       (top.jack.blow.rb.i > 0) || (top.jack.blow.rb.o > 0))
@@ -398,6 +399,7 @@ Audio_Callback4IL (float *input, float *output, unsigned int nframes)
 	       uni.tick,
 	       top.jack.blow.cb,
 	       top.jack.blow.rb.i, top.jack.blow.rb.o, top.jack.blow.xr);
+*/
 }
 
 
@@ -488,7 +490,7 @@ Audio_CallbackIL (float *input, float *output, unsigned int nframes)
 
   if (ringb_float_read_space (top.jack.ring.i.l) >= top.hold.size.frames)
     top.sync.buf.sem->Post();
-
+/*
   // check for blowups
   if ((top.jack.blow.cb > 0) ||
       (top.jack.blow.rb.i > 0) || (top.jack.blow.rb.o > 0))
@@ -496,6 +498,7 @@ Audio_CallbackIL (float *input, float *output, unsigned int nframes)
 	       uni.tick,
 	       top.jack.blow.cb,
 	       top.jack.blow.rb.i, top.jack.blow.rb.o, top.jack.blow.xr);
+*/
 }
 
 //========================================================================

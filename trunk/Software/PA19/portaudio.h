@@ -2,7 +2,7 @@
 #ifndef PORTAUDIO_H
 #define PORTAUDIO_H
 /*
- * $Id: portaudio.h,v 1.5.2.52 2005/12/07 20:10:34 aknudsen Exp $
+ * $Id: portaudio.h 1013 2006-05-15 04:01:31Z rossb $
  * PortAudio Portable Real-Time Audio Library
  * PortAudio API Header File
  * Latest version available at: http://www.portaudio.com/
@@ -36,11 +36,6 @@
 /** @file
  @brief The PortAudio API.
 */
-
-
-#if defined(__ICC) || defined(_MSC_VER)
-#pragma comment ( lib, "pa19" )
-#endif
 
 
 #ifdef __cplusplus
@@ -231,7 +226,8 @@ typedef enum PaHostApiTypeId
     paAL=9,
     paBeOS=10,
     paWDMKS=11,
-    paJACK=12
+    paJACK=12,
+	paWASAPI=13
 } PaHostApiTypeId;
 
 
@@ -253,13 +249,13 @@ typedef struct PaHostApiInfo
     */
     int deviceCount;
 
-    /** The the default input device for this host API. The value will be a
+    /** The default input device for this host API. The value will be a
      device index ranging from 0 to (Pa_GetDeviceCount()-1), or paNoDevice
      if no default input device is available.
     */
     PaDeviceIndex defaultInputDevice;
 
-    /** The the default output device for this host API. The value will be a
+    /** The default output device for this host API. The value will be a
      device index ranging from 0 to (Pa_GetDeviceCount()-1), or paNoDevice
      if no default output device is available.
     */

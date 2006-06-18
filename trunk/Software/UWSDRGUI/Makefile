@@ -42,7 +42,7 @@ NullReader.o:	NullReader.cpp NullReader.h DataReader.h
 NullWriter.o:	NullWriter.cpp NullWriter.h DataWriter.h
 		$(CC) $(CFLAGS) -c NullWriter.cpp
 
-RingBuffer.o:	RingBuffer.cpp RingBuffer.h Frequency.h
+RingBuffer.o:	RingBuffer.cpp RingBuffer.h
 		$(CC) $(CFLAGS) -c RingBuffer.cpp
 
 SDRDescrFile.o:	SDRDescrFile.cpp SDRDescrFile.h Frequency.h

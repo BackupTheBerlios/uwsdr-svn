@@ -22,8 +22,15 @@
 #include <wx/wx.h>
 
 #include "DataWriter.h"
+#include "RingBuffer.h"
 
 #include "portaudio.h"
+
+
+extern "C" {
+	int scwCallback(const void* input, void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void* userData);
+}
+
 
 class CSoundCardWriter : public IDataWriter {
     public:
@@ -34,10 +41,13 @@ class CSoundCardWriter : public IDataWriter {
 	virtual void write(const float* buffer, unsigned int nSamples);
 	virtual void close();
 
+	virtual int  callback(void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags);
+
     private:
-	int       m_api;
-	int       m_dev;
-	PaStream* m_stream;
+	int          m_api;
+	int          m_dev;
+	PaStream*    m_stream;
+	CRingBuffer* m_buffer;
 };
 
 #endif

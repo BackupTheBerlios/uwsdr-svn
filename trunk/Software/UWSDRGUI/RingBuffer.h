@@ -21,15 +21,13 @@
 
 #include <wx/wx.h>
 
-#include "Frequency.h"
-
 class CRingBuffer {
 
     public:
 	CRingBuffer(unsigned int length);
 	virtual ~CRingBuffer();
 
-	virtual unsigned int addData(float* buffer, unsigned int nSamples);
+	virtual unsigned int addData(const float* buffer, unsigned int nSamples);
 	virtual unsigned int getData(float* buffer, unsigned int nSamples);
 
 	virtual void         clear();

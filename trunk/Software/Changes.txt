@@ -128,3 +128,5 @@ RIT now doesn't move the spectrum display.
 Adding a frequency of .NNNN into the Frequency Keypad will have the current VFO megahertz.
 
 A new Panadapeter style with a solid graph has been added.
+
+Latest version of PortAudio and moved to non-blocking output.

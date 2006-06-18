@@ -18,10 +18,22 @@
 
 #include "SoundCardWriter.h"
 
+
+int scwCallback(const void* input, void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void* userData)
+{
+	wxASSERT(userData != NULL);
+
+	CSoundCardWriter* object = reinterpret_cast<CSoundCardWriter*>(userData);
+
+	return object->callback(output, nSamples, timeInfo, statusFlags);
+}
+
+
 CSoundCardWriter::CSoundCardWriter(int api, int dev) :
 m_api(api),
 m_dev(dev),
-m_stream(NULL)
+m_stream(NULL),
+m_buffer(NULL)
 {
 }
 
@@ -31,6 +43,8 @@ CSoundCardWriter::~CSoundCardWriter()
 
 bool CSoundCardWriter::open(unsigned int sampleRate, unsigned int blockSize)
 {
+	m_buffer = new CRingBuffer(blockSize * 5);
+
 	PaError error = ::Pa_Initialize();
 	if (error != paNoError) {
 		::wxLogError(wxT("Received %d:%s from Pa_Initialise() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
@@ -46,7 +60,7 @@ bool CSoundCardWriter::open(unsigned int sampleRate, unsigned int blockSize)
 	params.hostApiSpecificStreamInfo = NULL;
 	params.suggestedLatency          = PaTime(0);
 
-	error = ::Pa_OpenStream(&m_stream, NULL, &params, double(sampleRate), blockSize, paNoFlag, NULL, NULL);
+	error = ::Pa_OpenStream(&m_stream, NULL, &params, double(sampleRate), blockSize, paNoFlag, &scwCallback, this);
 	if (error != paNoError) {
 		::Pa_Terminate();
 		::wxLogError(wxT("Received %d:%s from Pa_OpenStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
@@ -66,18 +80,28 @@ bool CSoundCardWriter::open(unsigned int sampleRate, unsigned int blockSize)
 
 void CSoundCardWriter::write(const float* buffer, unsigned int nSamples)
 {
-	wxASSERT(m_stream != NULL);
+	wxASSERT(m_buffer != NULL);
 	wxASSERT(buffer != NULL);
 	wxASSERT(nSamples > 0);
 
-	for (unsigned int i = 0; i < nSamples * 2; i++) {
-		if (::fabs(buffer[i]) >= 1.0)
-			::wxLogError(wxT("Invalid value in SoundCardWriter: %f"), buffer[i]);
-	}
+	unsigned int n = m_buffer->addData(buffer, nSamples);
 
-	PaError error = ::Pa_WriteStream(m_stream, buffer, nSamples);
-	if (error != paNoError)
-		::wxLogError(wxT("Received %d:%s from Pa_WriteStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
+	if (n != nSamples)
+		::wxLogError(wxT("Buffer overrun in SoundCardWriter, wanted=%u have=%u"), nSamples, n);
+}
+
+int CSoundCardWriter::callback(void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags)
+{
+	wxASSERT(m_buffer != NULL);
+	wxASSERT(output != NULL);
+
+	// No output data may not be a problem, we could be on transmit
+	if (m_buffer->dataSpace() >= nSamples)
+		m_buffer->getData((float*)output, nSamples);
+	else
+		::memset(output, 0x00, nSamples * 2 * sizeof(float));
+
+	return paContinue;
 }
 
 void CSoundCardWriter::close()
@@ -93,4 +117,6 @@ void CSoundCardWriter::close()
 	error = ::Pa_Terminate();
 	if (error != paNoError)
 		::wxLogError(wxT("Received %d:%s from Pa_Terminate() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
+
+	delete m_buffer;
 }

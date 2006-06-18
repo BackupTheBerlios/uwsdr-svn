@@ -19,11 +19,11 @@
 #include "SoundCardReader.h"
 
 
-int cCallback(const void* input, void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void* userData)
+int scrCallback(const void* input, void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void* userData)
 {
 	wxASSERT(userData != NULL);
 
-	CSoundCardReader* object = static_cast<CSoundCardReader*>(userData);
+	CSoundCardReader* object = reinterpret_cast<CSoundCardReader*>(userData);
 
 	return object->callback(input, nSamples, timeInfo, statusFlags);
 }
@@ -67,7 +67,7 @@ bool CSoundCardReader::open(unsigned int sampleRate, unsigned int blockSize)
 	params.hostApiSpecificStreamInfo = NULL;
 	params.suggestedLatency          = PaTime(0);
 
-	error = ::Pa_OpenStream(&m_stream, &params, NULL, double(sampleRate), blockSize, paNoFlag, &cCallback, this);
+	error = ::Pa_OpenStream(&m_stream, &params, NULL, double(sampleRate), blockSize, paNoFlag, &scrCallback, this);
 	if (error != paNoError) {
 		::Pa_Terminate();
 		::wxLogError(wxT("Received %d:%s from Pa_OpenStream() in SoundCardReader"), error, ::Pa_GetErrorText(error));
@@ -88,6 +88,7 @@ bool CSoundCardReader::open(unsigned int sampleRate, unsigned int blockSize)
 int CSoundCardReader::callback(const void* input, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags)
 {
 	wxASSERT(m_callback != NULL);
+	wxASSERT(input != NULL);
 
 	m_callback->callback((float *)input, nSamples, m_id);
 

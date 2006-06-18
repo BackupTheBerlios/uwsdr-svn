@@ -39,7 +39,7 @@ Bridgewater, NJ 08807
 #define SPECMULT (4)
 #define DEFRATE (48000.0)
 #define DEFSIZE (512)
-#define DEFMODE (SAM)
+#define DEFMODE (USB)
 #define DEFSPEC (4096)
 #define DEFCOMP (512)
 

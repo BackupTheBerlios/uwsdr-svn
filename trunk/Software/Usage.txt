@@ -48,6 +48,8 @@ The frequency display attempts to replicate that authentic black box experience.
 
 The spectrum display shows a range of frequencies round the current operating frequency. The actual width seen will depend on the tuning steps of the hardware and the sample rate. It may also be used to view the signal after the filter. The display may be one of two different spectrum displays or a waterfall, the rate that it is refreshed can be changed also. This is done because the spectrum display is rather heavy on resources and may be a problem on older computers. All of these options are available by right clicking the mouse when over the spectrum display.
 
+The first spectrum display type looks like the output of a spectrum analyser, with a single line joining the amplitudes of the different FFT bins. The second display shows the same information but with a solid area underneath.
+
 It is possible to tune the SDR via the mouse and spectrum display by pointing and clicking with the left hand mouse button.
 
 Mode - Sets the SDR (actually the DSP code, the SDR knows nothing about the mode), to one of  CW Narrow, CW Wide, USB, LSB, FM Narrow, FM Wide and even AM. The setting of the mode can also affect the speed of tuning and the filter bandwidth, see the entries for Speed and Filter below.

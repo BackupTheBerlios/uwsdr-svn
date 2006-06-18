@@ -4,7 +4,6 @@ List of Bugs and JObs for the UWSDR Software
 BUGS
 ----
 
-No sound output, ring buffer problem?
 
 
 TODO
