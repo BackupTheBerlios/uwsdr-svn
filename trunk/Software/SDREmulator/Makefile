@@ -1,20 +1,17 @@
 all:		SDREmulator
 
-CFLAGS := -I../UWSDRGUI $(CFLAGS)
+CFLAGS :=	-I../Common $(CFLAGS)
 
-OBJS :=		SDREmulatorApp.o SDREmulatorFrame.o Frequency.o
+OBJS :=		SDREmulatorApp.o SDREmulatorFrame.o
 
 SDREmulator:	$(OBJS)
-		$(CC) $(LDFLAGS) -o SDREmulator $(OBJS) $(LIBS)
+		$(CC) $(LDFLAGS) -o SDREmulator $(OBJS) ../Common/Common.a $(LIBS)
 
 SDREmulatorApp.o:	SDREmulatorApp.cpp SDREmulatorApp.h SDREmulatorFrame.h
 		$(CC) $(CFLAGS) -c SDREmulatorApp.cpp
 
-SDREmulatorFrame.o:	SDREmulatorFrame.cpp SDREmulatorFrame.h
+SDREmulatorFrame.o:	SDREmulatorFrame.cpp SDREmulatorFrame.h ../Common/Frequency.h
 		$(CC) $(CFLAGS) -c SDREmulatorFrame.cpp
-
-Frequency.o:	../UWSDRGUI/Frequency.cpp ../UWSDRGUI/Frequency.h
-		$(CC) $(CFLAGS) -c ../UWSDRGUI/Frequency.cpp
 
 install:	SDREmulator
 		install -g bin -o root -m 0775 SDREmulator $(BINDIR)

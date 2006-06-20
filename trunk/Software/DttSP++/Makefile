@@ -1,9 +1,11 @@
 all:		DttSP.a
 
+CFLAGS :=	-I../Common $(CFLAGS)
+
 OBJS :=	AGC.o AMDemod.o AMMod.o Compand.o CorrectIQ.o CXB.o DCBlock.o FIR.o FMDemod.o FMMod.o \
-		FilterOVSV.o GraphicEQ.o Meter.o NoiseBlanker.o Oscillator.o Resample.o ResampleF.o \
-		Spectrum.o SpeechProc.o SpotTone.o Squelch.o Window.o banal.o lmadf.o ringb.o sdr.o \
-		sdrexport.o SSBDemod.o SSBMod.o thunk.o update.o winmain.o
+		FilterOVSV.o GraphicEQ.o Meter.o NoiseBlanker.o Oscillator.o Spectrum.o SpeechProc.o \
+		SpotTone.o Squelch.o Window.o banal.o lmadf.o sdr.o sdrexport.o SSBDemod.o SSBMod.o \
+		thunk.o update.o winmain.o
 
 DttSP.a:	$(OBJS)
 		ar rcs DttSP.a $(OBJS)
@@ -53,12 +55,6 @@ NoiseBlanker.o: NoiseBlanker.cpp NoiseBlanker.h CXB.h FromSys.h
 Oscillator.o: Oscillator.cpp Oscillator.h CXB.h DataTypes.h FromSys.h
 		$(CC) $(CFLAGS) -c Oscillator.cpp
 
-Resample.o:	Resample.cpp Resample.h banal.h CXOps.h FIR.h
-		$(CC) $(CFLAGS) -c Resample.cpp
-
-ResampleF.o: ResampleF.cpp ResampleF.h banal.h FIR.h
-		$(CC) $(CFLAGS) -c ResampleF.cpp
-
 Spectrum.o:	Spectrum.cpp Spectrum.h banal.h CXB.h DataTypes.h FIR.h FromSys.h Window.h
 		$(CC) $(CFLAGS) -c Spectrum.cpp
 
@@ -86,21 +82,18 @@ banal.o:	banal.cpp banal.h CXB.h DataTypes.h FromSys.h
 lmadf.o:	lmadf.cpp lmadf.h banal.h CXB.h CXOps.h DataTypes.h
 		$(CC) $(CFLAGS) -c lmadf.cpp
 
-ringb.o:	ringb.cpp ringb.h FromSys.h
-		$(CC) $(CFLAGS) -c ringb.cpp
-
 sdr.o:	sdr.cpp AMDemod.h AMMod.h banal.h FMDemod.h FMMod.h sdrexport.h SSBDemod.h SSBMod.h
 		$(CC) $(CFLAGS) -c sdr.cpp
 
 sdrexport.o: sdrexport.cpp sdrexport.h AGC.h AMDemod.h Compand.h CorrectIQ.h CXB.h DataTypes.h DCBlock.h Defs.h \
-		FIR.h FilterOVSV.h FMDemod.h FromSys.h GraphicEQ.h lmadf.h Meter.h NoiseBlanker.h Oscillator.h ringb.h \
-		Spectrum.h SpeechProc.h SpotTone.h
+		FIR.h FilterOVSV.h FMDemod.h FromSys.h GraphicEQ.h lmadf.h Meter.h NoiseBlanker.h Oscillator.h \
+		../Common/RingBuffer.h Spectrum.h SpeechProc.h SpotTone.h
 		$(CC) $(CFLAGS) -c sdrexport.cpp
 
 thunk.o:	thunk.cpp thunk.h FromSys.h
 		$(CC) $(CFLAGS) -c thunk.cpp
 
-update.o:	update.cpp update.h banal.h CXB.h DataTypes.h FromSys.h ringb.h thunk.h sdrexport.h
+update.o:	update.cpp update.h banal.h CXB.h DataTypes.h FromSys.h ../Common/RingBuffer.h thunk.h sdrexport.h
 		$(CC) $(CFLAGS) -c update.cpp
 
 winmain.o:	winmain.cpp local.h sdrexport.h

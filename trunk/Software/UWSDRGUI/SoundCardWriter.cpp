@@ -43,7 +43,7 @@ CSoundCardWriter::~CSoundCardWriter()
 
 bool CSoundCardWriter::open(unsigned int sampleRate, unsigned int blockSize)
 {
-	m_buffer = new CRingBuffer(blockSize * 5);
+	m_buffer = new CRingBuffer(blockSize * 5, 2);
 
 	PaError error = ::Pa_Initialize();
 	if (error != paNoError) {

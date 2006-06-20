@@ -14,17 +14,20 @@ all:		GUISetup/GUISetup SDREmulator/SDREmulator SDRSetup/SDRSetup UWSDRGUI/UWSDR
 GUISetup/GUISetup:
 		make -C GUISetup
 
-SDREmulator/SDREmulator:
+SDREmulator/SDREmulator: Common/Common.a
 		make -C SDREmulator
 
 SDRSetup/SDRSetup:
 		make -C SDRSetup
 
-UWSDRGUI/UWSDR:	DttSP++/DttSP.a
+UWSDRGUI/UWSDR:	Common/Common.a DttSP++/DttSP.a
 		make -C UWSDRGUI
 
-DttSP++/DttSP.a:
+DttSP++/DttSP.a:	Common/Common.a
 		make -C DttSP++
+
+Common/Common.a:
+		make -C Common
 
 install:
 		make -C GUISetup install
@@ -35,6 +38,7 @@ install:
 
 clean:
 		rm -f core *~ *.bak
+		make -C Common clean
 		make -C DttSP++ clean
 		make -C GUISetup clean
 		make -C SDREmulator clean

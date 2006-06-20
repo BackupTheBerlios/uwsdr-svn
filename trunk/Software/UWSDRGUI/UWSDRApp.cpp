@@ -23,6 +23,7 @@
 #include "UWSDRApp.h"
 #include "UWSDRDefs.h"
 #include "SDRDescrFile.h"
+#include "Version.h"
 #include "Log.h"
 
 const wxString KEY_FILE_NAME       = wxT("/FileName");

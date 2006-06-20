@@ -55,7 +55,7 @@ Bridgewater, NJ 08807
 #include "SpotTone.h"
 #include "Compand.h"
 #include "DCBlock.h"
-#include "ringb.h"
+#include "RingBuffer.h"
 #include "GraphicEQ.h"
 #include "AGC.h"
 
@@ -266,7 +266,7 @@ extern struct _top {
   struct {
     struct {
       struct {
-	ringb_float_t *i, *q;
+	     CRingBuffer *i, *q;
       } i, o;
     } ring;
 

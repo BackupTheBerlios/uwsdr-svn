@@ -3,7 +3,7 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
-Project: "DttSP"=".\DttSP\DttSP.dsp" - Package Owner=<4>
+Project: "Common"=".\Common\Common.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -11,6 +11,21 @@ Package=<5>
 
 Package=<4>
 {{{
+}}}
+
+###############################################################################
+
+Project: "DttSP"=".\DttSP++\DttSP.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Common
+    End Project Dependency
 }}}
 
 ###############################################################################
@@ -35,6 +50,9 @@ Package=<5>
 
 Package=<4>
 {{{
+    Begin Project Dependency
+    Project_Dep_Name Common
+    End Project Dependency
 }}}
 
 ###############################################################################
@@ -63,6 +81,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "Sound Test"=".\Sound Test\SoundTest.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "UWSDR GUI"=".\UWSDRGUI\UWSDRGUI.dsp" - Package Owner=<4>
 
 Package=<5>
@@ -73,6 +103,9 @@ Package=<4>
 {{{
     Begin Project Dependency
     Project_Dep_Name DttSP
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Common
     End Project Dependency
 }}}
 

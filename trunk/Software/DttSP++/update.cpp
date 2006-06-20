@@ -36,7 +36,7 @@ Bridgewater, NJ 08807
 #include "sdrexport.h"
 #include "banal.h"
 #include "thunk.h"
-#include "ringb.h"
+#include "RingBuffer.h"
 
 #include <wx/wx.h>
 
@@ -143,11 +143,15 @@ setTXAGCLimit (int n, char **p)
 static int
 setRingBufferReset (int n, char **p)
 {
-  ringb_float_reset(top.jack.ring.i.i);
-  ringb_float_reset(top.jack.ring.i.q);
+  wxASSERT(top.jack.ring.i.i != NULL);
+  wxASSERT(top.jack.ring.i.q != NULL);
+  wxASSERT(top.jack.ring.o.i != NULL);
+  wxASSERT(top.jack.ring.o.q != NULL);
 
-  ringb_float_restart(top.jack.ring.o.i, top.hold.size.frames);
-  ringb_float_restart(top.jack.ring.o.q, top.hold.size.frames);
+  top.jack.ring.i.i->clear();
+  top.jack.ring.i.q->clear();
+  top.jack.ring.o.i->clear();
+  top.jack.ring.o.q->clear();
 
   return 0;
 }

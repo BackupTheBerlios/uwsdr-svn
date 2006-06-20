@@ -48,8 +48,8 @@ m_sequenceOut(0),
 m_inBuffer(NULL),
 m_sockBuffer(NULL),
 m_outBuffer(NULL),
-m_rxBuffer(1000),
-m_txBuffer(1000)
+m_rxBuffer(1000, 2),
+m_txBuffer(1000, 2)
 {
 }
 

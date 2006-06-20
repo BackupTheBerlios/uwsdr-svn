@@ -22,7 +22,7 @@
 #include "UWSDRDefs.h"
 #include "UWSDRControl.h"
 #include "FreqKeypad.h"
-
+#include "Version.h"
 #include "NullReader.h"
 #include "NullWriter.h"
 #include "SignalReader.h"

@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GR /GX /O2 /I "C:\wxWidgets-2.6.3\lib\vc_dll\msw" /I "..\FFTW" /I "C:\wxWidgets-2.6.3\include" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D "__WXMSW__" /D "WXUSINGDLL" /FD /c
+# ADD CPP /nologo /MT /W3 /GR /GX /O2 /Ob0 /I "C:\wxWidgets-2.6.3\lib\vc_dll\msw" /I "..\Common\\" /I "..\FFTW" /I "C:\wxWidgets-2.6.3\include" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D "__WXMSW__" /D "WXUSINGDLL" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -65,7 +65,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GR /GX /ZI /Od /I "C:\wxWidgets-2.6.3\lib\vc_dll\mswd" /I "..\FFTW" /I "C:\wxWidgets-2.6.3\include" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "__WXMSW__" /D "__WXDEBUG__" /D "WXUSINGDLL" /FR /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GR /GX /ZI /Od /I "C:\wxWidgets-2.6.3\lib\vc_dll\mswd" /I "..\Common\\" /I "..\FFTW" /I "C:\wxWidgets-2.6.3\include" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "__WXMSW__" /D "__WXDEBUG__" /D "WXUSINGDLL" /FR /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
@@ -103,15 +103,15 @@ SOURCE=.\banal.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\bufvec.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\Compand.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\CorrectIQ.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\CXB.cpp
 # End Source File
 # Begin Source File
 
@@ -152,18 +152,6 @@ SOURCE=.\NoiseBlanker.cpp
 # Begin Source File
 
 SOURCE=.\Oscillator.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\Resample.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\ResampleF.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\ringb.cpp
 # End Source File
 # Begin Source File
 
@@ -235,10 +223,6 @@ SOURCE=.\banal.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\bufvec.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\Compand.h
 # End Source File
 # Begin Source File
@@ -248,6 +232,10 @@ SOURCE=.\Complex.h
 # Begin Source File
 
 SOURCE=.\CorrectIQ.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\CXB.h
 # End Source File
 # Begin Source File
 
@@ -308,18 +296,6 @@ SOURCE=.\NoiseBlanker.h
 # Begin Source File
 
 SOURCE=.\Oscillator.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\Resample.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ResampleF.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ringb.h
 # End Source File
 # Begin Source File
 
