@@ -316,27 +316,55 @@ float CDTTSPControl::getMeter(int type)
 	if (!m_started)
 		return -200.0F;
 
+	float val = -200.0F;
+
 	switch (type) {
 		case METER_I_INPUT:
-			return ::Calculate_Meters(ADC_REAL);
+			val = ::Calculate_Meters(ADC_REAL);
+			if (val != -200.0F)
+				val += 50.0F;
+			break;
 		case METER_Q_INPUT:
-			return ::Calculate_Meters(ADC_IMAG);
+			val = ::Calculate_Meters(ADC_IMAG);
+			if (val != -200.0F)
+				val += 50.0F;
+			break;
 		case METER_SIGNAL:
-			return ::Calculate_Meters(SIGNAL_STRENGTH);
+			val = ::Calculate_Meters(SIGNAL_STRENGTH);
+			if (val != -200.0F)
+				val += 40.0F;
+			break;
 		case METER_AVG_SIGNAL:
-			return ::Calculate_Meters(AVG_SIGNAL_STRENGTH);
+			val = ::Calculate_Meters(AVG_SIGNAL_STRENGTH);
+			if (val != -200.0F)
+				val += 40.0F;
+			break;
 		case METER_AGC:
-			return ::Calculate_Meters(AGC_GAIN);
+			val = ::Calculate_Meters(AGC_GAIN);
+			if (val != -200.0F)
+				val -= 57.0F;
+			break;
 		case METER_MICROPHONE:
-			return ::Calculate_Meters(MIC);
+			val = ::Calculate_Meters(MIC);
+			if (val != -200.0F)
+				val -= 10.0F;
+			break;
 		case METER_POWER:
-			return ::Calculate_Meters(PWR);
+			val = ::Calculate_Meters(PWR);
+			if (val != -200.0F)
+				val *= 94.0F;
+			break;
 		case METER_ALC:
-			return ::Calculate_Meters(ALC);
+			val = ::Calculate_Meters(ALC);
+			if (val != -200.0F)
+				val -= 10.0F;
+			break;
 		default:
 			::wxLogError(wxT("Unknown meter type = %d"), type);
-			return -200.0F;
+			break;
 	}
+
+	return val;
 }
 
 void CDTTSPControl::getSpectrum(float* spectrum, int pos)

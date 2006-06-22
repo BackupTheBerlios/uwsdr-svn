@@ -155,6 +155,10 @@ SOURCE=.\Oscillator.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\Resampler.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\sdr.cpp
 # End Source File
 # Begin Source File
@@ -296,6 +300,10 @@ SOURCE=.\NoiseBlanker.h
 # Begin Source File
 
 SOURCE=.\Oscillator.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Resampler.h
 # End Source File
 # Begin Source File
 

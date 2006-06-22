@@ -22,14 +22,16 @@
 
 #include <cmath>
 
-const int MENU_I_INPUT    = 7863;
-const int MENU_Q_INPUT    = 7864;
-const int MENU_SIGNAL     = 7865;
-const int MENU_AVG_SIGNAL = 7866;
-const int MENU_AGC        = 7867;
-const int MENU_MICROPHONE = 7868;
-const int MENU_POWER      = 7869;
-const int MENU_ALC        = 7870;
+enum {
+	MENU_I_INPUT = 7863,
+	MENU_Q_INPUT,
+	MENU_SIGNAL,
+	MENU_AVG_SIGNAL,
+	MENU_AGC,
+	MENU_MICROPHONE,
+	MENU_POWER,
+	MENU_ALC
+};
 
 BEGIN_EVENT_TABLE(CSMeter, wxPanel)
 	EVT_RIGHT_DOWN(CSMeter::onMouse)

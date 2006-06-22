@@ -22,9 +22,11 @@
 
 #include <cmath>
 
-const int STATE_NONE  = 0;
-const int STATE_LEFT  = 1;
-const int STATE_RIGHT = 2;
+enum {
+	STATE_NONE,
+	STATE_LEFT,
+	STATE_RIGHT
+};
 
 const int FREQ_TIMER = 67523;
 

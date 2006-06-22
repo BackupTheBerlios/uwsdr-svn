@@ -22,18 +22,20 @@
 
 #include <wx/image.h>
 
-const int MENU_PANADAPTER1 = 16531;
-const int MENU_PANADAPTER2 = 16532;
-const int MENU_WATERFALL   = 16533;
-const int MENU_PRE_FILT    = 16534;
-const int MENU_POST_FILT   = 16535;
-const int MENU_POST_AGC    = 16536;
-const int MENU_100MS       = 16537;
-const int MENU_200MS       = 16538;
-const int MENU_300MS       = 16539;
-const int MENU_400MS       = 16540;
-const int MENU_500MS       = 16541;
-const int MENU_1000MS      = 16542;
+enum {
+	MENU_PANADAPTER1 = 16531,
+	MENU_PANADAPTER2,
+	MENU_WATERFALL,
+	MENU_PRE_FILT,
+	MENU_POST_FILT,
+	MENU_POST_AGC,
+	MENU_100MS,
+	MENU_200MS,
+	MENU_300MS,
+	MENU_400MS,
+	MENU_500MS,
+	MENU_1000MS
+};
 
 BEGIN_EVENT_TABLE(CSpectrumDisplay, wxPanel)
 	EVT_PAINT(CSpectrumDisplay::onPaint)

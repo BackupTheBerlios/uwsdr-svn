@@ -24,9 +24,11 @@
 
 const int VOLUME_TIMER = 56754;
 
-const int STATE_NONE  = 0;
-const int STATE_LEFT  = 1;
-const int STATE_RIGHT = 2;
+enum {
+	STATE_NONE,
+	STATE_LEFT,
+	STATE_RIGHT
+};
 
 BEGIN_EVENT_TABLE(CVolumeDial, wxPanel)
 	EVT_PAINT(CVolumeDial::onPaint)

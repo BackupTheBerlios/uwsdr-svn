@@ -56,7 +56,7 @@ m_cpdrSave(0.0F)
 		m_rxval[i] = -200.0F;
 
 	for (i = 0; i < TXMETERPTS; i++)
-		m_txval[i] = 0.0F;
+		m_txval[i] = -200.0F;
 }
 
 CMeter::~CMeter()
@@ -71,7 +71,7 @@ void CMeter::reset()
 		m_rxval[i] = -200.0F;
 
 	for (i = 0; i < TXMETERPTS; i++)
-		m_txval[i] = 0.0F;
+		m_txval[i] = -200.0F;
 }
 
 void CMeter::setRXMeter(RXMETERTAP tap, CXB* buf, REAL agcGain)

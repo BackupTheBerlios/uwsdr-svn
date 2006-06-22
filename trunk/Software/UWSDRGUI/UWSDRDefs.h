@@ -80,79 +80,102 @@ const int SMETER_HEIGHT    = 70;
 #error "Unknown platform"
 #endif
 
-const int VFO_A            = 0;
-const int VFO_B            = 1;
-const int VFO_C            = 2;
-const int VFO_D            = 3;
+enum {
+	VFO_A,
+	VFO_B,
+	VFO_C,
+	VFO_D,
+	VFO_COUNT
+};
 
-const int VFO_SPLIT        = 0;
-const int VFO_SHIFT_1      = 1;
-const int VFO_SHIFT_2      = 2;
-const int VFO_NONE         = 3;
+enum {
+	VFO_SPLIT,
+	VFO_SHIFT_1,
+	VFO_SHIFT_2,
+	VFO_NONE
+};
 
-const int SPEED_VERYFAST   = 0;
-const int SPEED_FAST       = 1;
-const int SPEED_MEDIUM     = 2;
-const int SPEED_SLOW       = 3;
-const int SPEED_VERYSLOW   = 4;
+enum {
+	SPEED_VERYFAST,
+	SPEED_FAST,
+	SPEED_MEDIUM,
+	SPEED_SLOW,
+	SPEED_VERYSLOW
+};
 
-const int MODE_CWN         = 0;
-const int MODE_CWW         = 1;
-const int MODE_USB         = 2;
-const int MODE_LSB         = 3;
-const int MODE_AM          = 4;
-const int MODE_FMN         = 5;
-const int MODE_FMW         = 6;
+enum {
+	MODE_CWN,
+	MODE_CWW,
+	MODE_USB,
+	MODE_LSB,
+	MODE_AM,
+	MODE_FMN,
+	MODE_FMW
+};
 
-const int FILTER_20000     = 0;
-const int FILTER_15000     = 1;
-const int FILTER_10000     = 2;
-const int FILTER_6000      = 3;
-const int FILTER_4000      = 4;
-const int FILTER_2600      = 5;
-const int FILTER_2100      = 6;
-const int FILTER_1000      = 7;
-const int FILTER_500       = 8;
-const int FILTER_250       = 9;
-const int FILTER_100       = 10;
-const int FILTER_50        = 11;
-const int FILTER_25        = 12;
-const int FILTER_AUTO      = 13;
+enum {
+	FILTER_20000,
+	FILTER_15000,
+	FILTER_10000,
+	FILTER_6000,
+	FILTER_4000,
+	FILTER_2600,
+	FILTER_2100,
+	FILTER_1000,
+	FILTER_500,
+	FILTER_250,
+	FILTER_100,
+	FILTER_50,
+	FILTER_25,
+	FILTER_AUTO
+};
 
-const int DEVIATION_6000   = 0;
-const int DEVIATION_5000   = 1;
-const int DEVIATION_3000   = 2;
-const int DEVIATION_2500   = 3;
-const int DEVIATION_2000   = 4;
+enum {
+	DEVIATION_6000,
+	DEVIATION_5000,
+	DEVIATION_3000,
+	DEVIATION_2500,
+	DEVIATION_2000
+};
 
-const int AGC_FAST         = 0;
-const int AGC_MEDIUM       = 1;
-const int AGC_SLOW         = 2;
-const int AGC_NONE         = 3;
+enum {
+	AGC_FAST,
+	AGC_MEDIUM,
+	AGC_SLOW,
+	AGC_NONE
+};
 
-const int METER_I_INPUT    = 0;
-const int METER_Q_INPUT    = 1;
-const int METER_SIGNAL     = 2;
-const int METER_AVG_SIGNAL = 3;
-const int METER_AGC        = 4;
-const int METER_MICROPHONE = 5;
-const int METER_POWER      = 6;
-const int METER_ALC        = 7;
+enum {
+	METER_I_INPUT,
+	METER_Q_INPUT,
+	METER_SIGNAL,
+	METER_AVG_SIGNAL,
+	METER_AGC,
+	METER_MICROPHONE,
+	METER_POWER,
+	METER_ALC
+};
 
-const int SPECTRUM_PRE_FILT   = 0;
-const int SPECTRUM_POST_FILT  = 1;
-const int SPECTRUM_POST_AGC   = 2;
+enum {
+	SPECTRUM_PRE_FILT,
+	SPECTRUM_POST_FILT,
+	SPECTRUM_POST_AGC
+};
 
-const int SPECTRUM_PANADAPTER1 = 0;
-const int SPECTRUM_PANADAPTER2 = 1;
-const int SPECTRUM_WATERFALL   = 2;
+enum {
+	SPECTRUM_PANADAPTER1,
+	SPECTRUM_PANADAPTER2,
+	SPECTRUM_WATERFALL
+};
 
-const int SPECTRUM_100MS      = 0;
-const int SPECTRUM_200MS      = 1;
-const int SPECTRUM_300MS      = 2;
-const int SPECTRUM_400MS      = 3;
-const int SPECTRUM_500MS      = 4;
-const int SPECTRUM_1000MS     = 5;
+enum {
+	SPECTRUM_100MS,
+	SPECTRUM_200MS,
+	SPECTRUM_300MS,
+	SPECTRUM_400MS,
+	SPECTRUM_500MS,
+	SPECTRUM_1000MS
+};
 
 const int CW_OFFSET           = 800;
 

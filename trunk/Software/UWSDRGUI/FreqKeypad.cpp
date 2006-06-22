@@ -19,18 +19,20 @@
 #include "FreqKeypad.h"
 #include "UWSDRDefs.h"
 
-const int BUTTON_1     = 15342;
-const int BUTTON_2     = 15343;
-const int BUTTON_3     = 15344;
-const int BUTTON_4     = 15345;
-const int BUTTON_5     = 15346;
-const int BUTTON_6     = 15347;
-const int BUTTON_7     = 15348;
-const int BUTTON_8     = 15349;
-const int BUTTON_9     = 15350;
-const int BUTTON_0     = 15351;
-const int BUTTON_POINT = 15352;
-const int BUTTON_C     = 15353;
+enum {
+	BUTTON_1 = 15342,
+	BUTTON_2,
+	BUTTON_3,
+	BUTTON_4,
+	BUTTON_5,
+	BUTTON_6,
+	BUTTON_7,
+	BUTTON_8,
+	BUTTON_9,
+	BUTTON_0,
+	BUTTON_POINT,
+	BUTTON_C
+};
 
 BEGIN_EVENT_TABLE(CFreqKeypad, wxDialog)
 	EVT_BUTTON(BUTTON_1,     CFreqKeypad::onButton)

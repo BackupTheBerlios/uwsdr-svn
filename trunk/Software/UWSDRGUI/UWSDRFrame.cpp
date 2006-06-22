@@ -33,42 +33,48 @@
 
 #include "UWSDR.xpm"
 
-const int MENU_KEYPAD        = 36427;
-const int MENU_PREFERENCES   = 36428;
-const int MENU_CW_KEYBOARD   = 36429;
-const int MENU_RECORD        = 36430;
-const int MENU_HARDWARE_INFO = 36431;
-const int MENU_ABOUT         = 36432;
-const int MENU_EXIT          = 36433;
+enum {
+	MENU_LANGUAGE = 36427,
+	MENU_KEYPAD,
+	MENU_PREFERENCES,
+	MENU_CW_KEYBOARD,
+	MENU_RECORD,
+	MENU_HARDWARE_INFO,
+	MENU_ABOUT,
+	MENU_EXIT
+};
 
-const int MENU_BUTTON       = 17856;
-const int VFO_AB_BUTTON     = 17857;
-const int VFO_CD_BUTTON     = 17858;
-const int VFO_SWAP_BUTTON   = 17860;
-const int VFO_SPLIT_BUTTON  = 17861;
-const int VFO_SHIFT1_BUTTON = 17863;
-const int VFO_SHIFT2_BUTTON = 17864;
-const int FREQ_KNOB         = 17865;
-const int FREQ_MHZ1_BUTTON  = 17866;
-const int FREQ_MHZ2_BUTTON  = 17867;
-const int FREQ_DISPLAY      = 17868;		// Not used
-const int INFO_DISPLAY      = 17869;		// Not used
-const int FREQ_SPECTRUM     = 17870;		// Not used
-const int MODE_CHOICE       = 17871;
-const int FILTER_CHOICE     = 17872;
-const int RIT_BUTTON        = 17873;
-const int MUTE_BUTTON       = 17874;
-const int RIT_KNOB          = 17875;
-const int TX_BUTTON         = 17876;
-const int SMETER            = 17877;		// Not used
-const int MIC_KNOB          = 17878;
-const int POWER_KNOB        = 17879;
-const int VOLUME_KNOB       = 17880;
-const int SQUELCH_KNOB      = 17881;
-const int DISPLAY_TIMER     = 17882;
+enum {
+	MENU_BUTTON = 17856,
+	VFO_AB_BUTTON,
+	VFO_CD_BUTTON,
+	VFO_SWAP_BUTTON,
+	VFO_SPLIT_BUTTON,
+	VFO_SHIFT1_BUTTON,
+	VFO_SHIFT2_BUTTON,
+	FREQ_KNOB,
+	FREQ_MHZ1_BUTTON,
+	FREQ_MHZ2_BUTTON,
+	FREQ_DISPLAY,
+	INFO_DISPLAY,
+	FREQ_SPECTRUM,
+	MODE_CHOICE,
+	FILTER_CHOICE,
+	RIT_BUTTON,
+	MUTE_BUTTON,
+	RIT_KNOB,
+	TX_BUTTON,
+	SMETER,
+	MIC_KNOB,
+	POWER_KNOB,
+	VOLUME_KNOB,
+	SQUELCH_KNOB,
+	DISPLAY_TIMER
+};
 
 BEGIN_EVENT_TABLE(CUWSDRFrame, wxFrame)
 	EVT_BUTTON(MENU_BUTTON, CUWSDRFrame::onMenuButton)
+	EVT_MENU(MENU_LANGUAGE, CUWSDRFrame::onMenuSelection)
 	EVT_MENU(MENU_KEYPAD, CUWSDRFrame::onMenuSelection)
 	EVT_MENU(MENU_PREFERENCES, CUWSDRFrame::onMenuSelection)
 	EVT_MENU(MENU_RECORD, CUWSDRFrame::onMenuSelection)
@@ -262,8 +268,8 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_dsp->setTXWriter(new CNullWriter());
 
 	m_dsp->setRXReader(new CSignalReader(m_parameters->m_hardwareSampleRate / 4 + 1000, 0.0008F, 0.001F));
-	m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
-	// m_dsp->setRXWriter(new CNullWriter());
+	// m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
+	m_dsp->setRXWriter(new CNullWriter());
 
 	m_dsp->Create();
 	m_dsp->Run();
@@ -324,6 +330,7 @@ void CUWSDRFrame::createMenu()
 {
 	m_menu = new wxMenu();
 
+	m_menu->Append(MENU_LANGUAGE,        _("Language"));
 	m_menu->Append(MENU_KEYPAD,          _("Frequency Keypad..."));
 	m_menu->Append(MENU_PREFERENCES,     _("Preferences..."));
 	m_menu->Append(MENU_CW_KEYBOARD,     _("CW Keyboard..."));
@@ -1107,6 +1114,8 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 				}
 			}
 			break;
+		case MENU_LANGUAGE:
+			break;
 		case MENU_CW_KEYBOARD:
 			break;
 		case MENU_RECORD: {
@@ -1195,7 +1204,7 @@ void CUWSDRFrame::onTimer(wxTimerEvent& event)
 		float val = m_dsp->getMeter(meter);
 
 		if (val != -200.0F) {
-			m_sMeter->setLevel(val * 94.0F);
+			m_sMeter->setLevel(val);
 
 			m_dsp->getSpectrum(m_spectrum, m_parameters->m_spectrumPos);
 			m_spectrumDisplay->showSpectrum(m_spectrum, 0.0F);
@@ -1208,7 +1217,7 @@ void CUWSDRFrame::onTimer(wxTimerEvent& event)
 		float val = m_dsp->getMeter(meter);
 
 		if (val != -200.0F) {
-			m_sMeter->setLevel(val + 40.0F);
+			m_sMeter->setLevel(val);
 
 			m_dsp->getSpectrum(m_spectrum, m_parameters->m_spectrumPos);
 			m_spectrumDisplay->showSpectrum(m_spectrum, -30.0F);

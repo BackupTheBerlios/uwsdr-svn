@@ -81,18 +81,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "Sound Test"=".\Sound Test\SoundTest.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "UWSDR GUI"=".\UWSDRGUI\UWSDRGUI.dsp" - Package Owner=<4>
 
 Package=<5>

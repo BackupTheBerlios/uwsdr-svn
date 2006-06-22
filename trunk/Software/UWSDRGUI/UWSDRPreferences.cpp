@@ -23,10 +23,12 @@
 const int SPIN_WIDTH   = 75;
 const int SLIDER_WIDTH = 225;
 
-const int RXIQ_PHASE = 8763;
-const int RXIQ_GAIN  = 8764;
-const int TXIQ_PHASE = 8765;
-const int TXIQ_GAIN  = 8766;
+enum {
+	RXIQ_PHASE = 8763,
+	RXIQ_GAIN,
+	TXIQ_PHASE,
+	TXIQ_GAIN
+};
 
 BEGIN_EVENT_TABLE(CUWSDRPreferences, wxDialog)
 	EVT_SPINCTRL(RXIQ_PHASE, CUWSDRPreferences::onIQChanged)

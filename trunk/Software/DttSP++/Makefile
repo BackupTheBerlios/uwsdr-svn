@@ -3,9 +3,9 @@ all:		DttSP.a
 CFLAGS :=	-I../Common $(CFLAGS)
 
 OBJS :=	AGC.o AMDemod.o AMMod.o Compand.o CorrectIQ.o CXB.o DCBlock.o FIR.o FMDemod.o FMMod.o \
-		FilterOVSV.o GraphicEQ.o Meter.o NoiseBlanker.o Oscillator.o Spectrum.o SpeechProc.o \
-		SpotTone.o Squelch.o Window.o banal.o lmadf.o sdr.o sdrexport.o SSBDemod.o SSBMod.o \
-		thunk.o update.o winmain.o
+		FilterOVSV.o GraphicEQ.o Meter.o NoiseBlanker.o Oscillator.o Resampler.o Spectrum.o \
+		SpeechProc.o SpotTone.o Squelch.o Window.o banal.o lmadf.o sdr.o sdrexport.o SSBDemod.o \
+		SSBMod.o thunk.o update.o winmain.o
 
 DttSP.a:	$(OBJS)
 		ar rcs DttSP.a $(OBJS)
@@ -54,6 +54,9 @@ NoiseBlanker.o: NoiseBlanker.cpp NoiseBlanker.h CXB.h FromSys.h
 
 Oscillator.o: Oscillator.cpp Oscillator.h CXB.h DataTypes.h FromSys.h
 		$(CC) $(CFLAGS) -c Oscillator.cpp
+
+Resampler.o: Resampler.cpp Resampler.h banal.h Complex.h CXOps.h FIR.h
+		$(CC) $(CFLAGS) -c Resampler.cpp
 
 Spectrum.o:	Spectrum.cpp Spectrum.h banal.h CXB.h DataTypes.h FIR.h FromSys.h Window.h
 		$(CC) $(CFLAGS) -c Spectrum.cpp
