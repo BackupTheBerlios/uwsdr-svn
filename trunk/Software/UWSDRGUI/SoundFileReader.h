@@ -41,7 +41,7 @@ class CSoundFileReader : public wxThread, public IDataReader {
 
 	virtual void setCallback(IDataCallback* callback, int id);
 
-	virtual bool open(unsigned int sampleRate, unsigned int blockSize);
+	virtual bool open(float sampleRate, unsigned int blockSize);
 
 	virtual void* Entry();
 
@@ -49,7 +49,7 @@ class CSoundFileReader : public wxThread, public IDataReader {
 
     private:
 	wxString       m_fileName;
-	unsigned int   m_sampleRate;
+	float          m_sampleRate;
 	unsigned int   m_blockSize;
 	IDataCallback* m_callback;
 	int            m_id;

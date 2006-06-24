@@ -41,7 +41,7 @@ CSoundCardWriter::~CSoundCardWriter()
 {
 }
 
-bool CSoundCardWriter::open(unsigned int sampleRate, unsigned int blockSize)
+bool CSoundCardWriter::open(float sampleRate, unsigned int blockSize)
 {
 	m_buffer = new CRingBuffer(blockSize * 5, 2);
 
@@ -60,7 +60,7 @@ bool CSoundCardWriter::open(unsigned int sampleRate, unsigned int blockSize)
 	params.hostApiSpecificStreamInfo = NULL;
 	params.suggestedLatency          = PaTime(0);
 
-	error = ::Pa_OpenStream(&m_stream, NULL, &params, double(sampleRate), blockSize, paNoFlag, &scwCallback, this);
+	error = ::Pa_OpenStream(&m_stream, NULL, &params, sampleRate, blockSize, paNoFlag, &scwCallback, this);
 	if (error != paNoError) {
 		::Pa_Terminate();
 		::wxLogError(wxT("Received %d:%s from Pa_OpenStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));

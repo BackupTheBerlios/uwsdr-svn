@@ -39,7 +39,7 @@ class CSoundFileWriter : public IDataWriter {
     CSoundFileWriter(const wxString& fileName, unsigned int sampleWidth = 16);
 	virtual ~CSoundFileWriter();
 
-	virtual bool open(unsigned int sampleRate, unsigned int blockSize);
+	virtual bool open(float sampleRate, unsigned int blockSize);
 
 	virtual void write(const float* buffer, unsigned int length);
 
@@ -47,7 +47,7 @@ class CSoundFileWriter : public IDataWriter {
 
     private:
 	wxString     m_fileName;
-	unsigned int m_sampleWidth;
+	float        m_sampleWidth;
 #ifdef __WINDOWS__
 	unsigned int m_blockSize;
 	HMMIO        m_handle;

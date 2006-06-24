@@ -63,7 +63,7 @@ void CUWSDRData::setCallback(IDataCallback* callback, int id)
 	m_id       = id;
 }
 
-bool CUWSDRData::open(unsigned int sampleRate, unsigned int blockSize)
+bool CUWSDRData::open(float sampleRate, unsigned int blockSize)
 {
 	if (!m_enabled)
 		return true;

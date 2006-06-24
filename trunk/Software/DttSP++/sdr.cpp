@@ -98,14 +98,14 @@ static void setup_rx()
 
   rx.agc.gen = new CAGC(agcLONG,	// mode kept around for control reasons alone
 				    rx.buf.o,	// input buffer
-				    1.0f,	// Target output 
-				    2.0f,	// Attack time constant in ms
+				    1.0F,	// Target output 
+				    2.0F,	// Attack time constant in ms
 				    500,	// Decay time constant in ms
 				    1.0,	// Slope
 				    500,	//Hangtime in ms
 				    uni.samplerate,	// Sample rate
-				    2511.886f,	// Maximum gain as a multipler, linear not dB
-				    0.00001f,	// Minimum gain as a multipler, linear not dB
+				    31622.8F,	// Maximum gain as a multipler, linear not dB
+				    0.00001F,	// Minimum gain as a multipler, linear not dB
 				    1.0 	// Set the current gain
     );
 
@@ -137,28 +137,26 @@ static void setup_rx()
   rx.ssb = new CSSBDemod(rx.buf.o, rx.buf.o);
 
   /* noise reduction */
-  rx.anf.gen = new_lmsr(rx.buf.o,	// CXB signal,
+  rx.anf.gen = new CLMS(rx.buf.o,	// CXB signal,
 			    64,	// int delay,
 			    0.01F,	// REAL adaptation_rate,
 			    0.00001F,	// REAL leakage,
 			    45,	// int adaptive_filter_size,
-			    LMADF_INTERFERENCE);
+			    LMS_INTERFERENCE);
 
   rx.anf.flag = false;
-  rx.banf.gen =
-    new_blms (rx.buf.o, 0.00001f, 0.005f, LMADF_INTERFERENCE,
-	      uni.wisdom.bits);
+  rx.banf.gen = new CBlockLMS(rx.buf.o, 0.00001f, 0.005f, BLMS_INTERFERENCE, uni.wisdom.bits);
   rx.banf.flag = false;
 
-  rx.anr.gen = new_lmsr (rx.buf.o,	// CXB signal,
+  rx.anr.gen = new CLMS(rx.buf.o,	// CXB signal,
 			    64,	// int delay,
 			    0.01f,	// REAL adaptation_rate,
 			    0.00001f,	// REAL leakage,
 			    45,	// int adaptive_filter_size,
-			    LMADF_NOISE);
+			    LMS_NOISE);
 
   rx.anr.flag = false;
-  rx.banr.gen = new_blms (rx.buf.o, 0.00001f, 0.005f, LMADF_NOISE, uni.wisdom.bits);
+  rx.banr.gen = new CBlockLMS(rx.buf.o, 0.00001f, 0.005f, BLMS_NOISE, uni.wisdom.bits);
   rx.banr.flag = false;
 
   rx.nb.gen = new CNoiseBlanker(rx.buf.i, 3.3F);
@@ -302,10 +300,10 @@ void destroy_workspace()
   delete rx.nb_sdrom.gen;
   delete rx.nb.gen;
   delete rx.grapheq.gen;
-  del_lmsr (rx.anf.gen);
-  del_lmsr (rx.anr.gen);
-  del_blms (rx.banf.gen);
-  del_blms (rx.banr.gen);
+  delete rx.anf.gen;
+  delete rx.anr.gen;
+  delete rx.banf.gen;
+  delete rx.banr.gen;
   delete rx.am;
   delete rx.fm;
   delete rx.osc.gen;
@@ -324,22 +322,16 @@ void destroy_workspace()
 /* all */
 static void do_rx_meter(CXB* buf, RXMETERTAP tap)
 {
-	wxASSERT(buf != NULL);
-
 	REAL agcGain = 0.0F;
 	if (rx.agc.flag && rx.agc.gen != NULL)
 		agcGain = rx.agc.gen->getGain();
 
-	if (uni.meter.flag) {
-		wxASSERT(uni.meter.gen != NULL);
+	if (uni.meter.flag)
 		uni.meter.gen->setRXMeter(tap, buf, agcGain);
-	}
 }
 
 static void do_tx_meter(CXB* buf, TXMETERTYPE type)
 {
-	wxASSERT(buf != NULL);
-
 	REAL alcGain = 0.0F;
 	if (tx.alc.flag && tx.alc.gen != NULL)
 		alcGain = tx.alc.gen->getGain();
@@ -348,30 +340,20 @@ static void do_tx_meter(CXB* buf, TXMETERTYPE type)
 	if (tx.leveler.flag && tx.leveler.gen != NULL)
 		levelerGain = tx.leveler.gen->getGain();
 
-	if (uni.meter.flag) {
-		wxASSERT(uni.meter.gen != NULL);
+	if (uni.meter.flag)
 		uni.meter.gen->setTXMeter(type, buf, alcGain, levelerGain);
-	}
 }
 
 static void do_rx_spectrum(CXB* buf, SPECTRUMtype type)
 {
-	wxASSERT(buf != NULL);
-
-	if (uni.spec.flag && type == uni.spec.type) {
-		wxASSERT(uni.spec.gen != NULL);
+	if (uni.spec.flag && type == uni.spec.type)
 		uni.spec.gen->setData(buf);
-	}
 }
 
 static void do_tx_spectrum(CXB* buf)
 {
-	wxASSERT(buf != NULL);
-
-	if (uni.spec.flag) {
-		wxASSERT(uni.spec.gen != NULL);
+	if (uni.spec.flag)
 		uni.spec.gen->setData(buf);
-	}
 }
 
 //========================================================================
@@ -489,15 +471,6 @@ static void no_tx_squelch()
 /* pre-condition for (nearly) all RX modes */
 static void do_rx_pre()
 {
-	wxASSERT(rx.nb.gen != NULL);
-	wxASSERT(rx.nb_sdrom.gen != NULL);
-	wxASSERT(rx.iqfix != NULL);
-	wxASSERT(rx.osc.gen != NULL);
-	wxASSERT(rx.rit.gen != NULL);
-	wxASSERT(rx.filt != NULL);
-	wxASSERT(rx.cpd.gen != NULL);
-	wxASSERT(rx.agc.gen != NULL);
-
 	if (rx.nb.flag)
 		rx.nb.gen->blank();
 
@@ -546,9 +519,6 @@ static void do_rx_pre()
 
 static void do_rx_post()
 {
-	wxASSERT(rx.spot.gen != NULL);
-	wxASSERT(rx.grapheq.gen != NULL);
-
 	if (!rx.squelch.set) {
 		no_squelch();
 
@@ -562,39 +532,39 @@ static void do_rx_post()
 			for (unsigned int i = 0; i < n; i++)
 				CXBdata(rx.buf.o, i) = Cadd(CXBdata(rx.buf.o, i), CXBdata(rx.spot.gen->getData(), i));
 		}
-
-		if (rx.grapheq.flag)
-			rx.grapheq.gen->equalise();
 	}
+
+	if (rx.grapheq.flag)
+		rx.grapheq.gen->equalise();
+
+	do_rx_spectrum(rx.buf.o, SPEC_POST_DET);
 }
 
 /* demod processing */
 
 static void do_rx_SBCW()
 {
-	wxASSERT(rx.ssb != NULL);
-
 	rx.ssb->demodulate();
 
 	if (rx.bin.flag) {
 		if (rx.banr.flag && rx.anr.flag)
-			blms_adapt(rx.banr.gen);
+			rx.banr.gen->process();
 
 		if (rx.banf.flag && rx.anf.flag)
-			blms_adapt(rx.banf.gen);
+			rx.banf.gen->process();
 	} else {
 		if (rx.anr.flag) {
 			if (rx.banr.flag)
-				blms_adapt(rx.banr.gen);
+				rx.banr.gen->process();
 			else
-				lmsr_adapt(rx.anr.gen);
+				rx.anr.gen->process();
 		}
 
 		if (rx.anf.flag) {
 			if (rx.banf.flag)
-				blms_adapt(rx.banf.gen);
+				rx.banf.gen->process();
 			else
-				lmsr_adapt(rx.anf.gen);
+				rx.anf.gen->process();
 		}
 /*
 		for (unsigned int i = 0; i < CXBhave(rx.buf.o); i++)
@@ -605,22 +575,18 @@ static void do_rx_SBCW()
 
 static void do_rx_AM()
 {
-	wxASSERT(rx.am != NULL);
-
 	rx.am->demodulate();
 
 	if (rx.anf.flag) {
 		if (!rx.banf.flag)
-			lmsr_adapt (rx.anf.gen);
+			rx.anf.gen->process();
 		else
-			blms_adapt (rx.banf.gen);
+			rx.banf.gen->process();
 	}
 }
 
 static void do_rx_FM()
 {
-	wxASSERT(rx.fm != NULL);
-
 	rx.fm->demodulate();
 }
 
@@ -674,11 +640,6 @@ static void do_rx()
 /* TX processing */
 static void do_tx_pre()
 {
-	wxASSERT(tx.dcb.flag != NULL);
-	wxASSERT(tx.grapheq.gen != NULL);
-	wxASSERT(tx.leveler.gen != NULL);
-	wxASSERT(tx.spr.gen != NULL);
-	wxASSERT(tx.cpd.gen != NULL);
 /*
 	unsigned int n = CXBhave (tx.buf.i);
 
@@ -727,10 +688,6 @@ static void do_tx_pre()
 
 static void do_tx_post()
 {
-	wxASSERT(tx.filt != NULL);
-	wxASSERT(tx.osc.gen != NULL);
-	wxASSERT(tx.iqfix != NULL);
-
 	CXBhave(tx.buf.o) = CXBhave(tx.buf.i);
 
 	if (tx.tick == 0UL)
@@ -752,9 +709,6 @@ static void do_tx_post()
 
 static void do_tx_SBCW()
 {
-	wxASSERT(tx.alc.gen != NULL);
-	wxASSERT(tx.ssb != NULL);
-
 	if (tx.alc.flag && tx.mode != DIGU && tx.mode != DIGL)
 		tx.alc.gen->process();
 
@@ -768,9 +722,6 @@ static void do_tx_SBCW()
 
 static void do_tx_AM()
 {
-	wxASSERT(tx.alc.gen != NULL);
-	wxASSERT(tx.am != NULL);
-
 	if (tx.alc.flag)
 		tx.alc.gen->process();
 
@@ -781,9 +732,6 @@ static void do_tx_AM()
 
 static void do_tx_FM()
 {
-	wxASSERT(tx.alc.gen != NULL);
-	wxASSERT(tx.fm != NULL);
-
 	if (tx.alc.flag)
 		tx.alc.gen->process();
 

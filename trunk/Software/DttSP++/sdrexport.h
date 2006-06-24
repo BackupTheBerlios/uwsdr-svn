@@ -44,7 +44,8 @@ Bridgewater, NJ 08807
 #include "FIR.h"
 #include "FilterOVSV.h"
 #include "NoiseBlanker.h"
-#include "lmadf.h"
+#include "BlockLMS.h"
+#include "LMS.h"
 #include "SpeechProc.h"
 #include "AMDemod.h"
 #include "AMMod.h"
@@ -130,12 +131,12 @@ extern struct _rx
   } nb_sdrom;
 
   struct {
-    LMSR* gen;
+    CLMS* gen;
     bool flag;
   } anr, anf;
 
   struct {
-    BLMS* gen;
+    CBlockLMS* gen;
     bool flag;
   } banr, banf;
 

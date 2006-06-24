@@ -33,7 +33,7 @@ class CSDRDescrFile {
 	virtual CFrequency   getMaxFreq() const;
 	virtual CFrequency   getMinFreq() const;
 	virtual unsigned int getStepSize() const;
-	virtual unsigned int getSampleRate() const;
+	virtual float        getSampleRate() const;
 	virtual unsigned int getProtocolVersion() const;
 	virtual bool         getReceiveOnly() const;
 	virtual bool         isValid() const;
@@ -43,7 +43,7 @@ class CSDRDescrFile {
 	CFrequency   m_maxFreq;
 	CFrequency   m_minFreq;
 	unsigned int m_stepSize;
-	unsigned int m_sampleRate;
+	float        m_sampleRate;
 	unsigned int m_protocolVersion;
 	bool         m_receiveOnly;
 	bool         m_valid;

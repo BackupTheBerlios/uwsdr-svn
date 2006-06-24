@@ -78,7 +78,7 @@ All of the knobs should work except for the squelch knob.
 Changes to the GUISetup program because of the way that sound cards are handled.
 
 
-Prototype 5 - 10 June 2006
+Version 0.5 - 10 June 2006
 ==========================
 
 Lots of rework on the DttSP code, into C++ and cleanups.
@@ -110,8 +110,8 @@ Windows versions exists as a proper install program.
 Frequency picking from spectrum display.
 
 
-Prototype 0.5.1 - June 2006
-==============================
+Version 0.5.1 - 18 June 2006
+============================
 
 Real-time update of I+Q values from the preferences.
 
@@ -130,3 +130,11 @@ Adding a frequency of .NNNN into the Frequency Keypad will have the current VFO 
 A new Panadapeter style with a solid graph has been added.
 
 Latest version of PortAudio and moved to non-blocking output.
+
+
+Version 0.5.2 - June 2006
+============================
+
+Upgraded to DttSP 1.6.2, mostly.
+
+Colour scheme for Windows XP done.

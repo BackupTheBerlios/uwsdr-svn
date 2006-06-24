@@ -90,6 +90,14 @@ inline COMPLEX Cdiv(COMPLEX x, COMPLEX y)
 	return z;
 }
 
+inline REAL Cappmag(COMPLEX z)
+{
+	REAL tmpr = (REAL)::fabs(z.re);
+	REAL tmpi = (REAL)::fabs(z.im);
+
+	return (tmpr < tmpi) ? 0.4F * tmpr + 0.7F * tmpi : 0.4F * tmpi + 0.7F * tmpr;
+}
+
 inline REAL Cmag(COMPLEX z)
 {
 	return REAL(::sqrt(sqr(z.re) + sqr(z.im)));

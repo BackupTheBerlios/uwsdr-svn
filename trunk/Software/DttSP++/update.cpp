@@ -143,11 +143,6 @@ setTXAGCLimit (int n, char **p)
 static int
 setRingBufferReset (int n, char **p)
 {
-  wxASSERT(top.jack.ring.i.i != NULL);
-  wxASSERT(top.jack.ring.i.q != NULL);
-  wxASSERT(top.jack.ring.o.i != NULL);
-  wxASSERT(top.jack.ring.o.q != NULL);
-
   top.jack.ring.i.i->clear();
   top.jack.ring.i.q->clear();
   top.jack.ring.o.i->clear();
@@ -212,8 +207,6 @@ const CTE update_cmds[] = {
 
 int sendcommand(char *str)
 {
-	wxASSERT(top.sync.upd.sem != NULL);
-
 	::wxLogMessage("Command = %s", str);
 
 	int count = 0;
@@ -264,9 +257,6 @@ void Destroy_SDR()
 
 void SetMode(SDRMODE m)
 {
-	wxASSERT(top.sync.upd.sem != NULL);
-	wxASSERT(rx.am != NULL);
-
 	top.sync.upd.sem->Wait();
 
 	tx.mode = rx.mode = uni.mode.sdr = m;
@@ -286,11 +276,6 @@ void SetDCBlock(bool setit)
 
 void SetFilter(double low_frequency, double high_frequency, int taps, TRXMODE trx)
 {
-	wxASSERT(tx.filt != NULL);
-	wxASSERT(rx.filt != NULL);
-	wxASSERT(rx.fm != NULL);
-	wxASSERT(top.sync.upd.sem != NULL);
-
 	top.sync.upd.sem->Wait();
 
 	switch (trx) {
@@ -308,15 +293,11 @@ void SetFilter(double low_frequency, double high_frequency, int taps, TRXMODE tr
 
 void Release_Update()
 {
-	wxASSERT(top.sync.upd.sem != NULL);
-
 	top.sync.upd.sem->Post();
 }
 
 void SetOsc(double newfreq)
 {
-	wxASSERT(rx.osc.gen != NULL);
-
 	if (::fabs(newfreq) >= 0.5 * uni.samplerate)
 		return;
 
@@ -325,15 +306,11 @@ void SetOsc(double newfreq)
 
 void SetRIT(double newfreq)
 {
-	wxASSERT(rx.rit.gen != NULL);
-
 	rx.rit.gen->setFrequency(newfreq);
 }
 
 void SetTXOsc(double newfreq)
 {
-	wxASSERT(tx.osc.gen != NULL);
-
 	if (::fabs(newfreq) >= 0.5 * uni.samplerate)
 		return;
 
@@ -350,14 +327,14 @@ void SetBlkNR(bool setit)
 	rx.banr.flag = setit;
 }
 
-void SetNRvals(int taps, int delay, double gain, double leak)
+void SetNRvals(unsigned int taps, unsigned int delay, double gain, double leak)
 {
-	rx.anr.gen->adaptive_filter_size = taps;
-	rx.anr.gen->delay = delay;
-	rx.anr.gen->adaptation_rate = gain;
-	rx.anr.gen->leakage = leak;
+	rx.anr.gen->setAdaptiveFilterSize(taps);
+	rx.anr.gen->setDelay(delay);
+	rx.anr.gen->setAdaptationRate(gain);
+	rx.anr.gen->setLeakage(leak);
 
-	rx.banr.gen->adaptation_rate = min(0.1 * gain, 0.0002);
+	rx.banr.gen->setAdaptationRate(min(0.1F * gain, 0.0002F));
 }
 
 void SetTXCompandSt(bool setit)
@@ -367,8 +344,6 @@ void SetTXCompandSt(bool setit)
 
 void SetTXCompand(double setit)
 {
-	wxASSERT(tx.cpd.gen != NULL);
-
 	tx.cpd.gen->setFactor(-setit);
 }
 
@@ -392,14 +367,14 @@ void SetBlkANF(bool setit)
 	rx.banf.flag = setit;
 }
 
-void SetANFvals(int taps, int delay, double gain, double leak)
+void SetANFvals(unsigned int taps, unsigned int delay, double gain, double leak)
 {
-	rx.anf.gen->adaptive_filter_size = taps;
-	rx.anf.gen->delay = delay;
-	rx.anf.gen->adaptation_rate = gain;
-	rx.anf.gen->leakage = leak;
+	rx.anf.gen->setAdaptiveFilterSize(taps);
+	rx.anf.gen->setDelay(delay);
+	rx.anf.gen->setAdaptationRate(gain);
+	rx.anf.gen->setLeakage(leak);
 
-	rx.banf.gen->adaptation_rate = min(0.1 * gain, 0.0002);
+	rx.banf.gen->setAdaptationRate(min(0.1F * gain, 0.0002F));
 }
 
 void SetNB(bool setit)
@@ -409,8 +384,6 @@ void SetNB(bool setit)
 
 void SetNBvals(REAL threshold)
 {
-	wxASSERT(rx.nb.gen != NULL);
-
 	rx.nb.gen->setThreshold(threshold);
 }
 
@@ -421,8 +394,6 @@ void SetSDROM(bool setit)
 
 void SetSDROMvals(REAL threshold)
 {
-	wxASSERT(rx.nb_sdrom.gen != NULL);
-
 	rx.nb_sdrom.gen->setThreshold(threshold);
 }
 
@@ -447,8 +418,6 @@ SetTXALCAttack (int attack)
 
 void SetTXCarrierLevel(double setit)
 {
-	wxASSERT(tx.am != NULL);
-
 	tx.am->setCarrierLevel(setit);
 }
 
@@ -515,16 +484,12 @@ SetTXLevelerHang (int decay)
 
 void SetCorrectIQ(double phase, double gain)
 {
-	wxASSERT(rx.iqfix != NULL);
-
 	rx.iqfix->setPhase(REAL(0.001F * phase));
 	rx.iqfix->setGain(REAL(1.0F + 0.001F * gain));
 }
 
 void SetCorrectTXIQ(double phase, double gain)
 {
-	wxASSERT(tx.iqfix != NULL);
-
 	tx.iqfix->setPhase(REAL(0.001F * phase));
 	tx.iqfix->setGain(REAL(1.0F + 0.001F * gain));
 }
@@ -536,15 +501,11 @@ void SetPWSmode(SPECTRUMtype type)
 
 void SetWindow(Windowtype window)
 {
-	wxASSERT(uni.spec.gen != NULL);
-
 	uni.spec.gen->setWindow(window);
 }
 
 void SetSpectrumPolyphase(bool setit)
 {
-	wxASSERT(uni.spec.gen != NULL);
-
 	uni.spec.gen->setPolyphase(setit);
 }
 
@@ -560,8 +521,6 @@ SetTXEQ (int *txeq)
 
 void SetGrphTXEQ(int *txeq)
 {
-	wxASSERT(tx.grapheq.gen != NULL);
-
 	tx.grapheq.gen->setEQ(REAL(txeq[0]), REAL(txeq[1]), REAL(txeq[2]), REAL(txeq[3]));
 }
 
@@ -572,15 +531,11 @@ void SetGrphTXEQcmd(bool state)
 
 void SetNotch160(bool state)
 {
-	wxASSERT(tx.grapheq.gen != NULL);
-
 	tx.grapheq.gen->setNotchFlag(state);
 }
 
 void SetGrphRXEQ(int *rxeq)
 {
-	wxASSERT(rx.grapheq.gen != NULL);
-
 	rx.grapheq.gen->setEQ(REAL(rxeq[0]), REAL(rxeq[1]), REAL(rxeq[2]), REAL(rxeq[3]));
 }
 
@@ -596,8 +551,6 @@ void SetTXAGCFF(bool setit)
 
 void SetTXAGCFFCompression(REAL txc)
 {
-	wxASSERT(tx.spr.gen != NULL);
-
 	tx.spr.gen->setCompression(txc);
 }
 
@@ -613,8 +566,6 @@ void SetSquelchState(bool setit)
 
 void SetTRX(TRXMODE setit)
 {
-  wxASSERT(top.sync.upd.sem != NULL);
-
   top.sync.upd.sem->Wait();
 
   switch (setit) {
@@ -653,15 +604,11 @@ void SetTXAGCLimit (double limit)
 
 void setSpotToneVals(REAL gain, REAL freq, REAL rise, REAL fall)
 {
-	wxASSERT(rx.spot.gen != NULL);
-
 	rx.spot.gen->setValues(gain, freq, rise, fall);
 }
 
 void setSpotTone(bool setit)
 {
-	wxASSERT(rx.spot.gen != NULL);
-
 	if (setit) {
 		rx.spot.gen->on();
 		rx.spot.flag = true;
@@ -673,8 +620,7 @@ void setSpotTone(bool setit)
 
 void Process_Spectrum(float *results)
 {
-	wxASSERT(top.sync.upd.sem != NULL);
-	wxASSERT(uni.spec.gen != NULL);
+	wxASSERT(results != NULL);
 
 	uni.spec.type = SPEC_POST_FILT;
 	uni.spec.gen->setScale(SPEC_PWR);
@@ -688,8 +634,7 @@ void Process_Spectrum(float *results)
 
 void Process_Panadapter(float *results)
 {
-	wxASSERT(top.sync.upd.sem != NULL);
-	wxASSERT(uni.spec.gen != NULL);
+	wxASSERT(results != NULL);
 
 	uni.spec.type = SPEC_PRE_FILT;
 	uni.spec.gen->setScale(SPEC_PWR);
@@ -703,8 +648,7 @@ void Process_Panadapter(float *results)
 
 void Process_Phase(float *results, unsigned int numpoints)
 {
-	wxASSERT(top.sync.upd.sem != NULL);
-	wxASSERT(uni.spec.gen != NULL);
+	wxASSERT(results != NULL);
 
 	top.sync.upd.sem->Wait();
 	uni.spec.type = SPEC_POST_AGC;
@@ -717,8 +661,7 @@ void Process_Phase(float *results, unsigned int numpoints)
 
 void Process_Scope(float *results, unsigned int numpoints)
 {
-	wxASSERT(top.sync.upd.sem != NULL);
-	wxASSERT(uni.spec.gen != NULL);
+	wxASSERT(results != NULL);
 
 	top.sync.upd.sem->Wait();
 	uni.spec.type = SPEC_POST_AGC;
@@ -731,9 +674,6 @@ void Process_Scope(float *results, unsigned int numpoints)
 
 float Calculate_Meters(METERTYPE mt)
 {
-	wxASSERT(top.sync.upd.sem != NULL);
-	wxASSERT(uni.meter.gen != NULL);
-
 	float returnval = -200.0F;
 
 	top.sync.upd.sem->Wait();
@@ -801,9 +741,6 @@ float Calculate_Meters(METERTYPE mt)
 
 void SetDeviation(float value)
 {
-	wxASSERT(tx.fm != NULL);
-	wxASSERT(rx.fm != NULL);
-
 	tx.fm->setDeviation(value);
 	rx.fm->setDeviation(value);
 }

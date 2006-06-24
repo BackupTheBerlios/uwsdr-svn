@@ -48,7 +48,7 @@ void CSoundCardReader::setCallback(IDataCallback* callback, int id)
 	m_id       = id;
 }
 
-bool CSoundCardReader::open(unsigned int sampleRate, unsigned int blockSize)
+bool CSoundCardReader::open(float sampleRate, unsigned int blockSize)
 {
 	wxASSERT(m_callback != NULL);
 
@@ -67,7 +67,7 @@ bool CSoundCardReader::open(unsigned int sampleRate, unsigned int blockSize)
 	params.hostApiSpecificStreamInfo = NULL;
 	params.suggestedLatency          = PaTime(0);
 
-	error = ::Pa_OpenStream(&m_stream, &params, NULL, double(sampleRate), blockSize, paNoFlag, &scrCallback, this);
+	error = ::Pa_OpenStream(&m_stream, &params, NULL, sampleRate, blockSize, paNoFlag, &scrCallback, this);
 	if (error != paNoError) {
 		::Pa_Terminate();
 		::wxLogError(wxT("Received %d:%s from Pa_OpenStream() in SoundCardReader"), error, ::Pa_GetErrorText(error));

@@ -37,7 +37,7 @@ class CSoundCardWriter : public IDataWriter {
 	CSoundCardWriter(int api, int dev);
 	virtual ~CSoundCardWriter();
 
-	virtual bool open(unsigned int sampleRate, unsigned int blockSize);
+	virtual bool open(float sampleRate, unsigned int blockSize);
 	virtual void write(const float* buffer, unsigned int nSamples);
 	virtual void close();
 

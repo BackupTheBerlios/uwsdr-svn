@@ -49,7 +49,8 @@ typedef enum {
 typedef enum {
 	SPEC_PRE_FILT,
 	SPEC_POST_FILT,
-	SPEC_POST_AGC
+	SPEC_POST_AGC,
+	SPEC_POST_DET
 } SPECTRUMtype;
 
 

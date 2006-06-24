@@ -54,7 +54,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 wxbase26.lib wxmsw26_core.lib wxmsw26_html.lib wxbase26_net.lib DttSP.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib winmm.lib fftw3.lib PA19.lib /nologo /subsystem:windows /machine:I386 /out:"../Release/UWSDR.exe" /libpath:"..\DttSP\Release" /libpath:"C:\wxWidgets-2.6.3\lib\vc_dll" /libpath:"..\FFTW" /libpath:"..\PA19"
+# ADD LINK32 wxbase26.lib wxmsw26_core.lib wxmsw26_html.lib wxbase26_net.lib DttSP.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib winmm.lib fftw3.lib PA19.lib /nologo /subsystem:windows /machine:I386 /out:"../Release/UWSDR.exe" /libpath:"..\DttSP++\Release" /libpath:"C:\wxWidgets-2.6.3\lib\vc_dll" /libpath:"..\FFTW" /libpath:"..\PA19"
 
 !ELSEIF  "$(CFG)" == "UWSDR GUI - Win32 Debug"
 
@@ -81,7 +81,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 wxbase26d.lib wxmsw26d_core.lib wxmsw26d_html.lib wxbase26d_net.lib dttsp.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib winmm.lib fftw3.lib PA19.lib /nologo /subsystem:windows /debug /machine:I386 /out:"../Debug/UWSDR.exe" /pdbtype:sept /libpath:"..\DttSP\Debug" /libpath:"C:\wxWidgets-2.6.3\lib\vc_dll" /libpath:"..\FFTW" /libpath:"..\PA19"
+# ADD LINK32 wxbase26d.lib wxmsw26d_core.lib wxmsw26d_html.lib wxbase26d_net.lib dttsp.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib winmm.lib fftw3.lib PA19.lib /nologo /subsystem:windows /debug /machine:I386 /out:"../Debug/UWSDR.exe" /pdbtype:sept /libpath:"..\DttSP++\Debug" /libpath:"C:\wxWidgets-2.6.3\lib\vc_dll" /libpath:"..\FFTW" /libpath:"..\PA19"
 
 !ENDIF 
 

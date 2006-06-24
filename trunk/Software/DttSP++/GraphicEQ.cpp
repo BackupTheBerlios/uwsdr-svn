@@ -41,8 +41,14 @@ Bridgewater, NJ 08807
 #include <wx/wx.h>
 
 
-const REAL EQ_Num[] = { 0.9987f, -1.9969f, 0.9987f };
-const REAL EQ_Den[] = { 1.9969f, -0.9974f };
+const REAL EQ_Num_48000[] = {0.99220706371F, -1.98392450292F, 0.99220706371F};
+const REAL EQ_Den_48000[] = {1.98392450292f, -0.98441412742F};
+
+const REAL EQ_Num_96000[] = {0.99608835009F, -1.99205381333F, 0.99608835009f};
+const REAL EQ_Den_96000[] =  {1.99205381333F, -0.99217670018F};
+
+const REAL EQ_Num_192000[] = {0.99804034984F, -1.99604991764F, 0.99804034984F};
+const REAL EQ_Den_192000[] = {1.99604991764F, -0.99608069967F};
 
 
 CGraphicEQ::CGraphicEQ(CXB* d, REAL sampleRate, unsigned int bits) :
@@ -54,7 +60,9 @@ m_in(NULL),
 m_out(NULL),
 m_num(),
 m_den(),
-m_notchFlag(false)
+m_notchFlag(false),
+m_eqNum(),
+m_eqDen()
 {
 	wxASSERT(d != NULL);
 	wxASSERT(sampleRate > 0.0F);
@@ -66,6 +74,29 @@ m_notchFlag(false)
 
 	::memset(m_num, 0x00, 9 * sizeof(COMPLEX));
 	::memset(m_den, 0x00, 6 * sizeof(COMPLEX));
+
+	if (sampleRate == 48000.0F) {
+		m_eqNum[0] = EQ_Num_48000[0];
+		m_eqNum[1] = EQ_Num_48000[1];
+		m_eqNum[2] = EQ_Num_48000[2];
+
+		m_eqDen[0] = EQ_Den_48000[0];
+		m_eqDen[1] = EQ_Den_48000[1];
+	} else if (sampleRate == 96000.0F) {
+		m_eqNum[0] = EQ_Num_96000[0];
+		m_eqNum[1] = EQ_Num_96000[1];
+		m_eqNum[2] = EQ_Num_96000[2];
+
+		m_eqDen[0] = EQ_Den_96000[0];
+		m_eqDen[1] = EQ_Den_96000[1];
+	} else if (sampleRate == 192000.0F) {
+		m_eqNum[0] = EQ_Num_192000[0];
+		m_eqNum[1] = EQ_Num_192000[1];
+		m_eqNum[2] = EQ_Num_192000[2];
+
+		m_eqDen[0] = EQ_Den_192000[0];
+		m_eqDen[1] = EQ_Den_192000[1];
+	}
 }
 
 CGraphicEQ::~CGraphicEQ()
@@ -165,16 +196,16 @@ void CGraphicEQ::equalise()
 				m_num[k] = CXBdata(m_data, i);
 
 				COMPLEX numfilt;
-				numfilt.re = m_num[k].re * EQ_Num[0] + m_num[k + 1].re * EQ_Num[1] + m_num[k + 2].re * EQ_Num[2];
-				numfilt.im = m_num[k].im * EQ_Num[0] + m_num[k + 1].im * EQ_Num[1] + m_num[k + 2].im * EQ_Num[2];
+				numfilt.re = m_num[k].re * m_eqNum[0] + m_num[k + 1].re * m_eqNum[1] + m_num[k + 2].re * m_eqNum[2];
+				numfilt.im = m_num[k].im * m_eqNum[0] + m_num[k + 1].im * m_eqNum[1] + m_num[k + 2].im * m_eqNum[2];
 
 				m_num[k + 2] = m_num[k + 1];
 				m_num[k + 1] = m_num[k];
 
-				CXBdata(m_data, i) = Cmplx(numfilt.re + m_den[l].re * EQ_Den[0] +
-										m_den[l + 1].re * EQ_Den[1],
-										numfilt.im + m_den[l].im * EQ_Den[0] +
-										m_den[l + 1].im * EQ_Den[1]);
+				CXBdata(m_data, i) = Cmplx(numfilt.re + m_den[l].re * m_eqDen[0] +
+														m_den[l + 1].re * m_eqDen[1],
+										   numfilt.im + m_den[l].im * m_eqDen[0] +
+														m_den[l + 1].im * m_eqDen[1]);
 
 				m_den[l + 1] = m_den[l];
 				m_den[l + 0] = CXBdata(m_data, i);

@@ -27,7 +27,7 @@ class CDTTSPControl : public wxThread {
 	CDTTSPControl();
 	virtual ~CDTTSPControl();
 
-	virtual void open(unsigned int sampleRate, unsigned int blockSize);
+	virtual void open(float sampleRate, unsigned int blockSize);
 
 	virtual void* Entry();
 
@@ -58,7 +58,7 @@ class CDTTSPControl : public wxThread {
 	virtual void close();
 
     private:
-	unsigned int m_sampleRate;
+	float        m_sampleRate;
 	unsigned int m_blockSize;
 	int          m_filter;
 	int          m_mode;

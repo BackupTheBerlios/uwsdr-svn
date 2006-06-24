@@ -34,8 +34,7 @@
 #include "UWSDR.xpm"
 
 enum {
-	MENU_LANGUAGE = 36427,
-	MENU_KEYPAD,
+	MENU_KEYPAD = 36427,
 	MENU_PREFERENCES,
 	MENU_CW_KEYBOARD,
 	MENU_RECORD,
@@ -74,7 +73,6 @@ enum {
 
 BEGIN_EVENT_TABLE(CUWSDRFrame, wxFrame)
 	EVT_BUTTON(MENU_BUTTON, CUWSDRFrame::onMenuButton)
-	EVT_MENU(MENU_LANGUAGE, CUWSDRFrame::onMenuSelection)
 	EVT_MENU(MENU_KEYPAD, CUWSDRFrame::onMenuSelection)
 	EVT_MENU(MENU_PREFERENCES, CUWSDRFrame::onMenuSelection)
 	EVT_MENU(MENU_RECORD, CUWSDRFrame::onMenuSelection)
@@ -267,9 +265,9 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_dsp->setTXReader(new CSignalReader(750, 0.0F, 0.5F));
 	m_dsp->setTXWriter(new CNullWriter());
 
-	m_dsp->setRXReader(new CSignalReader(m_parameters->m_hardwareSampleRate / 4 + 1000, 0.0008F, 0.001F));
-	// m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
-	m_dsp->setRXWriter(new CNullWriter());
+	m_dsp->setRXReader(new CSignalReader(int(m_parameters->m_hardwareSampleRate / 4.0F + 1000.5F), 0.0008F, 0.001F));
+	m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
+	// m_dsp->setRXWriter(new CNullWriter());
 
 	m_dsp->Create();
 	m_dsp->Run();
@@ -330,7 +328,6 @@ void CUWSDRFrame::createMenu()
 {
 	m_menu = new wxMenu();
 
-	m_menu->Append(MENU_LANGUAGE,        _("Language"));
 	m_menu->Append(MENU_KEYPAD,          _("Frequency Keypad..."));
 	m_menu->Append(MENU_PREFERENCES,     _("Preferences..."));
 	m_menu->Append(MENU_CW_KEYBOARD,     _("CW Keyboard..."));
@@ -953,7 +950,7 @@ void CUWSDRFrame::normaliseFreq()
 	m_freqDisplay->setFrequency(dispFreq);
 
 	// Subtract the IF frequency
-	freq -= float(m_parameters->m_hardwareSampleRate) / 4.0F;
+	freq -= m_parameters->m_hardwareSampleRate / 4.0F;
 
 	// Now take into account the frequency steps of the SDR ...
 	double offset = 0.0;
@@ -1114,8 +1111,6 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 				}
 			}
 			break;
-		case MENU_LANGUAGE:
-			break;
 		case MENU_CW_KEYBOARD:
 			break;
 		case MENU_RECORD: {
@@ -1135,7 +1130,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 				stepSize.Printf(wxT("%u"), m_parameters->m_hardwareStepSize / 1000);
 
 				wxString sampleRate;
-				sampleRate.Printf(wxT("%u"), m_parameters->m_hardwareSampleRate);
+				sampleRate.Printf(wxT("%.0f"), m_parameters->m_hardwareSampleRate);
 
 				wxString protocolVersion;
 				protocolVersion.Printf(wxT("%u"), m_parameters->m_hardwareProtocolVersion);

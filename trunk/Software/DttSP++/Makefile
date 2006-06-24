@@ -2,10 +2,10 @@ all:		DttSP.a
 
 CFLAGS :=	-I../Common $(CFLAGS)
 
-OBJS :=	AGC.o AMDemod.o AMMod.o Compand.o CorrectIQ.o CXB.o DCBlock.o FIR.o FMDemod.o FMMod.o \
-		FilterOVSV.o GraphicEQ.o Meter.o NoiseBlanker.o Oscillator.o Resampler.o Spectrum.o \
-		SpeechProc.o SpotTone.o Squelch.o Window.o banal.o lmadf.o sdr.o sdrexport.o SSBDemod.o \
-		SSBMod.o thunk.o update.o winmain.o
+OBJS :=	AGC.o AMDemod.o AMMod.o BlockLMS.o Compand.o CorrectIQ.o CXB.o DCBlock.o FIR.o FMDemod.o FMMod.o \
+		FilterOVSV.o GraphicEQ.o LMS.o Meter.o NoiseBlanker.o Oscillator.o Resampler.o Spectrum.o \
+		SpeechProc.o SpotTone.o Squelch.o Window.o banal.o sdr.o sdrexport.o SSBDemod.o SSBMod.o \
+		thunk.o update.o winmain.o
 
 DttSP.a:	$(OBJS)
 		ar rcs DttSP.a $(OBJS)
@@ -18,6 +18,9 @@ AMDemod.o:	AMDemod.cpp AMDemod.h Complex.h CXB.h DataTypes.h FromSys.h
 
 AMMod.o:	AMMod.cpp AMMod.h Complex.h CXB.h DataTypes.h FromSys.h
 		$(CC) $(CFLAGS) -c AMMod.cpp
+
+BlockLMS.o:	BlockLMS.cpp BlockLMS.h banal.h CXB.h CXOps.h DataTypes.h
+		$(CC) $(CFLAGS) -c BlockLMS.cpp
 
 Compand.o:	Compand.cpp Compand.h CXB.h DataTypes.h FromSys.h
 		$(CC) $(CFLAGS) -c Compand.cpp
@@ -46,6 +49,9 @@ FilterOVSV.o: FilterOVSV.cpp FilterOVSV.h banal.h Complex.h CXB.h CXOps.h DataTy
 GraphicEQ.o: GraphicEQ.cpp GraphicEQ.h Complex.h CXB.h DataTypes.h FilterOVSV.h FIR.h FromSys.h
 		$(CC) $(CFLAGS) -c GraphicEQ.cpp
 
+LMS.o:		LMS.cpp LMS.h banal.h CXB.h CXOps.h DataTypes.h
+		$(CC) $(CFLAGS) -c LMS.cpp
+
 Meter.o:	Meter.cpp Meter.h banal.h CXB.h DataTypes.h FromSys.h
 		$(CC) $(CFLAGS) -c Meter.cpp
 
@@ -55,7 +61,7 @@ NoiseBlanker.o: NoiseBlanker.cpp NoiseBlanker.h CXB.h FromSys.h
 Oscillator.o: Oscillator.cpp Oscillator.h CXB.h DataTypes.h FromSys.h
 		$(CC) $(CFLAGS) -c Oscillator.cpp
 
-Resampler.o: Resampler.cpp Resampler.h banal.h Complex.h CXOps.h FIR.h
+Resampler.o: Resampler.cpp Resampler.h banal.h CXB.h CXOps.h FIR.h
 		$(CC) $(CFLAGS) -c Resampler.cpp
 
 Spectrum.o:	Spectrum.cpp Spectrum.h banal.h CXB.h DataTypes.h FIR.h FromSys.h Window.h
@@ -82,14 +88,11 @@ Window.o:	Window.cpp Window.h banal.h DataTypes.h FromSys.h
 banal.o:	banal.cpp banal.h CXB.h DataTypes.h FromSys.h
 		$(CC) $(CFLAGS) -c banal.cpp
 
-lmadf.o:	lmadf.cpp lmadf.h banal.h CXB.h CXOps.h DataTypes.h
-		$(CC) $(CFLAGS) -c lmadf.cpp
-
 sdr.o:	sdr.cpp AMDemod.h AMMod.h banal.h FMDemod.h FMMod.h sdrexport.h SSBDemod.h SSBMod.h
 		$(CC) $(CFLAGS) -c sdr.cpp
 
-sdrexport.o: sdrexport.cpp sdrexport.h AGC.h AMDemod.h Compand.h CorrectIQ.h CXB.h DataTypes.h DCBlock.h Defs.h \
-		FIR.h FilterOVSV.h FMDemod.h FromSys.h GraphicEQ.h lmadf.h Meter.h NoiseBlanker.h Oscillator.h \
+sdrexport.o: sdrexport.cpp sdrexport.h AGC.h AMDemod.h BlockLMS.h Compand.h CorrectIQ.h CXB.h DataTypes.h DCBlock.h \
+		Defs.h FIR.h FilterOVSV.h FMDemod.h FromSys.h GraphicEQ.h LMS.h Meter.h NoiseBlanker.h Oscillator.h \
 		../Common/RingBuffer.h Spectrum.h SpeechProc.h SpotTone.h
 		$(CC) $(CFLAGS) -c sdrexport.cpp
 

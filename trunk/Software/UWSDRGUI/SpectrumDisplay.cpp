@@ -64,13 +64,13 @@ m_width(size.GetWidth()),
 m_height(size.GetHeight()),
 m_background(NULL),
 m_bitmap(NULL),
-m_sampleRate(0),
+m_sampleRate(0.0F),
 m_bandwidth(0.0F),
 m_menu(NULL),
 m_speedMenu(NULL),
 m_posMenu(NULL),
 m_typeMenu(NULL),
-m_type(0),
+m_type(SPECTRUM_NONE),
 m_speed(0),
 m_position(0),
 m_factor(1),
@@ -111,7 +111,7 @@ CSpectrumDisplay::~CSpectrumDisplay()
 	delete m_menu;
 }
 
-void CSpectrumDisplay::setSampleRate(unsigned int sampleRate)
+void CSpectrumDisplay::setSampleRate(float sampleRate)
 {
 	m_sampleRate = sampleRate;
 }
@@ -120,7 +120,18 @@ void CSpectrumDisplay::setBandwidth(float bandwidth)
 {
 	m_bandwidth = bandwidth;
 
-	createPanadapter();
+	switch (m_type) {
+		case SPECTRUM_PANADAPTER1:
+		case SPECTRUM_PANADAPTER2:
+			createPanadapter();
+			break;
+		case SPECTRUM_WATERFALL:
+			createWaterfall();
+			break;
+		default:
+			::wxLogError(wxT("Unknown spectrum type = %d"), m_type);
+			break;
+	}
 
 	wxClientDC clientDC(this);
 	show(clientDC);
@@ -140,6 +151,8 @@ void CSpectrumDisplay::showSpectrum(const float* spectrum, float bottom)
 				break;
 			case SPECTRUM_WATERFALL:
 				drawWaterfall(spectrum, bottom);
+				break;
+			default:
 				break;
 		}
 
@@ -271,8 +284,8 @@ void CSpectrumDisplay::drawPanadapter1(const float* spectrum, float bottom)
 
 	dc.SetPen(*wxGREEN_PEN);
 
-	int firstBin = int(float(SPECTRUM_SIZE) / 2.0F - m_bandwidth / 2.0F * float(SPECTRUM_SIZE) / float(m_sampleRate) + 0.5);
-	int lastBin  = int(float(SPECTRUM_SIZE) / 2.0F + m_bandwidth / 2.0F * float(SPECTRUM_SIZE) / float(m_sampleRate) + 0.5);
+	int firstBin = int(float(SPECTRUM_SIZE) / 2.0F - m_bandwidth / 2.0F * float(SPECTRUM_SIZE) / m_sampleRate + 0.5);
+	int lastBin  = int(float(SPECTRUM_SIZE) / 2.0F + m_bandwidth / 2.0F * float(SPECTRUM_SIZE) / m_sampleRate + 0.5);
 
 	float binsPerPixel = float(lastBin - firstBin) / float(m_width - 5);
 
@@ -318,8 +331,8 @@ void CSpectrumDisplay::drawPanadapter2(const float* spectrum, float bottom)
 
 	dc.SetPen(*wxGREEN_PEN);
 
-	int firstBin = int(float(SPECTRUM_SIZE) / 2.0F - m_bandwidth / 2.0F * float(SPECTRUM_SIZE) / float(m_sampleRate) + 0.5);
-	int lastBin  = int(float(SPECTRUM_SIZE) / 2.0F + m_bandwidth / 2.0F * float(SPECTRUM_SIZE) / float(m_sampleRate) + 0.5);
+	int firstBin = int(float(SPECTRUM_SIZE) / 2.0F - m_bandwidth / 2.0F * float(SPECTRUM_SIZE) / m_sampleRate + 0.5);
+	int lastBin  = int(float(SPECTRUM_SIZE) / 2.0F + m_bandwidth / 2.0F * float(SPECTRUM_SIZE) / m_sampleRate + 0.5);
 
 	float binsPerPixel = float(lastBin - firstBin) / float(m_width - 5);
 
@@ -354,8 +367,8 @@ void CSpectrumDisplay::drawPanadapter2(const float* spectrum, float bottom)
  */
 void CSpectrumDisplay::drawWaterfall(const float* spectrum, float bottom)
 {
-	int firstBin = int(float(SPECTRUM_SIZE) / 2.0F - m_bandwidth / 2.0F * float(SPECTRUM_SIZE) / float(m_sampleRate) + 0.5);
-	int lastBin  = int(float(SPECTRUM_SIZE) / 2.0F + m_bandwidth / 2.0F * float(SPECTRUM_SIZE) / float(m_sampleRate) + 0.5);
+	int firstBin = int(float(SPECTRUM_SIZE) / 2.0F - m_bandwidth / 2.0F * float(SPECTRUM_SIZE) / m_sampleRate + 0.5);
+	int lastBin  = int(float(SPECTRUM_SIZE) / 2.0F + m_bandwidth / 2.0F * float(SPECTRUM_SIZE) / m_sampleRate + 0.5);
 
 	float binsPerPixel = float(lastBin - firstBin) / float(m_width - 5);
 
@@ -376,7 +389,7 @@ void CSpectrumDisplay::drawWaterfall(const float* spectrum, float bottom)
 		for (int i = 0; i < int(binsPerPixel + 0.5); i++) {
 			float val = spectrum[bin++];
 
-			if (value > val)
+			if (val > value)
 				value = val;
 		}
 

@@ -72,19 +72,19 @@ CResampler::~CResampler()
 	delete[] m_filterMemoryBuff;
 }
 
-void CResampler::process(COMPLEX* input, unsigned int inLen, COMPLEX* output, unsigned int& outLen)
+void CResampler::process(CXB* inBuf, CXB* outBuf)
 {
-	wxASSERT(input != NULL);
-	wxASSERT(output != NULL);
-	wxASSERT(inLen > 0);
+	wxASSERT(inBuf != NULL);
+	wxASSERT(outBuf != NULL);
 
-	outLen = 0;
+	unsigned int outLen = 0;
+	unsigned int inLen  = CXBhave(inBuf);
 
 	for (unsigned int i = 0; i < inLen; i++) {
 		/*
 		 * save data in circular buffer
 		 */
-		m_filterMemoryBuff[m_indexFiltMemBuf] = input[i];
+		m_filterMemoryBuff[m_indexFiltMemBuf] = CXBdata(inBuf, i);
 
 		unsigned int j = m_indexFiltMemBuf;
 		unsigned int jj = j;
@@ -100,14 +100,13 @@ void CResampler::process(COMPLEX* input, unsigned int inLen, COMPLEX* output, un
 		while (m_filterPhaseNum < m_interpFactor) {
 			j = jj;
 
-			COMPLEX* outptr = output + outLen;
-			*outptr = cxzero;
+			COMPLEX outVal = cxzero;
 
 			/*
 			 * perform convolution
 			 */
 			for (unsigned int k = m_filterPhaseNum; k < FILTER_LENGTH; k += m_interpFactor) {
-				*outptr = Cadd(*outptr, Cscl(m_filterMemoryBuff[j], m_filter[k].re));
+				outVal = Cadd(outVal, Cscl(m_filterMemoryBuff[j], m_filter[k].re));
 
 				/*
 				 * circular adressing
@@ -118,8 +117,13 @@ void CResampler::process(COMPLEX* input, unsigned int inLen, COMPLEX* output, un
 			/*
 			 * scale the data
 			 */
-			*outptr = Cscl(*outptr, REAL(m_interpFactor));
+			CXBdata(outBuf, outLen) = Cscl(outVal, REAL(m_interpFactor));
 			outLen++;
+
+			if (outLen == CXBsize(outBuf)) {
+				CXBhave(outBuf) = outLen;
+				return;
+			}
 
 			/*
 			 * increment interpolation phase # by decimation factor
@@ -129,4 +133,6 @@ void CResampler::process(COMPLEX* input, unsigned int inLen, COMPLEX* output, un
 
 		m_filterPhaseNum -= m_interpFactor;
 	}
+
+	CXBhave(outBuf) = outLen;
 }

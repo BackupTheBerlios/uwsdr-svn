@@ -23,7 +23,7 @@
 
 class IDataReader {
     public:
-	virtual bool open(unsigned int sampleRate, unsigned int blockSize) = 0;
+	virtual bool open(float sampleRate, unsigned int blockSize) = 0;
 	virtual void setCallback(IDataCallback* callback, int id) = 0;
 	virtual void close() = 0;
 };

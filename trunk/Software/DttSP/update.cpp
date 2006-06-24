@@ -1,7 +1,7 @@
 /* update.c
 
-common defs and code for parm update 
-   
+common defs and code for parm update
+
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006-5 by Frank Brickle, AB2KT and Bob McGwier, N4HY
@@ -1664,10 +1664,10 @@ SetBlkNR (bool setit)
 }
 
 void
-SetNRvals (int taps, int delay, double gain, double leak)
+SetNRvals (unsigned int taps, unsigned int delay, double gain, double leak)
 {
   char buffer[64];
-  sprintf (buffer, "!setNRvals %d %d %12.9lf %12.9lf\n", taps, delay,
+  sprintf (buffer, "!setNRvals %u %u %12.9lf %12.9lf\n", taps, delay,
 	   gain, leak);
   sendcommand (buffer);
   sprintf (buffer, "!setBlkNRval %12.9lf\n", min (0.1 * gain, 0.0002));
@@ -1721,10 +1721,10 @@ SetBlkANF (bool setit)
 
 
 void
-SetANFvals (int taps, int delay, double gain, double leak)
+SetANFvals (unsigned int taps, unsigned int delay, double gain, double leak)
 {
   char buffer[64];
-  sprintf (buffer, "!setANFvals %d %d %12.9lf %12.9lf\n", taps, delay,
+  sprintf (buffer, "!setANFvals %u %u %12.9lf %12.9lf\n", taps, delay,
 	   gain, leak);
   sendcommand (buffer);
   sprintf (buffer, "!setBlkANFval %12.9lf\n", min (0.1 * gain, 0.0002));

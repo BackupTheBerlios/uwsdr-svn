@@ -23,7 +23,7 @@
 
 CDTTSPControl::CDTTSPControl() :
 wxThread(),
-m_sampleRate(0),
+m_sampleRate(0.0F),
 m_blockSize(0),
 m_filter(-1),
 m_mode(-1),
@@ -52,12 +52,12 @@ CDTTSPControl::~CDTTSPControl()
 {
 }
 
-void CDTTSPControl::open(unsigned int sampleRate, unsigned int blockSize)
+void CDTTSPControl::open(float sampleRate, unsigned int blockSize)
 {
 	m_sampleRate = sampleRate;
 	m_blockSize  = blockSize;
 
-	::Setup_SDR(REAL(sampleRate), blockSize);
+	::Setup_SDR(sampleRate, blockSize);
 
 	::Release_Update();
 

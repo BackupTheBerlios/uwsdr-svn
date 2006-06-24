@@ -103,6 +103,10 @@ SOURCE=.\banal.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\BlockLMS.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\Compand.cpp
 # End Source File
 # Begin Source File
@@ -139,7 +143,7 @@ SOURCE=.\GraphicEQ.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\lmadf.cpp
+SOURCE=.\LMS.cpp
 # End Source File
 # Begin Source File
 
@@ -227,6 +231,10 @@ SOURCE=.\banal.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\BlockLMS.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\Compand.h
 # End Source File
 # Begin Source File
@@ -283,7 +291,7 @@ SOURCE=.\GraphicEQ.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lmadf.h
+SOURCE=.\LMS.h
 # End Source File
 # Begin Source File
 

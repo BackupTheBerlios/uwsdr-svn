@@ -27,7 +27,7 @@ m_name(),
 m_maxFreq(),
 m_minFreq(),
 m_stepSize(0),
-m_sampleRate(0),
+m_sampleRate(0.0F),
 m_protocolVersion(0),
 m_receiveOnly(true),
 m_valid(false)
@@ -56,7 +56,7 @@ m_valid(false)
 			else if (line.Left(9).Cmp(wxT("stepSize=")) == 0)
 				m_stepSize = ::atoi(line.Mid(9).c_str());
 			else if (line.Left(11).Cmp(wxT("sampleRate=")) == 0)
-				m_sampleRate = ::atoi(line.Mid(11).c_str());
+				m_sampleRate = ::atof(line.Mid(11).c_str());
 			else if (line.Left(16).Cmp(wxT("protocolVersion=")) == 0)
 				m_protocolVersion = ::atoi(line.Mid(16).c_str());
 			else if (line.Left(12).Cmp(wxT("receiveOnly=")) == 0)
@@ -93,7 +93,7 @@ unsigned int CSDRDescrFile::getStepSize() const
 	return m_stepSize;
 }
 
-unsigned int CSDRDescrFile::getSampleRate() const
+float CSDRDescrFile::getSampleRate() const
 {
 	return m_sampleRate;
 }

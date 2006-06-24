@@ -85,7 +85,8 @@ typedef enum {
 typedef enum {
 	SPEC_PRE_FILT,
 	SPEC_POST_FILT,
-	SPEC_POST_AGC
+	SPEC_POST_AGC,
+	SPEC_POST_DET
 } SPECTRUMtype;
 
 extern void    Setup_SDR(REAL sampleRate, unsigned int audioSize);
@@ -99,14 +100,14 @@ extern void    SetRIT(double newfreq);
 extern void    SetTXOsc(double newfreq);
 extern void    SetNR(bool setit);
 extern void    SetBlkNR(bool setit);
-extern void    SetNRvals(int taps, int delay, double gain, double leak);
+extern void    SetNRvals(unsigned int taps, unsigned int delay, double gain, double leak);
 extern void    SetTXCompandSt(bool setit);
 extern void    SetTXCompand(double setit);
 extern void    SetTXSquelchSt(bool setit);
 extern void    SetTXSquelchVal(float setit);
 extern void    SetANF(bool setit);
 extern void    SetBlkANF(bool setit);
-extern void    SetANFvals(int taps, int delay, double gain, double leak);
+extern void    SetANFvals(unsigned int taps, unsigned int delay, double gain, double leak);
 extern void    SetNB(bool setit);
 extern void    SetNBvals(REAL threshold);
 extern void    SetSDROM(bool setit);

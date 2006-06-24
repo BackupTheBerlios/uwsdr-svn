@@ -40,7 +40,7 @@ CSoundFileWriter::~CSoundFileWriter()
 {
 }
 
-bool CSoundFileWriter::open(unsigned int sampleRate, unsigned int blockSize)
+bool CSoundFileWriter::open(float sampleRate, unsigned int blockSize)
 {
 	m_blockSize = blockSize;
 
@@ -72,8 +72,8 @@ bool CSoundFileWriter::open(unsigned int sampleRate, unsigned int blockSize)
 	format.wBitsPerSample  = m_sampleWidth;
 	format.wFormatTag      = WAVE_FORMAT_PCM;
 	format.nChannels       = 2;
-	format.nSamplesPerSec  = sampleRate;
-	format.nAvgBytesPerSec = sampleRate * 2 * m_sampleWidth / 8;
+	format.nSamplesPerSec  = int(sampleRate + 0.5F);
+	format.nAvgBytesPerSec = int(sampleRate + 0.5F) * 2 * m_sampleWidth / 8;
 	format.nBlockAlign     = 2 * m_sampleWidth / 8;
 	format.cbSize          = 0;
 
@@ -163,10 +163,10 @@ CSoundFileWriter::~CSoundFileWriter()
 {
 }
 
-bool CSoundFileWriter::open(unsigned int sampleRate, unsigned int blockSize)
+bool CSoundFileWriter::open(float sampleRate, unsigned int blockSize)
 {
 	SF_INFO info;
-	info.samplerate = sampleRate;
+	info.samplerate = int(sampleRate + 0.5F);
 	info.channels   = 2;
 	info.format     = SF_FORMAT_WAV;
 

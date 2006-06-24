@@ -32,7 +32,7 @@ void* CSoundFileReader::Entry()
 {
 	wxASSERT(m_callback != NULL);
 
-	long interval = (1000L * m_blockSize) / m_sampleRate;
+	long interval = (1000L * m_blockSize) / int(m_sampleRate + 0.5F);
 
 	float* buffer = new float[m_blockSize * 2];
 
@@ -72,7 +72,7 @@ void CSoundFileReader::setCallback(IDataCallback* callback, int id)
 CSoundFileReader::CSoundFileReader(const wxString& fileName) :
 wxThread(),
 m_fileName(fileName),
-m_sampleRate(0),
+m_sampleRate(0.0F),
 m_blockSize(0),
 m_callback(NULL),
 m_id(0),
@@ -91,7 +91,7 @@ CSoundFileReader::~CSoundFileReader()
 	delete[] m_buffer16;
 }
 
-bool CSoundFileReader::open(unsigned int sampleRate, unsigned int blockSize)
+bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 {
 	m_sampleRate = sampleRate;
 	m_blockSize  = blockSize;
@@ -137,7 +137,7 @@ bool CSoundFileReader::open(unsigned int sampleRate, unsigned int blockSize)
 		return false;
 	}
 
-	if (int(format.nSamplesPerSec) != sampleRate) {
+	if (format.nSamplesPerSec != sampleRate) {
 		::wxLogError(wxT("%s is corrupt in SoundFileReader"), m_fileName.c_str());
 		return false;
 	}
@@ -225,7 +225,7 @@ void CSoundFileReader::closeFile()
 
 CSoundFileReader::CSoundFileReader(const wxString& fileName) :
 m_fileName(fileName),
-m_sampleRate(0),
+m_sampleRate(0.0F),
 m_blockSize(0),
 m_callback(NULL),
 m_id(0),
@@ -237,7 +237,7 @@ CSoundFileReader::~CSoundFileReader()
 {
 }
 
-bool CSoundFileReader::open(unsigned int sampleRate, unsigned int blockSize)
+bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 {
 	m_sampleRate = sampleRate;
 	m_blockSize  = blockSize;
@@ -251,7 +251,7 @@ bool CSoundFileReader::open(unsigned int sampleRate, unsigned int blockSize)
 		return false;
 	}
 
-	if (info.samplerate != sampleRate) {
+	if (info.samplerate != int(sampleRate + 0.5F)) {
 		::wxLogError(wxT("%s is corrupt in SoundFileReader"), m_fileName.c_str());
 		return false;
 	}

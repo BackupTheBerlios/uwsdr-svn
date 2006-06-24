@@ -83,9 +83,15 @@ void CVolumeDial::drawDial()
 	wxMemoryDC dc;
 	dc.SelectObject(*m_bitmap);
 
-// This needs fixing XXX
 #if defined(__WXMSW__)
-	wxColour bgColour(0xD4, 0xD0, 0xC8);
+	int major, minor;
+	::wxGetOsVersion(&major, &minor);
+
+	wxColour bgColour;
+	if (major >= 6 || (major == 5 && minor >= 1))
+		bgColour = wxColour(0xEC, 0xE9, 0xD8);		// Windows XP and newer
+	else
+		bgColour = wxColour(0xD4, 0xD0, 0xC8);		// Windows 2000 and earlier
 #elif defined(__WXGTK__)
 	wxColour bgColour = wxSystemSettings::GetColour(wxSYS_COLOUR_BACKGROUND);
 #else

@@ -59,11 +59,6 @@ extern void destroy_workspace();
 
 static void gethold()
 {
-	wxASSERT(top.jack.ring.i.i != NULL);
-	wxASSERT(top.jack.ring.i.q != NULL);
-	wxASSERT(top.jack.ring.o.i != NULL);
-	wxASSERT(top.jack.ring.o.q != NULL);
-
 	if (top.jack.ring.o.i->freeSpace() < top.hold.size.frames) {
 		// pathology
 		::wxLogError(wxT("Not enough space in output ring buffer"));
@@ -165,11 +160,6 @@ void Audio_Callback(float* input_i, float* input_q, float* output_i, float* outp
 	wxASSERT(input_q != NULL);
 	wxASSERT(output_i != NULL);
 	wxASSERT(output_q != NULL);
-	wxASSERT(top.sync.buf.sem != NULL);
-	wxASSERT(top.jack.ring.i.i != NULL);
-	wxASSERT(top.jack.ring.i.q != NULL);
-	wxASSERT(top.jack.ring.o.i != NULL);
-	wxASSERT(top.jack.ring.o.q != NULL);
 
 	if (top.susp) {
 		::memset(output_i, 0x00, nframes * sizeof(float));
@@ -205,17 +195,8 @@ void Audio_Callback(float* input_i, float* input_q, float* output_i, float* outp
 		::wxLogError(wxT("Not enough data in the input ring buffers"));
 	}
 
-	if (top.jack.ring.i.i->dataSpace() != top.jack.ring.i.q->dataSpace()) {
-		top.jack.ring.i.i->clear();
-		top.jack.ring.i.q->clear();
-		top.jack.ring.o.i->clear();
-		top.jack.ring.o.q->clear();
-
-		::wxLogError(wxT("Size mismatch in the input ring buffers"));
-	}
-
 	// if enough accumulated in ring, fire dsp
-	if (top.jack.ring.i.i->dataSpace() >= top.hold.size.frames)
+	if (top.jack.ring.i.i->dataSpace() >= top.hold.size.frames && top.jack.ring.i.q->dataSpace() >= top.hold.size.frames)
 		top.sync.buf.sem->Post();
 }
 
@@ -223,11 +204,6 @@ void Audio_CallbackIL(float* input, float* output, unsigned int nframes)
 {
 	wxASSERT(input != NULL);
 	wxASSERT(output != NULL);
-	wxASSERT(top.sync.buf.sem != NULL);
-	wxASSERT(top.jack.ring.i.i != NULL);
-	wxASSERT(top.jack.ring.i.q != NULL);
-	wxASSERT(top.jack.ring.o.i != NULL);
-	wxASSERT(top.jack.ring.o.q != NULL);
 
 	if (top.susp) {
 		::memset(output, 0x00, 2 * nframes * sizeof (float));
@@ -271,17 +247,8 @@ void Audio_CallbackIL(float* input, float* output, unsigned int nframes)
 		::wxLogError(wxT("Not enough space in the input ring buffers"));
 	}
 
-	if (top.jack.ring.i.i->dataSpace() != top.jack.ring.i.q->dataSpace()) {
-		top.jack.ring.i.i->clear();
-		top.jack.ring.i.q->clear();
-		top.jack.ring.o.i->clear();
-		top.jack.ring.o.q->clear();
-
-		::wxLogError(wxT("Size mismatch in the input ring buffers"));
-	}
-
 	// if enough accumulated in ring, fire dsp
-	if (top.jack.ring.i.i->dataSpace() >= top.hold.size.frames)
+	if (top.jack.ring.i.i->dataSpace() >= top.hold.size.frames && top.jack.ring.i.q->dataSpace() >= top.hold.size.frames)
 		top.sync.buf.sem->Post();
 }
 
@@ -290,9 +257,6 @@ void Audio_CallbackIL(float* input, float* output, unsigned int nframes)
 
 void process_samples_thread()
 {
-	wxASSERT(top.sync.buf.sem != NULL);
-	wxASSERT(top.sync.upd.sem != NULL);
-
 	while (top.running) {
 		top.sync.buf.sem->Wait();
 

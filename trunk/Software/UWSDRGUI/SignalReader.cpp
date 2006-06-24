@@ -27,7 +27,7 @@ wxThread(),
 m_frequency(frequency),
 m_noiseAmplitude(noiseAmplitude),
 m_signalAmplitude(signalAmplitude),
-m_sampleRate(0),
+m_sampleRate(0.0F),
 m_blockSize(0),
 m_callback(NULL),
 m_id(0)
@@ -48,7 +48,7 @@ void CSignalReader::setCallback(IDataCallback* callback, int id)
 	m_id       = id;
 }
 
-bool CSignalReader::open(unsigned int sampleRate, unsigned int blockSize)
+bool CSignalReader::open(float sampleRate, unsigned int blockSize)
 {
 	m_sampleRate = sampleRate;
 	m_blockSize  = blockSize;
@@ -62,16 +62,16 @@ bool CSignalReader::open(unsigned int sampleRate, unsigned int blockSize)
 void* CSignalReader::Entry()
 {
 	wxASSERT(m_callback != NULL);
-	wxASSERT(m_frequency < (m_sampleRate / 2));
+	wxASSERT(m_frequency < (unsigned int)(m_sampleRate + 0.5F) / 2);
 
-	unsigned int noiseSize = m_sampleRate * 10 * 2;
+	unsigned int noiseSize = int(m_sampleRate + 0.5F) * 10 * 2;
 
-	long interval = (1000L * m_blockSize) / m_sampleRate;
+	long interval = (1000L * m_blockSize) / int(m_sampleRate + 0.5F);
 
 	float* buffer = new float[m_blockSize * 2];
 	float* awgn   = new float[noiseSize];
 
-	float delta = float(m_frequency) / float(m_sampleRate) * 2.0 * M_PI;
+	float delta = float(m_frequency) / m_sampleRate * 2.0 * M_PI;
 
 	float cosVal = 1.0;
 	float sinVal = 0.0;

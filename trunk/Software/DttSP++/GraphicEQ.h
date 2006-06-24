@@ -83,6 +83,8 @@ class CGraphicEQ {
 	COMPLEX      m_num[9];
 	COMPLEX      m_den[6];
 	bool         m_notchFlag;
+	REAL         m_eqNum[3];
+	REAL         m_eqDen[3];
 
 	REAL dB2lin(REAL db);
 };

@@ -24,7 +24,7 @@
 
 CNullReader::CNullReader() :
 wxThread(),
-m_sampleRate(0),
+m_sampleRate(0.0F),
 m_blockSize(0),
 m_callback(NULL),
 m_id(0)
@@ -41,7 +41,7 @@ void CNullReader::setCallback(IDataCallback* callback, int id)
 	m_id       = id;
 }
 
-bool CNullReader::open(unsigned int sampleRate, unsigned int blockSize)
+bool CNullReader::open(float sampleRate, unsigned int blockSize)
 {
 	m_sampleRate = sampleRate;
 	m_blockSize  = blockSize;
@@ -56,7 +56,7 @@ void* CNullReader::Entry()
 {
 	wxASSERT(m_callback != NULL);
 
-	long interval = (1000L * m_blockSize) / m_sampleRate;
+	long interval = (1000L * m_blockSize) / int(m_sampleRate + 0.5F);
 
 	float* buffer = new float[m_blockSize * 2];
 

@@ -1,4 +1,4 @@
-/* Resampler.h
+/* BlockLMS.h 
 
 This file is part of a program that implements a Software-Defined Radio.
 
@@ -31,29 +31,49 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
-#ifndef _resampler_h
-#define _resampler_h
+#ifndef _blocklms_h
+#define _blocklms_h
 
+#include "DataTypes.h"
 #include "CXB.h"
-#include "FIR.h"
+#include "CXOps.h"
+#include "fftw3.h"
 
 
-class CResampler {
+enum {
+	BLMS_INTERFERENCE,
+	BLMS_NOISE
+};
+
+
+class CBlockLMS {
     public:
-	CResampler(REAL sampRateIn, REAL sampRateOut, unsigned int filterMemoryBuffLength = 32768);
-	virtual ~CResampler();
+	CBlockLMS(CXB* signal, REAL adaptationRate, REAL leakRate, unsigned int filterType, unsigned int pbits);
+	virtual ~CBlockLMS();
 
-	virtual void process(CXB* inBuf, CXB* outBuf);
+	virtual void setAdaptationRate(REAL adaptationRate);
+
+	virtual void process();
 
     private:
-	COMPLEX*     m_filterMemoryBuff;
-	COMPLEX*     m_filter;
-	unsigned int m_filterMemoryBuffLength;
-	unsigned int m_indexFiltMemBuf;
-	unsigned int m_interpFactor;
-	unsigned int m_filterPhaseNum;
-	unsigned int m_deciFactor;
-	unsigned int m_mask;
+	CXB*         m_signal;
+	REAL         m_adaptationRate;
+	REAL         m_leakRate;
+	unsigned int m_filterType;
+	COMPLEX*     m_delayLine;
+	COMPLEX*     m_y;
+	COMPLEX*     m_wHat;
+	COMPLEX*     m_xHat;
+	COMPLEX*     m_yHat;
+	COMPLEX*     m_error;
+	COMPLEX*     m_errHat;
+	COMPLEX*     m_update1;
+	COMPLEX*     m_update2;
+	fftwf_plan   m_wPlan;
+	fftwf_plan   m_xPlan;
+	fftwf_plan   m_yPlan;
+	fftwf_plan   m_errHatPlan;
+	fftwf_plan   m_updPlan;
 };
 
 #endif
