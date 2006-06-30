@@ -174,11 +174,7 @@ static void setup_rx()
     );
   rx.spot.flag = false;
 
-  ::memset(&rx.squelch, 0x00, sizeof(rx.squelch));
-  rx.squelch.thresh = -150.0;
-  rx.squelch.power = 0.0;
-  rx.squelch.flag = rx.squelch.running = rx.squelch.set = false;
-  rx.squelch.num = uni.buflen - 48;
+  rx.squelch.gen = new CSquelch(rx.buf.o, -150.0F, 0.0F, uni.buflen - 48);
 
   rx.cpd.gen = new CCompand(uni.cpdlen, 0.0F, rx.buf.o);
   rx.cpd.flag = false;
@@ -235,13 +231,7 @@ static void setup_tx()
   tx.grapheq.gen = new CGraphicEQ(tx.buf.i, uni.samplerate, uni.wisdom.bits);
   tx.grapheq.flag = false;
 
-
-  ::memset(&tx.squelch, 0x00, sizeof(tx.squelch));
-  tx.squelch.thresh = -40.0;
-  tx.squelch.power = 0.0;
-  tx.squelch.flag = false;
-  tx.squelch.running = tx.squelch.set = false;
-  tx.squelch.num = uni.buflen - 48;
+  tx.squelch.gen = new CSquelch(tx.buf.i, -40.0F, -30.0F, uni.buflen - 48);
 
   tx.alc.gen = new CAGC(agcLONG,	// mode kept around for control reasons alone
 			    tx.buf.i,	// input buffer
@@ -290,6 +280,7 @@ void destroy_workspace()
   delete tx.dcb.gen;
   delete tx.filt;
   delete tx.iqfix;
+  delete tx.squelch.gen;
   delCXB(tx.buf.o);
   delCXB(tx.buf.i);
 
@@ -310,6 +301,7 @@ void destroy_workspace()
   delete rx.rit.gen;
   delete rx.filt;
   delete rx.iqfix;
+  delete rx.squelch.gen;
   delCXB(rx.buf.o);
   delCXB(rx.buf.i);
 
@@ -359,115 +351,6 @@ static void do_tx_spectrum(CXB* buf)
 //========================================================================
 /* RX processing */
 
-static bool should_do_rx_squelch()
-{
-  if (rx.squelch.flag)
-    {
-      int i, n = CXBhave(rx.buf.o);
-      rx.squelch.power = 0.0;
-
-      for (i = 0; i < n; i++)
-	rx.squelch.power += Csqrmag (CXBdata (rx.buf.o, i));
-
-      return
-	10.0 * log10 (rx.squelch.power + 1e-17) < rx.squelch.thresh;
-
-    }
-  else
-    return rx.squelch.set = false;
-}
-
-static bool should_do_tx_squelch()
-{
-  if (tx.squelch.flag)
-    {
-      int i, n = CXBhave(tx.buf.i);
-      tx.squelch.power = 0.0;
-
-      for (i = 0; i < n; i++)
-	tx.squelch.power += Csqrmag (CXBdata (tx.buf.i, i));
-
-      return
-	(-30 + 10.0 * log10 (tx.squelch.power + 1e-17)) < tx.squelch.thresh;
-
-    }
-  else
-    return tx.squelch.set = false;
-}
-
-// apply squelch
-// slew into silence first time
-
-static void do_squelch()
-{
-  rx.squelch.set = true;
-
-  if (!rx.squelch.running)
-    {
-      int i, m = rx.squelch.num, n = CXBhave (rx.buf.o) - m;
-
-      for (i = 0; i < m; i++)
-	CXBdata (rx.buf.o, i) =
-	  Cscl (CXBdata (rx.buf.o, i), (REAL) (1.0 - (REAL) i / m));
-
-      memset ((void *) (CXBbase (rx.buf.o) + m), 0x00, n * sizeof (COMPLEX));
-      rx.squelch.running = true;
-
-    }
-  else
-    memset ((void *) CXBbase (rx.buf.o),
-	    0x00, CXBhave (rx.buf.o) * sizeof (COMPLEX));
-}
-static void do_tx_squelch()
-{
-  tx.squelch.set = true;
-
-  if (!tx.squelch.running)
-    {
-      int i, m = tx.squelch.num, n = CXBhave (tx.buf.i) - m;
-
-      for (i = 0; i < m; i++)
-	CXBdata (tx.buf.i, i) =
-	  Cscl (CXBdata (tx.buf.i, i), (REAL) (1.0 - (REAL) i / m));
-
-      memset ((void *) (CXBbase (tx.buf.i) + m), 0x00, n * sizeof (COMPLEX));
-      tx.squelch.running = true;
-
-    }
-  else
-    memset ((void *) CXBbase (tx.buf.i),
-	    0x00, CXBhave (tx.buf.i) * sizeof (COMPLEX));
-}
-
-// lift squelch
-// slew out from silence to full scale
-
-static void no_squelch()
-{
-  if (rx.squelch.running)
-    {
-      int i, m = rx.squelch.num;
-
-      for (i = 0; i < m; i++)
-	CXBdata (rx.buf.o, i) =
-	  Cscl (CXBdata (rx.buf.o, i), (REAL) i / m);
-
-      rx.squelch.running = false;
-    }
-}
-static void no_tx_squelch()
-{
-  if (tx.squelch.running)
-    {
-      int i, m = tx.squelch.num;
-
-      for (i = 0; i < m; i++)
-	CXBdata (tx.buf.i, i) = Cscl (CXBdata (tx.buf.i, i), (REAL) i / m);
-
-      tx.squelch.running = false;
-    }
-}
-
 /* pre-condition for (nearly) all RX modes */
 static void do_rx_pre()
 {
@@ -491,14 +374,10 @@ static void do_rx_pre()
 	/* IF shift */
 	rx.rit.gen->mix(rx.buf.i);
 
-	if (rx.mode != SPEC) {
-		if (rx.tick == 0UL)
-			rx.filt->reset();
+	if (rx.tick == 0UL)
+		rx.filt->reset();
 
-		rx.filt->filter();
-	} else {
-		::memcpy(CXBbase(rx.buf.o), CXBbase(rx.buf.i), sizeof(COMPLEX) * CXBhave(rx.buf.i));
-	}
+	rx.filt->filter();
 
 	CXBhave(rx.buf.o) = CXBhave(rx.buf.i);
 
@@ -508,8 +387,8 @@ static void do_rx_pre()
 	if (rx.cpd.flag)
 		rx.cpd.gen->process();
 
-	if (should_do_rx_squelch())
-		do_squelch();
+	if (rx.squelch.gen->isSquelch())
+		rx.squelch.gen->doSquelch();
 	else
 		rx.agc.gen->process();
 
@@ -519,8 +398,8 @@ static void do_rx_pre()
 
 static void do_rx_post()
 {
-	if (!rx.squelch.set) {
-		no_squelch();
+	if (!rx.squelch.gen->isSet()) {
+		rx.squelch.gen->noSquelch();
 
 		// spotting tone
 		if (rx.spot.flag) {
@@ -590,28 +469,16 @@ static void do_rx_FM()
 	rx.fm->demodulate();
 }
 
-static void do_rx_DRM()
-{
-}
-
-static void do_rx_SPEC()
-{
-}
-
 /* overall dispatch for RX processing */
-
 static void do_rx()
 {
 	do_rx_pre();
 
 	switch (rx.mode) {
-		case DIGU:
-		case DIGL:
 		case USB:
 		case LSB:
 		case CWU:
 		case CWL:
-		case DSB:
 			do_rx_SBCW();
 			break;
 
@@ -622,15 +489,6 @@ static void do_rx()
 
 		case FMN:
 			do_rx_FM();
-			break;
-
-		case DRM:
-			do_rx_DRM();
-			break;
-
-		case SPEC:
-		default:
-			do_rx_SPEC();
 			break;
 	}
 
@@ -651,39 +509,37 @@ static void do_tx_pre()
 
 	do_tx_meter(tx.buf.i, TX_MIC);
 
-	if (should_do_tx_squelch ()) {
-		do_tx_squelch ();
+	if (tx.squelch.gen->isSquelch()) {
+		tx.squelch.gen->doSquelch();
 	} else {
-		if (!tx.squelch.set)
-			no_tx_squelch();
+		if (!tx.squelch.gen->isSet())
+			tx.squelch.gen->noSquelch();
 
-		if (tx.mode != DIGU && tx.mode != DIGL) {
-			if (tx.grapheq.flag)
-				tx.grapheq.gen->equalise();
+		if (tx.grapheq.flag)
+			tx.grapheq.gen->equalise();
 
-			do_tx_meter(tx.buf.i, TX_EQtap);
+		do_tx_meter(tx.buf.i, TX_EQtap);
 
-			if (tx.leveler.flag)
-				tx.leveler.gen->process();
+		if (tx.leveler.flag)
+			tx.leveler.gen->process();
 
-			do_tx_meter(tx.buf.i, TX_LEVELER);
+		do_tx_meter(tx.buf.i, TX_LEVELER);
 
-			if (tx.spr.flag)
-				tx.spr.gen->process();
+		if (tx.spr.flag)
+			tx.spr.gen->process();
 
-			do_tx_meter(tx.buf.i, TX_COMP);
+		do_tx_meter(tx.buf.i, TX_COMP);
 
-			if (tx.cpd.flag)
-				tx.cpd.gen->process();
+		if (tx.cpd.flag)
+			tx.cpd.gen->process();
 
-			do_tx_meter(tx.buf.i, TX_CPDR);
-		} else {
-			do_tx_meter(tx.buf.i, TX_EQtap);
-			do_tx_meter(tx.buf.i, TX_LEVELER);
-			do_tx_meter(tx.buf.i, TX_COMP);
-			do_tx_meter(tx.buf.i, TX_CPDR);
-		}
+		do_tx_meter(tx.buf.i, TX_CPDR);
 	}
+
+	if (tx.alc.flag)
+		tx.alc.gen->process();
+
+	do_tx_meter(tx.buf.i, TX_ALC);
 }
 
 static void do_tx_post()
@@ -705,51 +561,8 @@ static void do_tx_post()
 	do_tx_meter(tx.buf.o, TX_PWR);
 }
 
-/* modulator processing */
-
-static void do_tx_SBCW()
-{
-	if (tx.alc.flag && tx.mode != DIGU && tx.mode != DIGL)
-		tx.alc.gen->process();
-
-	do_tx_meter(tx.buf.i, TX_ALC);
-
-	tx.ssb->modulate();
-
-	if (tx.mode != DSB)
-		CXBscl(tx.buf.i, 2.0F);
-}
-
-static void do_tx_AM()
-{
-	if (tx.alc.flag)
-		tx.alc.gen->process();
-
-	do_tx_meter(tx.buf.i, TX_ALC);
-
-	tx.am->modulate();
-}
-
-static void do_tx_FM()
-{
-	if (tx.alc.flag)
-		tx.alc.gen->process();
-
-	do_tx_meter(tx.buf.i, TX_ALC);
-
-	tx.fm->modulate();
-}
-
-static void do_tx_NIL()
-{
-	unsigned int n = CXBhave(tx.buf.i);
-
-	for (unsigned int i = 0; i < n; i++)
-		CXBdata(tx.buf.i, i) = cxzero;
-}
 
 /* general TX processing dispatch */
-
 static void do_tx()
 {
 	do_tx_pre();
@@ -759,25 +572,16 @@ static void do_tx()
 		case LSB:
 		case CWU:
 		case CWL:
-		case DIGU:
-		case DIGL:
-		case DSB:
-			do_tx_SBCW();
+			tx.ssb->modulate();
 			break;
 
 		case AM:
 		case SAM:
-			do_tx_AM();
+			tx.am->modulate();
 			break;
 
 		case FMN:
-			do_tx_FM();
-			break;
-
-		case DRM:
-		case SPEC:
-		default:
-			do_tx_NIL();
+			tx.fm->modulate();
 			break;
 	}
 

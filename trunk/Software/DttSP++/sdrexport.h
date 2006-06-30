@@ -59,6 +59,7 @@ Bridgewater, NJ 08807
 #include "RingBuffer.h"
 #include "GraphicEQ.h"
 #include "AGC.h"
+#include "Squelch.h"
 
 #include <wx/wx.h>
 
@@ -155,9 +156,7 @@ extern struct _rx
   } spot;
 
   struct {
-    REAL thresh, power;
-    bool flag, running, set;
-    unsigned int num;
+	CSquelch* gen;
   } squelch;
 
   struct {
@@ -210,9 +209,7 @@ extern struct _tx
   CSSBMod* ssb;
 
   struct {
-    REAL thresh, power;
-    bool flag, running, set;
-    unsigned int num;
+	CSquelch* gen;
   } squelch;
 
   struct {

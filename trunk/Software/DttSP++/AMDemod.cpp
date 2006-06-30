@@ -148,3 +148,28 @@ REAL CAMDemod::dem()
 
 	return m_pllDelay.re - m_dc;
 }
+
+bool CAMDemod::hasBinaural() const
+{
+	return false;
+}
+
+bool CAMDemod::hasBlockANR() const
+{
+	return false;
+}
+
+bool CAMDemod::hasBlockANF() const
+{
+	return true;
+}
+
+bool CAMDemod::hasANR() const
+{
+	return false;
+}
+
+bool CAMDemod::hasANF() const
+{
+	return true;
+}

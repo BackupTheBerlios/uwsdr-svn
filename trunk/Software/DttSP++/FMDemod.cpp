@@ -135,3 +135,28 @@ void CFMDemod::pll(COMPLEX sig)
 	while (m_pllPhase < 0.0F)
 		m_pllPhase += REAL(TWOPI);
 }
+
+bool CFMDemod::hasBinaural() const
+{
+	return false;
+}
+
+bool CFMDemod::hasBlockANR() const
+{
+	return false;
+}
+
+bool CFMDemod::hasBlockANF() const
+{
+	return false;
+}
+
+bool CFMDemod::hasANR() const
+{
+	return false;
+}
+
+bool CFMDemod::hasANF() const
+{
+	return false;
+}

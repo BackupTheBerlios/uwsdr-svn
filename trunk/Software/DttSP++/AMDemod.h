@@ -34,6 +34,7 @@ Bridgewater, NJ 08807
 #ifndef _amdemod_h
 #define _amdemod_h
 
+#include "Demod.h"
 #include "FromSys.h"
 #include "DataTypes.h"
 #include "Complex.h"
@@ -45,7 +46,7 @@ typedef enum {
 	SAMdet
 } AMMode;
 
-class CAMDemod {
+class CAMDemod : public IDemod {
     public:
 	CAMDemod(REAL samprate, REAL f_initial, REAL f_lobound, REAL f_hibound, REAL f_bandwid, CXB* ivec, CXB* ovec, AMMode mode);
 	virtual ~CAMDemod();
@@ -54,6 +55,14 @@ class CAMDemod {
 	virtual void   setMode(AMMode mode);
 
 	virtual void demodulate();
+
+	virtual bool hasBinaural() const;
+
+	virtual bool hasBlockANR() const;
+	virtual bool hasBlockANF() const;
+
+	virtual bool hasANR() const;
+	virtual bool hasANF() const;
 
     private:
 	CXB*    m_ibuf;

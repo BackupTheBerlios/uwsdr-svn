@@ -60,3 +60,28 @@ void CSSBDemod::demodulate()
 
 	CXBhave(m_obuf) = i;
 }
+
+bool CSSBDemod::hasBinaural() const
+{
+	return true;
+}
+
+bool CSSBDemod::hasBlockANR() const
+{
+	return true;
+}
+
+bool CSSBDemod::hasBlockANF() const
+{
+	return true;
+}
+
+bool CSSBDemod::hasANR() const
+{
+	return true;
+}
+
+bool CSSBDemod::hasANF() const
+{
+	return true;
+}

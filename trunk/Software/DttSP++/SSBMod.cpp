@@ -49,8 +49,10 @@ CSSBMod::~CSSBMod()
 
 void CSSBMod::modulate()
 {
-	if (m_ibuf == m_obuf)
+	if (m_ibuf == m_obuf) {
+		CXBscl(m_obuf, 2.0F);
 		return;
+	}
 
 	unsigned int n = CXBhave(m_ibuf);
 
@@ -58,4 +60,6 @@ void CSSBMod::modulate()
 		CXBdata(m_obuf, i) = CXBdata(m_ibuf, i);
 
 	CXBhave(m_obuf) = n;
+
+	CXBscl(m_obuf, 2.0F);
 }

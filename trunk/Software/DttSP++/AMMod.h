@@ -34,13 +34,14 @@ Bridgewater, NJ 08807
 #ifndef _ammod_h
 #define _ammod_h
 
+#include "Mod.h"
 #include "FromSys.h"
 #include "DataTypes.h"
 #include "Complex.h"
 #include "CXB.h"
 
 
-class CAMMod {
+class CAMMod : public IMod {
     public:
 	CAMMod(REAL level, CXB* in, CXB* out);
 	virtual ~CAMMod();

@@ -36,63 +36,78 @@ Bridgewater, NJ 08807
 #include <wx/wx.h>
 
 
-CSquelch::CSquelch(REAL threshold, REAL offset) :
+CSquelch::CSquelch(CXB* buf, REAL threshold, REAL offset, unsigned int num) :
+m_buf(buf),
 m_thresh(threshold),
 m_offset(offset),
+m_num(num),
 m_power(0.0F),
 m_set(false),
 m_running(false),
-m_num(0)
+m_flag(false)
 {
+	wxASSERT(m_buf != NULL);
 }
 
 CSquelch::~CSquelch()
 {
 }
 
-bool CSquelch::isSquelch(CXB* buf)
+bool CSquelch::isSquelch()
 {
-	wxASSERT(buf != NULL);
+	if (m_flag) {
+		unsigned int n = CXBhave(m_buf);
 
-	unsigned int n = CXBhave(buf);
+		m_power = 0.0F;
+		for (unsigned int i = 0; i < n; i++)
+			m_power += Csqrmag(CXBdata(m_buf, i));
 
-	m_power = 0.0F;
-	for (unsigned int i = 0; i < n; i++)
-		m_power += Csqrmag(CXBdata(buf, i));
+		return (m_offset + 10.0F * (REAL)::log10(m_power + 1e-17)) < m_thresh;
+	} else {
+		m_set = false;
 
-	return (m_offset + 10.0F * (REAL)::log10(m_power + 1e-17)) < m_thresh;
+		return false;
+	}
 }
 
-void CSquelch::doSquelch(CXB* buf)
+void CSquelch::doSquelch()
 {
-	wxASSERT(buf != NULL);
-
 	m_set = true;
 
 	if (!m_running) {
-		unsigned int m = m_num;
-		unsigned int n = CXBhave(buf) - m;
+		unsigned int n = CXBhave(m_buf) - m_num;
 
-		for (unsigned int i = 0; i < m; i++)
-			CXBdata(buf, i) = Cscl(CXBdata(buf, i), 1.0F - REAL(i) / REAL(m));
+		for (unsigned int i = 0; i < m_num; i++)
+			CXBdata(m_buf, i) = Cscl(CXBdata(m_buf, i), 1.0F - REAL(i) / REAL(m_num));
 
-		::memset((CXBbase(buf) + m), 0x00, n * sizeof(COMPLEX));
+		::memset((CXBbase(m_buf) + m_num), 0x00, n * sizeof(COMPLEX));
 		m_running = true;
 	} else {
-		::memset(CXBbase(buf), 0x00, CXBhave(buf) * sizeof(COMPLEX));
+		::memset(CXBbase(m_buf), 0x00, CXBhave(m_buf) * sizeof(COMPLEX));
 	}
 }
 
-void CSquelch::noSquelch(CXB* buf)
+void CSquelch::noSquelch()
 {
-	wxASSERT(buf != NULL);
-
 	if (m_running) {
-		unsigned int m = m_num;
-
-		for (unsigned int i = 0; i < m; i++)
-			CXBdata(buf, i) = Cscl(CXBdata(buf, i), REAL(i) / REAL(m));
+		for (unsigned int i = 0; i < m_num; i++)
+			CXBdata(m_buf, i) = Cscl(CXBdata(m_buf, i), REAL(i) / REAL(m_num));
 
 		m_running = false;
 	}
+}
+
+bool CSquelch::isSet() const
+{
+	return m_set;
+}
+
+void CSquelch::setFlag(bool flag)
+{
+	m_flag = flag;
+}
+
+void CSquelch::setThreshold(REAL threshold)
+{
+	m_thresh = threshold;
 }

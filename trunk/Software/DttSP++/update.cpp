@@ -349,12 +349,12 @@ void SetTXCompand(double setit)
 
 void SetTXSquelchSt(bool setit)
 {
-	tx.squelch.flag = setit;
+	tx.squelch.gen->setFlag(setit);
 }
 
 void SetTXSquelchVal(float setit)
 {
-	tx.squelch.thresh = setit;
+	tx.squelch.gen->setThreshold(setit);
 }
 
 void SetANF(bool setit)
@@ -556,12 +556,12 @@ void SetTXAGCFFCompression(REAL txc)
 
 void SetSquelchVal (float setit)
 {
-	rx.squelch.thresh = setit;
+	rx.squelch.gen->setThreshold(setit);
 }
 
 void SetSquelchState(bool setit)
 {
-	rx.squelch.flag = setit;
+	rx.squelch.gen->setFlag(setit);
 }
 
 void SetTRX(TRXMODE setit)

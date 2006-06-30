@@ -34,18 +34,27 @@ Bridgewater, NJ 08807
 #ifndef _ssbdemod_h
 #define _ssbdemod_h
 
-
+#include "Demod.h"
 #include "FromSys.h"
 #include "DataTypes.h"
 #include "Complex.h"
 #include "CXB.h"
 
-class CSSBDemod {
+
+class CSSBDemod : public IDemod {
     public:
 	CSSBDemod(CXB* ibuf, CXB* obuf);
 	virtual ~CSSBDemod();
 
 	virtual void demodulate();
+
+	virtual bool hasBinaural() const;
+
+	virtual bool hasBlockANR() const;
+	virtual bool hasBlockANF() const;
+
+	virtual bool hasANR() const;
+	virtual bool hasANF() const;
 
     private:
 	CXB* m_ibuf;

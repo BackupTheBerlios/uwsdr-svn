@@ -34,12 +34,13 @@ Bridgewater, NJ 08807
 #ifndef _fmdemod_h
 #define _fmdemod_h
 
-
+#include "Demod.h"
 #include "DataTypes.h"
 #include "Complex.h"
 #include "CXB.h"
 
-class CFMDemod {
+
+class CFMDemod : public IDemod {
     public:
 	CFMDemod(REAL samprate, REAL f_initial, REAL f_lobound, REAL f_hibound, REAL f_bandwid, CXB* ivec, CXB* ovec);
 	virtual ~CFMDemod();
@@ -48,6 +49,14 @@ class CFMDemod {
 	virtual void setDeviation(REAL f_bandwid);
 
 	virtual void demodulate();
+
+	virtual bool hasBinaural() const;
+
+	virtual bool hasBlockANR() const;
+	virtual bool hasBlockANF() const;
+
+	virtual bool hasANR() const;
+	virtual bool hasANF() const;
 
     private:
 	REAL    m_samprate;

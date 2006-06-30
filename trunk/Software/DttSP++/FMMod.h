@@ -34,13 +34,14 @@ Bridgewater, NJ 08807
 #ifndef _fmmod_h
 #define _fmmod_h
 
+#include "Mod.h"
 #include "FromSys.h"
 #include "DataTypes.h"
 #include "Complex.h"
 #include "CXB.h"
 
 
-class CFMMod {
+class CFMMod : public IMod {
     public:
 	CFMMod(REAL sampleRate, REAL deviation, CXB* input, CXB* output);
 	virtual ~CFMMod();

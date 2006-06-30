@@ -1,4 +1,4 @@
-/* Defs.h
+/* Mod.h
 
 This file is part of a program that implements a Software-Defined Radio.
 
@@ -31,29 +31,13 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
-#ifndef _defs_h
-#define _defs_h
+#ifndef _mod_h
+#define _mod_h
 
-typedef enum {
-	LSB,				//  0
-	USB,				//  1
-	CWL,				//  2
-	CWU,				//  3
-	FMN,				//  4
-	AM,					//  5
-	SAM					//  6
-} SDRMODE;
 
-typedef enum {
-	RX,
-	TX
-} TRXMODE;
-
-const unsigned int RINGMULT  = 2;
-const float        DEFRATE   = 48000.0F;
-const unsigned int DEFSIZE   = 1024;
-const SDRMODE      DEFMODE   = USB;
-const unsigned int DEFSPEC   = 4096;
-const unsigned int DEFCOMP   = 512;
+class IMod {
+    public:
+	virtual void modulate() = 0;
+};
 
 #endif

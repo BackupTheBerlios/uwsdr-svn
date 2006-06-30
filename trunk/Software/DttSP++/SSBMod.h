@@ -34,13 +34,14 @@ Bridgewater, NJ 08807
 #ifndef _ssbmod_h
 #define _ssbmod_h
 
+#include "Mod.h"
 #include "FromSys.h"
 #include "DataTypes.h"
 #include "Complex.h"
 #include "CXB.h"
 
 
-class CSSBMod {
+class CSSBMod : public IMod {
     public:
 	CSSBMod(CXB* ibuf, CXB* obuf);
 	virtual ~CSSBMod();

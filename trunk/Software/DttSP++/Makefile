@@ -13,10 +13,10 @@ DttSP.a:	$(OBJS)
 AGC.o:	AGC.cpp AGC.h banal.h Complex.h CXB.h DataTypes.h FromSys.h
 		$(CC) $(CFLAGS) -c AGC.cpp
 
-AMDemod.o:	AMDemod.cpp AMDemod.h Complex.h CXB.h DataTypes.h FromSys.h
+AMDemod.o:	AMDemod.cpp AMDemod.h Complex.h CXB.h DataTypes.h Demod.h FromSys.h
 		$(CC) $(CFLAGS) -c AMDemod.cpp
 
-AMMod.o:	AMMod.cpp AMMod.h Complex.h CXB.h DataTypes.h FromSys.h
+AMMod.o:	AMMod.cpp AMMod.h Complex.h CXB.h DataTypes.h FromSys.h Mod.h
 		$(CC) $(CFLAGS) -c AMMod.cpp
 
 BlockLMS.o:	BlockLMS.cpp BlockLMS.h banal.h CXB.h CXOps.h DataTypes.h
@@ -37,10 +37,10 @@ DCBlock.o:	DCBlock.cpp DCBlock.h Complex.h CXB.h DataTypes.h FromSys.h
 FIR.o:	FIR.cpp FIR.h banal.h Complex.h CXB.h DataTypes.h FromSys.h Window.h
 		$(CC) $(CFLAGS) -c FIR.cpp
 
-FMDemod.o:	FMDemod.cpp FMDemod.h banal.h Complex.h CXB.h DataTypes.h FromSys.h
+FMDemod.o:	FMDemod.cpp FMDemod.h banal.h Complex.h CXB.h DataTypes.h Demod.h FromSys.h
 		$(CC) $(CFLAGS) -c FMDemod.cpp
 
-FMMod.o:	FMMod.cpp FMMod.h banal.h Complex.h CXB.h DataTypes.h FromSys.h
+FMMod.o:	FMMod.cpp FMMod.h banal.h Complex.h CXB.h DataTypes.h FromSys.h Mod.h
 		$(CC) $(CFLAGS) -c FMMod.cpp
 
 FilterOVSV.o: FilterOVSV.cpp FilterOVSV.h banal.h Complex.h CXB.h CXOps.h DataTypes.h FIR.h
@@ -76,10 +76,10 @@ SpotTone.o:	SpotTone.cpp SpotTone.h CXB.h DataTypes.h FromSys.h Oscillator.h
 Squelch.o:	Squelch.cpp Squelch.h bufvec.h
 		$(CC) $(CFLAGS) -c Squelch.cpp
 
-SSBDemod.o:	SSBDemod.cpp SSBDemod.h Complex.h CXB.h DataTypes.h FromSys.h
+SSBDemod.o:	SSBDemod.cpp SSBDemod.h Complex.h CXB.h DataTypes.h Demod.h FromSys.h
 		$(CC) $(CFLAGS) -c SSBDemod.cpp
 
-SSBMod.o:	SSBMod.cpp SSBMod.h Complex.h CXB.h DataTypes.h FromSys.h
+SSBMod.o:	SSBMod.cpp SSBMod.h Complex.h CXB.h DataTypes.h FromSys.h Mod.h
 		$(CC) $(CFLAGS) -c SSBMod.cpp
 
 Window.o:	Window.cpp Window.h banal.h DataTypes.h FromSys.h
@@ -93,7 +93,7 @@ sdr.o:	sdr.cpp AMDemod.h AMMod.h banal.h FMDemod.h FMMod.h sdrexport.h SSBDemod.
 
 sdrexport.o: sdrexport.cpp sdrexport.h AGC.h AMDemod.h BlockLMS.h Compand.h CorrectIQ.h CXB.h DataTypes.h DCBlock.h \
 		Defs.h FIR.h FilterOVSV.h FMDemod.h FromSys.h GraphicEQ.h LMS.h Meter.h NoiseBlanker.h Oscillator.h \
-		../Common/RingBuffer.h Spectrum.h SpeechProc.h SpotTone.h
+		../Common/RingBuffer.h Spectrum.h SpeechProc.h SpotTone.h Squelch.h
 		$(CC) $(CFLAGS) -c sdrexport.cpp
 
 thunk.o:	thunk.cpp thunk.h FromSys.h

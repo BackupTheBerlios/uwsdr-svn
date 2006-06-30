@@ -53,15 +53,15 @@ typedef enum
 {
   LSB,				//  0
   USB,				//  1
-  DSB,				//  2
-  CWL,				//  3
-  CWU,				//  4
-  FMN,				//  5
-  AM,				//  6
-  DIGU,				//  7
-  SPEC,				//  8
-  DIGL,				//  9
-  SAM,				// 10
+  CWL,				//  2
+  CWU,				//  3
+  FMN,				//  4
+  AM,				//  5
+  SAM,				//  6
+  DSB,				//  7
+  DIGU,				//  8
+  SPEC,				//  9
+  DIGL,				// 10
   DRM				// 11
 } SDRMODE;
 

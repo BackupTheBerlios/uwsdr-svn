@@ -1,4 +1,4 @@
-/* Defs.h
+/* Demod.h
 
 This file is part of a program that implements a Software-Defined Radio.
 
@@ -31,29 +31,21 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
-#ifndef _defs_h
-#define _defs_h
+#ifndef _demod_h
+#define _demod_h
 
-typedef enum {
-	LSB,				//  0
-	USB,				//  1
-	CWL,				//  2
-	CWU,				//  3
-	FMN,				//  4
-	AM,					//  5
-	SAM					//  6
-} SDRMODE;
 
-typedef enum {
-	RX,
-	TX
-} TRXMODE;
+class IDemod {
+    public:
+	virtual void demodulate() = 0;
 
-const unsigned int RINGMULT  = 2;
-const float        DEFRATE   = 48000.0F;
-const unsigned int DEFSIZE   = 1024;
-const SDRMODE      DEFMODE   = USB;
-const unsigned int DEFSPEC   = 4096;
-const unsigned int DEFCOMP   = 512;
+	virtual bool hasBinaural() const = 0;
+
+	virtual bool hasBlockANR() const = 0;
+	virtual bool hasBlockANF() const = 0;
+
+	virtual bool hasANR() const = 0;
+	virtual bool hasANF() const = 0;
+};
 
 #endif
