@@ -57,11 +57,15 @@ class CAGC {
 
 	virtual void process();
 
-	virtual AGCMODE getMode() const;
-	virtual void    setMode(AGCMODE mode);
-
 	virtual float getGain() const;
-	virtual void  setGain(float gain);
+
+	virtual void setMode(AGCMODE mode);
+	virtual void setGain(float gain);
+	virtual void setHangTime(float time);
+	virtual void setGainTop(float gain);
+	virtual void setGainBottom(float gain);
+	virtual void setAttack(float attack);
+	virtual void setDecay(float decay);
 
     private:
 	AGCMODE      m_mode;

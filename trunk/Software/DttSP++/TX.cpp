@@ -187,7 +187,7 @@ void CTX::process()
 
 	m_filter->filter();
 
-	spectrum(m_oBuf);
+	m_spectrum->setData(m_oBuf);
 
 	m_oscillator->mix();
 
@@ -209,11 +209,6 @@ void CTX::meter(CXB* buf, TXMETERTYPE type)
 		levelerGain = m_leveler->getGain();
 
 	m_meter->setTXMeter(type, buf, alcGain, levelerGain);
-}
-
-void CTX::spectrum(CXB* buf)
-{
-	m_spectrum->setData(buf);
 }
 
 CXB* CTX::getIBuf()
@@ -312,6 +307,56 @@ void CTX::setIQGain(float gain)
 void CTX::setLevelerFlag(bool flag)
 {
 	m_levelerFlag = flag;
+}
+
+void CTX::setLevelerAttack(float attack)
+{
+	m_leveler->setAttack(attack);
+}
+
+void CTX::setLevelerDecay(float decay)
+{
+	m_leveler->setDecay(decay);
+}
+
+void CTX::setLevelerGainTop(float top)
+{
+	m_leveler->setGainTop(top);
+}
+
+void CTX::setLevelerGainBottom(float bottom)
+{
+	m_leveler->setGainBottom(bottom);
+}
+
+void CTX::setLevelerHangTime(float time)
+{
+	m_leveler->setHangTime(time);
+}
+
+void CTX::setALCAttack(float attack)
+{
+	m_alc->setAttack(attack);
+}
+
+void CTX::setALCDecay(float decay)
+{
+	m_alc->setDecay(decay);
+}
+
+void CTX::setALCGainTop(float top)
+{
+	m_alc->setGainTop(top);
+}
+
+void CTX::setALCGainBottom(float bottom)
+{
+	m_alc->setGainBottom(bottom);
+}
+
+void CTX::setALCHangTime(float time)
+{
+	m_alc->setHangTime(time);
 }
 
 void CTX::setGraphicEQFlag(bool flag)

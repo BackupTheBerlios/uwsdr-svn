@@ -35,213 +35,12 @@ Bridgewater, NJ 08807
 
 #include "sdrexport.h"
 #include "banal.h"
-#include "thunk.h"
 #include "RingBuffer.h"
 
 #include <wx/wx.h>
 
 
 ////////////////////////////////////////////////////////////////////////////
-
-static float inline
-dB2lin (float dB)
-{
-  return (float) pow (10.0, (float) dB / 20.0);
-}
-
-#ifdef notdef
-static int
-setTXALCAttack (int n, char **p)
-{
-  float tmp = (float) atof (p[0]);
-  tx.alc.gen->attack = (float) (1.0 - exp (-1000.0 / (tmp * uni.samplerate)));
-  tx.alc.gen->one_m_attack = (float) exp (-1000.0 / (tmp * uni.samplerate));
-  tx.alc.gen->sndx =
-    (tx.alc.gen->indx +
-     (int) (0.003 * uni.samplerate * tmp)) & tx.alc.gen->mask;
-  tx.alc.gen->fastindx =
-    (tx.alc.gen->sndx + FASTLEAD * tx.alc.gen->mask) & tx.alc.gen->mask;
-  tx.alc.gen->fasthangtime = (float) 0.1;
-  return 0;
-}
-
-static int
-setTXALCDecay (int n, char **p)
-{
-  float tmp = (float) atof (p[0]);
-  tx.alc.gen->decay = (float) (1.0 - exp (-1000.0 / (tmp * uni.samplerate)));
-  tx.alc.gen->one_m_decay = (float) exp (-1000.0 / (tmp * uni.samplerate));
-  return 0;
-}
-
-static int
-setTXALCHang (int n, char **p)
-{
-  float hang = (float) atof (p[0]);
-  tx.alc.gen->hangtime = (float) 0.001 *hang;
-  return 0;
-}
-
-static int
-setTXALCBot (int n, char **p)
-{
-  float bot = (float) atof (p[0]);
-  tx.alc.gen->gain.bottom = bot;
-  return 0;
-}
-
-static int
-setTXLevelerAttack (int n, char **p)
-{
-  float tmp = (float) atof (p[0]);
-  tx.leveler.gen->attack =
-    (float) (1.0 - exp (-1000.0 / (tmp * uni.samplerate)));
-  tx.leveler.gen->one_m_attack =
-    (float) exp (-1000.0 / (tmp * uni.samplerate));
-  tx.leveler.gen->sndx =
-    (tx.leveler.gen->indx +
-     (int) (0.003 * uni.samplerate * tmp)) & tx.leveler.gen->mask;
-  tx.leveler.gen->fastindx =
-    (tx.leveler.gen->sndx +
-     FASTLEAD * tx.leveler.gen->mask) & tx.leveler.gen->mask;
-  tx.leveler.gen->fasthangtime = (float) 0.1;	//wa6ahl: 100 ms
-  return 0;
-}
-
-static int setTXLevelerDecay(int n, char **p)
-{
-  float tmp = (float) atof (p[0]);
-  tx.leveler.gen->decay =
-    (float) (1.0 - exp (-1000.0 / (tmp * uni.samplerate)));
-  tx.leveler.gen->one_m_decay = (float) exp (-1000.0 / (tmp * uni.samplerate));
-  return 0;
-}
-
-static int setTXLevelerTop(int n, char **p)
-{
-	tx.leveler.gen->gain.top = float(::atof(p[0]));
-	return 0;
-}
-
-static int setTXLevelerHang(int n, char **p)
-{
-  float hang = (float) atof (p[0]);
-  tx.leveler.gen->hangtime = (float) 0.001 *hang;
-  return 0;
-}
-
-
-static int
-setTXAGCLimit (int n, char **p)
-{
-  float limit = (float) atof (p[0]);
-  tx.alc.gen->gain.top = limit;
-  return 0;
-}
-#endif
-
-static int
-setRingBufferReset (int n, char **p)
-{
-  top.jack.ring.i.i->clear();
-  top.jack.ring.i.q->clear();
-  top.jack.ring.o.i->clear();
-  top.jack.ring.o.q->clear();
-
-  return 0;
-}
-
-// [pos]  0.0 <= pos <= 1.0
-static int
-setRXPan (int n, char **p)
-{
-  float pos, theta;
-  if (n < 1)
-    {
-      pos = 0.5;
-      theta = (float) ((1.0 - pos) * M_PI / 2.0);
-      rx.azim = Cmplx ((float) cos (theta), (float) sin (theta));
-      return 0;
-    }
-  else
-    {
-      if ((pos = (float) atof (p[0])) < 0.0 || pos > 1.0)
-	return -1;
-      theta = (float) ((1.0 - pos) * M_PI / 2.0);
-      rx.azim = Cmplx ((float) cos (theta), (float) sin (theta));
-      return 0;
-    }
-}
-
-const CTE update_cmds[] = {
-#ifdef notdef
-  {"setTXALCAttack", setTXALCAttack}
-  ,
-  {"setTXALCDecay", setTXALCDecay}
-  ,
-  {"setTXALCBot", setTXALCBot}
-  ,
-  {"setTXALCHang", setTXALCHang}
-  ,
-  {"setTXAGCLimit", setTXAGCLimit}
-  ,
-  {"setTXLevelerAttack", setTXLevelerAttack}
-  ,
-  {"setTXLevelerDecay", setTXLevelerDecay}
-  ,
-  {"setTXLevelerHang", setTXLevelerHang}
-  ,
-  {"setTXLevelerTop", setTXLevelerTop}
-  ,
-  {"setfixedAGC", setfixedAGC}
-  ,
-#endif
-  {"setRingBufferReset", setRingBufferReset}
-  ,
-  {"setRXPan", setRXPan}
-  ,
-  {NULL, (Thunk)NULL}
-};
-
-//........................................................................
-
-int sendcommand(char *str)
-{
-	::wxLogMessage("Command = %s", str);
-
-	int count = 0;
-	char* args[20];
-
-	char* p = ::strtok(str, " \t\n\r");
-	while (p != NULL && count < 20) {
-		args[count] = p;
-		count++;
-
-		p = ::strtok(NULL, " \t\n\r");
-	}
-
-	if (count < 1) {
-		::wxLogError("Empty command");
-		return -1;
-	}
-
-	Thunk thk = Thunk_lookup(update_cmds, args[0]);
-
-	if (thk == NULL) {
-		::wxLogError("Unknown command = %s", args[0]);
-		return -1;
-	}
-
-	top.sync.upd.sem->Wait();
-	int val = (*thk)(count - 1, args + 1);
-	top.sync.upd.sem->Post();
-
-	return val;
-}
-
-//------------------------------------------------------------------------
-
-/*  Legacy DLL version of this code */
 
 void Setup_SDR(float sampleRate, unsigned int audioSize)
 {
@@ -409,12 +208,9 @@ void SetRXAGC(AGCMODE setit)
 	rx.agc.flag = true;				// FIXME ??????
 }
 
-void
-SetTXALCAttack (int attack)
+void SetTXALCAttack(float attack)
 {
-  char buffer[64];
-  sprintf (buffer, "setTXALCAttack %d\n", attack);
-  sendcommand (buffer);
+	tx->setALCAttack(attack);
 }
 
 void SetTXCarrierLevel(double setit)
@@ -422,28 +218,19 @@ void SetTXCarrierLevel(double setit)
 	tx->setAMCarrierLevel(setit);
 }
 
-void
-SetTXALCDecay (int decay)
+void SetTXALCDecay(float decay)
 {
-  char buffer[64];
-  sprintf (buffer, "setTXALCDecay %d\n", decay);
-  sendcommand (buffer);
+	tx->setALCDecay(decay);
 }
 
-void
-SetTXALCBot (double max_agc)
+void SetTXALCBot(float bot)
 {
-  char buffer[64];
-  sprintf (buffer, "setTXALCBot %f\n", dB2lin ((float) max_agc));
-  sendcommand (buffer);
+	tx->setALCGainBottom(bot);
 }
 
-void
-SetTXALCHang (int decay)
+void SetTXALCHang(float hang)
 {
-  char buffer[64];
-  sprintf (buffer, "setTXALCHang %d\n", decay);
-  sendcommand (buffer);
+	tx->setALCHangTime(hang);
 }
 
 void SetTXLevelerSt(bool state)
@@ -451,36 +238,24 @@ void SetTXLevelerSt(bool state)
 	tx->setLevelerFlag(state);
 }
 
-void
-SetTXLevelerAttack (int attack)
+void SetTXLevelerAttack(float attack)
 {
-  char buffer[64];
-  sprintf (buffer, "setTXLevelerAttack %d\n", attack);
-  sendcommand (buffer);
+	tx->setLevelerAttack(attack);
 }
 
-void
-SetTXLevelerDecay (int decay)
+void SetTXLevelerDecay(float decay)
 {
-  char buffer[64];
-  sprintf (buffer, "setTXLevelerDecay %d\n", decay);
-  sendcommand (buffer);
+	tx->setLevelerDecay(decay);
 }
 
-void
-SetTXLevelerTop (double top)
+void SetTXLevelerTop(float top)
 {
-  char buffer[64];
-  sprintf (buffer, "setTXLevelerTop %f\n", dB2lin ((float) top));
-  sendcommand (buffer);
+	tx->setLevelerGainTop(top);
 }
 
-void
-SetTXLevelerHang (int decay)
+void SetTXLevelerHang(float hang)
 {
-  char buffer[64];
-  sprintf (buffer, "setTXLevelerHang %d\n", decay);
-  sendcommand (buffer);
+	tx->setLevelerHangTime(hang);
 }
 
 void SetCorrectIQ(double phase, double gain)
@@ -535,17 +310,17 @@ void SetGrphRXEQcmd(bool state)
 	rx.grapheq.flag = state;
 }
 
-void SetTXAGCFF(bool setit)
+void SetTXCompressionSt(bool setit)
 {
 	tx->setCompressionFlag(setit);
 }
 
-void SetTXAGCFFCompression(float txc)
+void SetTXCompressionLevel(float txc)
 {
 	tx->setCompressionLevel(txc);
 }
 
-void SetSquelchVal (float setit)
+void SetSquelchVal(float setit)
 {
 	rx.squelch.gen->setThreshold(setit);
 }
@@ -557,40 +332,39 @@ void SetSquelchState(bool setit)
 
 void SetTRX(TRXMODE setit)
 {
-  top.sync.upd.sem->Wait();
+	top.sync.upd.sem->Wait();
 
-  switch (setit) {
-      case TX:
-		  switch (tx->getMode()) {
-			case CWU:
-			case CWL:
-				top.swch.bfct.want = 0;
-				break;
-			default:
-				top.swch.bfct.want = int(2 * uni.samplerate / 48000);
-				break;
-		  }
-	  case RX:
-		 top.swch.bfct.want = int(1 * uni.samplerate / 48000);
-		 break;
-  }
+	switch (setit) {
+		case TX:
+			switch (tx->getMode()) {
+				case CWU:
+				case CWL:
+					top.swch.bfct.want = 0;
+					break;
+				default:
+					top.swch.bfct.want = int(2 * uni.samplerate / 48000);
+					break;
+			}
 
-  top.swch.trx.next = setit;
-  top.swch.bfct.have = 0;
+		case RX:
+			top.swch.bfct.want = int(1 * uni.samplerate / 48000);
+			break;
+	}
 
-  if (top.state != RUN_SWCH)
-    top.swch.run.last = top.state;
+	top.swch.trx.next = setit;
+	top.swch.bfct.have = 0;
 
-  top.state = RUN_SWCH;
+	if (top.state != RUN_SWCH)
+		top.swch.run.last = top.state;
 
-  top.sync.upd.sem->Post();
+	top.state = RUN_SWCH;
+
+	top.sync.upd.sem->Post();
 }
 
-void SetTXAGCLimit (double limit)
+void SetTXALCLimit(float limit)
 {
-  char buffer[64];
-  sprintf (buffer, "setTXAGCLimit %lf\n", limit);
-  sendcommand (buffer);
+	tx->setALCGainTop(limit);
 }
 
 void setSpotToneVals(float gain, float freq, float rise, float fall)
@@ -734,4 +508,27 @@ void SetDeviation(float value)
 {
 	tx->setFMDeviation(value);
 	rx.fm->setDeviation(value);
+}
+
+void RingBufferReset()
+{
+	top.sync.upd.sem->Wait();
+
+	top.jack.ring.i.i->clear();
+	top.jack.ring.i.q->clear();
+	top.jack.ring.o.i->clear();
+	top.jack.ring.o.q->clear();
+
+	top.sync.upd.sem->Post();
+}
+
+// [pos]  0.0 <= pos <= 1.0
+void SetRXPan(float pos)
+{
+	if (pos < 0.0F || pos > 1.0F)
+		return;
+
+	float theta = float((1.0 - pos) * M_PI / 2.0);
+
+	rx.azim = Cmplx((float)::cos(theta), (float)::sin(theta));
 }

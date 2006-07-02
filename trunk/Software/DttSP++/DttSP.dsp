@@ -195,10 +195,6 @@ SOURCE=.\SSBMod.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\thunk.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\TX.cpp
 # End Source File
 # Begin Source File
@@ -348,10 +344,6 @@ SOURCE=.\SSBDemod.h
 # Begin Source File
 
 SOURCE=.\SSBMod.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\thunk.h
 # End Source File
 # Begin Source File
 

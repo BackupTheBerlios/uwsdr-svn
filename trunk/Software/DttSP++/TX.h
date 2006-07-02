@@ -87,6 +87,17 @@ class CTX {
 	virtual void setIQGain(float gain);
 
 	virtual void setLevelerFlag(bool flag);
+	virtual void setLevelerAttack(float attack);
+	virtual void setLevelerDecay(float decay);
+	virtual void setLevelerGainBottom(float bottom);
+	virtual void setLevelerGainTop(float top);
+	virtual void setLevelerHangTime(float hang);
+
+	virtual void setALCAttack(float attack);
+	virtual void setALCDecay(float decay);
+	virtual void setALCGainBottom(float bottom);
+	virtual void setALCGainTop(float top);
+	virtual void setALCHangTime(float hang);
 
 	virtual void setGraphicEQFlag(bool flag);
 	virtual void setGraphicEQValues(float preamp, float gain0, float gain1, float gain2);
@@ -140,7 +151,6 @@ class CTX {
 	unsigned long m_tick;
 
 	void meter(CXB* buf, TXMETERTYPE type);
-	void spectrum(CXB* buf);
 };
 
 #endif

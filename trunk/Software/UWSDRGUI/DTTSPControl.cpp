@@ -261,7 +261,7 @@ void CDTTSPControl::setSP(bool onOff)
 	if (onOff == m_sp)
 		return;
 
-	::SetTXAGCFF(onOff);
+	::SetTXCompressionSt(onOff);
 
 	m_sp = onOff;
 }
@@ -271,7 +271,7 @@ void CDTTSPControl::setSPValue(unsigned int value)
 	if (value == m_spValue)
 		return;
 
-	::SetTXAGCFFCompression(float(value));
+	::SetTXCompressionLevel(float(value));
 
 	m_spValue = value;
 }

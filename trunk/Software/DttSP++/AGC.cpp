@@ -172,16 +172,6 @@ float CAGC::getGain() const
 	return m_gainNow;
 }
 
-void CAGC::setGain(float gain)
-{
-	m_gainNow = gain;
-}
-
-AGCMODE CAGC::getMode() const
-{
-	return m_mode;
-}
-
 void CAGC::setMode(AGCMODE mode)
 {
 	m_mode = mode;
@@ -224,4 +214,41 @@ void CAGC::setMode(AGCMODE mode)
 			m_oneMDecay = 1.0F - m_decay;
 			break;
     }
+}
+
+void CAGC::setGain(float gain)
+{
+	m_gainNow = gain;
+}
+
+void CAGC::setHangTime(float time)
+{
+	m_hangTime = time * 0.001F;
+}
+
+void CAGC::setGainTop(float gain)
+{
+	m_gainTop = gain;
+}
+
+void CAGC::setGainBottom(float gain)
+{
+	m_gainBottom = gain;
+}
+
+void CAGC::setAttack(float attack)
+{
+	m_attack = float(1.0 - ::exp(-1000.0 / (attack * m_samprate)));
+	m_oneMAttack = (float)::exp (-1000.0 / (attack * m_samprate));
+
+	m_sndex = (m_index + (int)(0.003 * m_samprate * attack)) & m_mask;
+	m_fastIndex = (m_sndex + FASTLEAD * m_mask) & m_mask;
+
+	m_fastHangTime = 0.1F;
+}
+
+void CAGC::setDecay(float decay)
+{
+	m_decay = float(1.0 - ::exp(-1000.0 / (decay * m_samprate)));
+	m_oneMDecay = (float)::exp(-1000.0 / (decay * m_samprate));
 }

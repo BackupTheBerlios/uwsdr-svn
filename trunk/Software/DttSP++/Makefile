@@ -5,7 +5,7 @@ CFLAGS :=	-I../Common $(CFLAGS)
 OBJS :=		AGC.o AMDemod.o AMMod.o BlockLMS.o Compand.o CorrectIQ.o CXB.o DCBlock.o FIR.o FMDemod.o FMMod.o \
 		FilterOVSV.o GraphicEQ.o LMS.o Meter.o NoiseBlanker.o Oscillator.o Resampler.o Spectrum.o \
 		SpeechProc.o SpotTone.o Squelch.o TX.o Window.o banal.o sdr.o sdrexport.o SSBDemod.o SSBMod.o \
-		thunk.o update.o winmain.o
+		update.o winmain.o
 
 DttSP.a:	$(OBJS)
 		ar rcs DttSP.a $(OBJS)
@@ -100,10 +100,7 @@ sdrexport.o: 	sdrexport.cpp sdrexport.h AGC.h AMDemod.h BlockLMS.h Compand.h Cor
 		../Common/RingBuffer.h Spectrum.h SpeechProc.h SpotTone.h Squelch.h TX.h
 		$(CC) $(CFLAGS) -c sdrexport.cpp
 
-thunk.o:	thunk.cpp thunk.h FromSys.h
-		$(CC) $(CFLAGS) -c thunk.cpp
-
-update.o:	update.cpp banal.h CXB.h FromSys.h ../Common/RingBuffer.h thunk.h sdrexport.h
+update.o:	update.cpp banal.h CXB.h FromSys.h ../Common/RingBuffer.h sdrexport.h
 		$(CC) $(CFLAGS) -c update.cpp
 
 winmain.o:	winmain.cpp local.h sdrexport.h
