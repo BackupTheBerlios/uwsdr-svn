@@ -34,7 +34,6 @@ Bridgewater, NJ 08807
 #ifndef _dcblock_h
 #define _dcblock_h
 
-#include "DataTypes.h"
 #include "Complex.h"
 #include "CXB.h"
 
@@ -57,14 +56,14 @@ class CDCBlock {
 
     private:
 	DCBMode m_mode;
-	REAL    m_input[BLKMEM];
-	REAL    m_output[BLKMEM];
+	float   m_input[BLKMEM];
+	float   m_output[BLKMEM];
 	CXB*    m_buf;
 
-	REAL butterworthHighpass_100_2(REAL xin);
-	REAL butterworthHighpass_100_4(REAL xin);
-	REAL butterworthHighpass_100_6(REAL xin);
-	REAL butterworthHighpass_100_8(REAL xin);
+	float butterworthHighpass_100_2(float xin);
+	float butterworthHighpass_100_4(float xin);
+	float butterworthHighpass_100_6(float xin);
+	float butterworthHighpass_100_8(float xin);
 };
 
 #endif

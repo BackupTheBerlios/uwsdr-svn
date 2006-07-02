@@ -34,7 +34,6 @@ Bridgewater, NJ 08807
 #ifndef _lms_h
 #define _lms_h
 
-#include "DataTypes.h"
 #include "CXB.h"
 #include "CXOps.h"
 #include "fftw3.h"
@@ -48,13 +47,13 @@ enum {
 
 class CLMS {
     public:
-	CLMS(CXB* signal, unsigned int delay, REAL adaptationRate, REAL leakage, unsigned int adaptiveFilterSize, unsigned int filterType);
+	CLMS(CXB* signal, unsigned int delay, float adaptationRate, float leakage, unsigned int adaptiveFilterSize, unsigned int filterType);
 	virtual ~CLMS();
 
-	virtual void setAdaptationRate(REAL adaptationRate);
+	virtual void setAdaptationRate(float adaptationRate);
 	virtual void setAdaptiveFilterSize(unsigned int adaptiveFilterSize);
 	virtual void setDelay(unsigned int delay);
-	virtual void setLeakage(REAL leakage);
+	virtual void setLeakage(float leakage);
 
 	virtual void process();
 
@@ -64,12 +63,12 @@ class CLMS {
     private:
 	CXB*         m_signal;				/* Signal Buffer */
 	unsigned int m_delay;				/* Total delay between current sample and filter */
-	REAL         m_adaptationRate;		/* Adaptation rate for the LMS stochastic gradient */
-	REAL         m_leakage;				/* Exponential decay constant for filter coefficients */
+	float        m_adaptationRate;		/* Adaptation rate for the LMS stochastic gradient */
+	float        m_leakage;				/* Exponential decay constant for filter coefficients */
 	unsigned int m_adaptiveFilterSize;	/* number taps in adaptive filter */
 	unsigned int m_filterType;			/* Filter type */
-	REAL*        m_delayLine;			/* Delay Line circular buffer for holding samples */
-	REAL*        m_adaptiveFilter;		/* Filter coefficients */
+	float*       m_delayLine;			/* Delay Line circular buffer for holding samples */
+	float*       m_adaptiveFilter;		/* Filter coefficients */
 	unsigned int m_delayLinePtr;		/* Pointer for next sample into the delay line */
 	unsigned int m_size;				/* Delay line size */
 	unsigned int m_mask;				/* Mask for circular buffer */

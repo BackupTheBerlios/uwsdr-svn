@@ -50,8 +50,6 @@ typedef enum {
 } TRXMODE;
 
 const unsigned int RINGMULT  = 2;
-const float        DEFRATE   = 48000.0F;
-const unsigned int DEFSIZE   = 1024;
 const SDRMODE      DEFMODE   = USB;
 const unsigned int DEFSPEC   = 4096;
 const unsigned int DEFCOMP   = 512;

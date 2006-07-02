@@ -34,16 +34,15 @@ Bridgewater, NJ 08807
 #ifndef _fir_h
 #define _fir_h
 
-#include "DataTypes.h"
 #include "Complex.h"
 
 class CFIR {
     public:
-	static COMPLEX* lowpass(REAL cutoff, REAL samprate, unsigned int size);
-	static COMPLEX* bandpass(REAL lo, REAL hi, REAL samprate, unsigned int size);
-	static COMPLEX* highpass(REAL cutoff, REAL samprate, unsigned int size);
-	static COMPLEX* hilbert(REAL lo, REAL hi, REAL samprate, unsigned int size);
-	static COMPLEX* bandstop(REAL lo, REAL hi, REAL samprate, unsigned int size);
+	static COMPLEX* lowpass(float cutoff, float samprate, unsigned int size);
+	static COMPLEX* bandpass(float lo, float hi, float samprate, unsigned int size);
+	static COMPLEX* highpass(float cutoff, float samprate, unsigned int size);
+	static COMPLEX* hilbert(float lo, float hi, float samprate, unsigned int size);
+	static COMPLEX* bandstop(float lo, float hi, float samprate, unsigned int size);
 };
 
 #endif

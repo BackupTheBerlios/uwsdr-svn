@@ -231,7 +231,7 @@ void CDTTSPControl::setNBValue(unsigned int value)
 	if (value == m_nbValue)
 		return;
 
-	::SetNBvals(REAL(value));
+	::SetNBvals(float(value));
 
 	m_nbValue = value;
 }
@@ -251,7 +251,7 @@ void CDTTSPControl::setNB2Value(unsigned int value)
 	if (value == m_nb2Value)
 		return;
 
-	::SetSDROMvals(REAL(value));
+	::SetSDROMvals(float(value));
 
 	m_nb2Value = value;
 }
@@ -271,7 +271,7 @@ void CDTTSPControl::setSPValue(unsigned int value)
 	if (value == m_spValue)
 		return;
 
-	::SetTXAGCFFCompression(REAL(value));
+	::SetTXAGCFFCompression(float(value));
 
 	m_spValue = value;
 }

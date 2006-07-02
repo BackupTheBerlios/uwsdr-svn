@@ -36,21 +36,19 @@ Bridgewater, NJ 08807
 #include <wx/wx.h>
 
 
-CAMMod::CAMMod(REAL level, CXB* in, CXB* out) :
+CAMMod::CAMMod(float level, CXB* buf) :
 m_carrierLevel(level),
-m_input(in),
-m_output(out)
+m_buf(buf)
 {
 	wxASSERT(level >= 0.0F && level <= 1.0F);
-	wxASSERT(in != NULL);
-	wxASSERT(out != NULL);
+	wxASSERT(buf != NULL);
 }
 
 CAMMod::~CAMMod()
 {
 }
 
-void CAMMod::setCarrierLevel(REAL level)
+void CAMMod::setCarrierLevel(float level)
 {
 	wxASSERT(level >= 0.0F && level <= 1.0F);
 
@@ -59,10 +57,8 @@ void CAMMod::setCarrierLevel(REAL level)
 
 void CAMMod::modulate()
 {
-	unsigned int n = CXBhave(m_input);
+	unsigned int n = CXBhave(m_buf);
 
 	for (unsigned int i = 0; i < n; i++)
-		CXBdata(m_output, i) = Cmplx(m_carrierLevel + (1.0F - m_carrierLevel) * CXBreal(m_input, i), 0.0F);
-
-	CXBhave(m_output) = n;
+		CXBdata(m_buf, i) = Cmplx(m_carrierLevel + (1.0F - m_carrierLevel) * CXBreal(m_buf, i), 0.0F);
 }

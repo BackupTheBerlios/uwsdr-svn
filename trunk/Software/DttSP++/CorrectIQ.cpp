@@ -39,47 +39,46 @@ Bridgewater, NJ 08807
 #include <wx/wx.h>
 
 
-CCorrectIQ::CCorrectIQ() :
+CCorrectIQ::CCorrectIQ(CXB* buf) :
+m_buf(buf),
 m_phase(0.0F),
 m_gain(1.0F)
 {
+	wxASSERT(buf != NULL);
 }
 
 CCorrectIQ::~CCorrectIQ()
 {
 }
 
-void CCorrectIQ::process(CXB* sigbuf)
+void CCorrectIQ::process()
 {
-	wxASSERT(sigbuf != NULL);
-
-	unsigned int n = CXBhave(sigbuf);
+	unsigned int n = CXBhave(m_buf);
 
 	for (unsigned int i = 0; i < n; i++) {
-		CXBimag(sigbuf, i) += m_phase * CXBreal(sigbuf, i);
-		CXBreal(sigbuf, i) *= m_gain;
+		CXBimag(m_buf, i) += m_phase * CXBreal(m_buf, i);
+		CXBreal(m_buf, i) *= m_gain;
 	}
 }
 
-void CCorrectIQ::setPhase(REAL phase)
+void CCorrectIQ::setPhase(float phase)
 {
 	m_phase = phase;
 }
 
-void CCorrectIQ::setGain(REAL gain)
+void CCorrectIQ::setGain(float gain)
 {
 	wxASSERT(gain > 0.0);
 
 	m_gain = gain;
 }
 
-REAL CCorrectIQ::getPhase() const
+float CCorrectIQ::getPhase() const
 {
 	return m_phase;
 }
 
-REAL CCorrectIQ::getGain() const
+float CCorrectIQ::getGain() const
 {
 	return m_gain;
 }
-

@@ -36,7 +36,6 @@ Bridgewater, NJ 08807
 
 #include "Demod.h"
 #include "FromSys.h"
-#include "DataTypes.h"
 #include "Complex.h"
 #include "CXB.h"
 
@@ -48,7 +47,7 @@ typedef enum {
 
 class CAMDemod : public IDemod {
     public:
-	CAMDemod(REAL samprate, REAL f_initial, REAL f_lobound, REAL f_hibound, REAL f_bandwid, CXB* ivec, CXB* ovec, AMMode mode);
+	CAMDemod(float samprate, float f_initial, float f_lobound, float f_hibound, float f_bandwid, CXB* ivec, CXB* ovec, AMMode mode);
 	virtual ~CAMDemod();
 
 	virtual AMMode getMode() const;
@@ -67,23 +66,23 @@ class CAMDemod : public IDemod {
     private:
 	CXB*    m_ibuf;
 	CXB*    m_obuf;
-	REAL    m_pllAlpha;
-	REAL    m_pllBeta;
-	REAL    m_pllFastAlpha;
-	REAL    m_pllFreqF;
-	REAL    m_pllFreqL;
-	REAL    m_pllFreqH;
-	REAL    m_pllPhase;
-	REAL    m_pllIIRAlpha;
+	float   m_pllAlpha;
+	float   m_pllBeta;
+	float   m_pllFastAlpha;
+	float   m_pllFreqF;
+	float   m_pllFreqL;
+	float   m_pllFreqH;
+	float   m_pllPhase;
+	float   m_pllIIRAlpha;
 	COMPLEX m_pllDelay;
-    REAL    m_lockCurr;
-	REAL    m_lockPrev;
-	REAL    m_dc;
-	REAL    m_smooth;
+    float   m_lockCurr;
+	float   m_lockPrev;
+	float   m_dc;
+	float   m_smooth;
 	AMMode  m_mode;
 
 	void pll(COMPLEX sig);
-	REAL dem();
+	float dem();
 };
 
 #endif

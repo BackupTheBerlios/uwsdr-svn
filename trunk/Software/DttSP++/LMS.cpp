@@ -37,7 +37,7 @@ Bridgewater, NJ 08807
 #include <wx/wx.h>
 
 
-CLMS::CLMS(CXB* signal, unsigned int delay, REAL adaptionRate, REAL leakage, unsigned int adaptiveFilterSize, unsigned int filterType) :
+CLMS::CLMS(CXB* signal, unsigned int delay, float adaptionRate, float leakage, unsigned int adaptiveFilterSize, unsigned int filterType) :
 m_signal(signal),
 m_delay(delay),
 m_adaptationRate(adaptionRate),
@@ -53,11 +53,11 @@ m_mask(511)
 	wxASSERT(signal != NULL);
 	wxASSERT(filterType == LMS_INTERFERENCE || filterType == LMS_NOISE);
 
-	m_delayLine      = new REAL[m_size];
-	m_adaptiveFilter = new REAL[128];
+	m_delayLine      = new float[m_size];
+	m_adaptiveFilter = new float[128];
 
-	::memset(m_delayLine,      0x00, m_size * sizeof(REAL));
-	::memset(m_adaptiveFilter, 0x00, 128 * sizeof(REAL));
+	::memset(m_delayLine,      0x00, m_size * sizeof(float));
+	::memset(m_adaptiveFilter, 0x00, 128 * sizeof(float));
 }
 
 CLMS::~CLMS()
@@ -66,7 +66,7 @@ CLMS::~CLMS()
 	delete[] m_adaptiveFilter;
 }
 
-void CLMS::setAdaptationRate(REAL adaptationRate)
+void CLMS::setAdaptationRate(float adaptationRate)
 {
 	m_adaptationRate = adaptationRate;
 }
@@ -81,7 +81,7 @@ void CLMS::setDelay(unsigned int delay)
 	m_delay = delay;
 }
 
-void CLMS::setLeakage(REAL leakage)
+void CLMS::setLeakage(float leakage)
 {
 	m_leakage = leakage;
 }
@@ -106,14 +106,14 @@ void CLMS::process()
 
 void CLMS::processInterference()
 {
-	REAL scl1 = 1.0F - m_adaptationRate * m_leakage;
+	float scl1 = 1.0F - m_adaptationRate * m_leakage;
 
 	unsigned int n = CXBhave(m_signal);
 
 	for (unsigned int i = 0; i < n; i++) {
 		m_delayLine[m_delayLinePtr] = CXBreal(m_signal, i);
-		REAL accum = 0.0F;
-		REAL sum_sq = 0.0F;
+		float accum = 0.0F;
+		float sum_sq = 0.0F;
 
 		unsigned int j;
 		for (j = 0; j < m_adaptiveFilterSize; j++) {
@@ -122,12 +122,12 @@ void CLMS::processInterference()
 			accum += m_adaptiveFilter[j] * m_delayLine[k];
 		}
 
-		REAL error = CXBreal(m_signal, i) - accum;
+		float error = CXBreal(m_signal, i) - accum;
 
 		CXBreal(m_signal, i) = error;
 		CXBimag(m_signal, i) = error;
 
-		REAL scl2 = m_adaptationRate / (sum_sq + 1e-10);
+		float scl2 = m_adaptationRate / (sum_sq + 1e-10);
 		error *= scl2;
 
 		for (j = 0; j < m_adaptiveFilterSize; j++) {
@@ -141,14 +141,14 @@ void CLMS::processInterference()
 
 void CLMS::processNoise()
 {
-	REAL scl1 = 1.0F - m_adaptationRate * m_leakage;
+	float scl1 = 1.0F - m_adaptationRate * m_leakage;
 
 	unsigned int n = CXBhave(m_signal);
 
 	for (unsigned int i = 0; i < n; i++) {
 		m_delayLine[m_delayLinePtr] = CXBreal(m_signal, i);
-		REAL accum = 0.0F;
-		REAL sum_sq = 0.0F;
+		float accum = 0.0F;
+		float sum_sq = 0.0F;
 
 		unsigned int j;
 		for (j = 0; j < m_adaptiveFilterSize; j++) {
@@ -157,12 +157,12 @@ void CLMS::processNoise()
 			accum += m_adaptiveFilter[j] * m_delayLine[k];
 		}
 
-		REAL error = CXBreal(m_signal, i) - accum;
+		float error = CXBreal(m_signal, i) - accum;
 
 		CXBreal(m_signal, i) = accum;
 		CXBimag(m_signal, i) = accum;
 
-		REAL scl2 = m_adaptationRate / (sum_sq + 1e-10);
+		float scl2 = m_adaptationRate / (sum_sq + 1e-10);
 		error *= scl2;
 
 		for (j = 0; j < m_adaptiveFilterSize; j++) {

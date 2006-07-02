@@ -41,12 +41,14 @@ Bridgewater, NJ 08807
 
 const double HUGE_PHASE = 1256637061.43593;
 
-COscillator::COscillator(double frequency, double phase, REAL sampleRate) :
+COscillator::COscillator(CXB* buf, double frequency, double phase, float sampleRate) :
+m_buf(buf),
 m_frequency(0.0),
 m_sampleRate(sampleRate),
 m_phase(phase),
 m_delta(0.0)
 {
+	wxASSERT(buf != NULL);
 	wxASSERT(sampleRate > 0.0F);
 
 	setFrequency(frequency);
@@ -77,50 +79,45 @@ double COscillator::getFrequency() const
 	return m_frequency;
 }
 
-CXB* COscillator::oscillate(CXB* buf)
+void COscillator::oscillate()
 {
-	wxASSERT(buf != NULL);
+	unsigned int len = CXBhave(m_buf);
+
+	if (m_frequency == 0.0 || len == 0)
+		return;
 
 	if (m_phase > HUGE_PHASE)
 		m_phase -= HUGE_PHASE;
 
-	COMPLEX z     = Cmplx((REAL)::cos(m_phase), (IMAG)::sin(m_phase));
-	COMPLEX delta = Cmplx((REAL)::cos(m_delta), (IMAG)::sin(m_delta));
+	COMPLEX z     = Cmplx((float)::cos(m_phase), (float)::sin(m_phase));
+	COMPLEX delta = Cmplx((float)::cos(m_delta), (float)::sin(m_delta));
 
-	unsigned int n = CXBhave(buf);
-
-	for (unsigned int i = 0; i < n; i++) {
-		CXBdata(buf, i) = z = Cmul(z, delta);
+	for (unsigned int i = 0; i < len; i++) {
+		CXBdata(m_buf, i) = z = Cmul(z, delta);
 
 		m_phase += m_delta;
 	}
-
-	return buf;
 }
 
-CXB* COscillator::mix(CXB* buf)
+void COscillator::mix()
 {
-	wxASSERT(buf != NULL);
-
-	unsigned int len = CXBhave(buf);
+	unsigned int len = CXBhave(m_buf);
 
 	if (m_frequency == 0.0 || len == 0)
-		return buf;
+		return;
 
 	if (m_phase > HUGE_PHASE)
 		m_phase -= HUGE_PHASE;
 
-	COMPLEX z     = Cmplx((REAL)::cos(m_phase), (IMAG)::sin(m_phase));
-	COMPLEX delta = Cmplx((REAL)::cos(m_delta), (IMAG)::sin(m_delta));
+	COMPLEX z     = Cmplx((float)::cos(m_phase), (float)::sin(m_phase));
+	COMPLEX delta = Cmplx((float)::cos(m_delta), (float)::sin(m_delta));
 
 	for (unsigned int i = 0; i < len; i++) {
 		z = Cmul(z, delta);
 
-		CXBdata(buf, i) = Cmul(CXBdata(buf, i), z);
+		CXBdata(m_buf, i) = Cmul(CXBdata(m_buf, i), z);
 
 		m_phase += m_delta;
 	}
-
-	return buf;
 }
 

@@ -36,7 +36,6 @@
 #define _banal_h
 
 #include "FromSys.h"
-#include "DataTypes.h"
 
 
 inline unsigned int max(unsigned int val1, unsigned int val2)
@@ -71,14 +70,14 @@ inline double min(double val1, double val2)
 
 #define abs(a) ((a) >= 0 ? (a) : -(a))
 
-const REAL MONDO = 1E15F;
+const float MONDO = 1E15F;
 
-inline REAL sqr(REAL x)
+inline float sqr(float x)
 {
 	return x * x;
 }
 
-extern unsigned int  npoof2(unsigned int);
-extern unsigned int  nblock2(unsigned int);
+extern unsigned int npoof2(unsigned int);
+extern unsigned int nblock2(unsigned int);
 
 #endif

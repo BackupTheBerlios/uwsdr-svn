@@ -40,7 +40,7 @@ Bridgewater, NJ 08807
 
 const unsigned int FILTER_LENGTH = 19839;
 
-CResampler::CResampler(REAL sampRateIn, REAL sampRateOut, unsigned int filterMemoryBuffLength) :
+CResampler::CResampler(float sampRateIn, float sampRateOut, unsigned int filterMemoryBuffLength) :
 m_filterMemoryBuff(NULL),
 m_filter(NULL),
 m_filterMemoryBuffLength(0),
@@ -63,7 +63,7 @@ m_mask(0)
 	m_filterMemoryBuff = new COMPLEX[m_filterMemoryBuffLength];
 	::memset(m_filterMemoryBuff, 0x00, m_filterMemoryBuffLength * sizeof(COMPLEX));
 
-	m_filter = CFIR::lowpass(0.45F, REAL(m_interpFactor), FILTER_LENGTH);
+	m_filter = CFIR::lowpass(0.45F, float(m_interpFactor), FILTER_LENGTH);
 }
 
 CResampler::~CResampler()
@@ -117,7 +117,7 @@ void CResampler::process(CXB* inBuf, CXB* outBuf)
 			/*
 			 * scale the data
 			 */
-			CXBdata(outBuf, outLen) = Cscl(outVal, REAL(m_interpFactor));
+			CXBdata(outBuf, outLen) = Cscl(outVal, float(m_interpFactor));
 			outLen++;
 
 			if (outLen == CXBsize(outBuf)) {

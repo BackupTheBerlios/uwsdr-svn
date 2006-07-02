@@ -34,7 +34,6 @@ Bridgewater, NJ 08807
 #ifndef _spottone_h
 #define _spottone_h
 
-#include "DataTypes.h"
 #include "CXB.h"
 #include "Oscillator.h"
 
@@ -51,10 +50,10 @@ typedef enum {
 
 class CSpotTone {
     public:
-	CSpotTone(REAL gain, REAL freq, REAL rise, REAL fall, unsigned int size, REAL sampleRate);
+	CSpotTone(float gain, float freq, float rise, float fall, unsigned int size, float sampleRate);
 	virtual ~CSpotTone();
 
-	virtual void setValues(REAL gain, REAL freq, REAL rise, REAL fall);
+	virtual void setValues(float gain, float freq, float rise, float fall);
 
 	virtual void on();
 	virtual void off();
@@ -64,19 +63,19 @@ class CSpotTone {
 	virtual CXB* getData();
 
     private:
-	REAL          m_curr;
-	REAL          m_gain;
-	REAL          m_mul;
-	REAL          m_scl;
-	REAL          m_sampleRate;
-    REAL          m_freq;
+	float         m_curr;
+	float         m_gain;
+	float         m_mul;
+	float         m_scl;
+	float         m_sampleRate;
+    float         m_freq;
     COscillator*  m_gen;
-    REAL          m_riseDur;
-	REAL          m_riseIncr;
+    float         m_riseDur;
+	float         m_riseIncr;
     unsigned int  m_riseWant;
 	unsigned int  m_riseHave;
-    REAL          m_fallDur;
-	REAL          m_fallIncr;
+    float         m_fallDur;
+	float         m_fallIncr;
     unsigned int  m_fallWant;
 	unsigned int  m_fallHave;
 	unsigned int  m_size;

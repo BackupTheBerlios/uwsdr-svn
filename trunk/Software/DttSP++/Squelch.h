@@ -39,7 +39,7 @@ Bridgewater, NJ 08807
 
 class CSquelch {
     public:
-	CSquelch(CXB* buf, REAL threshold, REAL offset, unsigned int num);
+	CSquelch(CXB* buf, float threshold, float offset, unsigned int num);
 	virtual ~CSquelch();
 
 	virtual bool isSquelch();
@@ -51,14 +51,14 @@ class CSquelch {
 	virtual bool isSet() const;
 
 	virtual void setFlag(bool flag);
-	virtual void setThreshold(REAL threshold);
+	virtual void setThreshold(float threshold);
 
     private:
 	CXB*         m_buf;
-	REAL         m_thresh;
-	REAL         m_offset;
+	float        m_thresh;
+	float        m_offset;
 	unsigned int m_num;
-	REAL         m_power;
+	float        m_power;
 	bool         m_set;
 	bool         m_running;
 	bool         m_flag;

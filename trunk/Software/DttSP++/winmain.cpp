@@ -48,7 +48,7 @@ extern void reset_meters();
 extern void reset_spectrum();
 extern void reset_counters();
 extern void process_samples(float* bufi, float* bufq, unsigned int size);
-extern void setup_workspace(REAL rate,
+extern void setup_workspace(float rate,
 			     unsigned int buflen,
 			     SDRMODE mode,
 			     unsigned int specsize, unsigned int cpdsize);
@@ -312,72 +312,40 @@ void closeup()
 	::wxLogMessage(wxT("DttSP finished"));
 }
 
-//........................................................................
-
-static void setup_switching()
-{
-	top.swch.fade = (unsigned int)(0.2F * REAL(uni.buflen) + 0.5F);
-	top.swch.tail = top.hold.size.frames - top.swch.fade;
-}
-
-static void setup_local_audio()
-{
-	top.hold.size.frames = uni.buflen;
-	top.hold.size.bytes  = top.hold.size.frames * sizeof(float);
-
-	top.hold.buf.i = new float[top.hold.size.frames];
-	top.hold.buf.q = new float[top.hold.size.frames];
-
-	::memset(top.hold.buf.i, 0x00, top.hold.size.frames * sizeof(float));
-	::memset(top.hold.buf.q, 0x00, top.hold.size.frames * sizeof(float));
-}
-
-static void setup_system_audio()
-{
-	top.jack.size = 2048;
-
-	top.jack.ring.i.i = new CRingBuffer(top.jack.size * loc.mult.ring, 1);
-	top.jack.ring.i.q = new CRingBuffer(top.jack.size * loc.mult.ring, 1);
-	top.jack.ring.o.i = new CRingBuffer(top.jack.size * loc.mult.ring, 1);
-	top.jack.ring.o.q = new CRingBuffer(top.jack.size * loc.mult.ring, 1);
-}
-
-static void setup_threading()
-{
-	top.susp = false;
-
-	top.sync.upd.sem = new wxSemaphore();
-	top.sync.buf.sem = new wxSemaphore();
-}
-
 //========================================================================
-// hard defaults, then environment
-
-static void setup_defaults(REAL sampleRate, unsigned int audioSize)
-{
-	loc.def.rate  = (sampleRate == 0.0F) ? DEFRATE : sampleRate;
-	loc.def.size  = (audioSize == 0) ? DEFSIZE : audioSize;
-	loc.def.mode  = DEFMODE;
-	loc.def.spec  = DEFSPEC;
-	loc.mult.ring = RINGMULT;
-	loc.def.comp  = DEFCOMP;
-}
-
-//========================================================================
-void setup(REAL sampleRate, unsigned int audioSize)
+void setup(float sampleRate, unsigned int audioSize)
 {
 	top.running = true;
 	top.state = RUN_PLAY;
 
-	setup_defaults(sampleRate, audioSize);
+	loc.def.rate  = sampleRate;
+	loc.def.size  = audioSize;
+	loc.def.mode  = DEFMODE;
+	loc.def.spec  = DEFSPEC;
+	loc.mult.ring = RINGMULT;
+	loc.def.comp  = DEFCOMP;
 
 	setup_workspace(loc.def.rate, loc.def.size, loc.def.mode, loc.def.spec, loc.def.comp);
 
-	setup_local_audio();
-	setup_system_audio();
+	top.hold.size.frames = uni.buflen;
+	top.hold.size.bytes  = top.hold.size.frames * sizeof(float);
+	top.hold.buf.i = new float[top.hold.size.frames];
+	top.hold.buf.q = new float[top.hold.size.frames];
+	::memset(top.hold.buf.i, 0x00, top.hold.size.frames * sizeof(float));
+	::memset(top.hold.buf.q, 0x00, top.hold.size.frames * sizeof(float));
 
-	setup_threading();
-	setup_switching();
+	top.jack.size = 2048;
+	top.jack.ring.i.i = new CRingBuffer(top.jack.size * loc.mult.ring, 1);
+	top.jack.ring.i.q = new CRingBuffer(top.jack.size * loc.mult.ring, 1);
+	top.jack.ring.o.i = new CRingBuffer(top.jack.size * loc.mult.ring, 1);
+	top.jack.ring.o.q = new CRingBuffer(top.jack.size * loc.mult.ring, 1);
+
+	top.susp = false;
+	top.sync.upd.sem = new wxSemaphore();
+	top.sync.buf.sem = new wxSemaphore();
+
+	top.swch.fade = (unsigned int)(0.2F * float(uni.buflen) + 0.5F);
+	top.swch.tail = top.hold.size.frames - top.swch.fade;
 
 	reset_meters();
 	reset_spectrum();

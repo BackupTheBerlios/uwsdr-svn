@@ -37,7 +37,7 @@ Bridgewater, NJ 08807
 #include <wx/wx.h>
 
 
-CFMDemod::CFMDemod(REAL samprate, REAL f_initial, REAL f_lobound, REAL f_hibound, REAL f_bandwid, CXB* ivec, CXB* ovec) :
+CFMDemod::CFMDemod(float samprate, float f_initial, float f_lobound, float f_hibound, float f_bandwid, CXB* ivec, CXB* ovec) :
 m_samprate(samprate),
 m_ibuf(ivec),
 m_obuf(ovec),
@@ -57,7 +57,7 @@ m_cvt(0.0F)
 	wxASSERT(ovec != NULL);
 	wxASSERT(samprate > 0.0F);
 
-	REAL fac = TWOPI / samprate;
+	float fac = TWOPI / samprate;
 
 	m_pllFreqF = f_initial * fac;
 	m_pllFreqL = f_lobound * fac;
@@ -74,18 +74,18 @@ CFMDemod::~CFMDemod()
 {
 }
 
-void CFMDemod::setBandwidth(REAL f_lobound, REAL f_hibound)
+void CFMDemod::setBandwidth(float f_lobound, float f_hibound)
 {
-	REAL fac = TWOPI / m_samprate;
+	float fac = TWOPI / m_samprate;
 
 	m_pllFreqF = 0.0F;
 	m_pllFreqL = f_lobound * fac;
 	m_pllFreqH = f_hibound * fac;
 }
 
-void CFMDemod::setDeviation(REAL f_bandwid)
+void CFMDemod::setDeviation(float f_bandwid)
 {
-	REAL fac = TWOPI / m_samprate;
+	float fac = TWOPI / m_samprate;
 
 	m_pllFreqF = 0.0F;
 
@@ -103,7 +103,7 @@ void CFMDemod::demodulate()
 	for (unsigned int i = 0; i < n; i++) {
 		pll(CXBdata(m_ibuf, i));
 
-		m_afc = REAL(0.9999 * m_afc + 0.0001F * m_pllFreqF);
+		m_afc = float(0.9999 * m_afc + 0.0001F * m_pllFreqF);
 
 		CXBreal(m_obuf, i) = CXBimag(m_obuf, i) = (m_pllFreqF - m_afc) * m_cvt;
 	}
@@ -113,12 +113,12 @@ void CFMDemod::demodulate()
 
 void CFMDemod::pll(COMPLEX sig)
 {
-	COMPLEX z = Cmplx((REAL)cos(m_pllPhase), (IMAG)sin (m_pllPhase));
+	COMPLEX z = Cmplx((float)cos(m_pllPhase), (float)sin (m_pllPhase));
 
 	m_pllDelay.re = z.re * sig.re + z.im * sig.im;
 	m_pllDelay.im = -z.im * sig.re + z.re * sig.im;
 
-	REAL diff = (REAL)::atan2(m_pllDelay.im, m_pllDelay.re);
+	float diff = (float)::atan2(m_pllDelay.im, m_pllDelay.re);
 
 	m_pllFreqF += m_pllBeta * diff;
 
@@ -130,10 +130,10 @@ void CFMDemod::pll(COMPLEX sig)
 	m_pllPhase += m_pllFreqF + m_pllAlpha * diff;
 
 	while (m_pllPhase >= TWOPI)
-		m_pllPhase -= REAL(TWOPI);
+		m_pllPhase -= float(TWOPI);
 
 	while (m_pllPhase < 0.0F)
-		m_pllPhase += REAL(TWOPI);
+		m_pllPhase += float(TWOPI);
 }
 
 bool CFMDemod::hasBinaural() const

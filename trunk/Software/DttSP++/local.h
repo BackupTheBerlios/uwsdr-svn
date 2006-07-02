@@ -36,13 +36,12 @@ Bridgewater, NJ 08807
 #ifndef _local_h
 #define _local_h
 
-#include "DataTypes.h"
 #include "Defs.h"
 
 
 extern struct _loc {
   struct {
-    REAL rate;
+    float rate;
     unsigned int size, spec, comp;
     SDRMODE mode;
   } def;

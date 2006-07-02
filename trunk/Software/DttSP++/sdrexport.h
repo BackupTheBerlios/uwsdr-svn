@@ -34,7 +34,6 @@ Bridgewater, NJ 08807
 #ifndef _sdrexport_h
 #define _sdrexport_h
 
-#include "DataTypes.h"
 #include "Defs.h"
 #include "Meter.h"
 #include "Spectrum.h"
@@ -60,6 +59,7 @@ Bridgewater, NJ 08807
 #include "GraphicEQ.h"
 #include "AGC.h"
 #include "Squelch.h"
+#include "TX.h"
 
 #include <wx/wx.h>
 
@@ -71,7 +71,7 @@ Bridgewater, NJ 08807
 //------------------------------------------------------------------------
 extern struct _uni
 {
-  REAL samplerate;
+  float samplerate;
   unsigned int buflen;
 
   struct {
@@ -81,13 +81,11 @@ extern struct _uni
 
   struct {
     CMeter* gen;
-	bool flag;
   } meter;
 
   struct {
 	CSpectrum* gen;
 	SPECTRUMtype type;
-	bool flag;
   } spec;
 
   struct {
@@ -175,68 +173,13 @@ extern struct _rx
     bool flag;
   } bin;
 
-  REAL norm;
+  float norm;
   COMPLEX azim;
   unsigned long tick;
 } rx;
 
-//------------------------------------------------------------------------
-/* TX */
-//------------------------------------------------------------------------
-extern struct _tx
-{
-  struct {
-    CXB* i;
-	CXB* o;
-  } buf;
 
-  CCorrectIQ* iqfix;
-
-  struct {
-    bool flag;
-    CDCBlock* gen;
-  } dcb;
-
-  struct {
-    double phase;
-    COscillator* gen;
-  } osc;
-
-  CFilterOVSV* filt;
-
-  CAMMod*  am;
-  CFMMod*  fm;
-  CSSBMod* ssb;
-
-  struct {
-	CSquelch* gen;
-  } squelch;
-
-  struct {
-    CAGC* gen;
-    bool flag;
-  } leveler, alc;
-
-  struct {
-    CGraphicEQ* gen;
-    bool flag;
-  } grapheq;
-
-  struct {
-    CSpeechProc* gen;
-    bool flag;
-  } spr;
-
-  struct {
-    bool flag;
-    CCompand* gen;
-  } cpd;
-
-  SDRMODE mode;
-
-  unsigned long tick;
-} tx;
-
+extern CTX* tx;
 //------------------------------------------------------------------------
 
 typedef enum _runmode {

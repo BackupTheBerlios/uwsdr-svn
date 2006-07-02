@@ -36,7 +36,7 @@ Bridgewater, NJ 08807
 #include <wx/wx.h>
 
 
-CSquelch::CSquelch(CXB* buf, REAL threshold, REAL offset, unsigned int num) :
+CSquelch::CSquelch(CXB* buf, float threshold, float offset, unsigned int num) :
 m_buf(buf),
 m_thresh(threshold),
 m_offset(offset),
@@ -62,7 +62,7 @@ bool CSquelch::isSquelch()
 		for (unsigned int i = 0; i < n; i++)
 			m_power += Csqrmag(CXBdata(m_buf, i));
 
-		return (m_offset + 10.0F * (REAL)::log10(m_power + 1e-17)) < m_thresh;
+		return (m_offset + 10.0F * (float)::log10(m_power + 1e-17)) < m_thresh;
 	} else {
 		m_set = false;
 
@@ -78,7 +78,7 @@ void CSquelch::doSquelch()
 		unsigned int n = CXBhave(m_buf) - m_num;
 
 		for (unsigned int i = 0; i < m_num; i++)
-			CXBdata(m_buf, i) = Cscl(CXBdata(m_buf, i), 1.0F - REAL(i) / REAL(m_num));
+			CXBdata(m_buf, i) = Cscl(CXBdata(m_buf, i), 1.0F - float(i) / float(m_num));
 
 		::memset((CXBbase(m_buf) + m_num), 0x00, n * sizeof(COMPLEX));
 		m_running = true;
@@ -91,7 +91,7 @@ void CSquelch::noSquelch()
 {
 	if (m_running) {
 		for (unsigned int i = 0; i < m_num; i++)
-			CXBdata(m_buf, i) = Cscl(CXBdata(m_buf, i), REAL(i) / REAL(m_num));
+			CXBdata(m_buf, i) = Cscl(CXBdata(m_buf, i), float(i) / float(m_num));
 
 		m_running = false;
 	}
@@ -107,7 +107,7 @@ void CSquelch::setFlag(bool flag)
 	m_flag = flag;
 }
 
-void CSquelch::setThreshold(REAL threshold)
+void CSquelch::setThreshold(float threshold)
 {
 	m_thresh = threshold;
 }

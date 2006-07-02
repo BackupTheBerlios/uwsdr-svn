@@ -1985,15 +1985,6 @@ SetSpectrumPolyphase (bool setit)
 }
 
 void
-SetTXEQ (int *txeq)
-{
-  char buffer[256];
-  sprintf (buffer, "!setTXEQ 0.0 %d 120.0 %d 230.0 %d 450.0 %d 800.0 \
-%d 1150.0 %d 1450.0 %d 1800.0 %d 2150.0 \
-%d 2450.0 %d 2800.0 %d 3250.0 %d 6000.0\n", txeq[0], txeq[1], txeq[2], txeq[3], txeq[4], txeq[5], txeq[6], txeq[7], txeq[8], txeq[9], txeq[10], txeq[11]);
-  sendcommand (buffer);
-}
-void
 SetGrphTXEQ (int *txeq)
 {
   char buffer[256];

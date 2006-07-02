@@ -40,15 +40,15 @@ Bridgewater, NJ 08807
 #include <wx/wx.h>
 
 
-void CXBscl(CXB* buff, REAL scl)
+void CXBscl(CXB* buff, float scl)
 {
 	for (unsigned int i = 0; i < CXBhave(buff); i++)
 		CXBdata(buff, i) = Cscl(CXBdata(buff, i), scl);
 }
 
-REAL CXBpeak(CXB* buff)
+float CXBpeak(CXB* buff)
 {
-	REAL maxsam = 0.0;
+	float maxsam = 0.0;
 	for (unsigned int i = 0; i < CXBhave(buff); i++)
 		maxsam = max(Cmag(CXBdata(buff, i)), maxsam);
 
@@ -92,18 +92,18 @@ void delCXB(CXB* p)
 //========================================================================
 // return normalization constant
 
-REAL normalize_vec_COMPLEX(COMPLEX* z, unsigned int n)
+float normalize_vec_COMPLEX(COMPLEX* z, unsigned int n)
 {
 	if (z != NULL && n > 0) {
-		REAL big = -MONDO;
+		float big = -MONDO;
 
 		for (unsigned int i = 0; i < n; i++) {
-			REAL a = Cabs(z[i]);
+			float a = Cabs(z[i]);
 			big = max(big, a);
 		}
 
 		if (big > 0.0F) {
-			REAL scl = 1.0F / big;
+			float scl = 1.0F / big;
 
 			for (unsigned int i = 0; i < n; i++)
 				z[i] = Cscl(z[i], scl);

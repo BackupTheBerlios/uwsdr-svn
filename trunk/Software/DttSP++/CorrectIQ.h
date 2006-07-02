@@ -39,20 +39,21 @@ Bridgewater, NJ 08807
 
 class CCorrectIQ {
     public:
-	CCorrectIQ();
+	CCorrectIQ(CXB* buf);
 	virtual ~CCorrectIQ();
 
-	virtual void process(CXB* sigbuf);
+	virtual void process();
 
-	virtual void setPhase(REAL phase);
-	virtual void setGain(REAL gain);
+	virtual void setPhase(float phase);
+	virtual void setGain(float gain);
 
-	virtual REAL getPhase() const;
-	virtual REAL getGain() const;
+	virtual float getPhase() const;
+	virtual float getGain() const;
 
     private:
-	REAL m_phase;
-	REAL m_gain;
+	CXB*  m_buf;
+	float m_phase;
+	float m_gain;
 };
 
 #endif

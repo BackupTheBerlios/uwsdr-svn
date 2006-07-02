@@ -34,7 +34,6 @@ Bridgewater, NJ 08807
 #ifndef _meter_h
 #define _meter_h
 
-#include "DataTypes.h"
 #include "CXB.h"
 
 
@@ -90,25 +89,25 @@ class CMeter {
 	CMeter();
 	virtual ~CMeter();
 
-	virtual void setRXMeter(RXMETERTAP tap, CXB* buf, REAL agcGain);
-	virtual void setTXMeter(TXMETERTYPE type, CXB* buf, REAL alcGain, REAL levelerGain);
+	virtual void setRXMeter(RXMETERTAP tap, CXB* buf, float agcGain);
+	virtual void setTXMeter(TXMETERTYPE type, CXB* buf, float alcGain, float levelerGain);
 
-	virtual REAL getRXMeter(RXMETERTYPE type) const;
-	virtual REAL getTXMeter(TXMETERTYPE type) const;
+	virtual float getRXMeter(RXMETERTYPE type) const;
+	virtual float getTXMeter(TXMETERTYPE type) const;
 
 	virtual void reset();
 
     private:
-    REAL        m_rxval[RXMETERPTS];
+    float       m_rxval[RXMETERPTS];
 	RXMETERTYPE m_rxmode;
-	REAL        m_txval[TXMETERPTS];
+	float       m_txval[TXMETERPTS];
 	TXMETERTYPE m_txmode;
-	REAL        m_micSave;
-	REAL        m_alcSave;
-	REAL        m_eqTapSave;
-	REAL        m_levelerSave;
-	REAL        m_compSave;
-	REAL        m_cpdrSave;
+	float       m_micSave;
+	float       m_alcSave;
+	float       m_eqTapSave;
+	float       m_levelerSave;
+	float       m_compSave;
+	float       m_cpdrSave;
 };
 
 #endif

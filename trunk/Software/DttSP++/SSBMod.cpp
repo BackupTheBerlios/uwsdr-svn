@@ -35,12 +35,10 @@ Bridgewater, NJ 08807
 #include <wx/wx.h>
 
 
-CSSBMod::CSSBMod(CXB* ibuf, CXB* obuf) :
-m_ibuf(ibuf),
-m_obuf(obuf)
+CSSBMod::CSSBMod(CXB* buf) :
+m_buf(buf)
 {
-	wxASSERT(ibuf != NULL);
-	wxASSERT(obuf != NULL);
+	wxASSERT(buf != NULL);
 }
 
 CSSBMod::~CSSBMod()
@@ -49,17 +47,5 @@ CSSBMod::~CSSBMod()
 
 void CSSBMod::modulate()
 {
-	if (m_ibuf == m_obuf) {
-		CXBscl(m_obuf, 2.0F);
-		return;
-	}
-
-	unsigned int n = CXBhave(m_ibuf);
-
-	for (unsigned int i = 0; i < n; i++)
-		CXBdata(m_obuf, i) = CXBdata(m_ibuf, i);
-
-	CXBhave(m_obuf) = n;
-
-	CXBscl(m_obuf, 2.0F);
+	CXBscl(m_buf, 2.0F);
 }

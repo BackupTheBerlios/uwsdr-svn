@@ -41,17 +41,17 @@ Bridgewater, NJ 08807
 #include <wx/wx.h>
 
 
-const REAL EQ_Num_48000[] = {0.99220706371F, -1.98392450292F, 0.99220706371F};
-const REAL EQ_Den_48000[] = {1.98392450292f, -0.98441412742F};
+const float EQ_Num_48000[] = {0.99220706371F, -1.98392450292F, 0.99220706371F};
+const float EQ_Den_48000[] = {1.98392450292f, -0.98441412742F};
 
-const REAL EQ_Num_96000[] = {0.99608835009F, -1.99205381333F, 0.99608835009f};
-const REAL EQ_Den_96000[] =  {1.99205381333F, -0.99217670018F};
+const float EQ_Num_96000[] = {0.99608835009F, -1.99205381333F, 0.99608835009f};
+const float EQ_Den_96000[] =  {1.99205381333F, -0.99217670018F};
 
-const REAL EQ_Num_192000[] = {0.99804034984F, -1.99604991764F, 0.99804034984F};
-const REAL EQ_Den_192000[] = {1.99604991764F, -0.99608069967F};
+const float EQ_Num_192000[] = {0.99804034984F, -1.99604991764F, 0.99804034984F};
+const float EQ_Den_192000[] = {1.99604991764F, -0.99608069967F};
 
 
-CGraphicEQ::CGraphicEQ(CXB* d, REAL sampleRate, unsigned int bits) :
+CGraphicEQ::CGraphicEQ(CXB* d, float sampleRate, unsigned int bits) :
 m_data(d),
 m_sampleRate(sampleRate),
 m_bits(bits),
@@ -117,7 +117,7 @@ bool CGraphicEQ::getNotchFlag() const
 	return m_notchFlag;
 }
 
-void CGraphicEQ::setEQ(REAL preamp, REAL gain0, REAL gain1, REAL gain2)
+void CGraphicEQ::setEQ(float preamp, float gain0, float gain1, float gain2)
 {
 	unsigned int i;
 
@@ -214,7 +214,7 @@ void CGraphicEQ::equalise()
 	}
 }
 
-REAL CGraphicEQ::dB2lin(REAL dB)
+float CGraphicEQ::dB2lin(float dB)
 {
-	return (REAL)::pow(10.0, dB / 20.0);
+	return ::pow(10.0, dB / 20.0);
 }

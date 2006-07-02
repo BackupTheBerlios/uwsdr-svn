@@ -34,7 +34,6 @@ Bridgewater, NJ 08807
 #ifndef _blocklms_h
 #define _blocklms_h
 
-#include "DataTypes.h"
 #include "CXB.h"
 #include "CXOps.h"
 #include "fftw3.h"
@@ -48,17 +47,17 @@ enum {
 
 class CBlockLMS {
     public:
-	CBlockLMS(CXB* signal, REAL adaptationRate, REAL leakRate, unsigned int filterType, unsigned int pbits);
+	CBlockLMS(CXB* signal, float adaptationRate, float leakRate, unsigned int filterType, unsigned int pbits);
 	virtual ~CBlockLMS();
 
-	virtual void setAdaptationRate(REAL adaptationRate);
+	virtual void setAdaptationRate(float adaptationRate);
 
 	virtual void process();
 
     private:
 	CXB*         m_signal;
-	REAL         m_adaptationRate;
-	REAL         m_leakRate;
+	float        m_adaptationRate;
+	float        m_leakRate;
 	unsigned int m_filterType;
 	COMPLEX*     m_delayLine;
 	COMPLEX*     m_y;

@@ -41,7 +41,7 @@ Bridgewater, NJ 08807
 // A/R use sine shaping.
 //------------------------------------------------------------------------
 
-CSpotTone::CSpotTone(REAL gain,	REAL freq, REAL rise, REAL fall, unsigned int size, REAL sampleRate) :
+CSpotTone::CSpotTone(float gain,	float freq, float rise, float fall, unsigned int size, float sampleRate) :
 m_curr(0.0F),
 m_gain(0.0F),
 m_mul(0.0F),
@@ -63,9 +63,9 @@ m_buf(NULL)
 {
 	setValues(gain, freq, rise, fall);
 
-	m_gen = new COscillator(freq, 0.0, sampleRate);
-
 	m_buf = newCXB(size, NULL);
+
+	m_gen = new COscillator(m_buf, freq, 0.0, sampleRate);
 }
 
 CSpotTone::~CSpotTone()
@@ -78,7 +78,7 @@ CSpotTone::~CSpotTone()
 void CSpotTone::on()
 {
 	// gain is in dB
-	m_scl  = (REAL)::pow (10.0, m_gain / 20.0);
+	m_scl  = (float)::pow (10.0, m_gain / 20.0);
 	m_curr = 0.0F;
 	m_mul  = 0.0F;
 
@@ -88,14 +88,14 @@ void CSpotTone::on()
 	if (m_riseWant <= 1)
 		m_riseIncr = 1.0F;
 	else
-		m_riseIncr = 1.0F / REAL(m_riseWant - 1);
+		m_riseIncr = 1.0F / float(m_riseWant - 1);
 
 	m_fallWant = (unsigned int)(0.5 + m_sampleRate * (m_fallDur / 1e3));
 	m_fallHave = 0;
 	if (m_fallWant <= 1)
 		m_fallIncr = 1.0F;
 	else
-		m_fallIncr = 1.0F / REAL(m_fallWant - 1);
+		m_fallIncr = 1.0F / float(m_fallWant - 1);
 
 	// freq is in Hz
 	m_gen->setFrequency(m_freq);
@@ -110,7 +110,7 @@ void CSpotTone::off()
 	m_stage = SpotTone_FALL;
 }
 
-void CSpotTone::setValues(REAL gain, REAL freq, REAL rise, REAL fall)
+void CSpotTone::setValues(float gain, float freq, float rise, float fall)
 {
 	m_gain    = gain;
 	m_freq    = freq;
@@ -120,7 +120,7 @@ void CSpotTone::setValues(REAL gain, REAL freq, REAL rise, REAL fall)
 
 bool CSpotTone::generate()
 {
-	m_gen->oscillate(m_buf);
+	m_gen->oscillate();
 
 	for (unsigned int i = 0; i < m_size; i++) {
 		// in an envelope stage?
@@ -128,7 +128,7 @@ bool CSpotTone::generate()
 			// still going?
 			if (m_riseHave++ < m_riseWant) {
 				m_curr += m_riseIncr;
-				m_mul   = REAL(m_scl * ::sin(m_curr * M_PI / 2.0));
+				m_mul   = float(m_scl * ::sin(m_curr * M_PI / 2.0));
 			} else {
 				// no, assert steady-state, force level
 				m_curr  = 1.0F;
@@ -141,7 +141,7 @@ bool CSpotTone::generate()
 			// still going?
 			if (m_fallHave++ < m_fallWant) {
 				m_curr -= m_fallIncr;
-				m_mul   = REAL(m_scl * ::sin(m_curr * M_PI / 2.0));
+				m_mul   = float(m_scl * ::sin(m_curr * M_PI / 2.0));
 			} else {
 				// no, assert trailing, force level
 				m_curr  = 0.0F;

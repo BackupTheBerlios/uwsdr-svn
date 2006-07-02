@@ -36,24 +36,22 @@ Bridgewater, NJ 08807
 
 #include "Mod.h"
 #include "FromSys.h"
-#include "DataTypes.h"
 #include "Complex.h"
 #include "CXB.h"
 
 
 class CAMMod : public IMod {
     public:
-	CAMMod(REAL level, CXB* in, CXB* out);
+	CAMMod(float level, CXB* buf);
 	virtual ~CAMMod();
 
-	virtual void setCarrierLevel(REAL level);
+	virtual void setCarrierLevel(float level);
 
 	virtual void modulate();
 
     private:
-	REAL m_carrierLevel;
-	CXB* m_input;
-	CXB* m_output;
+	float m_carrierLevel;
+	CXB*  m_buf;
 };
 
 #endif

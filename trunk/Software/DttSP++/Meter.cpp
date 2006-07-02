@@ -74,7 +74,7 @@ void CMeter::reset()
 		m_txval[i] = -200.0F;
 }
 
-void CMeter::setRXMeter(RXMETERTAP tap, CXB* buf, REAL agcGain)
+void CMeter::setRXMeter(RXMETERTAP tap, CXB* buf, float agcGain)
 {
 	wxASSERT(buf != NULL);
 
@@ -83,41 +83,41 @@ void CMeter::setRXMeter(RXMETERTAP tap, CXB* buf, REAL agcGain)
 	unsigned int len = CXBhave(buf);
 	unsigned int i;
 
-	REAL temp1, temp2;
+	float temp1, temp2;
 
 	switch (tap) {
 		case RXMETER_PRE_CONV:
 			temp1 = m_rxval[RX_ADC_REAL];
 			for (i = 0; i < len; i++)
-				temp1 = (REAL)max(::fabs(vec[i].re), temp1);
-			m_rxval[RX_ADC_REAL] = REAL(20.0 * ::log10(temp1 + 1e-10));
+				temp1 = (float)max(::fabs(vec[i].re), temp1);
+			m_rxval[RX_ADC_REAL] = float(20.0 * ::log10(temp1 + 1e-10));
 
 			temp1 = m_rxval[RX_ADC_IMAG];
 			for (i = 0; i < len; i++)
-				temp1 = (REAL)max(::fabs(vec[i].im), temp1);
-			m_rxval[RX_ADC_IMAG] = REAL(20.0 * ::log10(temp1 + 1e-10));
+				temp1 = (float)max(::fabs(vec[i].im), temp1);
+			m_rxval[RX_ADC_IMAG] = float(20.0 * ::log10(temp1 + 1e-10));
 			break;
 
 		case RXMETER_POST_FILT:
 			temp1 = 0.0F;
 			for (i = 0; i < len; i++)
 				temp1 += Csqrmag(vec[i]);
-			// temp1 /= REAL(len);
+			// temp1 /= float(len);
 
-			m_rxval[RX_SIGNAL_STRENGTH] = REAL(10.0 * ::log10(temp1 + 1e-20));
+			m_rxval[RX_SIGNAL_STRENGTH] = float(10.0 * ::log10(temp1 + 1e-20));
 
 			temp1 = m_rxval[RX_SIGNAL_STRENGTH];
 			temp2 = m_rxval[RX_AVG_SIGNAL_STRENGTH];
-			m_rxval[RX_AVG_SIGNAL_STRENGTH] = REAL(0.95 * temp2 + 0.05 * temp1);
+			m_rxval[RX_AVG_SIGNAL_STRENGTH] = float(0.95 * temp2 + 0.05 * temp1);
 			break;
 
 		case RXMETER_POST_AGC:
-			m_rxval[RX_AGC_GAIN] = REAL(20.0 * ::log10(agcGain + 1e-10));
+			m_rxval[RX_AGC_GAIN] = float(20.0 * ::log10(agcGain + 1e-10));
 			break;
 	}
 }
 
-void CMeter::setTXMeter(TXMETERTYPE type, CXB* buf, REAL alcGain, REAL levelerGain)
+void CMeter::setTXMeter(TXMETERTYPE type, CXB* buf, float alcGain, float levelerGain)
 {
 	wxASSERT(buf != NULL);
 
@@ -126,52 +126,52 @@ void CMeter::setTXMeter(TXMETERTYPE type, CXB* buf, REAL alcGain, REAL levelerGa
 	unsigned int len = CXBhave(buf);
 	unsigned int i;
 
-	REAL temp;
+	float temp;
 
 	switch (type) {
 		case TX_MIC:
 			for (i = 0; i < len; i++)
-				m_micSave = REAL(0.9995 * m_micSave + 0.0005 * Csqrmag(vec[i]));
-			m_txval[TX_MIC] = REAL(-10.0 * ::log10(m_micSave + 1e-16));
+				m_micSave = float(0.9995 * m_micSave + 0.0005 * Csqrmag(vec[i]));
+			m_txval[TX_MIC] = float(-10.0 * ::log10(m_micSave + 1e-16));
 			break;
 
 		case TX_PWR:
 			temp = 0.0000001F;
 			for (i = 0;	i < len; i++)
 				temp += Csqrmag(vec[i]);
-			m_txval[TX_PWR] = temp / REAL(len);
+			m_txval[TX_PWR] = temp / float(len);
 			break;
 
 		case TX_ALC:
 			for (i = 0; i < len; i++)
-				m_alcSave = REAL(0.9995 * m_alcSave + 0.0005 * Csqrmag(vec[i]));
-			m_txval[TX_ALC]   = REAL(-10.0 * ::log10(m_alcSave + 1e-16));
-			m_txval[TX_ALC_G] = REAL(20.0 * ::log10(alcGain + 1e-16));
+				m_alcSave = float(0.9995 * m_alcSave + 0.0005 * Csqrmag(vec[i]));
+			m_txval[TX_ALC]   = float(-10.0 * ::log10(m_alcSave + 1e-16));
+			m_txval[TX_ALC_G] = float(20.0 * ::log10(alcGain + 1e-16));
 			break;
 
 		case TX_EQtap:
 			for (i = 0; i < len; i++)
-				m_eqTapSave =	REAL(0.9995 * m_eqTapSave + 0.0005 * Csqrmag(vec[i]));
-			m_txval[TX_EQtap] = REAL(-10.0 * ::log10(m_eqTapSave + 1e-16));
+				m_eqTapSave =	float(0.9995 * m_eqTapSave + 0.0005 * Csqrmag(vec[i]));
+			m_txval[TX_EQtap] = float(-10.0 * ::log10(m_eqTapSave + 1e-16));
 			break;
 
 		case TX_LEVELER:
 			for (i = 0; i < len; i++)
-				m_levelerSave = REAL(0.9995 * m_levelerSave + 0.0005 * Csqrmag(vec[i]));
-			m_txval[TX_LEVELER] = REAL(-10.0 * ::log10(m_levelerSave + 1e-16));
-			m_txval[TX_LVL_G]   = REAL(20.0 * ::log10(levelerGain + 1e-16));
+				m_levelerSave = float(0.9995 * m_levelerSave + 0.0005 * Csqrmag(vec[i]));
+			m_txval[TX_LEVELER] = float(-10.0 * ::log10(m_levelerSave + 1e-16));
+			m_txval[TX_LVL_G]   = float(20.0 * ::log10(levelerGain + 1e-16));
 			break;
 
 		case TX_COMP:
 			for (i = 0; i < len; i++)
-				m_compSave = REAL(0.9995 * m_compSave +	0.0005 * Csqrmag(vec[i]));
-			m_txval[TX_COMP] = REAL(-10.0 * ::log10(m_compSave + 1e-16));
+				m_compSave = float(0.9995 * m_compSave +	0.0005 * Csqrmag(vec[i]));
+			m_txval[TX_COMP] = float(-10.0 * ::log10(m_compSave + 1e-16));
 			break;
 
 		case TX_CPDR:
 			for (i = 0; i < len; i++)
-				m_cpdrSave = REAL(0.9995 * m_cpdrSave + 0.0005 * Csqrmag(vec[i]));
-			m_txval[TX_CPDR] = REAL(-10.0 * ::log10(m_cpdrSave + 1e-16));
+				m_cpdrSave = float(0.9995 * m_cpdrSave + 0.0005 * Csqrmag(vec[i]));
+			m_txval[TX_CPDR] = float(-10.0 * ::log10(m_cpdrSave + 1e-16));
 			break;
 
 		case TX_ALC_G:
@@ -180,12 +180,12 @@ void CMeter::setTXMeter(TXMETERTYPE type, CXB* buf, REAL alcGain, REAL levelerGa
 	}
 }
 
-REAL CMeter::getRXMeter(RXMETERTYPE type) const
+float CMeter::getRXMeter(RXMETERTYPE type) const
 {
 	return m_rxval[type];
 }
 
-REAL CMeter::getTXMeter(TXMETERTYPE type) const
+float CMeter::getTXMeter(TXMETERTYPE type) const
 {
 	return m_txval[type];
 }

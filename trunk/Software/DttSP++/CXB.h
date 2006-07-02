@@ -36,7 +36,6 @@ Bridgewater, NJ 08807
 #ifndef _cxb_h
 #define _cxb_h
 
-#include "DataTypes.h"
 #include "Complex.h"
 #include "CXOps.h"
 
@@ -61,9 +60,9 @@ typedef struct {
 extern CXB* newCXB(unsigned int size, COMPLEX* base);
 extern void delCXB(CXB* p);
 
-extern void CXBscl(CXB* buff, REAL scl);
-extern REAL CXBpeak(CXB* buff);
+extern void CXBscl(CXB* buff, float scl);
+extern float CXBpeak(CXB* buff);
 
-extern REAL normalize_vec_COMPLEX(COMPLEX*, unsigned int n);
+extern float normalize_vec_COMPLEX(COMPLEX*, unsigned int n);
 
 #endif

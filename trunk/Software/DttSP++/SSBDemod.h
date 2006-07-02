@@ -36,7 +36,6 @@ Bridgewater, NJ 08807
 
 #include "Demod.h"
 #include "FromSys.h"
-#include "DataTypes.h"
 #include "Complex.h"
 #include "CXB.h"
 

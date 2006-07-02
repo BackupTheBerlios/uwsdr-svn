@@ -19,8 +19,6 @@
 #ifndef	DttSPExports_H
 #define	DttSPExports_H
 
-typedef float REAL;
-
 typedef enum {
 	LSB,				//  0
 	USB,				//  1
@@ -84,7 +82,7 @@ typedef enum {
 	SPEC_POST_DET
 } SPECTRUMtype;
 
-extern void    Setup_SDR(REAL sampleRate, unsigned int audioSize);
+extern void    Setup_SDR(float sampleRate, unsigned int audioSize);
 extern void    Destroy_SDR();
 extern void    SetMode(SDRMODE m);
 extern void    SetDCBlock(bool setit);
@@ -104,9 +102,9 @@ extern void    SetANF(bool setit);
 extern void    SetBlkANF(bool setit);
 extern void    SetANFvals(unsigned int taps, unsigned int delay, double gain, double leak);
 extern void    SetNB(bool setit);
-extern void    SetNBvals(REAL threshold);
+extern void    SetNBvals(float threshold);
 extern void    SetSDROM(bool setit);
-extern void    SetSDROMvals(REAL threshold);
+extern void    SetSDROMvals(float threshold);
 extern void    SetBIN(bool setit);
 extern void    SetRXAGC(AGCMODE setit);
 extern void    SetTXALCAttack(int attack);
@@ -124,14 +122,13 @@ extern void    SetCorrectTXIQ(double phase, double gain);
 extern void    SetPWSmode(SPECTRUMtype type);
 extern void    SetWindow(Windowtype Windowset);
 extern void    SetSpectrumPolyphase(bool setit);
-extern void    SetTXEQ(int* txeq);
 extern void    SetGrphTXEQ(int* txeq);
 extern void    SetGrphTXEQcmd(bool state);
 extern void    SetNotch160(bool state);
 extern void    SetGrphRXEQ(int* rxeq);
 extern void    SetGrphRXEQcmd(bool state);
 extern void    SetTXAGCFF(bool setit);
-extern void    SetTXAGCFFCompression(REAL txc);
+extern void    SetTXAGCFFCompression(float txc);
 extern void    SetSquelchVal(float setit);
 extern void    SetSquelchState(bool setit);
 extern void    SetTRX(TRXMODE setit);

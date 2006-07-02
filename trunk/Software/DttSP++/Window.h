@@ -35,7 +35,6 @@ Bridgewater, NJ 08807
 #ifndef _window_h
 #define _window_h
 
-#include "DataTypes.h"
 #include "FromSys.h"
 
 
@@ -59,7 +58,7 @@ typedef enum {
 class CWindow {
     public:
 
-	static REAL* create(Windowtype type, unsigned int size, REAL* window = NULL);
+	static float* create(Windowtype type, unsigned int size, float* window = NULL);
 
     private:
 };

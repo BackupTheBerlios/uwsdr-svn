@@ -34,27 +34,26 @@ Bridgewater, NJ 08807
 #ifndef _speechproc_h
 #define _speechproc_h
 
-#include "DataTypes.h"
 #include "Complex.h"
 #include "CXB.h"
 
 
 class CSpeechProc {
     public:
-	CSpeechProc(REAL k, REAL maxCompression, CXB* spdat);
+	CSpeechProc(float k, float maxCompression, CXB* spdat);
 	virtual ~CSpeechProc();
 
-	virtual void setCompression(REAL compression);
+	virtual void setCompression(float compression);
 
 	virtual void process();
 
     private:
-	REAL* m_CG;
-	CXB*  m_buf;
-	REAL  m_lastCG;
-	REAL  m_k;
-	REAL  m_maxGain;
-	REAL  m_fac;
+	float* m_CG;
+	CXB*   m_buf;
+	float  m_lastCG;
+	float  m_k;
+	float  m_maxGain;
+	float  m_fac;
 };
 
 #endif

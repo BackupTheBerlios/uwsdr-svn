@@ -36,21 +36,19 @@ Bridgewater, NJ 08807
 
 #include "Mod.h"
 #include "FromSys.h"
-#include "DataTypes.h"
 #include "Complex.h"
 #include "CXB.h"
 
 
 class CSSBMod : public IMod {
     public:
-	CSSBMod(CXB* ibuf, CXB* obuf);
+	CSSBMod(CXB* buf);
 	virtual ~CSSBMod();
 
 	virtual void modulate();
 
     private:
-	CXB* m_ibuf;
-	CXB* m_obuf;
+	CXB* m_buf;
 };
 
 #endif

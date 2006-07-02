@@ -199,6 +199,10 @@ SOURCE=.\thunk.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\TX.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\update.cpp
 # End Source File
 # Begin Source File
@@ -252,10 +256,6 @@ SOURCE=.\CXB.h
 # Begin Source File
 
 SOURCE=.\CXOps.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\DataTypes.h
 # End Source File
 # Begin Source File
 
@@ -335,7 +335,7 @@ SOURCE=.\SpeechProc.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\spottone.h
+SOURCE=.\SpotTone.h
 # End Source File
 # Begin Source File
 
@@ -355,7 +355,7 @@ SOURCE=.\thunk.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\update.h
+SOURCE=.\TX.h
 # End Source File
 # Begin Source File
 

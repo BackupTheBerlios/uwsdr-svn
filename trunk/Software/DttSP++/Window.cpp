@@ -51,24 +51,24 @@ Bridgewater, NJ 08807
  * JOS had slightly different numbers for the Blackman-Harris windows.
  */
 
-REAL* CWindow::create(Windowtype type, unsigned int size, REAL* window)
+float* CWindow::create(Windowtype type, unsigned int size, float* window)
 {
 	unsigned int i, j;
-	REAL sr1;
+	float sr1;
 
 	unsigned int midn = size >> 1;
 	unsigned int midp1 = (size + 1) / 2;
 	unsigned int midm1 = (size - 1) / 2;
 
-	REAL freq = REAL(TWOPI / REAL(size));
-	REAL rate = 1.0F / REAL(midn);
-	REAL angle = 0.0F;
-	REAL expn = REAL(::log(2.0) / REAL(midn + 1));
-	REAL expsum = 1.0F;
+	float freq = float(TWOPI / float(size));
+	float rate = 1.0F / float(midn);
+	float angle = 0.0F;
+	float expn = float(::log(2.0) / float(midn + 1));
+	float expsum = 1.0F;
 
 	if (window == NULL)
-		window = new REAL[size];
-	::memset(window, 0x00, size * sizeof(REAL));
+		window = new float[size];
+	::memset(window, 0x00, size * sizeof(float));
 
 	switch (type) {
 		case RECTANGULAR_WINDOW:
@@ -78,17 +78,17 @@ REAL* CWindow::create(Windowtype type, unsigned int size, REAL* window)
 
 		case HANN_WINDOW:
 			for (i = 0, j = size - 1, angle = 0.0; i <= midn; i++, j--, angle += freq)
-				window[j] = window[i] = REAL(0.5 - 0.5 * ::cos(angle));
+				window[j] = window[i] = float(0.5 - 0.5 * ::cos(angle));
 			break;
 
 		case WELCH_WINDOW:
 			for (i = 0, j = size - 1; i <= midn; i++, j--)
-				window[j] = window[i] = REAL(1.0 - ::sqr(REAL(i - midm1) / REAL(midp1)));
+				window[j] = window[i] = float(1.0 - ::sqr(float(i - midm1) / float(midp1)));
 			break;
 
 		case PARZEN_WINDOW:
 			for (i = 0, j = size - 1; i <= midn; i++, j--)
-				window[j] = window[i] = REAL(1.0 - ::fabs(REAL(i - midm1) / REAL(midp1)));
+				window[j] = window[i] = float(1.0 - ::fabs(float(i - midm1) / float(midp1)));
 			break;
 
 		case BARTLETT_WINDOW:
@@ -98,72 +98,72 @@ REAL* CWindow::create(Windowtype type, unsigned int size, REAL* window)
 
 		case HAMMING_WINDOW:
 			for (i = 0, j = size - 1, angle = 0.0; i <= midn; i++, j--, angle += freq)
-				window[j] = window[i] = REAL(0.54 - 0.46 * ::cos(angle));
+				window[j] = window[i] = float(0.54 - 0.46 * ::cos(angle));
 			break;
 
 		case BLACKMAN2_WINDOW:	/* using Chebyshev polynomial equivalents here */
 			for (i = 0, j = size - 1, angle = 0.0; i <= midn; i++, j--, angle += freq) {
-				REAL cx = (REAL)::cos(angle);
-				window[j] = window[i] = REAL(0.34401 + (cx * (-0.49755 + (cx * 0.15844))));
+				float cx = (float)::cos(angle);
+				window[j] = window[i] = float(0.34401 + (cx * (-0.49755 + (cx * 0.15844))));
 			}
 			break;
 
 		case BLACKMAN3_WINDOW:
 			for (i = 0, j = size - 1, angle = 0.0; i <= midn; i++, j--, angle += freq) {
-				REAL cx = (REAL)::cos(angle);
-				window[j] = window[i] = REAL(0.21747 + (cx * (-0.45325 + (cx * (0.28256 - (cx * 0.04672))))));
+				float cx = (float)::cos(angle);
+				window[j] = window[i] = float(0.21747 + (cx * (-0.45325 + (cx * (0.28256 - (cx * 0.04672))))));
 			}
 			break;
 
 	    case BLACKMAN4_WINDOW:
 			for (i = 0, j = size - 1, angle = 0.0; i <= midn; i++, j--, angle += freq) {
-				REAL cx = (REAL)::cos(angle);
-				window[j] = window[i] = REAL(0.084037 + (cx * (-0.29145 + (cx * (0.375696 + (cx * (-0.20762 + (cx * 0.041194))))))));
+				float cx = (float)::cos(angle);
+				window[j] = window[i] = float(0.084037 + (cx * (-0.29145 + (cx * (0.375696 + (cx * (-0.20762 + (cx * 0.041194))))))));
 			}
 			break;
 
 		case EXPONENTIAL_WINDOW:
 			for (i = 0, j = size - 1; i <= midn; i++, j--) {
-				window[j] = window[i] = REAL(expsum - 1.0);
+				window[j] = window[i] = float(expsum - 1.0);
 				expsum *= expn;
 			}
 			break;
 
 		case RIEMANN_WINDOW:
-			sr1 = REAL(TWOPI / REAL(size));
+			sr1 = float(TWOPI / float(size));
 			for (i = 0, j = size - 1; i <= midn; i++, j--) {
 				if (i == midn) {
 					window[j] = window[i] = 1.0F;
 				} else {
-					REAL cx = sr1 * REAL(midn - i);
-					window[j] = window[i] = REAL(::sin(cx) / cx);
+					float cx = sr1 * float(midn - i);
+					window[j] = window[i] = float(::sin(cx) / cx);
 				}
 			}
 			break;
 
 		case BLACKMANHARRIS_WINDOW: {
-				const REAL a0 = 0.35875F;
-				const REAL a1 = 0.48829F;
-				const REAL a2 = 0.14128F;
-				const REAL a3 = 0.01168F;
+				const float a0 = 0.35875F;
+				const float a1 = 0.48829F;
+				const float a2 = 0.14128F;
+				const float a3 = 0.01168F;
 
 				for (i = 0; i < size; i++)
-					window[i] = REAL(a0 - a1 * (REAL)::cos(      TWOPI * REAL(i + 0.5F) / REAL(size - 1)) +
-										  a2 * (REAL)::cos(2.0 * TWOPI * REAL(i + 0.5F) / REAL(size - 1)) -
-										  a3 * (REAL)::cos(3.0 * TWOPI * REAL(i + 0.5F) / REAL(size - 1)));
+					window[i] = float(a0 - a1 * (float)::cos(      TWOPI * float(i + 0.5F) / float(size - 1)) +
+										   a2 * (float)::cos(2.0 * TWOPI * float(i + 0.5F) / float(size - 1)) -
+										   a3 * (float)::cos(3.0 * TWOPI * float(i + 0.5F) / float(size - 1)));
 			}
 			break;
 
 		case NUTTALL_WINDOW: {
-				const REAL a0 = 0.3635819F;
-				const REAL a1 = 0.4891775F;
-				const REAL a2 = 0.1365995F;
-				const REAL a3 = 0.0106411F;
+				const float a0 = 0.3635819F;
+				const float a1 = 0.4891775F;
+				const float a2 = 0.1365995F;
+				const float a3 = 0.0106411F;
 
 				for (i = 0; i < size; i++)
-					window[i] = REAL(a0 - a1 * (REAL)::cos(      TWOPI * REAL(i + 0.5) / REAL(size - 1)) +
-										  a2 * (REAL)::cos(2.0 * TWOPI * REAL(i + 0.5) / REAL(size - 1)) -
-										  a3 * (REAL)::cos(3.0 * TWOPI * REAL(i + 0.5) / REAL(size - 1)));
+					window[i] = float(a0 - a1 * (float)::cos(      TWOPI * float(i + 0.5) / float(size - 1)) +
+										   a2 * (float)::cos(2.0 * TWOPI * float(i + 0.5) / float(size - 1)) -
+										   a3 * (float)::cos(3.0 * TWOPI * float(i + 0.5) / float(size - 1)));
 			}
 			break;
 

@@ -36,26 +36,24 @@ Bridgewater, NJ 08807
 
 #include "Mod.h"
 #include "FromSys.h"
-#include "DataTypes.h"
 #include "Complex.h"
 #include "CXB.h"
 
 
 class CFMMod : public IMod {
     public:
-	CFMMod(REAL sampleRate, REAL deviation, CXB* input, CXB* output);
+	CFMMod(float sampleRate, float deviation, CXB* buf);
 	virtual ~CFMMod();
 
-	virtual void setDeviation(REAL val);
+	virtual void setDeviation(float val);
 
 	virtual void modulate();
 
     private:
-	REAL m_sampleRate;
-	REAL m_deviation;
-	CXB* m_input;
-	CXB* m_output;
-	REAL m_phase;
+	float m_sampleRate;
+	float m_deviation;
+	CXB*  m_buf;
+	float m_phase;
 };
 
 #endif

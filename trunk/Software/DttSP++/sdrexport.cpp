@@ -36,5 +36,5 @@ Bridgewater, NJ 08807
 
 struct _uni uni;
 struct _rx rx;
-struct _tx tx;
+CTX* tx;
 struct _top top;

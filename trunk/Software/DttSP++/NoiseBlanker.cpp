@@ -37,7 +37,7 @@ Bridgewater, NJ 08807
 #include <wx/wx.h>
 
 
-CNoiseBlanker::CNoiseBlanker(CXB* sigbuf, REAL threshold) :
+CNoiseBlanker::CNoiseBlanker(CXB* sigbuf, float threshold) :
 m_sigbuf(sigbuf),
 m_threshold(threshold),
 m_aveSig(),
@@ -56,12 +56,12 @@ CNoiseBlanker::~CNoiseBlanker()
 {
 }
 
-REAL CNoiseBlanker::getThreshold() const
+float CNoiseBlanker::getThreshold() const
 {
 	return m_threshold;
 }
 
-void CNoiseBlanker::setThreshold(REAL threshold)
+void CNoiseBlanker::setThreshold(float threshold)
 {
 	m_threshold = threshold;
 }
@@ -71,7 +71,7 @@ void CNoiseBlanker::blank()
 	unsigned int n = CXBhave(m_sigbuf);
 
 	for (unsigned int i = 0; i < n; i++) {
-		REAL cmag = Cmag(CXBdata(m_sigbuf, i));
+		float cmag = Cmag(CXBdata(m_sigbuf, i));
 
 		m_delay[m_sigIndex] = CXBdata(m_sigbuf, i);
 		m_aveMag = 0.999F * m_aveMag + 0.001F * cmag;
@@ -96,7 +96,7 @@ void CNoiseBlanker::sdromBlank()
 	unsigned int n = CXBhave(m_sigbuf);
 
 	for (unsigned int i = 0; i < n; i++) {
-		REAL cmag = Cmag(CXBdata(m_sigbuf, i));
+		float cmag = Cmag(CXBdata(m_sigbuf, i));
 
 		m_aveSig = Cadd(Cscl(m_aveSig, 0.75),
 

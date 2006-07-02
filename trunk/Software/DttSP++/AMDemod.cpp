@@ -36,7 +36,7 @@ Bridgewater, NJ 08807
 #include <wx/wx.h>
 
 
-CAMDemod::CAMDemod(REAL samprate, REAL f_initial, REAL f_lobound, REAL f_hibound, REAL f_bandwid, CXB* ivec, CXB* ovec, AMMode mode) :
+CAMDemod::CAMDemod(float samprate, float f_initial, float f_lobound, float f_hibound, float f_bandwid, CXB* ivec, CXB* ovec, AMMode mode) :
 m_ibuf(ivec),
 m_obuf(ovec),
 m_pllAlpha(0.0F),
@@ -58,7 +58,7 @@ m_mode(mode)
 	wxASSERT(ivec != NULL);
 	wxASSERT(ovec != NULL);
 
-	REAL fac = REAL(TWOPI / samprate);
+	float fac = float(TWOPI / samprate);
 
 	m_pllFreqF = f_initial * fac;
 	m_pllFreqL = f_lobound * fac;
@@ -93,7 +93,7 @@ void CAMDemod::demodulate()
 		case SAMdet:
 			for (i = 0; i < n; i++) {
 				pll(CXBdata(m_ibuf, i));
-				REAL demout = dem();
+				float demout = dem();
 
 				CXBdata(m_obuf, i) = Cmplx(demout, demout);
 			}
@@ -115,12 +115,12 @@ void CAMDemod::demodulate()
 
 void CAMDemod::pll(COMPLEX sig)
 {
-	COMPLEX z = Cmplx((REAL)::cos(m_pllPhase), (REAL)::sin(m_pllPhase));
+	COMPLEX z = Cmplx((float)::cos(m_pllPhase), (float)::sin(m_pllPhase));
 
 	m_pllDelay.re =  z.re * sig.re + z.im * sig.im;
 	m_pllDelay.im = -z.im * sig.re + z.re * sig.im;
 
-	REAL diff = Cmag(sig) * (REAL)::atan2(m_pllDelay.im, m_pllDelay.re);
+	float diff = Cmag(sig) * (float)::atan2(m_pllDelay.im, m_pllDelay.re);
 
 	m_pllFreqF += m_pllBeta * diff;
 
@@ -132,15 +132,15 @@ void CAMDemod::pll(COMPLEX sig)
 	m_pllPhase += m_pllFreqF + m_pllAlpha * diff;
 
 	while (m_pllPhase >= TWOPI)
-		m_pllPhase -= (REAL) TWOPI;
+		m_pllPhase -= (float) TWOPI;
 
 	while (m_pllPhase < 0.0F)
-		m_pllPhase += (REAL) TWOPI;
+		m_pllPhase += (float) TWOPI;
 }
 
-REAL CAMDemod::dem()
+float CAMDemod::dem()
 {
-	m_lockCurr = REAL(0.999 * m_lockCurr + 0.001 * ::fabs(m_pllDelay.im));
+	m_lockCurr = float(0.999 * m_lockCurr + 0.001 * ::fabs(m_pllDelay.im));
 
 	m_lockPrev = m_lockCurr;
 

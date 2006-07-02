@@ -38,9 +38,9 @@ Bridgewater, NJ 08807
 #include <wx/wx.h>
 
 
-CAGC::CAGC(AGCMODE mode, CXB* buff, REAL limit, REAL attack,
-		   REAL decay, REAL slope, REAL hangtime, REAL samprate, REAL maxGain,
-		   REAL minGain, REAL curGain) :
+CAGC::CAGC(AGCMODE mode, CXB* buff, float limit, float attack,
+		   float decay, float slope, float hangtime, float samprate, float maxGain,
+		   float minGain, float curGain) :
 m_mode(mode),
 m_samprate(samprate),
 m_gainTop(maxGain),
@@ -75,17 +75,17 @@ m_fastHang(0)			//wa6ahl:  added to structure
 
 	m_mask = 2 * CXBsize(buff);
 
-	m_attack     = REAL(1.0 - ::exp(-1000.0 / (attack * samprate)));
-	m_oneMAttack = (REAL)::exp(-1000.0 / (attack * samprate));
+	m_attack     = float(1.0 - ::exp(-1000.0 / (attack * samprate)));
+	m_oneMAttack = (float)::exp(-1000.0 / (attack * samprate));
 
-	m_decay     = REAL(1.0 - ::exp(-1000.0 / (decay * samprate)));
-	m_oneMDecay = (REAL)::exp(-1000.0 / (decay * samprate));
+	m_decay     = float(1.0 - ::exp(-1000.0 / (decay * samprate)));
+	m_oneMDecay = (float)::exp(-1000.0 / (decay * samprate));
 
-	m_fastAttack     = REAL(1.0 - ::exp(-1000.0 / (0.2 * samprate)));
-	m_oneMFastAttack = (REAL)::exp(-1000.0 / (0.2 * samprate));
+	m_fastAttack     = float(1.0 - ::exp(-1000.0 / (0.2 * samprate)));
+	m_oneMFastAttack = (float)::exp(-1000.0 / (0.2 * samprate));
 
-	m_fastDecay     = REAL(1.0 - ::exp(-1000.0 / (3.0 * samprate)));
-	m_oneMFastDecay = (REAL)::exp(-1000.0 / (3.0 * samprate));
+	m_fastDecay     = float(1.0 - ::exp(-1000.0 / (3.0 * samprate)));
+	m_oneMFastDecay = (float)::exp(-1000.0 / (3.0 * samprate));
 
 	m_sndex = (unsigned int)(samprate * attack * 0.003F);
 
@@ -108,7 +108,7 @@ void CAGC::process()
 	unsigned int hangTime     = (unsigned int)(m_samprate * m_hangTime);
 	unsigned int fastHangTime = (unsigned int)(m_samprate * m_fastHangTime);
 
-	REAL hangThresh = 0.0F;
+	float hangThresh = 0.0F;
 
 	if (m_hangThresh > 0.0F)
 		hangThresh = m_gainTop * m_hangThresh + m_gainBottom * (1.0F - m_hangThresh);
@@ -122,7 +122,7 @@ void CAGC::process()
 
 	for (unsigned int i = 0; i < n; i++) {
 		m_circ[m_index] = CXBdata(m_buff, i);	/* Drop sample into circular buffer */
-		REAL tmp = 1.1F * Cmag(m_circ[m_index]);
+		float tmp = 1.1F * Cmag(m_circ[m_index]);
 
 		if (tmp != 0.0F)
 			tmp = m_gainLimit / tmp;	// if not zero sample, calculate gain
@@ -167,12 +167,12 @@ void CAGC::process()
 	}
 }
 
-REAL CAGC::getGain() const
+float CAGC::getGain() const
 {
 	return m_gainNow;
 }
 
-void CAGC::setGain(REAL gain)
+void CAGC::setGain(float gain)
 {
 	m_gainNow = gain;
 }
@@ -185,7 +185,7 @@ AGCMODE CAGC::getMode() const
 void CAGC::setMode(AGCMODE mode)
 {
 	m_mode = mode;
-	m_attack = REAL(1.0 - ::exp(-500.0 / m_samprate));
+	m_attack = float(1.0 - ::exp(-500.0 / m_samprate));
 	m_oneMAttack = 1.0F - m_attack;
 	m_hangIndex = 0;
 	m_index = 0;
@@ -199,28 +199,28 @@ void CAGC::setMode(AGCMODE mode)
 		case agcSLOW:
 			m_hangTime = 0.5F;
 			m_fastHangTime = 0.1F;
-			m_decay = REAL(1.0 - ::exp(-2.0 / m_samprate));
+			m_decay = float(1.0 - ::exp(-2.0 / m_samprate));
 			m_oneMDecay = 1.0F - m_decay;
 			break;
 
 		case agcMED:
 			m_hangTime = 0.25F;
 			m_fastHangTime = 0.1F;
-			m_decay = REAL(1.0 - ::exp(-4.0 / m_samprate));
+			m_decay = float(1.0 - ::exp(-4.0 / m_samprate));
 			m_oneMDecay = 1.0F - m_decay;
 			break;
 
 		case agcFAST:
 			m_hangTime = 0.1F;
 			m_fastHangTime = 0.1F;
-			m_decay = REAL(1.0 - ::exp(-10.0 / m_samprate));
+			m_decay = float(1.0 - ::exp(-10.0 / m_samprate));
 			m_oneMDecay = 1.0F - m_decay;
 			break;
 
 		case agcLONG:
 			m_hangTime = 0.75F;
 			m_fastHangTime = 0.1F;
-			m_decay = REAL(1.0 - ::exp(-0.5 / m_samprate));
+			m_decay = float(1.0 - ::exp(-0.5 / m_samprate));
 			m_oneMDecay = 1.0F - m_decay;
 			break;
     }

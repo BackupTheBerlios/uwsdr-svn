@@ -34,7 +34,6 @@ Bridgewater, NJ 08807
 #ifndef _compand_h
 #define _compand_h
 
-#include "DataTypes.h"
 #include "CXB.h"
 
 
@@ -43,22 +42,22 @@ Bridgewater, NJ 08807
 
 class CCompand {
     public:
-	CCompand(unsigned int npts, REAL fac, CXB* buff);
+	CCompand(unsigned int npts, float fac, CXB* buff);
 	virtual ~CCompand();
 
 	virtual void process();
 
-	virtual REAL getFactor() const;
-	virtual void setFactor(REAL fac);
+	virtual float getFactor() const;
+	virtual void  setFactor(float fac);
 
     private:
 	unsigned int m_npts;
 	unsigned int m_nend;
-	REAL         m_fac;
-	REAL*        m_tbl;
+	float        m_fac;
+	float*       m_tbl;
 	CXB*         m_buff;
 
-	REAL lookup(REAL x);
+	float lookup(float x);
 };
 
 #endif

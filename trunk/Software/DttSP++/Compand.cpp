@@ -42,7 +42,7 @@ Bridgewater, NJ 08807
 // fac < 0: compression
 // fac > 0: expansion
 
-CCompand::CCompand(unsigned int npts, REAL fac, CXB* buff) :
+CCompand::CCompand(unsigned int npts, float fac, CXB* buff) :
 m_npts(npts),
 m_nend(npts - 1),
 m_fac(fac),
@@ -52,8 +52,8 @@ m_buff(buff)
 	wxASSERT(npts > 1);
 	wxASSERT(buff != NULL);
 
-	m_tbl  = new REAL[npts];
-	::memset(m_tbl, 0x00, npts * sizeof(REAL));
+	m_tbl  = new float[npts];
+	::memset(m_tbl, 0x00, npts * sizeof(float));
 
 	setFactor(fac);
 }
@@ -70,48 +70,48 @@ void CCompand::process()
 	for (unsigned int i = 0; i < n; i++) {
 		COMPLEX val = CXBdata(m_buff, i);
 
-		REAL mag = Cmag(val);
-		REAL scl = lookup(mag);
+		float mag = Cmag(val);
+		float scl = lookup(mag);
 
 		CXBdata(m_buff, i) = Cscl(val, 0.8F * scl);
 	}
 }
 
-REAL CCompand::getFactor() const
+float CCompand::getFactor() const
 {
 	return m_fac;
 }
 
-void CCompand::setFactor(REAL fac)
+void CCompand::setFactor(float fac)
 {
 	wxASSERT(m_tbl != NULL);
 
 	if (fac == 0.0F) {	// just linear
 		for (unsigned int i = 0; i < m_npts; i++)
-			m_tbl[i] = REAL(i) / REAL(m_nend);
+			m_tbl[i] = float(i) / float(m_nend);
 	} else {				// exponential
-		REAL del = fac / REAL(m_nend);
-		REAL scl = REAL(1.0F - ::exp(fac));
+		float del = fac / float(m_nend);
+		float scl = float(1.0 - ::exp(fac));
 
 		for (unsigned int i = 0; i < m_npts; i++)
-			m_tbl[i] = REAL((1.0 - ::exp(REAL(i) * del)) / scl);
+			m_tbl[i] = float((1.0 - ::exp(float(i) * del)) / scl);
 	}
 
 	m_fac = fac;
 }
 
-REAL CCompand::lookup(REAL x)
+float CCompand::lookup(float x)
 {
 	wxASSERT(m_tbl != NULL);
 
 	if (x <= 0.0F) 
 		return 0.0F;
 
-	REAL d = x - ::floor(x);
+	float d = x - ::floor(x);
 
 	unsigned int i = (unsigned int)(x * m_npts);
 
-	REAL y;
+	float y;
 	if (i < m_nend)
 		y = m_tbl[i] + d * (m_tbl[i + 1] - m_tbl[i]);
 	else

@@ -43,49 +43,49 @@ Bridgewater, NJ 08807
 
 ////////////////////////////////////////////////////////////////////////////
 
-static REAL inline
-dB2lin (REAL dB)
+static float inline
+dB2lin (float dB)
 {
-  return (REAL) pow (10.0, (REAL) dB / 20.0);
+  return (float) pow (10.0, (float) dB / 20.0);
 }
 
 #ifdef notdef
 static int
 setTXALCAttack (int n, char **p)
 {
-  REAL tmp = (REAL) atof (p[0]);
-  tx.alc.gen->attack = (REAL) (1.0 - exp (-1000.0 / (tmp * uni.samplerate)));
-  tx.alc.gen->one_m_attack = (REAL) exp (-1000.0 / (tmp * uni.samplerate));
+  float tmp = (float) atof (p[0]);
+  tx.alc.gen->attack = (float) (1.0 - exp (-1000.0 / (tmp * uni.samplerate)));
+  tx.alc.gen->one_m_attack = (float) exp (-1000.0 / (tmp * uni.samplerate));
   tx.alc.gen->sndx =
     (tx.alc.gen->indx +
      (int) (0.003 * uni.samplerate * tmp)) & tx.alc.gen->mask;
   tx.alc.gen->fastindx =
     (tx.alc.gen->sndx + FASTLEAD * tx.alc.gen->mask) & tx.alc.gen->mask;
-  tx.alc.gen->fasthangtime = (REAL) 0.1;
+  tx.alc.gen->fasthangtime = (float) 0.1;
   return 0;
 }
 
 static int
 setTXALCDecay (int n, char **p)
 {
-  REAL tmp = (REAL) atof (p[0]);
-  tx.alc.gen->decay = (REAL) (1.0 - exp (-1000.0 / (tmp * uni.samplerate)));
-  tx.alc.gen->one_m_decay = (REAL) exp (-1000.0 / (tmp * uni.samplerate));
+  float tmp = (float) atof (p[0]);
+  tx.alc.gen->decay = (float) (1.0 - exp (-1000.0 / (tmp * uni.samplerate)));
+  tx.alc.gen->one_m_decay = (float) exp (-1000.0 / (tmp * uni.samplerate));
   return 0;
 }
 
 static int
 setTXALCHang (int n, char **p)
 {
-  REAL hang = (REAL) atof (p[0]);
-  tx.alc.gen->hangtime = (REAL) 0.001 *hang;
+  float hang = (float) atof (p[0]);
+  tx.alc.gen->hangtime = (float) 0.001 *hang;
   return 0;
 }
 
 static int
 setTXALCBot (int n, char **p)
 {
-  REAL bot = (REAL) atof (p[0]);
+  float bot = (float) atof (p[0]);
   tx.alc.gen->gain.bottom = bot;
   return 0;
 }
@@ -93,40 +93,40 @@ setTXALCBot (int n, char **p)
 static int
 setTXLevelerAttack (int n, char **p)
 {
-  REAL tmp = (REAL) atof (p[0]);
+  float tmp = (float) atof (p[0]);
   tx.leveler.gen->attack =
-    (REAL) (1.0 - exp (-1000.0 / (tmp * uni.samplerate)));
+    (float) (1.0 - exp (-1000.0 / (tmp * uni.samplerate)));
   tx.leveler.gen->one_m_attack =
-    (REAL) exp (-1000.0 / (tmp * uni.samplerate));
+    (float) exp (-1000.0 / (tmp * uni.samplerate));
   tx.leveler.gen->sndx =
     (tx.leveler.gen->indx +
      (int) (0.003 * uni.samplerate * tmp)) & tx.leveler.gen->mask;
   tx.leveler.gen->fastindx =
     (tx.leveler.gen->sndx +
      FASTLEAD * tx.leveler.gen->mask) & tx.leveler.gen->mask;
-  tx.leveler.gen->fasthangtime = (REAL) 0.1;	//wa6ahl: 100 ms
+  tx.leveler.gen->fasthangtime = (float) 0.1;	//wa6ahl: 100 ms
   return 0;
 }
 
 static int setTXLevelerDecay(int n, char **p)
 {
-  REAL tmp = (REAL) atof (p[0]);
+  float tmp = (float) atof (p[0]);
   tx.leveler.gen->decay =
-    (REAL) (1.0 - exp (-1000.0 / (tmp * uni.samplerate)));
-  tx.leveler.gen->one_m_decay = (REAL) exp (-1000.0 / (tmp * uni.samplerate));
+    (float) (1.0 - exp (-1000.0 / (tmp * uni.samplerate)));
+  tx.leveler.gen->one_m_decay = (float) exp (-1000.0 / (tmp * uni.samplerate));
   return 0;
 }
 
 static int setTXLevelerTop(int n, char **p)
 {
-	tx.leveler.gen->gain.top = REAL(::atof(p[0]));
+	tx.leveler.gen->gain.top = float(::atof(p[0]));
 	return 0;
 }
 
 static int setTXLevelerHang(int n, char **p)
 {
-  REAL hang = (REAL) atof (p[0]);
-  tx.leveler.gen->hangtime = (REAL) 0.001 *hang;
+  float hang = (float) atof (p[0]);
+  tx.leveler.gen->hangtime = (float) 0.001 *hang;
   return 0;
 }
 
@@ -134,7 +134,7 @@ static int setTXLevelerHang(int n, char **p)
 static int
 setTXAGCLimit (int n, char **p)
 {
-  REAL limit = (REAL) atof (p[0]);
+  float limit = (float) atof (p[0]);
   tx.alc.gen->gain.top = limit;
   return 0;
 }
@@ -155,20 +155,20 @@ setRingBufferReset (int n, char **p)
 static int
 setRXPan (int n, char **p)
 {
-  REAL pos, theta;
+  float pos, theta;
   if (n < 1)
     {
       pos = 0.5;
-      theta = (REAL) ((1.0 - pos) * M_PI / 2.0);
-      rx.azim = Cmplx ((REAL) cos (theta), (REAL) sin (theta));
+      theta = (float) ((1.0 - pos) * M_PI / 2.0);
+      rx.azim = Cmplx ((float) cos (theta), (float) sin (theta));
       return 0;
     }
   else
     {
-      if ((pos = (REAL) atof (p[0])) < 0.0 || pos > 1.0)
+      if ((pos = (float) atof (p[0])) < 0.0 || pos > 1.0)
 	return -1;
-      theta = (REAL) ((1.0 - pos) * M_PI / 2.0);
-      rx.azim = Cmplx ((REAL) cos (theta), (REAL) sin (theta));
+      theta = (float) ((1.0 - pos) * M_PI / 2.0);
+      rx.azim = Cmplx ((float) cos (theta), (float) sin (theta));
       return 0;
     }
 }
@@ -259,7 +259,8 @@ void SetMode(SDRMODE m)
 {
 	top.sync.upd.sem->Wait();
 
-	tx.mode = rx.mode = uni.mode.sdr = m;
+	tx->setMode(m);
+	rx.mode = uni.mode.sdr = m;
 
 	if (rx.mode == AM)
 		rx.am->setMode(AMdet);
@@ -271,7 +272,7 @@ void SetMode(SDRMODE m)
 
 void SetDCBlock(bool setit)
 {
-	tx.dcb.flag = setit;
+	tx->setDCBlockFlag(setit);
 }
 
 void SetFilter(double low_frequency, double high_frequency, int taps, TRXMODE trx)
@@ -280,7 +281,7 @@ void SetFilter(double low_frequency, double high_frequency, int taps, TRXMODE tr
 
 	switch (trx) {
 		case TX:
-			tx.filt->setFilter(low_frequency, high_frequency);
+			tx->setFilter(low_frequency, high_frequency);
 			break;
 		case RX:
 			rx.filt->setFilter(low_frequency, high_frequency);
@@ -314,7 +315,7 @@ void SetTXOsc(double newfreq)
 	if (::fabs(newfreq) >= 0.5 * uni.samplerate)
 		return;
 
-	tx.osc.gen->setFrequency(newfreq);
+	tx->setFrequency(newfreq);
 }
 
 void SetNR(bool setit)
@@ -339,22 +340,22 @@ void SetNRvals(unsigned int taps, unsigned int delay, double gain, double leak)
 
 void SetTXCompandSt(bool setit)
 {
-	tx.cpd.flag = setit;
+	tx->setCompandFlag(setit);
 }
 
 void SetTXCompand(double setit)
 {
-	tx.cpd.gen->setFactor(-setit);
+	tx->setCompandFactor(-setit);
 }
 
 void SetTXSquelchSt(bool setit)
 {
-	tx.squelch.gen->setFlag(setit);
+	tx->setSquelchFlag(setit);
 }
 
 void SetTXSquelchVal(float setit)
 {
-	tx.squelch.gen->setThreshold(setit);
+	tx->setSquelchThreshold(setit);
 }
 
 void SetANF(bool setit)
@@ -382,7 +383,7 @@ void SetNB(bool setit)
 	rx.nb.flag = setit;
 }
 
-void SetNBvals(REAL threshold)
+void SetNBvals(float threshold)
 {
 	rx.nb.gen->setThreshold(threshold);
 }
@@ -392,7 +393,7 @@ void SetSDROM(bool setit)
 	rx.nb_sdrom.flag = setit;
 }
 
-void SetSDROMvals(REAL threshold)
+void SetSDROMvals(float threshold)
 {
 	rx.nb_sdrom.gen->setThreshold(threshold);
 }
@@ -418,7 +419,7 @@ SetTXALCAttack (int attack)
 
 void SetTXCarrierLevel(double setit)
 {
-	tx.am->setCarrierLevel(setit);
+	tx->setAMCarrierLevel(setit);
 }
 
 void
@@ -433,7 +434,7 @@ void
 SetTXALCBot (double max_agc)
 {
   char buffer[64];
-  sprintf (buffer, "setTXALCBot %f\n", dB2lin ((REAL) max_agc));
+  sprintf (buffer, "setTXALCBot %f\n", dB2lin ((float) max_agc));
   sendcommand (buffer);
 }
 
@@ -447,7 +448,7 @@ SetTXALCHang (int decay)
 
 void SetTXLevelerSt(bool state)
 {
-	tx.leveler.flag = state;
+	tx->setLevelerFlag(state);
 }
 
 void
@@ -470,7 +471,7 @@ void
 SetTXLevelerTop (double top)
 {
   char buffer[64];
-  sprintf (buffer, "setTXLevelerTop %f\n", dB2lin ((REAL) top));
+  sprintf (buffer, "setTXLevelerTop %f\n", dB2lin ((float) top));
   sendcommand (buffer);
 }
 
@@ -484,14 +485,14 @@ SetTXLevelerHang (int decay)
 
 void SetCorrectIQ(double phase, double gain)
 {
-	rx.iqfix->setPhase(REAL(0.001F * phase));
-	rx.iqfix->setGain(REAL(1.0F + 0.001F * gain));
+	rx.iqfix->setPhase(float(0.001F * phase));
+	rx.iqfix->setGain(float(1.0F + 0.001F * gain));
 }
 
 void SetCorrectTXIQ(double phase, double gain)
 {
-	tx.iqfix->setPhase(REAL(0.001F * phase));
-	tx.iqfix->setGain(REAL(1.0F + 0.001F * gain));
+	tx->setIQPhase(float(0.001F * phase));
+	tx->setIQGain(float(1.0F + 0.001F * gain));
 }
 
 void SetPWSmode(SPECTRUMtype type)
@@ -509,34 +510,24 @@ void SetSpectrumPolyphase(bool setit)
 	uni.spec.gen->setPolyphase(setit);
 }
 
-void
-SetTXEQ (int *txeq)
-{
-  char buffer[256];
-  sprintf (buffer, "setTXEQ 0.0 %d 120.0 %d 230.0 %d 450.0 %d 800.0 \
-%d 1150.0 %d 1450.0 %d 1800.0 %d 2150.0 \
-%d 2450.0 %d 2800.0 %d 3250.0 %d 6000.0\n", txeq[0], txeq[1], txeq[2], txeq[3], txeq[4], txeq[5], txeq[6], txeq[7], txeq[8], txeq[9], txeq[10], txeq[11]);
-  sendcommand (buffer);
-}
-
 void SetGrphTXEQ(int *txeq)
 {
-	tx.grapheq.gen->setEQ(REAL(txeq[0]), REAL(txeq[1]), REAL(txeq[2]), REAL(txeq[3]));
+	tx->setGraphicEQValues(float(txeq[0]), float(txeq[1]), float(txeq[2]), float(txeq[3]));
 }
 
 void SetGrphTXEQcmd(bool state)
 {
-	tx.grapheq.flag = state;
+	tx->setGraphicEQFlag(state);
 }
 
 void SetNotch160(bool state)
 {
-	tx.grapheq.gen->setNotchFlag(state);
+	tx->setNotchFlag(state);
 }
 
 void SetGrphRXEQ(int *rxeq)
 {
-	rx.grapheq.gen->setEQ(REAL(rxeq[0]), REAL(rxeq[1]), REAL(rxeq[2]), REAL(rxeq[3]));
+	rx.grapheq.gen->setEQ(float(rxeq[0]), float(rxeq[1]), float(rxeq[2]), float(rxeq[3]));
 }
 
 void SetGrphRXEQcmd(bool state)
@@ -546,12 +537,12 @@ void SetGrphRXEQcmd(bool state)
 
 void SetTXAGCFF(bool setit)
 {
-	tx.spr.flag = setit;
+	tx->setCompressionFlag(setit);
 }
 
-void SetTXAGCFFCompression(REAL txc)
+void SetTXAGCFFCompression(float txc)
 {
-	tx.spr.gen->setCompression(txc);
+	tx->setCompressionLevel(txc);
 }
 
 void SetSquelchVal (float setit)
@@ -570,7 +561,7 @@ void SetTRX(TRXMODE setit)
 
   switch (setit) {
       case TX:
-		  switch (tx.mode) {
+		  switch (tx->getMode()) {
 			case CWU:
 			case CWL:
 				top.swch.bfct.want = 0;
@@ -602,7 +593,7 @@ void SetTXAGCLimit (double limit)
   sendcommand (buffer);
 }
 
-void setSpotToneVals(REAL gain, REAL freq, REAL rise, REAL fall)
+void setSpotToneVals(float gain, float freq, float rise, float fall)
 {
 	rx.spot.gen->setValues(gain, freq, rise, fall);
 }
@@ -741,6 +732,6 @@ float Calculate_Meters(METERTYPE mt)
 
 void SetDeviation(float value)
 {
-	tx.fm->setDeviation(value);
+	tx->setFMDeviation(value);
 	rx.fm->setDeviation(value);
 }

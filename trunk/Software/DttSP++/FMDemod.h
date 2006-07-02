@@ -35,18 +35,17 @@ Bridgewater, NJ 08807
 #define _fmdemod_h
 
 #include "Demod.h"
-#include "DataTypes.h"
 #include "Complex.h"
 #include "CXB.h"
 
 
 class CFMDemod : public IDemod {
     public:
-	CFMDemod(REAL samprate, REAL f_initial, REAL f_lobound, REAL f_hibound, REAL f_bandwid, CXB* ivec, CXB* ovec);
+	CFMDemod(float samprate, float f_initial, float f_lobound, float f_hibound, float f_bandwid, CXB* ivec, CXB* ovec);
 	virtual ~CFMDemod();
 
-	virtual void setBandwidth(REAL f_lobound, REAL f_hibound);
-	virtual void setDeviation(REAL f_bandwid);
+	virtual void setBandwidth(float f_lobound, float f_hibound);
+	virtual void setDeviation(float f_bandwid);
 
 	virtual void demodulate();
 
@@ -59,20 +58,20 @@ class CFMDemod : public IDemod {
 	virtual bool hasANF() const;
 
     private:
-	REAL    m_samprate;
+	float   m_samprate;
 	CXB*    m_ibuf;
 	CXB*    m_obuf;
-	REAL    m_pllAlpha;
-	REAL    m_pllBeta;
-	REAL    m_pllFreqF;
-	REAL    m_pllFreqL;
-	REAL    m_pllFreqH;
-	REAL    m_pllPhase;
+	float   m_pllAlpha;
+	float   m_pllBeta;
+	float   m_pllFreqF;
+	float   m_pllFreqL;
+	float   m_pllFreqH;
+	float   m_pllPhase;
 	COMPLEX m_pllDelay;
-	REAL    m_iirAlpha;
-	REAL    m_lock;
-	REAL    m_afc;
-	REAL    m_cvt;
+	float   m_iirAlpha;
+	float   m_lock;
+	float   m_afc;
+	float   m_cvt;
 
 	void pll(COMPLEX sig);
 };

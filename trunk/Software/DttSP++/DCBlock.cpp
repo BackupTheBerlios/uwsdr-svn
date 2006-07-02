@@ -50,8 +50,8 @@ m_buf(buf)
 {
 	wxASSERT(buf != NULL);
 
-	::memset(m_input,  0x00, BLKMEM * sizeof(REAL));
-	::memset(m_output, 0x00, BLKMEM * sizeof(REAL));
+	::memset(m_input,  0x00, BLKMEM * sizeof(float));
+	::memset(m_output, 0x00, BLKMEM * sizeof(float));
 }
 
 CDCBlock::~CDCBlock()
@@ -66,32 +66,32 @@ void CDCBlock::block()
 	switch (m_mode) {
 		case DCB_LOW:
 			for (i = 0; i < n; i++) {
-				REAL x = CXBreal(m_buf, i);
-				REAL y = butterworthHighpass_100_2(x);
+				float x = CXBreal(m_buf, i);
+				float y = butterworthHighpass_100_2(x);
 				CXBdata(m_buf, i) = Cmplx(y, 0.0);
 			}
 			break;
 
 		case DCB_MED:
 			for (i = 0; i < n; i++) {
-				REAL x = CXBreal(m_buf, i);
-				REAL y = butterworthHighpass_100_4(x);
+				float x = CXBreal(m_buf, i);
+				float y = butterworthHighpass_100_4(x);
 				CXBdata(m_buf, i) = Cmplx(y, 0.0);
 			}
 			break;
 
 		case DCB_HIGH:
 			for (i = 0; i < n; i++) {
-				REAL x = CXBreal(m_buf, i);
-				REAL y = butterworthHighpass_100_6(x);
+				float x = CXBreal(m_buf, i);
+				float y = butterworthHighpass_100_6(x);
 				CXBdata(m_buf, i) = Cmplx(y, 0.0);
 			}
 			break;
 
 		case DCB_SUPER:
 			for (i = 0; i < n; i++) {
-				REAL x = CXBreal(m_buf, i);
-				REAL y = butterworthHighpass_100_8(x);
+				float x = CXBreal(m_buf, i);
+				float y = butterworthHighpass_100_8(x);
 				CXBdata(m_buf, i) = Cmplx(y, 0.0);
 			}
 			break;
@@ -101,7 +101,7 @@ void CDCBlock::block()
 	}
 }
 
-REAL CDCBlock::butterworthHighpass_100_2(REAL xin)
+float CDCBlock::butterworthHighpass_100_2(float xin)
 {
 	for (int i = 1; i < 2; i++) {
 		m_input[i - 1]  = m_input[i];
@@ -110,14 +110,14 @@ REAL CDCBlock::butterworthHighpass_100_2(REAL xin)
 
 	m_input[2] = xin / 1.009297482F;
 
-	m_output[2] = REAL((m_input[0] + m_input[2])
+	m_output[2] = float((m_input[0] + m_input[2])
 		  + -2.0 * m_input[1]
 		  + -0.9816611902 * m_output[0] + 1.9814914708 * m_output[1]);
 
 	return m_output[2];
 }
 
-REAL CDCBlock::butterworthHighpass_100_4(REAL xin)
+float CDCBlock::butterworthHighpass_100_4(float xin)
 {
 	for (int i = 1; i < 4; i++) {
 		m_input[i - 1]  = m_input[i];
@@ -126,7 +126,7 @@ REAL CDCBlock::butterworthHighpass_100_4(REAL xin)
 
 	m_input[4] = xin / 1.012F;
 
-	m_output[4] = REAL((m_input[0] + m_input[4])
+	m_output[4] = float((m_input[0] + m_input[4])
 		  + -4.0 * (m_input[1] + m_input[3])
 		  + 6.0 * m_input[2]
 		  + -0.976340271 * m_output[0]
@@ -137,7 +137,7 @@ REAL CDCBlock::butterworthHighpass_100_4(REAL xin)
 	return m_output[4];
 }
 
-REAL CDCBlock::butterworthHighpass_100_6(REAL xin)
+float CDCBlock::butterworthHighpass_100_6(float xin)
 {
 	for (int i = 1; i < 6; i++) {
 		m_input[i - 1]  = m_input[i];
@@ -146,7 +146,7 @@ REAL CDCBlock::butterworthHighpass_100_6(REAL xin)
 
 	m_input[6] = xin / 1.025606415F;
 
-	m_output[6] = REAL((m_input[0] + m_input[6])
+	m_output[6] = float((m_input[0] + m_input[6])
 		  + -6.0 * (m_input[1] + m_input[5])
 		  + 15.0 * (m_input[2] + m_input[4])
 		  + -20.0 * m_input[3]
@@ -160,7 +160,7 @@ REAL CDCBlock::butterworthHighpass_100_6(REAL xin)
 	return m_output[6];
 }
 
-REAL CDCBlock::butterworthHighpass_100_8(REAL xin)
+float CDCBlock::butterworthHighpass_100_8(float xin)
 {
 	for (int i = 1; i < 8; i++) {
 		m_input[i - 1]  = m_input[i];
@@ -169,7 +169,7 @@ REAL CDCBlock::butterworthHighpass_100_8(REAL xin)
 
 	m_input[8] = xin / 1.034112352F;
 
-	m_output[8] = REAL((m_input[0] + m_input[8])
+	m_output[8] = float((m_input[0] + m_input[8])
 		  + -8.0 * (m_input[1] + m_input[7])
 		  + 28.0 * (m_input[2] + m_input[6])
 		  + -56.0 * (m_input[3] + m_input[5])

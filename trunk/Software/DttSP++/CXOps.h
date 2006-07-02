@@ -35,7 +35,6 @@ Bridgewater, NJ 08807
 #define _cxops_h
 
 #include "Complex.h"
-#include "DataTypes.h"
 #include "FromSys.h"
 #include "banal.h"
 
@@ -48,7 +47,7 @@ const COMPLEX cxminusJ   = { 0.0, -1.0 };
 
 
 // scalar
-inline COMPLEX Cscl(COMPLEX x, REAL a)
+inline COMPLEX Cscl(COMPLEX x, float a)
 {
 	COMPLEX z;
 	z.re = x.re * a;
@@ -82,7 +81,7 @@ inline COMPLEX Cmul(COMPLEX x, COMPLEX y)
 
 inline COMPLEX Cdiv(COMPLEX x, COMPLEX y)
 {
-	REAL d = sqr(y.re) + sqr(y.im);
+	float d = sqr(y.re) + sqr(y.im);
 
 	COMPLEX z;
 	z.re = (x.re * y.re + x.im * y.im) / d;
@@ -90,30 +89,30 @@ inline COMPLEX Cdiv(COMPLEX x, COMPLEX y)
 	return z;
 }
 
-inline REAL Cappmag(COMPLEX z)
+inline float Cappmag(COMPLEX z)
 {
-	REAL tmpr = (REAL)::fabs(z.re);
-	REAL tmpi = (REAL)::fabs(z.im);
+	float tmpr = (float)::fabs(z.re);
+	float tmpi = (float)::fabs(z.im);
 
 	return (tmpr < tmpi) ? 0.4F * tmpr + 0.7F * tmpi : 0.4F * tmpi + 0.7F * tmpr;
 }
 
-inline REAL Cmag(COMPLEX z)
+inline float Cmag(COMPLEX z)
 {
-	return REAL(::sqrt(sqr(z.re) + sqr(z.im)));
+	return float(::sqrt(sqr(z.re) + sqr(z.im)));
 }
 
-inline REAL Cabs(COMPLEX z)
+inline float Cabs(COMPLEX z)
 {
-	return REAL(::sqrt(sqr(z.re) + sqr(z.im)));
+	return float(::sqrt(sqr(z.re) + sqr(z.im)));
 }
 
-inline REAL Csqrmag(COMPLEX z)
+inline float Csqrmag(COMPLEX z)
 {
-	return REAL(sqr(z.re) + sqr(z.im));
+	return float(sqr(z.re) + sqr(z.im));
 }
 
-inline COMPLEX Cmplx(REAL x, IMAG y)
+inline COMPLEX Cmplx(float x, float y)
 {
 	COMPLEX z;
 	z.re = x;
@@ -128,9 +127,9 @@ inline COMPLEX Conjg(COMPLEX z)
 
 inline COMPLEX Cexp(COMPLEX z)
 {
-	REAL r = REAL(::exp(z.re));
+	float r = float(::exp(z.re));
 
-	return Cmplx(REAL(r * ::cos(z.im)), IMAG(r * ::sin(z.im)));
+	return Cmplx(float(r * ::cos(z.im)), float(r * ::sin(z.im)));
 }
 
 #endif

@@ -34,18 +34,17 @@ Bridgewater, NJ 08807
 #ifndef _filterovsv_h
 #define _filterovsv_h
 
-#include "DataTypes.h"
 #include "Complex.h"
 #include "fftw3.h"
 
 
 class CFilterOVSV {
     public:
-	CFilterOVSV(unsigned int bufLen, unsigned int pbits, REAL sampleRate, REAL lowFreq, REAL highFreq);
+	CFilterOVSV(unsigned int bufLen, unsigned int pbits, float sampleRate, float lowFreq, float highFreq);
 	virtual ~CFilterOVSV();
 
-	virtual COMPLEX*     fetchPoint();
-	virtual COMPLEX*     storePoint();
+	virtual COMPLEX* fetchPoint();
+	virtual COMPLEX* storePoint();
 
 	virtual unsigned int fetchSize();
 	virtual unsigned int storeSize();
@@ -54,13 +53,13 @@ class CFilterOVSV {
 
 	virtual void reset();
 
-	virtual void setFilter(REAL lowFreq, REAL highFreq);
+	virtual void setFilter(float lowFreq, float highFreq);
 
 	virtual void filter();
 
     private:
 	unsigned int m_pbits;
-	REAL         m_samprate;
+	float        m_samprate;
 	unsigned int m_bufLen;
 	COMPLEX*     m_zfvec;
 	COMPLEX*     m_zivec;
@@ -68,7 +67,7 @@ class CFilterOVSV {
 	COMPLEX*     m_zrvec;
 	fftwf_plan   m_pfwd;
 	fftwf_plan   m_pinv;
-	REAL         m_scale;
+	float        m_scale;
 };
 
 #endif

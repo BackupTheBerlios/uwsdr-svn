@@ -37,14 +37,14 @@ Bridgewater, NJ 08807
 #include "Window.h"
 
 
-COMPLEX* CFIR::lowpass(REAL cutoff, REAL samprate, unsigned int size)
+COMPLEX* CFIR::lowpass(float cutoff, float samprate, unsigned int size)
 {
 	if (cutoff < 0.0F || cutoff > (samprate / 2.0F))
 		return NULL;
 	if (size < 1)
 		return NULL;
 
-	REAL fc = cutoff / samprate;
+	float fc = cutoff / samprate;
 
 	if (!(size & 01))
 		size++;
@@ -53,14 +53,14 @@ COMPLEX* CFIR::lowpass(REAL cutoff, REAL samprate, unsigned int size)
 
 	COMPLEX* h = new COMPLEX[size];
 
-	REAL* w = CWindow::create(BLACKMANHARRIS_WINDOW, size);
+	float* w = CWindow::create(BLACKMANHARRIS_WINDOW, size);
 
 	for (int i = 1; i <= int(size); i++) {
 		int  j = i - 1;
-		REAL k = REAL(i - midpoint);
+		float k = float(i - midpoint);
 
 		if (i != midpoint) {
-			h[j].re = REAL((::sin(TWOPI * k * fc) / (M_PI * k)) * w[j]);
+			h[j].re = float((::sin(TWOPI * k * fc) / (M_PI * k)) * w[j]);
 			h[j].im = 0.0F;
 		} else {
 			h[midpoint - 1].re = 2.0F * fc;
@@ -73,7 +73,7 @@ COMPLEX* CFIR::lowpass(REAL cutoff, REAL samprate, unsigned int size)
 	return h;
 }
 
-COMPLEX* CFIR::bandpass(REAL lo, REAL hi, REAL samprate, unsigned int size)
+COMPLEX* CFIR::bandpass(float lo, float hi, float samprate, unsigned int size)
 {
 	if (lo < -(samprate / 2.0F) || hi > (samprate / 2.0F) || hi <= lo)
 		return NULL;
@@ -87,29 +87,29 @@ COMPLEX* CFIR::bandpass(REAL lo, REAL hi, REAL samprate, unsigned int size)
 
 	COMPLEX* h = new COMPLEX[size];
 
-	REAL* w = CWindow::create(BLACKMANHARRIS_WINDOW, size);
+	float* w = CWindow::create(BLACKMANHARRIS_WINDOW, size);
 
 	lo /= samprate;
 	hi /= samprate;
 
-	REAL fc = REAL((hi - lo) / 2.0F);
-	REAL ff = REAL((lo + hi) * M_PI);
+	float fc = float((hi - lo) / 2.0F);
+	float ff = float((lo + hi) * M_PI);
 
 	for (int i = 1; i <= int(size); i++) {
 		int j = i - 1;
-		REAL k = REAL(i - midpoint);
-		REAL phs = ff * k;
+		float k = float(i - midpoint);
+		float phs = ff * k;
 
-		REAL tmp;
+		float tmp;
 		if (i != midpoint)
-			tmp = REAL((::sin(TWOPI * k * fc) / (M_PI * k)) * w[j]);
+			tmp = float((::sin(TWOPI * k * fc) / (M_PI * k)) * w[j]);
 		else
 			tmp = 2.0F * fc;
 
 		tmp *= 2.0F;
 
-		h[j].re = REAL(tmp * ::cos(phs));
-		h[j].im = IMAG(tmp * ::sin(phs));
+		h[j].re = float(tmp * ::cos(phs));
+		h[j].im = float(tmp * ::sin(phs));
 	}
 
 	delete[] w;
@@ -117,7 +117,7 @@ COMPLEX* CFIR::bandpass(REAL lo, REAL hi, REAL samprate, unsigned int size)
 	return h;
 }
 
-COMPLEX* CFIR::highpass(REAL cutoff, REAL samprate, unsigned int size)
+COMPLEX* CFIR::highpass(float cutoff, float samprate, unsigned int size)
 {
 	if (cutoff < 0.0F || cutoff > (samprate / 2.0F))
 		return NULL;
@@ -131,17 +131,17 @@ COMPLEX* CFIR::highpass(REAL cutoff, REAL samprate, unsigned int size)
 
 	COMPLEX* h = new COMPLEX[size];
 
-	REAL* w = CWindow::create(BLACKMANHARRIS_WINDOW, size);
+	float* w = CWindow::create(BLACKMANHARRIS_WINDOW, size);
 
-	REAL fc = cutoff / samprate;
+	float fc = cutoff / samprate;
 
 	int i;
 	for (i = 1; i <= int(size); i++) {
 		int j = i - 1;
-		REAL k = REAL(i - midpoint);
+		float k = float(i - midpoint);
 
 		if (i != midpoint) {
-			h[j].re = REAL((::sin(TWOPI * k * fc) / (M_PI * k)) * w[j]);
+			h[j].re = float((::sin(TWOPI * k * fc) / (M_PI * k)) * w[j]);
 			h[j].im = 0.0F;
 		} else {
 			h[midpoint - 1].re = 2.0F * fc;
@@ -163,7 +163,7 @@ COMPLEX* CFIR::highpass(REAL cutoff, REAL samprate, unsigned int size)
 	return h;
 }
 
-COMPLEX* CFIR::hilbert(REAL lo, REAL hi, REAL samprate, unsigned int size)
+COMPLEX* CFIR::hilbert(float lo, float hi, float samprate, unsigned int size)
 {
 	if (lo < 0.0F || hi > (samprate / 2.0F) || hi <= lo)
 		return NULL;
@@ -177,29 +177,29 @@ COMPLEX* CFIR::hilbert(REAL lo, REAL hi, REAL samprate, unsigned int size)
 
 	COMPLEX* h = new COMPLEX[size];
 
-	REAL* w = CWindow::create(BLACKMANHARRIS_WINDOW, size);
+	float* w = CWindow::create(BLACKMANHARRIS_WINDOW, size);
 
 	lo /= samprate;
 	hi /= samprate;
 
-	REAL fc = REAL((hi - lo) / 2.0F);
-	REAL ff = REAL((lo + hi) * M_PI);
+	float fc = float((hi - lo) / 2.0F);
+	float ff = float((lo + hi) * M_PI);
 
 	for (int i = 1; i <= int(size); i++) {
 		int j = i - 1;
-		REAL k = REAL(i - midpoint);
-		REAL phs = ff * k;
+		float k = float(i - midpoint);
+		float phs = ff * k;
 
-		REAL tmp;
+		float tmp;
 		if (i != midpoint)
-			tmp = REAL((::sin(TWOPI * k * fc) / (M_PI * k)) * w[j]);
+			tmp = float((::sin(TWOPI * k * fc) / (M_PI * k)) * w[j]);
 		else
 			tmp = 2.0F * fc;
 
 		tmp *= 2.0F;
 
 		h[j].re = 0.0F;
-		h[j].im = IMAG(tmp * ::sin(phs));
+		h[j].im = float(tmp * ::sin(phs));
 	}
 
 	delete[] w;
@@ -207,7 +207,7 @@ COMPLEX* CFIR::hilbert(REAL lo, REAL hi, REAL samprate, unsigned int size)
 	return h;
 }
 
-COMPLEX* CFIR::bandstop(REAL lo, REAL hi, REAL samprate, unsigned int size)
+COMPLEX* CFIR::bandstop(float lo, float hi, float samprate, unsigned int size)
 {
 	if (lo < 0.0F || hi > (samprate / 2.0F) || hi <= lo)
 		return NULL;
@@ -220,30 +220,30 @@ COMPLEX* CFIR::bandstop(REAL lo, REAL hi, REAL samprate, unsigned int size)
 	int midpoint = (size >> 01) | 01;
 	COMPLEX* h = new COMPLEX[size];
 
-	REAL* w = CWindow::create(BLACKMANHARRIS_WINDOW, size);
+	float* w = CWindow::create(BLACKMANHARRIS_WINDOW, size);
 
 	lo /= samprate;
 	hi /= samprate;
 
-	REAL fc = REAL((hi - lo) / 2.0F);
-	REAL ff = REAL((lo + hi) * M_PI);
+	float fc = float((hi - lo) / 2.0F);
+	float ff = float((lo + hi) * M_PI);
 
 	int i;
 	for (i = 1; i <= int(size); i++) {
 		int j = i - 1;
-		REAL k = REAL(i - midpoint);
-		REAL phs = ff * k;
+		float k = float(i - midpoint);
+		float phs = ff * k;
 
-		REAL tmp;
+		float tmp;
 		if (i != midpoint)
-			tmp = REAL((::sin(TWOPI * k * fc) / (M_PI * k)) * w[j]);
+			tmp = float((::sin(TWOPI * k * fc) / (M_PI * k)) * w[j]);
 		else
 			tmp = 2.0F * fc;
 
 		tmp *= 2.0F;
 
-		h[j].re = REAL(tmp * ::cos(phs));
-		h[j].im = IMAG(tmp * ::sin(phs));
+		h[j].re = float(tmp * ::cos(phs));
+		h[j].im = float(tmp * ::sin(phs));
 	}
 
 	delete[] w;

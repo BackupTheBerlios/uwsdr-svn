@@ -38,20 +38,20 @@ Bridgewater, NJ 08807
 
 class CNoiseBlanker {
     public:
-	CNoiseBlanker(CXB* sigbuf, REAL threshold);
+	CNoiseBlanker(CXB* sigbuf, float threshold);
 	virtual ~CNoiseBlanker();
 
-	virtual REAL getThreshold() const;
-	virtual void setThreshold(REAL threshold);
+	virtual float getThreshold() const;
+	virtual void setThreshold(float threshold);
 
     virtual void blank();
 	virtual void sdromBlank();
 
     private:
 	CXB*    m_sigbuf;			/* Signal Buffer */
-	REAL    m_threshold;		/* Noise Blanker Threshold */
+	float   m_threshold;		/* Noise Blanker Threshold */
 	COMPLEX m_aveSig;
-	REAL    m_aveMag;
+	float   m_aveMag;
 	COMPLEX m_delay[8];
 	int     m_delayIndex;
 	int     m_sigIndex;

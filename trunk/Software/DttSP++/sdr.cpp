@@ -36,26 +36,23 @@ Bridgewater, NJ 08807
 
 void reset_meters()
 {
-	if (uni.meter.flag)
-		uni.meter.gen->reset();
+	uni.meter.gen->reset();
 }
 
 void reset_spectrum()
 {
-	if (uni.spec.flag)
-		uni.spec.gen->reinitSpectrum();
+	uni.spec.gen->reinitSpectrum();
 }
 
 void reset_counters()
 {
 	rx.tick = 0UL;
-	tx.tick = 0UL;
 }
 
 /* global and general info,
    not specifically attached to
    tx, rx, or scheduling */
-static void setup_all(REAL rate, unsigned int buflen, SDRMODE mode, unsigned int specsize, unsigned int cpdsize)
+static void setup_all(float rate, unsigned int buflen, SDRMODE mode, unsigned int specsize, unsigned int cpdsize)
 {
   uni.samplerate = rate;
   uni.buflen = buflen;
@@ -65,11 +62,9 @@ static void setup_all(REAL rate, unsigned int buflen, SDRMODE mode, unsigned int
   uni.wisdom.bits = FFTW_ESTIMATE;
 
   uni.meter.gen = new CMeter();
-  uni.meter.flag = true;
 
   uni.spec.gen = new CSpectrum(specsize, uni.wisdom.bits, SPEC_PWR);
   uni.spec.type = SPEC_POST_FILT;
-  uni.spec.flag = true;
 
   uni.cpdlen = cpdsize;
 
@@ -79,9 +74,6 @@ static void setup_all(REAL rate, unsigned int buflen, SDRMODE mode, unsigned int
 /* purely rx */
 static void setup_rx()
 {
-  /* conditioning */
-  rx.iqfix = new CCorrectIQ();
-
   rx.filt = new CFilterOVSV(uni.buflen, uni.wisdom.bits, uni.samplerate, -4800.0F, 4800.0F);
 
   /* buffers */
@@ -90,11 +82,14 @@ static void setup_rx()
   rx.buf.i = newCXB(rx.filt->fetchSize(), rx.filt->fetchPoint());
   rx.buf.o = newCXB(rx.filt->storeSize(), rx.filt->storePoint());
 
+  /* conditioning */
+  rx.iqfix = new CCorrectIQ(rx.buf.i);
+
   /* conversion */
-  rx.osc.gen = new COscillator(-uni.samplerate / 4.0F, 0.0, uni.samplerate);
+  rx.osc.gen = new COscillator(rx.buf.i, -uni.samplerate / 4.0F, 0.0, uni.samplerate);
 
   // RIT
-  rx.rit.gen = new COscillator(0.0F, 0.0, uni.samplerate);
+  rx.rit.gen = new COscillator(rx.buf.i, 0.0F, 0.0, uni.samplerate);
 
   rx.agc.gen = new CAGC(agcLONG,	// mode kept around for control reasons alone
 				    rx.buf.o,	// input buffer
@@ -116,21 +111,21 @@ static void setup_rx()
 
 
   /* demods */
-  rx.am = new CAMDemod(uni.samplerate,	// REAL samprate
-			 0.0F,	// REAL f_initial
-			 -500.0F,	// REAL f_lobound,
-			 500.0F,	// REAL f_hibound,
-			 400.0F,	// REAL f_bandwid,
+  rx.am = new CAMDemod(uni.samplerate,	// float samprate
+			 0.0F,	// float f_initial
+			 -500.0F,	// float f_lobound,
+			 500.0F,	// float f_hibound,
+			 400.0F,	// float f_bandwid,
 			 rx.buf.o,	// COMPLEX *ivec,
 			 rx.buf.o,	// COMPLEX *ovec,
 			 AMdet		// AM Mode AMdet == rectifier,
 			 );			// SAMdet == synchronous detector
 
-  rx.fm = new CFMDemod(uni.samplerate,	// REAL samprate
-			 0.0F,	// REAL f_initial
-			 -6000.0F,	// REAL f_lobound
-			 6000.0F,	// REAL f_hibound
-			 5000.0F,	// REAL f_bandwid
+  rx.fm = new CFMDemod(uni.samplerate,	// float samprate
+			 0.0F,	// float f_initial
+			 -6000.0F,	// float f_lobound
+			 6000.0F,	// float f_hibound
+			 5000.0F,	// float f_bandwid
 			 rx.buf.o,	// COMPLEX *ivec
 			 rx.buf.o);	// COMPLEX *ovec
 
@@ -139,8 +134,8 @@ static void setup_rx()
   /* noise reduction */
   rx.anf.gen = new CLMS(rx.buf.o,	// CXB signal,
 			    64,	// int delay,
-			    0.01F,	// REAL adaptation_rate,
-			    0.00001F,	// REAL leakage,
+			    0.01F,	// float adaptation_rate,
+			    0.00001F,	// float leakage,
 			    45,	// int adaptive_filter_size,
 			    LMS_INTERFERENCE);
 
@@ -150,8 +145,8 @@ static void setup_rx()
 
   rx.anr.gen = new CLMS(rx.buf.o,	// CXB signal,
 			    64,	// int delay,
-			    0.01f,	// REAL adaptation_rate,
-			    0.00001f,	// REAL leakage,
+			    0.01f,	// float adaptation_rate,
+			    0.00001f,	// float leakage,
 			    45,	// int adaptive_filter_size,
 			    LMS_NOISE);
 
@@ -183,106 +178,27 @@ static void setup_rx()
   rx.bin.flag = false;
 
   {
-    REAL pos = 0.5,		// 0 <= pos <= 1, left->right
-      theta = (REAL) ((1.0 - pos) * M_PI / 2.0);
-    rx.azim = Cmplx ((REAL) cos (theta), (IMAG) sin (theta));
+    float pos = 0.5,		// 0 <= pos <= 1, left->right
+      theta = (float) ((1.0 - pos) * M_PI / 2.0);
+    rx.azim = Cmplx ((float) cos (theta), (float) sin (theta));
   }
 
   rx.tick = 0UL;
 }
 
-/* purely tx */
-static void setup_tx()
-{
-  /* conditioning */
-  tx.iqfix = new CCorrectIQ();
-
-  tx.filt = new CFilterOVSV(uni.buflen, uni.wisdom.bits, uni.samplerate, 300.0F, 3000.0F);
-
-  /* buffers */
-  tx.buf.i = newCXB(tx.filt->fetchSize(), tx.filt->fetchPoint());
-  tx.buf.o = newCXB(tx.filt->storeSize(), tx.filt->storePoint());
-
-  tx.dcb.flag = false;
-  tx.dcb.gen = new CDCBlock(DCB_MED, tx.buf.i);
-
-  /* conversion */
-  tx.osc.phase = 0.0;
-  tx.osc.gen = new COscillator(0.0, tx.osc.phase, uni.samplerate);
-
-  tx.am  = new CAMMod(0.5F, tx.buf.i, tx.buf.i);
-  tx.fm  = new CFMMod(5000.0F, uni.samplerate, tx.buf.i, tx.buf.i);
-  tx.ssb = new CSSBMod(tx.buf.i, tx.buf.i);
-
-  tx.leveler.gen = new CAGC(agcLONG,	// mode kept around for control reasons
-				tx.buf.i,	// input buffer
-				1.1f,	// Target output
-				2,	// Attack time constant in ms
-				500,	// Decay time constant in ms
-				1,	// Slope
-				500,	//Hangtime in ms
-				uni.samplerate,	// Sample rate
-				5.62f,	// Maximum gain as a multipler, linear not dB
-				1.0,	// Minimum gain as a multipler, linear not dB
-				1.0		// Set the current gain
-    );
-  tx.leveler.flag = true;
-
-  tx.grapheq.gen = new CGraphicEQ(tx.buf.i, uni.samplerate, uni.wisdom.bits);
-  tx.grapheq.flag = false;
-
-  tx.squelch.gen = new CSquelch(tx.buf.i, -40.0F, -30.0F, uni.buflen - 48);
-
-  tx.alc.gen = new CAGC(agcLONG,	// mode kept around for control reasons alone
-			    tx.buf.i,	// input buffer
-			    1.2f,	// Target output 
-			    2,	// Attack time constant in ms
-			    10,	// Decay time constant in ms
-			    1,	// Slope
-			    500,	//Hangtime in ms
-			    uni.samplerate, 1.0,	// Maximum gain as a multipler, linear not dB
-			    .000001f,	// Minimum gain as a multipler, linear not dB
-			    1.0		// Set the current gain
-    );
-  tx.alc.flag = true;
-
-  tx.spr.gen = new CSpeechProc(0.4F, 3.0, tx.buf.i);
-  tx.spr.flag = false;
-
-  tx.cpd.gen = new CCompand(uni.cpdlen, -3.0F, tx.buf.i);
-  tx.cpd.flag = false;
-
-  tx.mode = uni.mode.sdr;
-
-  tx.tick = 0UL;
-  /* not much else to do for TX */
-}
-
 /* how the outside world sees it */
-void setup_workspace(REAL rate, unsigned int buflen, SDRMODE mode, unsigned int specsize, unsigned int cpdsize)
+void setup_workspace(float rate, unsigned int buflen, SDRMODE mode, unsigned int specsize, unsigned int cpdsize)
 {
 	setup_all(rate, buflen, mode, specsize, cpdsize);
 
 	setup_rx();
 
-	setup_tx();
+	tx = new CTX(uni.buflen, uni.wisdom.bits, uni.cpdlen, uni.samplerate, uni.meter.gen, uni.spec.gen);
 }
 
 void destroy_workspace()
 {
-  /* TX */
-  delete tx.cpd.gen;
-  delete tx.spr.gen;
-  delete tx.leveler.gen;
-  delete tx.alc.gen;
-  delete tx.grapheq.gen;
-  delete tx.osc.gen;
-  delete tx.dcb.gen;
-  delete tx.filt;
-  delete tx.iqfix;
-  delete tx.squelch.gen;
-  delCXB(tx.buf.o);
-  delCXB(tx.buf.i);
+  delete tx;
 
   /* RX */
   delete rx.cpd.gen;
@@ -314,37 +230,16 @@ void destroy_workspace()
 /* all */
 static void do_rx_meter(CXB* buf, RXMETERTAP tap)
 {
-	REAL agcGain = 0.0F;
+	float agcGain = 0.0F;
 	if (rx.agc.flag && rx.agc.gen != NULL)
 		agcGain = rx.agc.gen->getGain();
 
-	if (uni.meter.flag)
-		uni.meter.gen->setRXMeter(tap, buf, agcGain);
-}
-
-static void do_tx_meter(CXB* buf, TXMETERTYPE type)
-{
-	REAL alcGain = 0.0F;
-	if (tx.alc.flag && tx.alc.gen != NULL)
-		alcGain = tx.alc.gen->getGain();
-
-	REAL levelerGain = 0.0F;
-	if (tx.leveler.flag && tx.leveler.gen != NULL)
-		levelerGain = tx.leveler.gen->getGain();
-
-	if (uni.meter.flag)
-		uni.meter.gen->setTXMeter(type, buf, alcGain, levelerGain);
+	uni.meter.gen->setRXMeter(tap, buf, agcGain);
 }
 
 static void do_rx_spectrum(CXB* buf, SPECTRUMtype type)
 {
-	if (uni.spec.flag && type == uni.spec.type)
-		uni.spec.gen->setData(buf);
-}
-
-static void do_tx_spectrum(CXB* buf)
-{
-	if (uni.spec.flag)
+	if (type == uni.spec.type)
 		uni.spec.gen->setData(buf);
 }
 
@@ -363,16 +258,16 @@ static void do_rx_pre()
 	// metering for uncorrected values here
 	do_rx_meter(rx.buf.i, RXMETER_PRE_CONV);
 
-	rx.iqfix->process(rx.buf.i);
+	rx.iqfix->process();
 
 	/* 2nd IF conversion happens here */
-	rx.osc.gen->mix(rx.buf.i);
+	rx.osc.gen->mix();
 
 	/* filtering, metering, spectrum, squelch, & AGC */
 	do_rx_spectrum(rx.buf.i, SPEC_PRE_FILT);
 
 	/* IF shift */
-	rx.rit.gen->mix(rx.buf.i);
+	rx.rit.gen->mix();
 
 	if (rx.tick == 0UL)
 		rx.filt->reset();
@@ -495,99 +390,6 @@ static void do_rx()
 	do_rx_post ();
 }
 
-/* TX processing */
-static void do_tx_pre()
-{
-/*
-	unsigned int n = CXBhave (tx.buf.i);
-
-	for (unsigned int i = 0; i < n; i++)
-		CXBdata(tx.buf.i, i) = Cmplx(CXBimag(tx.buf.i, i), 0.0F);
-*/
-	if (tx.dcb.flag)
-		tx.dcb.gen->block();
-
-	do_tx_meter(tx.buf.i, TX_MIC);
-
-	if (tx.squelch.gen->isSquelch()) {
-		tx.squelch.gen->doSquelch();
-	} else {
-		if (!tx.squelch.gen->isSet())
-			tx.squelch.gen->noSquelch();
-
-		if (tx.grapheq.flag)
-			tx.grapheq.gen->equalise();
-
-		do_tx_meter(tx.buf.i, TX_EQtap);
-
-		if (tx.leveler.flag)
-			tx.leveler.gen->process();
-
-		do_tx_meter(tx.buf.i, TX_LEVELER);
-
-		if (tx.spr.flag)
-			tx.spr.gen->process();
-
-		do_tx_meter(tx.buf.i, TX_COMP);
-
-		if (tx.cpd.flag)
-			tx.cpd.gen->process();
-
-		do_tx_meter(tx.buf.i, TX_CPDR);
-	}
-
-	if (tx.alc.flag)
-		tx.alc.gen->process();
-
-	do_tx_meter(tx.buf.i, TX_ALC);
-}
-
-static void do_tx_post()
-{
-	CXBhave(tx.buf.o) = CXBhave(tx.buf.i);
-
-	if (tx.tick == 0UL)
-		tx.filt->reset();
-
-	tx.filt->filter();
-
-	if (uni.spec.flag)
-		do_tx_spectrum(tx.buf.o);
-
-	tx.osc.gen->mix(tx.buf.o);
-
-	tx.iqfix->process(tx.buf.o);
-
-	do_tx_meter(tx.buf.o, TX_PWR);
-}
-
-
-/* general TX processing dispatch */
-static void do_tx()
-{
-	do_tx_pre();
-
-	switch (tx.mode) {
-		case USB:
-		case LSB:
-		case CWU:
-		case CWL:
-			tx.ssb->modulate();
-			break;
-
-		case AM:
-		case SAM:
-			tx.am->modulate();
-			break;
-
-		case FMN:
-			tx.fm->modulate();
-			break;
-	}
-
-	do_tx_post();
-}
-
 //========================================================================
 /* overall buffer processing;
    come here when there are buffers to work on */
@@ -615,20 +417,23 @@ void process_samples(float* bufi, float* bufq, unsigned int n)
 			}
 			break;
 
-		case TX:
-			for (i = 0; i < n; i++) {
-				CXBreal(tx.buf.i, i) = bufi[i];
-				CXBimag(tx.buf.i, i) = bufq[i];
-			}
-			CXBhave(tx.buf.i) = n;
+		case TX: {
+				CXB* iBuf = tx->getIBuf();
+				CXB* oBuf = tx->getOBuf();
 
-			do_tx();
-			tx.tick++;
+				for (i = 0; i < n; i++) {
+					CXBreal(iBuf, i) = bufi[i];
+					CXBimag(iBuf, i) = bufq[i];
+				}
+				CXBhave(iBuf) = n;
 
-			n = CXBhave(tx.buf.o);
-			for (i = 0; i < n; i++) {
-				bufi[i] = CXBreal(tx.buf.o, i);
-				bufq[i] = CXBimag(tx.buf.o, i);
+				tx->process();
+
+				n = CXBhave(oBuf);
+				for (i = 0; i < n; i++) {
+					bufi[i] = CXBreal(oBuf, i);
+					bufq[i] = CXBimag(oBuf, i);
+				}
 			}
 			break;
 	}

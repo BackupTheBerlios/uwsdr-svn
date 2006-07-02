@@ -40,7 +40,7 @@ Bridgewater, NJ 08807
 #include <wx/wx.h>
 
 
-CFilterOVSV::CFilterOVSV(unsigned int bufLen, unsigned int pbits, REAL sampleRate, REAL lowFreq, REAL highFreq) :
+CFilterOVSV::CFilterOVSV(unsigned int bufLen, unsigned int pbits, float sampleRate, float lowFreq, float highFreq) :
 m_pbits(pbits),
 m_samprate(sampleRate),
 m_bufLen(bufLen),
@@ -75,7 +75,7 @@ m_scale(0.0F)
 	m_pfwd = ::fftwf_plan_dft_1d(fftLen, (fftwf_complex *)m_zrvec, (fftwf_complex *)m_zivec, FFTW_FORWARD, m_pbits);
 	m_pinv = ::fftwf_plan_dft_1d(fftLen, (fftwf_complex *)m_zivec, (fftwf_complex *)m_zovec, FFTW_BACKWARD, m_pbits);
 
-	m_scale = 1.0F / REAL(fftLen);
+	m_scale = 1.0F / float(fftLen);
 
 	setFilter(lowFreq, highFreq);
 }
@@ -91,7 +91,7 @@ CFilterOVSV::~CFilterOVSV()
 	::fftwf_destroy_plan(m_pinv);
 }
 
-void CFilterOVSV::setFilter(REAL lowFreq, REAL highFreq)
+void CFilterOVSV::setFilter(float lowFreq, float highFreq)
 {
 	wxASSERT(::fabs(lowFreq) < 0.5 * m_samprate);
 	wxASSERT(::fabs(highFreq) < 0.5 * m_samprate);

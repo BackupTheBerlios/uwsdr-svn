@@ -40,7 +40,7 @@ Bridgewater, NJ 08807
 const float BLKSCL = 1.0F / 256.0F;
 
 
-CBlockLMS::CBlockLMS(CXB* signal, REAL adaptionRate, REAL leakRate, unsigned int filterType, unsigned int pbits) :
+CBlockLMS::CBlockLMS(CXB* signal, float adaptionRate, float leakRate, unsigned int filterType, unsigned int pbits) :
 m_signal(signal),
 m_adaptationRate(adaptionRate),
 m_leakRate(1.0F - leakRate),
@@ -120,7 +120,7 @@ CBlockLMS::~CBlockLMS()
 	::fftw_free(m_delayLine);
 }
 
-void CBlockLMS::setAdaptationRate(REAL adaptationRate)
+void CBlockLMS::setAdaptationRate(float adaptationRate)
 {
 	m_adaptationRate = adaptationRate;
 }

@@ -35,13 +35,12 @@ Bridgewater, NJ 08807
 #ifndef _oscillator_h
 #define _oscillator_h
 
-#include "DataTypes.h"
 #include "CXB.h"
 
 
 class COscillator {
     public:
-	COscillator(double frequency, double phase, REAL sampleRate);
+	COscillator(CXB* buf, double frequency, double phase, float sampleRate);
 	virtual ~COscillator();
 
 	virtual double getPhase() const;
@@ -50,13 +49,14 @@ class COscillator {
 	virtual double getFrequency() const;
 	virtual void   setFrequency(double frequency);
 
-	virtual CXB* oscillate(CXB* buf);
+	virtual void oscillate();
 
-	virtual CXB* mix(CXB* buf);
+	virtual void mix();
 
     private:
+	CXB*   m_buf;
 	double m_frequency;
-	REAL   m_sampleRate;
+	float  m_sampleRate;
 	double m_phase;
 	double m_delta;
 };

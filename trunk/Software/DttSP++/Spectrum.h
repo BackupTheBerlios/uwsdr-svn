@@ -34,7 +34,6 @@ Bridgewater, NJ 08807
 #ifndef _spectrum_h
 #define _spectrum_h
 
-#include "DataTypes.h"
 #include "Window.h"
 #include "CXB.h"
 #include "fftw3.h"
@@ -88,7 +87,7 @@ class CSpectrum {
 	unsigned int  m_size;
 	unsigned int  m_mask;
 	Windowtype    m_winType;
-	REAL*         m_window;
+	float*        m_window;
 	unsigned int  m_planbits;
 	fftwf_plan    m_plan;
 	bool          m_polyphase;

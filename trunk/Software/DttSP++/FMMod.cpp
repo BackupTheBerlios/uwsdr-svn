@@ -36,41 +36,37 @@ Bridgewater, NJ 08807
 #include <wx/wx.h>
 
 
-CFMMod::CFMMod(REAL sampleRate, REAL deviation, CXB* input, CXB* output) :
+CFMMod::CFMMod(float sampleRate, float deviation, CXB* buf) :
 m_sampleRate(sampleRate),
 m_deviation(0.0F),
-m_input(input),
-m_output(output),
+m_buf(buf),
 m_phase(0.0F)
 {
 	wxASSERT(deviation >= 0.0F);
-	wxASSERT(input != NULL);
-	wxASSERT(output != NULL);
+	wxASSERT(buf != NULL);
 
-	m_deviation = REAL(deviation * M_PI / m_sampleRate);
+	m_deviation = deviation * M_PI / m_sampleRate;
 }
 
 CFMMod::~CFMMod()
 {
 }
 
-void CFMMod::setDeviation(REAL value)
+void CFMMod::setDeviation(float value)
 {
 	wxASSERT(value >= 0.0F);
 
-	m_deviation = REAL(value * M_PI / m_sampleRate);
+	m_deviation = value * M_PI / m_sampleRate;
 }
 
 // FIXME m_phase should go to the main oscillator
 void CFMMod::modulate()
 {
-	unsigned int n = CXBhave(m_input);
+	unsigned int n = CXBhave(m_buf);
 
 	for (unsigned int i = 0; i < n; i++) {
-		m_phase += CXBreal(m_input, i) * m_deviation;
+		m_phase += CXBreal(m_buf, i) * m_deviation;
 
-		CXBdata(m_output, i) = Cmplx((REAL)::cos(m_phase), (IMAG)::sin(m_phase));
+		CXBdata(m_buf, i) = Cmplx((float)::cos(m_phase), (float)::sin(m_phase));
 	}
-
-	CXBhave(m_output) = n;
 }

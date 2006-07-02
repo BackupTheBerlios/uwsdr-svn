@@ -55,7 +55,6 @@ This is derived from equ.xmms:
 #ifndef GRPHEQ_H
 #define GRPHEQ_H
 
-#include "DataTypes.h"
 #include "Complex.h"
 #include "CXB.h"
 #include "FilterOVSV.h"
@@ -63,19 +62,19 @@ This is derived from equ.xmms:
 
 class CGraphicEQ {
     public:
-	CGraphicEQ(CXB* d, REAL sampleRate, unsigned int bits);
+	CGraphicEQ(CXB* d, float sampleRate, unsigned int bits);
 	virtual ~CGraphicEQ();
 
 	virtual bool getNotchFlag() const;
 	virtual void setNotchFlag(bool setit);
 
-	void setEQ(REAL preamp, REAL gain0, REAL gain1, REAL gain2);
+	void setEQ(float preamp, float gain0, float gain1, float gain2);
 
 	virtual void equalise();
 
     private:
 	CXB*         m_data;
-	REAL         m_sampleRate;
+	float        m_sampleRate;
 	unsigned int m_bits;
 	CFilterOVSV* m_p;
 	CXB*         m_in;
@@ -83,10 +82,10 @@ class CGraphicEQ {
 	COMPLEX      m_num[9];
 	COMPLEX      m_den[6];
 	bool         m_notchFlag;
-	REAL         m_eqNum[3];
-	REAL         m_eqDen[3];
+	float        m_eqNum[3];
+	float        m_eqDen[3];
 
-	REAL dB2lin(REAL db);
+	float dB2lin(float db);
 };
 
 #endif

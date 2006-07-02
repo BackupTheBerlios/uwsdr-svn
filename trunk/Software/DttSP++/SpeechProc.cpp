@@ -39,7 +39,7 @@ Bridgewater, NJ 08807
 #include <wx/wx.h>
 
 
-CSpeechProc::CSpeechProc(REAL k, REAL maxCompression, CXB* spdat) :
+CSpeechProc::CSpeechProc(float k, float maxCompression, CXB* spdat) :
 m_CG(NULL),
 m_buf(spdat),
 m_lastCG(1.0F),
@@ -51,8 +51,8 @@ m_fac(0.0F)
 
 	unsigned int size = CXBsize(spdat);
 
-	m_CG  = new REAL[size + 1];
-	::memset(m_CG, 0x00, (size + 1) * sizeof(REAL));
+	m_CG  = new float[size + 1];
+	::memset(m_CG, 0x00, (size + 1) * sizeof(float));
 
 	setCompression(maxCompression);
 }
@@ -62,11 +62,11 @@ CSpeechProc::~CSpeechProc()
 	delete[] m_CG;
 }
 
-void CSpeechProc::setCompression(REAL compression)
+void CSpeechProc::setCompression(float compression)
 {
-	m_maxGain = (REAL)::pow(10.0, compression * 0.05);
+	m_maxGain = ::pow(10.0, compression * 0.05);
 
-	m_fac = REAL((((0.0000401002 * compression) - 0.0032093390) * compression + 0.0612862687) * compression + 0.9759745718);
+	m_fac = float((((0.0000401002 * compression) - 0.0032093390) * compression + 0.0612862687) * compression + 0.9759745718);
 }
 
 void CSpeechProc::process()
@@ -78,17 +78,17 @@ void CSpeechProc::process()
 		return;
 
 	// K was 0.4 in VB version, this value is better, perhaps due to filters that follow?
-	REAL r = 0.0;
+	float r = 0.0;
 	for (i = 0; i < n; i++)
 		r = max(r, Cmag(CXBdata(m_buf, i)));	// find the peak magnitude value in the sample buffer 
 
 	m_CG[0] = m_lastCG;	// restore from last time
 
 	for (i = 1; i <= n; i++) {
-		REAL mag = Cmag(CXBdata(m_buf, i - 1));
+		float mag = Cmag(CXBdata(m_buf, i - 1));
 
 		if (mag != 0.0F) {
-			REAL val = m_CG[i - 1] * (1.0F - m_k) + (m_k * r / mag);	// Frerking's formula
+			float val = m_CG[i - 1] * (1.0F - m_k) + (m_k * r / mag);	// Frerking's formula
 
 			m_CG[i] = (val > m_maxGain) ? m_maxGain : val;
 		} else {
@@ -99,5 +99,5 @@ void CSpeechProc::process()
 	m_lastCG = m_CG[n];	// save for next time 
 
 	for (i = 0; i < n; i++)	// multiply each sample by its gain constant 
-		CXBdata(m_buf, i) = Cscl(CXBdata(m_buf, i), REAL(m_CG[i] / (m_fac * ::pow(m_maxGain, 0.25F))));
+		CXBdata(m_buf, i) = Cscl(CXBdata(m_buf, i), float(m_CG[i] / (m_fac * ::pow(m_maxGain, 0.25F))));
 }

@@ -40,7 +40,7 @@ Bridgewater, NJ 08807
 
 class CResampler {
     public:
-	CResampler(REAL sampRateIn, REAL sampRateOut, unsigned int filterMemoryBuffLength = 32768);
+	CResampler(float sampRateIn, float sampRateOut, unsigned int filterMemoryBuffLength = 32768);
 	virtual ~CResampler();
 
 	virtual void process(CXB* inBuf, CXB* outBuf);

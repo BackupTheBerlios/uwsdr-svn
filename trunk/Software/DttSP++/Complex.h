@@ -34,11 +34,9 @@ Bridgewater, NJ 08807
 #ifndef _complex_h
 #define _complex_h
 
-#include "DataTypes.h"
-
 typedef struct {
-	REAL re;
-	REAL im;
+	float re;
+	float im;
 } COMPLEX;
 
 #endif

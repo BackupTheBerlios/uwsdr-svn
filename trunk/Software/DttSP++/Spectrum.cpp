@@ -57,7 +57,7 @@ m_polyphase(false)
 	wxASSERT(size > 0);
 
 	m_accum  = newCXB(m_size * 16, NULL);
-	m_window = new REAL[m_size * 16];
+	m_window = new float[m_size * 16];
 
 	COMPLEX* timebuf = (COMPLEX*)::fftw_malloc(m_size * sizeof(COMPLEX));
 	COMPLEX* freqbuf = (COMPLEX*)::fftw_malloc(m_size * sizeof(COMPLEX));
@@ -66,7 +66,7 @@ m_polyphase(false)
 	wxASSERT(freqbuf != NULL);
 
 	::memset(CXBbase(m_accum), 0x00, 16 * m_size * sizeof(COMPLEX));
-	::memset(m_window, 0x00, 16 * m_size * sizeof(REAL));
+	::memset(m_window, 0x00, 16 * m_size * sizeof(float));
 	::memset(timebuf,  0x00, m_size * sizeof(COMPLEX));
 	::memset(freqbuf,  0x00, m_size * sizeof(COMPLEX));
 
@@ -129,15 +129,15 @@ void CSpectrum::setPolyphase(bool setit)
 
 			unsigned int i;
 
-			COMPLEX* fir = CFIR::lowpass(1.0F, REAL(m_size), 8 * m_size - 1);
-			::memset(m_window, 0x00, 8 * sizeof(REAL) * m_size);
+			COMPLEX* fir = CFIR::lowpass(1.0F, float(m_size), 8 * m_size - 1);
+			::memset(m_window, 0x00, 8 * sizeof(float) * m_size);
 			for (i = 0; i < 8 * m_size - 1; i++)
 				m_window[i] = fir[i].re;
 			delete[] fir;
 
-			REAL maxTap = 0.0F;
+			float maxTap = 0.0F;
 			for (i = 0; i < 8 * m_size; i++)
-				maxTap = max(maxTap, (REAL)::fabs(m_window[i]));
+				maxTap = max(maxTap, (float)::fabs(m_window[i]));
 
 			maxTap = 1.0F / maxTap;
 
@@ -146,7 +146,7 @@ void CSpectrum::setPolyphase(bool setit)
 		} else {
 			m_polyphase = false;
 			m_mask = m_size - 1;
-			::memset(m_window, 0x00, sizeof(REAL) * m_size);
+			::memset(m_window, 0x00, sizeof(float) * m_size);
 			CWindow::create(m_winType, m_size - 1, m_window);
 		}
 
@@ -171,7 +171,7 @@ void CSpectrum::reinitSpectrum()
 	if (m_polyphase)
 		polysize = 8;
 
-	::memset(CXBbase(m_accum), 0, polysize * m_size * sizeof(REAL));
+	::memset(CXBbase(m_accum), 0, polysize * m_size * sizeof(float));
 }
 
 // snapshot of current signal
