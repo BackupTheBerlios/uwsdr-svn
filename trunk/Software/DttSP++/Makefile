@@ -3,7 +3,7 @@ all:		DttSP.a
 CFLAGS :=	-I../Common $(CFLAGS)
 
 OBJS :=		AGC.o AMDemod.o AMMod.o BlockLMS.o Compand.o CorrectIQ.o CXB.o DCBlock.o FIR.o FMDemod.o FMMod.o \
-		FilterOVSV.o GraphicEQ.o LMS.o Meter.o NoiseBlanker.o Oscillator.o Resampler.o Spectrum.o \
+		FilterOVSV.o GraphicEQ.o LMS.o Meter.o NoiseBlanker.o Oscillator.o Resampler.o RX.o Spectrum.o \
 		SpeechProc.o SpotTone.o Squelch.o TX.o Window.o banal.o sdr.o sdrexport.o SSBDemod.o SSBMod.o \
 		update.o winmain.o
 
@@ -64,6 +64,10 @@ Oscillator.o: 	Oscillator.cpp Oscillator.h CXB.h FromSys.h
 Resampler.o: 	Resampler.cpp Resampler.h banal.h CXB.h CXOps.h FIR.h
 		$(CC) $(CFLAGS) -c Resampler.cpp
 
+RX.o:		RX.cpp RX.h AGC.h AMDemod.h BlockLMS.h Compand.h CorrectIQ.h CXB.h Defs.h Demod.h FilterOVSV.h FMDemod.h \
+		GraphicEQ.h LMS.h Meter.h NoiseBlanker.h Oscillator.h Spectrum.h SpotTone.h Squelch.h SSBDemod.h
+		$(CC) $(CFLAGS) -c RX.cpp
+
 Spectrum.o:	Spectrum.cpp Spectrum.h banal.h CXB.h FIR.h FromSys.h Window.h
 		$(CC) $(CFLAGS) -c Spectrum.cpp
 
@@ -97,7 +101,7 @@ sdr.o:		sdr.cpp AMDemod.h AMMod.h banal.h FMDemod.h FMMod.h sdrexport.h SSBDemod
 
 sdrexport.o: 	sdrexport.cpp sdrexport.h AGC.h AMDemod.h BlockLMS.h Compand.h CorrectIQ.h CXB.h DCBlock.h \
 		Defs.h FIR.h FilterOVSV.h FMDemod.h FromSys.h GraphicEQ.h LMS.h Meter.h NoiseBlanker.h Oscillator.h \
-		../Common/RingBuffer.h Spectrum.h SpeechProc.h SpotTone.h Squelch.h TX.h
+		../Common/RingBuffer.h RX.h Spectrum.h SpeechProc.h SpotTone.h Squelch.h TX.h
 		$(CC) $(CFLAGS) -c sdrexport.cpp
 
 update.o:	update.cpp banal.h CXB.h FromSys.h ../Common/RingBuffer.h sdrexport.h

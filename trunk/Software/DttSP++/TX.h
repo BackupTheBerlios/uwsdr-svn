@@ -83,8 +83,7 @@ class CTX {
 
 	virtual void setFMDeviation(float deviation);
 
-	virtual void setIQPhase(float phase);
-	virtual void setIQGain(float gain);
+	virtual void setIQ(float phase, float gain);
 
 	virtual void setLevelerFlag(bool flag);
 	virtual void setLevelerAttack(float attack);

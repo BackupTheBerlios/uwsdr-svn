@@ -186,6 +186,7 @@ void CTX::process()
 		m_filter->reset();
 
 	m_filter->filter();
+	CXBhave(m_oBuf) = CXBhave(m_iBuf);
 
 	m_spectrum->setData(m_oBuf);
 
@@ -294,13 +295,9 @@ void CTX::setFMDeviation(float deviation)
 	m_fmModulator->setDeviation(deviation);
 }
 
-void CTX::setIQPhase(float phase)
+void CTX::setIQ(float phase, float gain)
 {
 	m_iq->setPhase(phase);
-}
-
-void CTX::setIQGain(float gain)
-{
 	m_iq->setGain(gain);
 }
 

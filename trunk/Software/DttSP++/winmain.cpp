@@ -44,9 +44,6 @@ struct _loc loc;
 // most of what little we know here about the inner loop,
 // functionally speaking
 
-extern void reset_meters();
-extern void reset_spectrum();
-extern void reset_counters();
 extern void process_samples(float* bufi, float* bufq, unsigned int size);
 extern void setup_workspace(float rate,
 			     unsigned int buflen,
@@ -346,10 +343,6 @@ void setup(float sampleRate, unsigned int audioSize)
 
 	top.swch.fade = (unsigned int)(0.2F * float(uni.buflen) + 0.5F);
 	top.swch.tail = top.hold.size.frames - top.swch.fade;
-
-	reset_meters();
-	reset_spectrum();
-	reset_counters();
 
 	::wxLogMessage(wxT("DttSP initialised"));
 }

@@ -59,12 +59,7 @@ void SetMode(SDRMODE m)
 	top.sync.upd.sem->Wait();
 
 	tx->setMode(m);
-	rx.mode = uni.mode.sdr = m;
-
-	if (rx.mode == AM)
-		rx.am->setMode(AMdet);
-	if (rx.mode == SAM)
-		rx.am->setMode(SAMdet);
+	rx->setMode(m);
 
 	top.sync.upd.sem->Post();
 }
@@ -83,8 +78,7 @@ void SetFilter(double low_frequency, double high_frequency, int taps, TRXMODE tr
 			tx->setFilter(low_frequency, high_frequency);
 			break;
 		case RX:
-			rx.filt->setFilter(low_frequency, high_frequency);
-			rx.fm->setBandwidth(low_frequency, high_frequency);
+			rx->setFilter(low_frequency, high_frequency);
 			break;
 	}
 
@@ -96,45 +90,43 @@ void Release_Update()
 	top.sync.upd.sem->Post();
 }
 
-void SetOsc(double newfreq)
+void SetOsc(double freq)
 {
-	if (::fabs(newfreq) >= 0.5 * uni.samplerate)
+	if (::fabs(freq) >= 0.5 * uni.samplerate)
 		return;
 
-	rx.osc.gen->setFrequency(newfreq);
+	rx->setFrequency(freq);
 }
 
-void SetRIT(double newfreq)
+void SetRIT(double freq)
 {
-	rx.rit.gen->setFrequency(newfreq);
-}
-
-void SetTXOsc(double newfreq)
-{
-	if (::fabs(newfreq) >= 0.5 * uni.samplerate)
+	if (::fabs(freq) > 5000.0)
 		return;
 
-	tx->setFrequency(newfreq);
+	rx->setRITFrequency(freq);
+}
+
+void SetTXOsc(double freq)
+{
+	if (::fabs(freq) >= 0.5 * uni.samplerate)
+		return;
+
+	tx->setFrequency(freq);
 }
 
 void SetNR(bool setit)
 {
-	rx.anr.flag = setit;
+	rx->setANRFlag(setit);
 }
 
 void SetBlkNR(bool setit)
 {
-	rx.banr.flag = setit;
+	rx->setBANRFlag(setit);
 }
 
 void SetNRvals(unsigned int taps, unsigned int delay, double gain, double leak)
 {
-	rx.anr.gen->setAdaptiveFilterSize(taps);
-	rx.anr.gen->setDelay(delay);
-	rx.anr.gen->setAdaptationRate(gain);
-	rx.anr.gen->setLeakage(leak);
-
-	rx.banr.gen->setAdaptationRate(min(0.1F * gain, 0.0002F));
+	rx->setANRValues(taps, delay, gain, leak);
 }
 
 void SetTXCompandSt(bool setit)
@@ -159,53 +151,47 @@ void SetTXSquelchVal(float setit)
 
 void SetANF(bool setit)
 {
-	rx.anf.flag = setit;
+	rx->setANFFlag(setit);
 }
 
 void SetBlkANF(bool setit)
 {
-	rx.banf.flag = setit;
+	rx->setBANFFlag(setit);
 }
 
 void SetANFvals(unsigned int taps, unsigned int delay, double gain, double leak)
 {
-	rx.anf.gen->setAdaptiveFilterSize(taps);
-	rx.anf.gen->setDelay(delay);
-	rx.anf.gen->setAdaptationRate(gain);
-	rx.anf.gen->setLeakage(leak);
-
-	rx.banf.gen->setAdaptationRate(min(0.1F * gain, 0.0002F));
+	rx->setANFValues(taps, delay, gain, leak);
 }
 
 void SetNB(bool setit)
 {
-	rx.nb.flag = setit;
+	rx->setNBFlag(setit);
 }
 
 void SetNBvals(float threshold)
 {
-	rx.nb.gen->setThreshold(threshold);
+	rx->setNBThreshold(threshold);
 }
 
 void SetSDROM(bool setit)
 {
-	rx.nb_sdrom.flag = setit;
+	rx->setNBSDROMFlag(setit);
 }
 
 void SetSDROMvals(float threshold)
 {
-	rx.nb_sdrom.gen->setThreshold(threshold);
+	rx->setNBSDROMThreshold(threshold);
 }
 
 void SetBIN(bool setit)
 {
-	rx.bin.flag = setit;
+	rx->setBinauralFlag(setit);
 }
 
 void SetRXAGC(AGCMODE setit)
 {
-	rx.agc.gen->setMode(setit);
-	rx.agc.flag = true;				// FIXME ??????
+	rx->setAGCMode(setit);
 }
 
 void SetTXALCAttack(float attack)
@@ -260,19 +246,17 @@ void SetTXLevelerHang(float hang)
 
 void SetCorrectIQ(double phase, double gain)
 {
-	rx.iqfix->setPhase(float(0.001F * phase));
-	rx.iqfix->setGain(float(1.0F + 0.001F * gain));
+	rx->setIQ(float(0.001F * phase), float(1.0F + 0.001F * gain));
 }
 
 void SetCorrectTXIQ(double phase, double gain)
 {
-	tx->setIQPhase(float(0.001F * phase));
-	tx->setIQGain(float(1.0F + 0.001F * gain));
+	tx->setIQ(float(0.001F * phase), float(1.0F + 0.001F * gain));
 }
 
 void SetPWSmode(SPECTRUMtype type)
 {
-	uni.spec.type = type;
+	rx->setSpectrumType(type);
 }
 
 void SetWindow(Windowtype window)
@@ -302,12 +286,12 @@ void SetNotch160(bool state)
 
 void SetGrphRXEQ(int *rxeq)
 {
-	rx.grapheq.gen->setEQ(float(rxeq[0]), float(rxeq[1]), float(rxeq[2]), float(rxeq[3]));
+	rx->setGraphicEQValues(float(rxeq[0]), float(rxeq[1]), float(rxeq[2]), float(rxeq[3]));
 }
 
 void SetGrphRXEQcmd(bool state)
 {
-	rx.grapheq.flag = state;
+	rx->setGraphicEQFlag(state);
 }
 
 void SetTXCompressionSt(bool setit)
@@ -322,12 +306,12 @@ void SetTXCompressionLevel(float txc)
 
 void SetSquelchVal(float setit)
 {
-	rx.squelch.gen->setThreshold(setit);
+	rx->setSquelchThreshold(setit);
 }
 
 void SetSquelchState(bool setit)
 {
-	rx.squelch.gen->setFlag(setit);
+	rx->setSquelchFlag(setit);
 }
 
 void SetTRX(TRXMODE setit)
@@ -367,27 +351,21 @@ void SetTXALCLimit(float limit)
 	tx->setALCGainTop(limit);
 }
 
-void setSpotToneVals(float gain, float freq, float rise, float fall)
+void setSpotTone(bool flag)
 {
-	rx.spot.gen->setValues(gain, freq, rise, fall);
+	rx->setSpotToneFlag(flag);
 }
 
-void setSpotTone(bool setit)
+void setSpotToneVals(float gain, float freq, float rise, float fall)
 {
-	if (setit) {
-		rx.spot.gen->on();
-		rx.spot.flag = true;
-	} else {
-		rx.spot.gen->off();
-		rx.spot.flag = false;
-	}
+	rx->setSpotToneValues(gain, freq, rise, fall);
 }
 
 void Process_Spectrum(float *results)
 {
 	wxASSERT(results != NULL);
 
-	uni.spec.type = SPEC_POST_FILT;
+	rx->setSpectrumType(SPEC_POST_FILT);
 	uni.spec.gen->setScale(SPEC_PWR);
 
 	top.sync.upd.sem->Wait();
@@ -401,7 +379,7 @@ void Process_Panadapter(float *results)
 {
 	wxASSERT(results != NULL);
 
-	uni.spec.type = SPEC_PRE_FILT;
+	rx->setSpectrumType(SPEC_PRE_FILT);
 	uni.spec.gen->setScale(SPEC_PWR);
 
 	top.sync.upd.sem->Wait();
@@ -415,9 +393,10 @@ void Process_Phase(float *results, unsigned int numpoints)
 {
 	wxASSERT(results != NULL);
 
-	top.sync.upd.sem->Wait();
-	uni.spec.type = SPEC_POST_AGC;
+	rx->setSpectrumType(SPEC_POST_AGC);
 	uni.spec.gen->setScale(SPEC_PWR);
+
+	top.sync.upd.sem->Wait();
 	uni.spec.gen->snapScope();
 	top.sync.upd.sem->Post();
 
@@ -428,9 +407,10 @@ void Process_Scope(float *results, unsigned int numpoints)
 {
 	wxASSERT(results != NULL);
 
-	top.sync.upd.sem->Wait();
-	uni.spec.type = SPEC_POST_AGC;
+	rx->setSpectrumType(SPEC_POST_AGC);
 	uni.spec.gen->setScale(SPEC_PWR);
+
+	top.sync.upd.sem->Wait();
 	uni.spec.gen->snapScope();
 	top.sync.upd.sem->Post();
 
@@ -507,7 +487,7 @@ float Calculate_Meters(METERTYPE mt)
 void SetDeviation(float value)
 {
 	tx->setFMDeviation(value);
-	rx.fm->setDeviation(value);
+	rx->setFMDeviation(value);
 }
 
 void RingBufferReset()
@@ -528,7 +508,5 @@ void SetRXPan(float pos)
 	if (pos < 0.0F || pos > 1.0F)
 		return;
 
-	float theta = float((1.0 - pos) * M_PI / 2.0);
-
-	rx.azim = Cmplx((float)::cos(theta), (float)::sin(theta));
+	rx->setAzim(pos);
 }

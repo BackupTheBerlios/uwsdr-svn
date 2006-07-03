@@ -163,6 +163,10 @@ SOURCE=.\Resampler.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\RX.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\sdr.cpp
 # End Source File
 # Begin Source File
@@ -316,6 +320,10 @@ SOURCE=.\Oscillator.h
 # Begin Source File
 
 SOURCE=.\Resampler.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\RX.h
 # End Source File
 # Begin Source File
 

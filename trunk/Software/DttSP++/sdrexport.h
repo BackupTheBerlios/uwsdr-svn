@@ -60,6 +60,7 @@ Bridgewater, NJ 08807
 #include "AGC.h"
 #include "Squelch.h"
 #include "TX.h"
+#include "RX.h"
 
 #include <wx/wx.h>
 
@@ -85,7 +86,6 @@ extern struct _uni
 
   struct {
 	CSpectrum* gen;
-	SPECTRUMtype type;
   } spec;
 
   struct {
@@ -96,90 +96,8 @@ extern struct _uni
   unsigned long tick;
 } uni;
 
-//------------------------------------------------------------------------
-/* RX */
-//------------------------------------------------------------------------
-
-extern struct _rx
-{
-  struct {
-    CXB* i;
-	CXB* o;
-  } buf;
-
-  CCorrectIQ* iqfix;
-
-  struct {
-    COscillator* gen;
-  } osc;
-
-  CFilterOVSV* filt;
-
-  struct {
-	COscillator* gen;
-  } rit;
-
-  struct {
-    CNoiseBlanker* gen;
-    bool flag;
-  } nb;
-
-  struct {
-    CNoiseBlanker* gen;
-    bool flag;
-  } nb_sdrom;
-
-  struct {
-    CLMS* gen;
-    bool flag;
-  } anr, anf;
-
-  struct {
-    CBlockLMS* gen;
-    bool flag;
-  } banr, banf;
-
-  struct {
-    CAGC* gen;
-    bool flag;
-  } agc;
-
-  CAMDemod*  am;
-  CFMDemod*  fm;
-  CSSBDemod* ssb;
-
-  struct {
-    bool flag;
-    CSpotTone* gen;
-  } spot;
-
-  struct {
-	CSquelch* gen;
-  } squelch;
-
-  struct {
-    bool flag;
-    CCompand* gen;
-  } cpd;
-
-  struct {
-    CGraphicEQ* gen;
-    bool flag;
-  } grapheq;
-
-  SDRMODE mode;
-
-  struct {
-    bool flag;
-  } bin;
-
-  float norm;
-  COMPLEX azim;
-  unsigned long tick;
-} rx;
-
-
 extern CTX* tx;
+extern CRX* rx;
 //------------------------------------------------------------------------
 
 typedef enum _runmode {
