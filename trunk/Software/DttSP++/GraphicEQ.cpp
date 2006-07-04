@@ -45,10 +45,7 @@ const float EQ_Num_48000[] = {0.99220706371F, -1.98392450292F, 0.99220706371F};
 const float EQ_Den_48000[] = {1.98392450292f, -0.98441412742F};
 
 const float EQ_Num_96000[] = {0.99608835009F, -1.99205381333F, 0.99608835009f};
-const float EQ_Den_96000[] =  {1.99205381333F, -0.99217670018F};
-
-const float EQ_Num_192000[] = {0.99804034984F, -1.99604991764F, 0.99804034984F};
-const float EQ_Den_192000[] = {1.99604991764F, -0.99608069967F};
+const float EQ_Den_96000[] = {1.99205381333F, -0.99217670018F};
 
 
 CGraphicEQ::CGraphicEQ(CXB* d, float sampleRate, unsigned int bits) :
@@ -89,13 +86,6 @@ m_eqDen()
 
 		m_eqDen[0] = EQ_Den_96000[0];
 		m_eqDen[1] = EQ_Den_96000[1];
-	} else if (sampleRate == 192000.0F) {
-		m_eqNum[0] = EQ_Num_192000[0];
-		m_eqNum[1] = EQ_Num_192000[1];
-		m_eqNum[2] = EQ_Num_192000[2];
-
-		m_eqDen[0] = EQ_Den_192000[0];
-		m_eqDen[1] = EQ_Den_192000[1];
 	}
 }
 

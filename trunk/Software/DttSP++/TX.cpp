@@ -74,7 +74,7 @@ m_tick(0UL)
 
 	m_iq = new CCorrectIQ(m_oBuf);
 
-	m_dcBlock = new CDCBlock(DCB_MED, m_iBuf);
+	m_dcBlock = new CDCBlock(DCB_MED, sampleRate, m_iBuf);
 
 	m_oscillator = new COscillator(m_oBuf, 0.0, 0.0, sampleRate);
 

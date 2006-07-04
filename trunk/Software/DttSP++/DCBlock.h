@@ -49,21 +49,32 @@ const int BLKMEM = 9;
 
 class CDCBlock {
     public:
-	CDCBlock(DCBMode mode, CXB* buf);
+	CDCBlock(DCBMode mode, float sampleRate, CXB* buf);
 	virtual ~CDCBlock();
 
 	virtual void block();
 
     private:
 	DCBMode m_mode;
+	float   m_sampleRate;
+	CXB*    m_buf;
 	float   m_input[BLKMEM];
 	float   m_output[BLKMEM];
-	CXB*    m_buf;
 
-	float butterworthHighpass_100_2(float xin);
-	float butterworthHighpass_100_4(float xin);
-	float butterworthHighpass_100_6(float xin);
-	float butterworthHighpass_100_8(float xin);
+	float butterworthHighpass_100_2_11025(float xin);
+	float butterworthHighpass_100_4_11025(float xin);
+	float butterworthHighpass_100_6_11025(float xin);
+	float butterworthHighpass_100_8_11025(float xin);
+
+	float butterworthHighpass_100_2_48000(float xin);
+	float butterworthHighpass_100_4_48000(float xin);
+	float butterworthHighpass_100_6_48000(float xin);
+	float butterworthHighpass_100_8_48000(float xin);
+
+	float butterworthHighpass_100_2_96000(float xin);
+	float butterworthHighpass_100_4_96000(float xin);
+	float butterworthHighpass_100_6_96000(float xin);
+	float butterworthHighpass_100_8_96000(float xin);
 };
 
 #endif
