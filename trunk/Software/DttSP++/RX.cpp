@@ -343,6 +343,16 @@ void CRX::setRITFrequency(double freq)
 	m_rit->setFrequency(freq);
 }
 
+void CRX::setCompandFlag(bool flag)
+{
+	m_companderFlag = flag;
+}
+
+void CRX::setCompandFactor(float factor)
+{
+	m_compander->setFactor(factor);
+}
+
 void CRX::setSquelchFlag(bool flag)
 {
 	m_squelch->setFlag(flag);

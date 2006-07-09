@@ -32,7 +32,7 @@ Bridgewater, NJ 08807
 */
 
 #include "BlockLMS.h"
-#include "banal.h"
+#include "Utils.h"
 
 #include <wx/wx.h>
 
@@ -64,15 +64,15 @@ m_updPlan(NULL)
 	wxASSERT(filterType == BLMS_INTERFERENCE || filterType == BLMS_NOISE);
 	wxASSERT(pbits > 0);
 
-	m_delayLine = (COMPLEX*)::fftw_malloc(256 * sizeof(COMPLEX));
-	m_y         = (COMPLEX*)::fftw_malloc(256 * sizeof(COMPLEX));
-	m_wHat      = (COMPLEX*)::fftw_malloc(256 * sizeof(COMPLEX));
-	m_xHat      = (COMPLEX*)::fftw_malloc(256 * sizeof(COMPLEX));
-	m_yHat      = (COMPLEX*)::fftw_malloc(256 * sizeof(COMPLEX));
-	m_error     = (COMPLEX*)::fftw_malloc(256 * sizeof(COMPLEX));
-	m_errHat    = (COMPLEX*)::fftw_malloc(256 * sizeof(COMPLEX));
-	m_update1   = (COMPLEX*)::fftw_malloc(256 * sizeof(COMPLEX));
-	m_update2   = (COMPLEX*)::fftw_malloc(256 * sizeof(COMPLEX));
+	m_delayLine = (COMPLEX*)::fftwf_malloc(256 * sizeof(COMPLEX));
+	m_y         = (COMPLEX*)::fftwf_malloc(256 * sizeof(COMPLEX));
+	m_wHat      = (COMPLEX*)::fftwf_malloc(256 * sizeof(COMPLEX));
+	m_xHat      = (COMPLEX*)::fftwf_malloc(256 * sizeof(COMPLEX));
+	m_yHat      = (COMPLEX*)::fftwf_malloc(256 * sizeof(COMPLEX));
+	m_error     = (COMPLEX*)::fftwf_malloc(256 * sizeof(COMPLEX));
+	m_errHat    = (COMPLEX*)::fftwf_malloc(256 * sizeof(COMPLEX));
+	m_update1   = (COMPLEX*)::fftwf_malloc(256 * sizeof(COMPLEX));
+	m_update2   = (COMPLEX*)::fftwf_malloc(256 * sizeof(COMPLEX));
 
 	wxASSERT(m_delayLine != NULL);
 	wxASSERT(m_y != NULL);
@@ -109,15 +109,15 @@ CBlockLMS::~CBlockLMS()
 	::fftwf_destroy_plan(m_errHatPlan);
 	::fftwf_destroy_plan(m_updPlan);
 
-	::fftw_free(m_update1);
-	::fftw_free(m_update2);
-	::fftw_free(m_wHat);
-	::fftw_free(m_xHat);
-	::fftw_free(m_yHat);
-	::fftw_free(m_error);
-	::fftw_free(m_errHat);
-	::fftw_free(m_y);
-	::fftw_free(m_delayLine);
+	::fftwf_free(m_update1);
+	::fftwf_free(m_update2);
+	::fftwf_free(m_wHat);
+	::fftwf_free(m_xHat);
+	::fftwf_free(m_yHat);
+	::fftwf_free(m_error);
+	::fftwf_free(m_errHat);
+	::fftwf_free(m_y);
+	::fftwf_free(m_delayLine);
 }
 
 void CBlockLMS::setAdaptationRate(float adaptationRate)

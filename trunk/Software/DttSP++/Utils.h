@@ -1,4 +1,4 @@
-/* banal.h
+/* Utils.h
    stuff we're too embarrassed to declare otherwise
    
    This file is part of a program that implements a Software-Defined Radio.
@@ -32,8 +32,8 @@
    Bridgewater, NJ 08807
 */
 
-#ifndef _banal_h
-#define _banal_h
+#ifndef _utils_h
+#define _utils_h
 
 #include "FromSys.h"
 

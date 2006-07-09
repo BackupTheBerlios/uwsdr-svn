@@ -201,17 +201,6 @@ CUWSDRFrame::~CUWSDRFrame()
 void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 {
 	wxASSERT(parameters != NULL);
-	wxASSERT(m_spectrumDisplay != NULL);
-	wxASSERT(m_infoBox != NULL);
-	wxASSERT(m_mode != NULL);
-	wxASSERT(m_filter != NULL);
-	wxASSERT(m_ritCtrl != NULL);
-	wxASSERT(m_rit != NULL);
-	wxASSERT(m_micGain != NULL);
-	wxASSERT(m_power != NULL);
-	wxASSERT(m_afGain != NULL);
-	wxASSERT(m_squelch != NULL);
-	wxASSERT(m_sMeter != NULL);
 
 	m_parameters = parameters;
 
@@ -573,9 +562,6 @@ void CUWSDRFrame::onMouseWheel(wxMouseEvent& event)
 
 void CUWSDRFrame::dialMoved(int id, int value)
 {
-	wxASSERT(m_parameters != NULL);
-	wxASSERT(m_dsp != NULL);
-
 	switch (id) {
 		case FREQ_KNOB:
 			freqChange(double(value) * m_stepSize);
@@ -605,8 +591,6 @@ void CUWSDRFrame::dialMoved(int id, int value)
 
 void CUWSDRFrame::freqChange(double value)
 {
-	wxASSERT(m_parameters != NULL);
-
 	CFrequency freq;
 
 	if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn)
@@ -664,8 +648,6 @@ void CUWSDRFrame::freqChange(double value)
 
 void CUWSDRFrame::onMenuButton(wxCommandEvent& event)
 {
-	wxASSERT(m_menu != NULL);
-
 	m_menu->Check(MENU_RECORD, m_record);
 
 	PopupMenu(m_menu, 0, 30);
@@ -673,9 +655,6 @@ void CUWSDRFrame::onMenuButton(wxCommandEvent& event)
 
 void CUWSDRFrame::onVFOButton(wxCommandEvent& event)
 {
-	wxASSERT(m_parameters != NULL);
-	wxASSERT(m_infoBox != NULL);
-
 	if (m_txOn)
 		return;
 
@@ -739,8 +718,6 @@ void CUWSDRFrame::onVFOButton(wxCommandEvent& event)
 
 void CUWSDRFrame::onMHzButton(wxCommandEvent& event)
 {
-	wxASSERT(m_parameters != NULL);
-
 	if (m_txOn)
 		return;
 
@@ -756,8 +733,6 @@ void CUWSDRFrame::onMHzButton(wxCommandEvent& event)
 
 void CUWSDRFrame::onModeChoice(wxCommandEvent& event)
 {
-	wxASSERT(m_parameters != NULL);
-
 	m_parameters->m_mode = int(event.GetSelection());
 
 	normaliseMode();
@@ -767,8 +742,6 @@ void CUWSDRFrame::onModeChoice(wxCommandEvent& event)
 
 void CUWSDRFrame::onFilterChoice(wxCommandEvent& event)
 {
-	wxASSERT(m_parameters != NULL);
-
 	m_parameters->m_filter = int(event.GetSelection());
 
 	normaliseMode();
@@ -776,9 +749,6 @@ void CUWSDRFrame::onFilterChoice(wxCommandEvent& event)
 
 void CUWSDRFrame::onRITButton(wxCommandEvent& event)
 {
-	wxASSERT(m_infoBox != NULL);
-	wxASSERT(m_parameters != NULL);
-
 	m_parameters->m_ritOn = !m_parameters->m_ritOn;
 
 	m_infoBox->setRIT(m_parameters->m_ritOn);
@@ -791,8 +761,6 @@ void CUWSDRFrame::onRITButton(wxCommandEvent& event)
 
 void CUWSDRFrame::onMuteButton(wxCommandEvent& event)
 {
-	wxASSERT(m_sdr != NULL);
-
 	m_rxOn = !m_rxOn;
 
 	m_sdr->enableRX(m_rxOn);
@@ -800,9 +768,6 @@ void CUWSDRFrame::onMuteButton(wxCommandEvent& event)
 
 void CUWSDRFrame::onTXButton(wxCommandEvent& event)
 {
-	wxASSERT(m_infoBox != NULL);
-	wxASSERT(m_parameters != NULL);
-
 	if (!m_txOn && m_parameters->m_hardwareReceiveOnly) {
 		::wxMessageBox(_("This SDR is only a receiver!"), _("uWave SDR Error"), wxICON_ERROR);
 		return;
@@ -875,10 +840,6 @@ void CUWSDRFrame::normaliseFreq()
 	// We can be called too early ...
 	if (m_parameters == NULL)
 		return;
-
-	wxASSERT(m_freqDisplay != NULL);
-	wxASSERT(m_sdr != NULL);
-	wxASSERT(m_dsp != NULL);
 
 	CFrequency freq;
 
@@ -981,8 +942,6 @@ void CUWSDRFrame::normaliseMode()
 	if (m_parameters == NULL)
 		return;
 
-	wxASSERT(m_dsp != NULL);
-
 	m_dsp->setMode(m_parameters->m_mode);
 
 	int speed  = -1;
@@ -1053,9 +1012,6 @@ void CUWSDRFrame::normaliseMode()
 
 void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 {
-	wxASSERT(m_parameters != NULL);
-	wxASSERT(m_dsp != NULL);
-
 	switch (event.GetId()) {
 		case MENU_PREFERENCES: {
 				CUWSDRPreferences preferences(this, -1, m_parameters, m_dsp);
@@ -1184,10 +1140,6 @@ void CUWSDRFrame::sdrConnectionLost(int id)
 
 void CUWSDRFrame::onTimer(wxTimerEvent& event)
 {
-	wxASSERT(m_dsp != NULL);
-	wxASSERT(m_sMeter != NULL);
-	wxASSERT(m_spectrumDisplay != NULL);
-
 	m_parameters->m_spectrumPos   = m_spectrumDisplay->getPosition();
 	m_parameters->m_spectrumType  = m_spectrumDisplay->getType();
 	m_parameters->m_spectrumSpeed = m_spectrumDisplay->getSpeed();
@@ -1226,9 +1178,6 @@ void CUWSDRFrame::onTimer(wxTimerEvent& event)
 
 void CUWSDRFrame::onClose(wxCloseEvent& event)
 {
-	wxASSERT(m_sdr != NULL);
-	wxASSERT(m_dsp != NULL);
-
 	if (!event.CanVeto()) {
 		Destroy();
 		return;

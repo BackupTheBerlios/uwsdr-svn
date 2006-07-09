@@ -142,6 +142,6 @@ extern void    SetDeviation(float value);
 
 extern void    Audio_Callback(float* input_i, float* input_q, float* output_i, float* output_q, unsigned int nframes);
 extern void    Audio_CallbackIL(float* input, float* output, unsigned int nframes);
-extern void    process_samples_thread(void);
+extern void    process_samples_thread();
 
 #endif

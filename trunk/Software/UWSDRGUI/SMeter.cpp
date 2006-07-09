@@ -212,10 +212,6 @@ void CSMeter::createBackground()
 
 void CSMeter::onMouse(wxMouseEvent& event)
 {
-	wxASSERT(m_menu != NULL);
-	wxASSERT(m_rxMenu != NULL);
-	wxASSERT(m_txMenu != NULL);
-
 	switch (m_rxMeter) {
 		case METER_I_INPUT:
 			m_rxMenu->Check(MENU_I_INPUT, true);

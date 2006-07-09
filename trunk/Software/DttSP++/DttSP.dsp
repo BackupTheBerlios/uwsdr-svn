@@ -99,10 +99,6 @@ SOURCE=.\AMMod.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\banal.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\BlockLMS.cpp
 # End Source File
 # Begin Source File
@@ -120,6 +116,10 @@ SOURCE=.\CXB.cpp
 # Begin Source File
 
 SOURCE=.\DCBlock.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\DttSP.cpp
 # End Source File
 # Begin Source File
 
@@ -167,14 +167,6 @@ SOURCE=.\RX.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\sdr.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\sdrexport.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\Spectrum.cpp
 # End Source File
 # Begin Source File
@@ -207,11 +199,11 @@ SOURCE=.\update.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\Window.cpp
+SOURCE=.\Utils.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\winmain.cpp
+SOURCE=.\Window.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -228,10 +220,6 @@ SOURCE=.\AMDemod.h
 # Begin Source File
 
 SOURCE=.\AMMod.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\banal.h
 # End Source File
 # Begin Source File
 
@@ -271,6 +259,10 @@ SOURCE=.\Demod.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\DttSP.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\FilterOVSV.h
 # End Source File
 # Begin Source File
@@ -299,10 +291,6 @@ SOURCE=.\LMS.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\local.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\Meter.h
 # End Source File
 # Begin Source File
@@ -324,10 +312,6 @@ SOURCE=.\Resampler.h
 # Begin Source File
 
 SOURCE=.\RX.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\sdrexport.h
 # End Source File
 # Begin Source File
 
@@ -356,6 +340,10 @@ SOURCE=.\SSBMod.h
 # Begin Source File
 
 SOURCE=.\TX.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Utils.h
 # End Source File
 # Begin Source File
 

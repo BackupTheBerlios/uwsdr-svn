@@ -104,13 +104,10 @@ bool CSoundFileWriter::open(float sampleRate, unsigned int blockSize)
 
 void CSoundFileWriter::write(const float* buffer, unsigned int length)
 {
-	wxASSERT(m_handle != NULL);
 	wxASSERT(buffer != NULL);
 	wxASSERT(length > 0 && length <= m_blockSize);
 
 	if (m_sampleWidth == 8) {
-		wxASSERT(m_buffer8 != NULL);
-
 		for (unsigned int i = 0; i < length * 2; i++)
 			m_buffer8[i] = uint8(buffer[i] * 128.0 + 127.0);
 
@@ -120,8 +117,6 @@ void CSoundFileWriter::write(const float* buffer, unsigned int length)
 		if (n != bytes)
 			::wxLogError(wxT("Error from mmioWrite(), wanted %ld available %ld"), bytes, n);
 	} else {
-		wxASSERT(m_buffer16 != NULL);
-
 		for (unsigned int i = 0; i < length * 2; i++)
 			m_buffer16[i] = sint16(buffer[i] * 32768.0);
 
@@ -135,8 +130,6 @@ void CSoundFileWriter::write(const float* buffer, unsigned int length)
 
 void CSoundFileWriter::close()
 {
-	wxASSERT(m_handle != NULL);
-
 	::mmioAscend(m_handle, &m_child, 0);
 	::mmioAscend(m_handle, &m_parent, 0);
 
@@ -193,7 +186,6 @@ bool CSoundFileWriter::open(float sampleRate, unsigned int blockSize)
 
 void CSoundFileWriter::write(const float* buffer, unsigned int length)
 {
-	wxASSERT(m_file != NULL);
 	wxASSERT(buffer != NULL);
 
 	::sf_write_float(m_file, buffer, length);
@@ -201,8 +193,6 @@ void CSoundFileWriter::write(const float* buffer, unsigned int length)
 
 void CSoundFileWriter::close()
 {
-	wxASSERT(m_file != NULL);
-
 	::sf_close(m_file);
 }
 

@@ -72,6 +72,9 @@ class CRX {
 	virtual void setFrequency(double freq);
 	virtual void setRITFrequency(double freq);
 
+	virtual void setCompandFlag(bool flag);
+	virtual void setCompandFactor(float factor);
+
 	virtual void setSquelchFlag(bool flag);
 	virtual void setSquelchThreshold(float threshold);
 

@@ -98,8 +98,6 @@ void CDSPControl::setRXWriter(IDataWriter* writer)
 
 void* CDSPControl::Entry()
 {
-	wxASSERT(m_dttsp != NULL);
-
 	bool ret = openIO();
 	if (!ret) {
 		m_dttsp->close();
@@ -152,11 +150,6 @@ void* CDSPControl::Entry()
 
 bool CDSPControl::openIO()
 {
-	wxASSERT(m_txReader != NULL);
-	wxASSERT(m_rxReader != NULL);
-	wxASSERT(m_txWriter != NULL);
-	wxASSERT(m_rxWriter != NULL);
-
 	// This should be done before opening
 	m_txReader->setCallback(this, TX_READER);
 	m_rxReader->setCallback(this, RX_READER);
@@ -191,11 +184,6 @@ bool CDSPControl::openIO()
 
 void CDSPControl::closeIO()
 {
-	wxASSERT(m_txReader != NULL);
-	wxASSERT(m_rxReader != NULL);
-	wxASSERT(m_txWriter != NULL);
-	wxASSERT(m_rxWriter != NULL);
-
 	setRecord(false);
 
 	m_txReader->close();
@@ -206,9 +194,7 @@ void CDSPControl::closeIO()
 
 void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 {
-	wxASSERT(m_dttsp != NULL);
 	wxASSERT(inBuffer != NULL);
-	wxASSERT(m_outBuffer != NULL);
 	wxASSERT(nSamples > 0);
 
 	// Don't process any data until the main thread is ready
@@ -254,36 +240,26 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 
 void CDSPControl::setMode(int mode)
 {
-	wxASSERT(m_dttsp != NULL);
-
 	m_dttsp->setMode(mode);
 }
 
 void CDSPControl::setFilter(int filter)
 {
-	wxASSERT(m_dttsp != NULL);
-
 	m_dttsp->setFilter(filter);
 }
 
 void CDSPControl::setAGC(int agc)
 {
-	wxASSERT(m_dttsp != NULL);
-
 	m_dttsp->setAGC(agc);
 }
 
 void CDSPControl::setDeviation(int dev)
 {
-	wxASSERT(m_dttsp != NULL);
-
 	m_dttsp->setDeviation(dev);
 }
 
 void CDSPControl::setTXAndFreq(bool transmit, float freq)
 {
-	wxASSERT(m_dttsp != NULL);
-
 	// On a change from transmit to receive and vice versa we empty the ring buffers and
 	// drain the semaphore.
 	if (transmit != m_transmit) {
@@ -307,78 +283,56 @@ void CDSPControl::setTXAndFreq(bool transmit, float freq)
 
 void CDSPControl::setRIT(float freq)
 {
-	wxASSERT(m_dttsp != NULL);
-
 	m_dttsp->setRIT(freq);
 }
 
 void CDSPControl::setNB(bool onOff)
 {
-	wxASSERT(m_dttsp != NULL);
-
 	m_dttsp->setNB(onOff);
 }
 
 void CDSPControl::setNBValue(unsigned int value)
 {
-	wxASSERT(m_dttsp != NULL);
-
 	m_dttsp->setNBValue(value);
 }
 
 void CDSPControl::setNB2(bool onOff)
 {
-	wxASSERT(m_dttsp != NULL);
-
 	m_dttsp->setNB2(onOff);
 }
 
 void CDSPControl::setNB2Value(unsigned int value)
 {
-	wxASSERT(m_dttsp != NULL);
-
 	m_dttsp->setNB2Value(value);
 }
 
 void CDSPControl::setSP(bool onOff)
 {
-	wxASSERT(m_dttsp != NULL);
-
 	m_dttsp->setSP(onOff);
 }
 
 void CDSPControl::setSPValue(unsigned int value)
 {
-	wxASSERT(m_dttsp != NULL);
-
 	m_dttsp->setSPValue(value);
 }
 
 void CDSPControl::setRXIAndQ(int phase, int gain)
 {
-	wxASSERT(m_dttsp != NULL);
-
 	m_dttsp->setRXIAndQ(phase, gain);
 }
 
 void CDSPControl::setTXIAndQ(int phase, int gain)
 {
-	wxASSERT(m_dttsp != NULL);
-
 	m_dttsp->setTXIAndQ(phase, gain);
 }
 
 float CDSPControl::getMeter(int type)
 {
-	wxASSERT(m_dttsp != NULL);
-
 	return m_dttsp->getMeter(type);
 }
 
 void CDSPControl::getSpectrum(float* spectrum, int pos)
 {
-	wxASSERT(m_dttsp != NULL);
-
 	m_dttsp->getSpectrum(spectrum, pos);
 }
 
@@ -399,8 +353,6 @@ void CDSPControl::setPower(unsigned int value)
 
 void CDSPControl::setSquelch(unsigned int value)
 {
-	wxASSERT(m_dttsp != NULL);
-
 	m_dttsp->setSquelch(value);
 }
 

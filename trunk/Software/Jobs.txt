@@ -26,3 +26,4 @@ CW Keyboard
 I+Q storage for different frequencies
 Mac OS X version
 Voice keyer?
+Frequency database with display on the spectrum.

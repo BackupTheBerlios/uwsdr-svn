@@ -183,13 +183,10 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 
 bool CSoundFileReader::readFile(float* buffer, unsigned int nSamples)
 {
-	wxASSERT(m_handle != NULL);
 	wxASSERT(buffer != NULL);
 	wxASSERT(nSamples > 0 && nSamples <= m_blockSize);
 
 	if (m_sampleWidth == 8) {
-		wxASSERT(m_buffer8 != NULL);
-
 		LONG n = ::mmioRead(m_handle, (char *)m_buffer8, nSamples * 2 * sizeof(uint8));
 
 		if (n <= 0)
@@ -198,8 +195,6 @@ bool CSoundFileReader::readFile(float* buffer, unsigned int nSamples)
 		for (int i = 0; i < n; i++)
 			buffer[i] = (float(m_buffer8[i]) - 127.0) / 128.0;
 	} else {
-		wxASSERT(m_buffer16 != NULL);
-
 		LONG n = ::mmioRead(m_handle, (char *)m_buffer16, nSamples * 2 * sizeof(sint16));
 
 		if (n <= 0)
@@ -269,7 +264,6 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 
 bool CSoundFileReader::readFile(float* buffer, unsigned int nSamples)
 {
-	wxASSERT(m_file != NULL);
 	wxASSERT(buffer != NULL);
 
 	int n = ::sf_read_float(m_file, buffer, nSamples);
@@ -282,8 +276,6 @@ bool CSoundFileReader::readFile(float* buffer, unsigned int nSamples)
 
 void CSoundFileReader::closeFile()
 {
-	wxASSERT(m_file != NULL);
-
 	::sf_close(m_file);
 }
 

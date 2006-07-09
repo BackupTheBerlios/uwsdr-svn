@@ -1,4 +1,4 @@
-/* banal.cpp
+/* Utils.cpp
 
 This file is part of a program that implements a Software-Defined Radio.
 
@@ -31,7 +31,7 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
-#include "banal.h"
+#include "Utils.h"
 
 
 unsigned int npoof2(unsigned int n)

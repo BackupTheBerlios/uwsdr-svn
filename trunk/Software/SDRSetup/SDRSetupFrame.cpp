@@ -103,13 +103,6 @@ CSDRSetupFrame::~CSDRSetupFrame()
 
 void CSDRSetupFrame::onExecute(wxCommandEvent& event)
 {
-   wxASSERT(m_oldSDRAddress != NULL);
-   wxASSERT(m_oldSDRControlPort != NULL);
-   wxASSERT(m_sdrAddress != NULL);
-   wxASSERT(m_sdrControlPort != NULL);
-   wxASSERT(m_sdrDataPort != NULL);
-   wxASSERT(m_dspAddress != NULL);
-
    wxIPV4address address;
 
 	wxString oldSDRAddress = m_oldSDRAddress->GetValue();

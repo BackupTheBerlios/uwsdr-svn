@@ -44,6 +44,8 @@ CSoundCardReader::~CSoundCardReader()
 
 void CSoundCardReader::setCallback(IDataCallback* callback, int id)
 {
+	wxASSERT(callback != NULL);
+
 	m_callback = callback;
 	m_id       = id;
 }

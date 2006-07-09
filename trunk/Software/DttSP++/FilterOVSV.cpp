@@ -34,7 +34,7 @@ Bridgewater, NJ 08807
 #include "FilterOVSV.h"
 #include "FIR.h"
 #include "CXOps.h"
-#include "banal.h"
+#include "Utils.h"
 #include "CXB.h"
 
 #include <wx/wx.h>
@@ -56,10 +56,10 @@ m_scale(0.0F)
 
 	unsigned int fftLen = 2 * m_bufLen;
 
-	m_zrvec = (COMPLEX*)::fftw_malloc(fftLen * sizeof(COMPLEX));
-	m_zfvec = (COMPLEX*)::fftw_malloc(fftLen * sizeof(COMPLEX));
-	m_zivec = (COMPLEX*)::fftw_malloc(fftLen * sizeof(COMPLEX));
-	m_zovec = (COMPLEX*)::fftw_malloc(fftLen * sizeof(COMPLEX));
+	m_zrvec = (COMPLEX*)::fftwf_malloc(fftLen * sizeof(COMPLEX));
+	m_zfvec = (COMPLEX*)::fftwf_malloc(fftLen * sizeof(COMPLEX));
+	m_zivec = (COMPLEX*)::fftwf_malloc(fftLen * sizeof(COMPLEX));
+	m_zovec = (COMPLEX*)::fftwf_malloc(fftLen * sizeof(COMPLEX));
 
 	wxASSERT(m_zrvec != NULL);
 	wxASSERT(m_zfvec != NULL);
@@ -82,10 +82,10 @@ m_scale(0.0F)
 
 CFilterOVSV::~CFilterOVSV()
 {
-	::fftw_free(m_zfvec);
-	::fftw_free(m_zivec);
-	::fftw_free(m_zovec);
-	::fftw_free(m_zrvec);
+	::fftwf_free(m_zfvec);
+	::fftwf_free(m_zivec);
+	::fftwf_free(m_zovec);
+	::fftwf_free(m_zrvec);
 
 	::fftwf_destroy_plan(m_pfwd);
 	::fftwf_destroy_plan(m_pinv);
@@ -102,7 +102,7 @@ void CFilterOVSV::setFilter(float lowFreq, float highFreq)
 
 	COMPLEX* coefs = CFIR::bandpass(lowFreq, highFreq, m_samprate, ncoef);
 
-	COMPLEX* zcvec = (COMPLEX*)::fftw_malloc(fftLen * sizeof(COMPLEX));
+	COMPLEX* zcvec = (COMPLEX*)::fftwf_malloc(fftLen * sizeof(COMPLEX));
 	wxASSERT(zcvec != NULL);
 	::memset(zcvec, 0x00, fftLen * sizeof(COMPLEX));
 
@@ -119,7 +119,7 @@ void CFilterOVSV::setFilter(float lowFreq, float highFreq)
 	::fftwf_execute(ptmp);
 
 	::fftwf_destroy_plan(ptmp);
-	::fftw_free(zcvec);
+	::fftwf_free(zcvec);
 
 	delete[] coefs;
 

@@ -13,8 +13,8 @@
 ;Configuration
 
   ;General
-  Name "UWSDR 0.5.1"
-  OutFile "UWSDR-0.5.1.exe"
+  Name "UWSDR 0.5.2"
+  OutFile "UWSDR-0.5.2.exe"
 
   ;Folder selection page
   InstallDir "$PROGRAMFILES\UWSDR"
@@ -54,7 +54,7 @@ Section "UWSDR Program Files" SecProgram
   File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Release\SDRHelp.exe"
   File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Release\SDRSetup.exe"
   File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Release\SDREmulator.exe"
-  File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Release\fftw3.dll"
+  File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Release\libfftw3f-3.dll"
   File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Release\PA19.dll"
   File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Release\wxbase26_vc_custom.dll"
   File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Release\wxbase26_net_vc_custom.dll"

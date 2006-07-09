@@ -212,8 +212,6 @@ int CUWSDRApp::OnExit()
 
 bool CUWSDRApp::readDescrFile()
 {
-	wxASSERT(m_parameters != NULL);
-
 	CSDRDescrFile descrFile(m_parameters->m_fileName);
 
 	if (!descrFile.isValid())
@@ -549,8 +547,6 @@ void CUWSDRApp::writeConfig()
 
 void CUWSDRApp::showHelp(const wxString& chapter)
 {
-	wxASSERT(m_help != NULL);
-
 	m_help->Display(chapter);
 }
 

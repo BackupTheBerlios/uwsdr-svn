@@ -49,7 +49,7 @@ typedef enum {
 	TX
 } TRXMODE;
 
-const unsigned int RINGMULT  = 2;
+const unsigned int RINGSIZE  = 4096;
 const SDRMODE      DEFMODE   = USB;
 const unsigned int DEFSPEC   = 4096;
 const unsigned int DEFCOMP   = 512;

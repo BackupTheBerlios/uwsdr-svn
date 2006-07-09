@@ -373,8 +373,6 @@ void CGUISetupFrame::readConfig(const wxString& name)
 
 void CGUISetupFrame::enumerateAPI()
 {
-	wxASSERT(m_apiChoice != NULL);
-
 	PaError error = ::Pa_Initialize();
 	if (error != paNoError) {
 		::wxMessageBox(_("Cannot initialise the sound access system."));
@@ -406,8 +404,6 @@ void CGUISetupFrame::enumerateAPI()
 
 void CGUISetupFrame::enumerateAudio(int api)
 {
-	wxASSERT(m_devChoice != NULL);
-
 	PaError error = ::Pa_Initialize();
 	if (error != paNoError) {
 		::wxMessageBox(_("Cannot initialise the sound access system."));

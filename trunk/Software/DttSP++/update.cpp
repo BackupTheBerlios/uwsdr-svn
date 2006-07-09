@@ -1,6 +1,4 @@
 /* update.cpp
-
-common defs and code for parm update 
    
 This file is part of a program that implements a Software-Defined Radio.
 
@@ -33,480 +31,342 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
-#include "sdrexport.h"
-#include "banal.h"
-#include "RingBuffer.h"
+#include "DttSP.h"
 
-#include <wx/wx.h>
 
+static CDttSP* dttsp = NULL;
 
 ////////////////////////////////////////////////////////////////////////////
 
 void Setup_SDR(float sampleRate, unsigned int audioSize)
 {
-	extern void setup(float samplerate, unsigned int audioSize);
-	setup(sampleRate, audioSize);
+	dttsp = new CDttSP(sampleRate, audioSize);
 }
 
 void Destroy_SDR()
 {
-	extern void closeup();
-	closeup();
+	delete dttsp;
 }
 
 void SetMode(SDRMODE m)
 {
-	top.sync.upd.sem->Wait();
-
-	tx->setMode(m);
-	rx->setMode(m);
-
-	top.sync.upd.sem->Post();
+	dttsp->setMode(m);
 }
 
 void SetDCBlock(bool setit)
 {
-	tx->setDCBlockFlag(setit);
+	dttsp->setDCBlockFlag(setit);
 }
 
 void SetFilter(double low_frequency, double high_frequency, int taps, TRXMODE trx)
 {
-	top.sync.upd.sem->Wait();
-
 	switch (trx) {
 		case TX:
-			tx->setFilter(low_frequency, high_frequency);
+			dttsp->setTXFilter(low_frequency, high_frequency);
 			break;
 		case RX:
-			rx->setFilter(low_frequency, high_frequency);
+			dttsp->setRXFilter(low_frequency, high_frequency);
 			break;
 	}
-
-	top.sync.upd.sem->Post();
 }
 
 void Release_Update()
 {
-	top.sync.upd.sem->Post();
+	dttsp->releaseUpdate();
 }
 
 void SetOsc(double freq)
 {
-	if (::fabs(freq) >= 0.5 * uni.samplerate)
-		return;
-
-	rx->setFrequency(freq);
+	dttsp->setRXFrequency(freq);
 }
 
 void SetRIT(double freq)
 {
-	if (::fabs(freq) > 5000.0)
-		return;
 
-	rx->setRITFrequency(freq);
+	dttsp->setRITFrequency(freq);
 }
 
 void SetTXOsc(double freq)
 {
-	if (::fabs(freq) >= 0.5 * uni.samplerate)
-		return;
-
-	tx->setFrequency(freq);
+	dttsp->setTXFrequency(freq);
 }
 
 void SetNR(bool setit)
 {
-	rx->setANRFlag(setit);
+	dttsp->setANRFlag(setit);
 }
 
 void SetBlkNR(bool setit)
 {
-	rx->setBANRFlag(setit);
+	dttsp->setBANRFlag(setit);
 }
 
 void SetNRvals(unsigned int taps, unsigned int delay, double gain, double leak)
 {
-	rx->setANRValues(taps, delay, gain, leak);
+	dttsp->setANRValues(taps, delay, gain, leak);
 }
 
 void SetTXCompandSt(bool setit)
 {
-	tx->setCompandFlag(setit);
+	dttsp->setCompandFlag(setit);
 }
 
 void SetTXCompand(double setit)
 {
-	tx->setCompandFactor(-setit);
+	dttsp->setCompandFactor(setit);
 }
 
 void SetTXSquelchSt(bool setit)
 {
-	tx->setSquelchFlag(setit);
+	dttsp->setTXSquelchFlag(setit);
 }
 
 void SetTXSquelchVal(float setit)
 {
-	tx->setSquelchThreshold(setit);
+	dttsp->setTXSquelchThreshold(setit);
 }
 
 void SetANF(bool setit)
 {
-	rx->setANFFlag(setit);
+	dttsp->setANFFlag(setit);
 }
 
 void SetBlkANF(bool setit)
 {
-	rx->setBANFFlag(setit);
+	dttsp->setBANFFlag(setit);
 }
 
 void SetANFvals(unsigned int taps, unsigned int delay, double gain, double leak)
 {
-	rx->setANFValues(taps, delay, gain, leak);
+	dttsp->setANFValues(taps, delay, gain, leak);
 }
 
 void SetNB(bool setit)
 {
-	rx->setNBFlag(setit);
+	dttsp->setNBFlag(setit);
 }
 
 void SetNBvals(float threshold)
 {
-	rx->setNBThreshold(threshold);
+	dttsp->setNBThreshold(threshold);
 }
 
 void SetSDROM(bool setit)
 {
-	rx->setNBSDROMFlag(setit);
+	dttsp->setNBSDROMFlag(setit);
 }
 
 void SetSDROMvals(float threshold)
 {
-	rx->setNBSDROMThreshold(threshold);
+	dttsp->setNBSDROMThreshold(threshold);
 }
 
 void SetBIN(bool setit)
 {
-	rx->setBinauralFlag(setit);
+	dttsp->setBinauralFlag(setit);
 }
 
 void SetRXAGC(AGCMODE setit)
 {
-	rx->setAGCMode(setit);
+	dttsp->setAGCMode(setit);
 }
 
 void SetTXALCAttack(float attack)
 {
-	tx->setALCAttack(attack);
+	dttsp->setALCAttack(attack);
 }
 
 void SetTXCarrierLevel(double setit)
 {
-	tx->setAMCarrierLevel(setit);
+	dttsp->setCarrierLevel(setit);
 }
 
 void SetTXALCDecay(float decay)
 {
-	tx->setALCDecay(decay);
+	dttsp->setALCDecay(decay);
 }
 
 void SetTXALCBot(float bot)
 {
-	tx->setALCGainBottom(bot);
+	dttsp->setALCGainBottom(bot);
 }
 
 void SetTXALCHang(float hang)
 {
-	tx->setALCHangTime(hang);
+	dttsp->setALCHangTime(hang);
 }
 
 void SetTXLevelerSt(bool state)
 {
-	tx->setLevelerFlag(state);
+	dttsp->setLevelerFlag(state);
 }
 
 void SetTXLevelerAttack(float attack)
 {
-	tx->setLevelerAttack(attack);
+	dttsp->setLevelerAttack(attack);
 }
 
 void SetTXLevelerDecay(float decay)
 {
-	tx->setLevelerDecay(decay);
+	dttsp->setLevelerDecay(decay);
 }
 
 void SetTXLevelerTop(float top)
 {
-	tx->setLevelerGainTop(top);
+	dttsp->setLevelerGainTop(top);
 }
 
 void SetTXLevelerHang(float hang)
 {
-	tx->setLevelerHangTime(hang);
+	dttsp->setLevelerHangTime(hang);
 }
 
 void SetCorrectIQ(double phase, double gain)
 {
-	rx->setIQ(float(0.001F * phase), float(1.0F + 0.001F * gain));
+	dttsp->setRXCorrectIQ(float(0.001F * phase), float(1.0F + 0.001F * gain));
 }
 
 void SetCorrectTXIQ(double phase, double gain)
 {
-	tx->setIQ(float(0.001F * phase), float(1.0F + 0.001F * gain));
+	dttsp->setTXCorrectIQ(float(0.001F * phase), float(1.0F + 0.001F * gain));
 }
 
 void SetPWSmode(SPECTRUMtype type)
 {
-	rx->setSpectrumType(type);
+	dttsp->setSpectrumType(type);
 }
 
 void SetWindow(Windowtype window)
 {
-	uni.spec.gen->setWindow(window);
+	dttsp->setSpectrumWindowType(window);
 }
 
 void SetSpectrumPolyphase(bool setit)
 {
-	uni.spec.gen->setPolyphase(setit);
+	dttsp->setSpectrumPolyphaseFlag(setit);
 }
 
 void SetGrphTXEQ(int *txeq)
 {
-	tx->setGraphicEQValues(float(txeq[0]), float(txeq[1]), float(txeq[2]), float(txeq[3]));
+	dttsp->setTXGraphicEQValues(float(txeq[0]), float(txeq[1]), float(txeq[2]), float(txeq[3]));
 }
 
 void SetGrphTXEQcmd(bool state)
 {
-	tx->setGraphicEQFlag(state);
+	dttsp->setTXGraphicEQFlag(state);
 }
 
 void SetNotch160(bool state)
 {
-	tx->setNotchFlag(state);
+	dttsp->setTXNotchFlag(state);
 }
 
 void SetGrphRXEQ(int *rxeq)
 {
-	rx->setGraphicEQValues(float(rxeq[0]), float(rxeq[1]), float(rxeq[2]), float(rxeq[3]));
+	dttsp->setRXGraphicEQValues(float(rxeq[0]), float(rxeq[1]), float(rxeq[2]), float(rxeq[3]));
 }
 
 void SetGrphRXEQcmd(bool state)
 {
-	rx->setGraphicEQFlag(state);
+	dttsp->setRXGraphicEQFlag(state);
 }
 
 void SetTXCompressionSt(bool setit)
 {
-	tx->setCompressionFlag(setit);
+	dttsp->setCompressionFlag(setit);
 }
 
 void SetTXCompressionLevel(float txc)
 {
-	tx->setCompressionLevel(txc);
+	dttsp->setCompressionLevel(txc);
 }
 
 void SetSquelchVal(float setit)
 {
-	rx->setSquelchThreshold(setit);
+	dttsp->setRXSquelchThreshold(setit);
 }
 
 void SetSquelchState(bool setit)
 {
-	rx->setSquelchFlag(setit);
+	dttsp->setRXSquelchFlag(setit);
 }
 
 void SetTRX(TRXMODE setit)
 {
-	top.sync.upd.sem->Wait();
-
-	switch (setit) {
-		case TX:
-			switch (tx->getMode()) {
-				case CWU:
-				case CWL:
-					top.swch.bfct.want = 0;
-					break;
-				default:
-					top.swch.bfct.want = int(2 * uni.samplerate / 48000);
-					break;
-			}
-
-		case RX:
-			top.swch.bfct.want = int(1 * uni.samplerate / 48000);
-			break;
-	}
-
-	top.swch.trx.next = setit;
-	top.swch.bfct.have = 0;
-
-	if (top.state != RUN_SWCH)
-		top.swch.run.last = top.state;
-
-	top.state = RUN_SWCH;
-
-	top.sync.upd.sem->Post();
+	dttsp->setTRX(setit);
 }
 
 void SetTXALCLimit(float limit)
 {
-	tx->setALCGainTop(limit);
+	dttsp->setALCGainTop(limit);
 }
 
 void setSpotTone(bool flag)
 {
-	rx->setSpotToneFlag(flag);
+	dttsp->setSpotToneFlag(flag);
 }
 
 void setSpotToneVals(float gain, float freq, float rise, float fall)
 {
-	rx->setSpotToneValues(gain, freq, rise, fall);
+	dttsp->setSpotToneValues(gain, freq, rise, fall);
 }
 
 void Process_Spectrum(float *results)
 {
-	wxASSERT(results != NULL);
-
-	rx->setSpectrumType(SPEC_POST_FILT);
-	uni.spec.gen->setScale(SPEC_PWR);
-
-	top.sync.upd.sem->Wait();
-	uni.spec.gen->snapSpectrum();
-	top.sync.upd.sem->Post();
-
-	uni.spec.gen->computeSpectrum(results);
+	dttsp->setSpectrumType(SPEC_POST_FILT);
+	dttsp->getSpectrum(results);
 }
 
 void Process_Panadapter(float *results)
 {
-	wxASSERT(results != NULL);
-
-	rx->setSpectrumType(SPEC_PRE_FILT);
-	uni.spec.gen->setScale(SPEC_PWR);
-
-	top.sync.upd.sem->Wait();
-	uni.spec.gen->snapSpectrum();
-	top.sync.upd.sem->Post();
-
-	uni.spec.gen->computeSpectrum(results);
+	dttsp->setSpectrumType(SPEC_PRE_FILT);
+	dttsp->getSpectrum(results);
 }
 
 void Process_Phase(float *results, unsigned int numpoints)
 {
-	wxASSERT(results != NULL);
-
-	rx->setSpectrumType(SPEC_POST_AGC);
-	uni.spec.gen->setScale(SPEC_PWR);
-
-	top.sync.upd.sem->Wait();
-	uni.spec.gen->snapScope();
-	top.sync.upd.sem->Post();
-
-	uni.spec.gen->computeScopeComplex(results, numpoints);
+	dttsp->setSpectrumType(SPEC_POST_AGC);
+	dttsp->getPhase(results, numpoints);
 }
 
 void Process_Scope(float *results, unsigned int numpoints)
 {
-	wxASSERT(results != NULL);
-
-	rx->setSpectrumType(SPEC_POST_AGC);
-	uni.spec.gen->setScale(SPEC_PWR);
-
-	top.sync.upd.sem->Wait();
-	uni.spec.gen->snapScope();
-	top.sync.upd.sem->Post();
-
-	uni.spec.gen->computeScopeReal(results, numpoints);
+	dttsp->setSpectrumType(SPEC_POST_AGC);
+	dttsp->getScope(results, numpoints);
 }
 
 float Calculate_Meters(METERTYPE mt)
 {
-	float returnval = -200.0F;
-
-	top.sync.upd.sem->Wait();
-
-	if (uni.mode.trx == RX) {
-		switch (mt) {
-			case SIGNAL_STRENGTH:
-				returnval = uni.meter.gen->getRXMeter(RX_SIGNAL_STRENGTH);
-				break;
-			case AVG_SIGNAL_STRENGTH:
-				returnval = uni.meter.gen->getRXMeter(RX_AVG_SIGNAL_STRENGTH);
-				break;
-			case ADC_REAL:
-				returnval = uni.meter.gen->getRXMeter(RX_ADC_REAL);
-				break;
-			case ADC_IMAG:
-				returnval = uni.meter.gen->getRXMeter(RX_ADC_IMAG);
-				break;
-			case AGC_GAIN:
-				returnval = uni.meter.gen->getRXMeter(RX_AGC_GAIN);
-				break;
-			default:
-				returnval = -200.0F;
-				break;
-		}
-    } else {
-		switch(mt) {
-			case MIC:
-				returnval = uni.meter.gen->getTXMeter(TX_MIC);
-				break;
-			case PWR:
-				returnval = uni.meter.gen->getTXMeter(TX_PWR);
-				break;
-			case ALC:
-				returnval = uni.meter.gen->getTXMeter(TX_ALC);
-				break;
-			case EQtap:
-				returnval = uni.meter.gen->getTXMeter(TX_EQtap);
-				break;
-			case LEVELER:
-				returnval = uni.meter.gen->getTXMeter(TX_LEVELER);
-				break;
-			case COMP:
-				returnval = uni.meter.gen->getTXMeter(TX_COMP);
-				break;
-			case CPDR:
-				returnval = uni.meter.gen->getTXMeter(TX_CPDR);
-				break;
-			case ALC_G:
-				returnval = uni.meter.gen->getTXMeter(TX_ALC_G);
-				break;
-			case LVL_G:
-				returnval = uni.meter.gen->getTXMeter(TX_LVL_G);
-				break;
-			default:
-				returnval = -200.0F;
-				break;
-		}
-    }
-
-	top.sync.upd.sem->Post();
-
-	return returnval;
+	return dttsp->getMeter(mt);
 }
 
 void SetDeviation(float value)
 {
-	tx->setFMDeviation(value);
-	rx->setFMDeviation(value);
+	dttsp->setDeviation(value);
 }
 
 void RingBufferReset()
 {
-	top.sync.upd.sem->Wait();
-
-	top.jack.ring.i.i->clear();
-	top.jack.ring.i.q->clear();
-	top.jack.ring.o.i->clear();
-	top.jack.ring.o.q->clear();
-
-	top.sync.upd.sem->Post();
+	dttsp->ringBufferReset();
 }
 
 // [pos]  0.0 <= pos <= 1.0
 void SetRXPan(float pos)
 {
-	if (pos < 0.0F || pos > 1.0F)
-		return;
+	dttsp->setRXPan(pos);
+}
 
-	rx->setAzim(pos);
+void  Audio_Callback(float* input_i, float* input_q, float* output_i, float* output_q, unsigned int nframes)
+{
+	dttsp->audioEntry(input_i, input_q, output_i, output_q, nframes);
+}
+
+void  Audio_CallbackIL(float* input, float* output, unsigned int nframes)
+{
+	dttsp->audioEntry(input, output, nframes);
+}
+
+void process_samples_thread()
+{
+	dttsp->process();
 }

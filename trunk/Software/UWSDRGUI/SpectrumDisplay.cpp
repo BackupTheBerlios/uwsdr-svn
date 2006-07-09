@@ -448,9 +448,6 @@ void CSpectrumDisplay::onLeftMouse(wxMouseEvent& event)
 
 void CSpectrumDisplay::onRightMouse(wxMouseEvent& event)
 {
-	wxASSERT(m_menu != NULL);
-	wxASSERT(m_speedMenu != NULL);
-
 	switch (m_type) {
 		case SPECTRUM_PANADAPTER1:
 			m_typeMenu->Check(MENU_PANADAPTER1, true);

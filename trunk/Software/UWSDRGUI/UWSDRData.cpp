@@ -123,10 +123,8 @@ void CUWSDRData::write(const float* buffer, unsigned int nSamples)
 
 void CUWSDRData::writePacket(const float* buffer, unsigned int nSamples)
 {
-	wxASSERT(m_socket != NULL);
 	wxASSERT(buffer != NULL);
 	wxASSERT(nSamples > 0 && nSamples <= PACKET_SIZE);
-	wxASSERT(m_outBuffer != NULL);
 
 	m_outBuffer[0] = 'D';
 	m_outBuffer[1] = 'A';
@@ -179,7 +177,6 @@ void CUWSDRData::close()
 void CUWSDRData::onSocket(wxSocketEvent& event)
 {
 	wxASSERT(m_socket != NULL);
-	wxASSERT(m_inBuffer != NULL);
 
 	if (event.GetSocketEvent() == wxSOCKET_INPUT) {
 		wxIPV4address addr;

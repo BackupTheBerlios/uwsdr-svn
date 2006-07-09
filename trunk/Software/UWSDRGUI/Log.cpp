@@ -36,14 +36,11 @@ m_eol()
 
 CLog::~CLog()
 {
-	wxASSERT(m_file != NULL);
-
 	delete m_file;
 }
 
 void CLog::DoLog(wxLogLevel level, const wxChar *msg, time_t timestamp)
 {
-	wxASSERT(m_file != NULL);
 	wxASSERT(m_file->IsOpened());
 	wxASSERT(msg != NULL);
 
@@ -77,7 +74,6 @@ void CLog::DoLog(wxLogLevel level, const wxChar *msg, time_t timestamp)
 
 void CLog::DoLogString(const wxChar* msg, time_t timestamp)
 {
-	wxASSERT(m_file != NULL);
 	wxASSERT(m_file->IsOpened());
 	wxASSERT(msg != NULL);
 

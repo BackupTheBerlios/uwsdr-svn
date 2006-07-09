@@ -84,8 +84,6 @@ float CCompand::getFactor() const
 
 void CCompand::setFactor(float fac)
 {
-	wxASSERT(m_tbl != NULL);
-
 	if (fac == 0.0F) {	// just linear
 		for (unsigned int i = 0; i < m_npts; i++)
 			m_tbl[i] = float(i) / float(m_nend);
@@ -102,8 +100,6 @@ void CCompand::setFactor(float fac)
 
 float CCompand::lookup(float x)
 {
-	wxASSERT(m_tbl != NULL);
-
 	if (x <= 0.0F) 
 		return 0.0F;
 

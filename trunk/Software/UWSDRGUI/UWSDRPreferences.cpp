@@ -376,8 +376,6 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 
 void CUWSDRPreferences::onHelp(wxCommandEvent& event)
 {
-	wxASSERT(m_noteBook != NULL);
-
 	int page = m_noteBook->GetSelection();
 	if (page == -1)
 		return;
@@ -842,12 +840,6 @@ wxPanel* CUWSDRPreferences::createIQTab(wxNotebook* noteBook)
 
 void CUWSDRPreferences::onIQChanged(wxSpinEvent& event)
 {
-	wxASSERT(m_rxIQPhase != NULL);
-	wxASSERT(m_txIQPhase != NULL);
-	wxASSERT(m_rxIQGain != NULL);
-	wxASSERT(m_txIQGain != NULL);
-	wxASSERT(m_dsp != NULL);
-
 	switch (event.GetId()) {
 		case RXIQ_PHASE:
 		case RXIQ_GAIN: {

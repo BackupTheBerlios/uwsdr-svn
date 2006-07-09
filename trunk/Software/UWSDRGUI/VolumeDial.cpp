@@ -56,6 +56,7 @@ m_state(STATE_NONE)
 	wxASSERT(m_max > m_min);
 	wxASSERT(m_value >= m_min && value < m_max);
 	wxASSERT(m_width == m_height);
+	wxASSERT(m_callback != NULL);
 
 	m_timer  = new wxTimer(this, VOLUME_TIMER);
 	m_bitmap = new wxBitmap(m_width, m_height);
@@ -147,8 +148,6 @@ void CVolumeDial::show(wxDC& dc)
 
 void CVolumeDial::onMouse(wxMouseEvent& event)
 {
-	wxASSERT(m_timer != NULL);
-
 	int state;
 	if (event.LeftDown())
 		state = STATE_LEFT;
@@ -189,8 +188,6 @@ void CVolumeDial::onTimer(wxTimerEvent& event)
 
 void CVolumeDial::moveDial()
 {
-	wxASSERT(m_callback != NULL);
-
 	switch (m_state) {
 		case STATE_LEFT:
 			if (m_value <= m_min)

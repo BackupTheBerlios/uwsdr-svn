@@ -140,9 +140,6 @@ bool CSDREmulatorFrame::createListener(unsigned int port)
 
 void CSDREmulatorFrame::onParentSocket(wxSocketEvent& event)
 {
-	wxASSERT(m_server != NULL);
-	wxASSERT(m_connectLabel != NULL);
-
 	wxSocketBase* child = m_server->Accept();
 	if (child == NULL) {
 		m_server->Close();
@@ -188,15 +185,13 @@ void CSDREmulatorFrame::onChildSocket(wxSocketEvent& event)
 			socket->Destroy();
 			break;
 		default:
-			assert(false);
+			wxASSERT(false);
 			break;
 	}
 }
 
 void CSDREmulatorFrame::processCommand(wxSocketBase& socket, wxChar* buffer)
 {
-	wxASSERT(m_messages != NULL);
-
 	wxString messages = buffer;
 
 	int pos = messages.Find(wxT(';'));

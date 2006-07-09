@@ -52,6 +52,7 @@ m_angle(0),
 m_mult(0)
 {
 	wxASSERT(m_height == m_width);
+	wxASSERT(m_callback != NULL);
 
 	m_timer  = new wxTimer(this, FREQ_TIMER),
 	m_bitmap = new wxBitmap(m_width, m_height);
@@ -133,8 +134,6 @@ void CFreqDial::show(wxDC& dc)
 
 void CFreqDial::onMouse(wxMouseEvent& event)
 {
-	wxASSERT(m_timer != NULL);
-
 	int state;
 	if (event.LeftDown())
 		state = STATE_LEFT;
@@ -181,8 +180,6 @@ void CFreqDial::onTimer(wxTimerEvent& event)
 
 void CFreqDial::moveDial()
 {
-	wxASSERT(m_callback != NULL);
-
 	switch (m_state) {
 		case STATE_LEFT:
 			m_angle -= 3 * m_mult;

@@ -80,7 +80,6 @@ bool CSoundCardWriter::open(float sampleRate, unsigned int blockSize)
 
 void CSoundCardWriter::write(const float* buffer, unsigned int nSamples)
 {
-	wxASSERT(m_buffer != NULL);
 	wxASSERT(buffer != NULL);
 	wxASSERT(nSamples > 0);
 
@@ -92,7 +91,6 @@ void CSoundCardWriter::write(const float* buffer, unsigned int nSamples)
 
 int CSoundCardWriter::callback(void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags)
 {
-	wxASSERT(m_buffer != NULL);
 	wxASSERT(output != NULL);
 
 	// No output data may not be a problem, we could be on transmit

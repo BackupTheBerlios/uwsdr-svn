@@ -35,7 +35,7 @@ Bridgewater, NJ 08807
 #include "Window.h"
 #include "FromSys.h"
 #include "FIR.h"
-#include "banal.h"
+#include "Utils.h"
 
 #include <wx/wx.h>
 
@@ -59,8 +59,8 @@ m_polyphase(false)
 	m_accum  = newCXB(m_size * 16, NULL);
 	m_window = new float[m_size * 16];
 
-	COMPLEX* timebuf = (COMPLEX*)::fftw_malloc(m_size * sizeof(COMPLEX));
-	COMPLEX* freqbuf = (COMPLEX*)::fftw_malloc(m_size * sizeof(COMPLEX));
+	COMPLEX* timebuf = (COMPLEX*)::fftwf_malloc(m_size * sizeof(COMPLEX));
+	COMPLEX* freqbuf = (COMPLEX*)::fftwf_malloc(m_size * sizeof(COMPLEX));
 
 	wxASSERT(timebuf != NULL);
 	wxASSERT(freqbuf != NULL);
@@ -80,8 +80,8 @@ m_polyphase(false)
 
 CSpectrum::~CSpectrum()
 {
-	::fftw_free(CXBbase(m_timebuf));
-	::fftw_free(CXBbase(m_freqbuf));
+	::fftwf_free(CXBbase(m_timebuf));
+	::fftwf_free(CXBbase(m_freqbuf));
 
 	delCXB(m_accum);
 	delCXB(m_timebuf);
@@ -102,12 +102,12 @@ void CSpectrum::setScale(SPECTRUMscale scale)
 	m_scale = scale;
 }
 
-Windowtype CSpectrum::getWindow() const
+Windowtype CSpectrum::getWindowType() const
 {
 	return m_winType;
 }
 
-void CSpectrum::setWindow(Windowtype type)
+void CSpectrum::setWindowType(Windowtype type)
 {
 	if (!m_polyphase)
 		CWindow::create(type, m_size, m_window);
@@ -115,12 +115,12 @@ void CSpectrum::setWindow(Windowtype type)
 	m_winType = type;
 }
 
-bool CSpectrum::getPolyphase() const
+bool CSpectrum::getPolyphaseFlag() const
 {
 	return m_polyphase;
 }
 
-void CSpectrum::setPolyphase(bool setit)
+void CSpectrum::setPolyphaseFlag(bool setit)
 {
 	if (m_polyphase != setit) {
 		if (setit) {

@@ -61,11 +61,11 @@ class CSpectrum {
 	virtual SPECTRUMscale getScale() const;
 	virtual void setScale(SPECTRUMscale scale);
 
-	virtual Windowtype getWindow() const;
-	virtual void setWindow(Windowtype type);
+	virtual Windowtype getWindowType() const;
+	virtual void setWindowType(Windowtype type);
 
-	virtual bool getPolyphase() const;
-	virtual void setPolyphase(bool setit);
+	virtual bool getPolyphaseFlag() const;
+	virtual void setPolyphaseFlag(bool setit);
 
 	virtual void setData(CXB* buf);
 

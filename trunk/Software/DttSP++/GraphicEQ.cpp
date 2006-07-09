@@ -114,7 +114,7 @@ void CGraphicEQ::setEQ(float preamp, float gain0, float gain1, float gain2)
 	COMPLEX* tmpcoef = new COMPLEX[257];
 	::memset(tmpcoef, 0x00, 257 * sizeof(COMPLEX));
 
-	COMPLEX* filtcoef = (COMPLEX*)::fftw_malloc(512 * sizeof(COMPLEX));
+	COMPLEX* filtcoef = (COMPLEX*)::fftwf_malloc(512 * sizeof(COMPLEX));
 	wxASSERT(filtcoef != NULL);
 	::memset(filtcoef, 0x00, 512 * sizeof(COMPLEX));
 
@@ -157,7 +157,7 @@ void CGraphicEQ::setEQ(float preamp, float gain0, float gain1, float gain2)
 
 	::fftwf_execute(ptmp);
 	::fftwf_destroy_plan(ptmp);
-	::fftw_free(filtcoef);
+	::fftwf_free(filtcoef);
 
 	delete[] tmpcoef;
 }

@@ -32,7 +32,7 @@ Bridgewater, NJ 08807
 */
 
 #include "LMS.h"
-#include "banal.h"
+#include "Utils.h"
 
 #include <wx/wx.h>
 
