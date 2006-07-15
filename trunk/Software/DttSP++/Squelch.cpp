@@ -33,8 +33,6 @@ Bridgewater, NJ 08807
 
 #include "Squelch.h"
 
-#include <wx/wx.h>
-
 
 CSquelch::CSquelch(CXB* buf, float threshold, float offset, unsigned int num) :
 m_buf(buf),
@@ -46,7 +44,7 @@ m_set(false),
 m_running(false),
 m_flag(false)
 {
-	wxASSERT(m_buf != NULL);
+	ASSERT(m_buf != NULL);
 }
 
 CSquelch::~CSquelch()

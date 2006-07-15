@@ -19,7 +19,6 @@
 #ifndef	RingBuffer_H
 #define	RingBuffer_H
 
-#include <wx/wx.h>
 
 class CRingBuffer {
 

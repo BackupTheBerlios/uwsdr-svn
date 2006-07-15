@@ -37,7 +37,6 @@ Bridgewater, NJ 08807
 #include "FIR.h"
 #include "Utils.h"
 
-#include <wx/wx.h>
 
 
 CSpectrum::CSpectrum(unsigned int size, unsigned int planbits, SPECTRUMscale scale) :
@@ -54,7 +53,7 @@ m_planbits(planbits),
 m_plan(),
 m_polyphase(false)
 {
-	wxASSERT(size > 0);
+	ASSERT(size > 0);
 
 	m_accum  = newCXB(m_size * 16, NULL);
 	m_window = new float[m_size * 16];
@@ -62,8 +61,8 @@ m_polyphase(false)
 	COMPLEX* timebuf = (COMPLEX*)::fftwf_malloc(m_size * sizeof(COMPLEX));
 	COMPLEX* freqbuf = (COMPLEX*)::fftwf_malloc(m_size * sizeof(COMPLEX));
 
-	wxASSERT(timebuf != NULL);
-	wxASSERT(freqbuf != NULL);
+	ASSERT(timebuf != NULL);
+	ASSERT(freqbuf != NULL);
 
 	::memset(CXBbase(m_accum), 0x00, 16 * m_size * sizeof(COMPLEX));
 	::memset(m_window, 0x00, 16 * m_size * sizeof(float));
@@ -156,7 +155,7 @@ void CSpectrum::setPolyphaseFlag(bool setit)
 
 void CSpectrum::setData(CXB* buf)
 {
-	wxASSERT(buf != NULL);
+	ASSERT(buf != NULL);
 
 	::memcpy(&CXBdata(m_accum, m_fill), CXBbase(buf), CXBhave(buf) * sizeof(COMPLEX));
 
@@ -220,7 +219,7 @@ void CSpectrum::snapScope()
 // snapshot -> frequency domain
 void CSpectrum::computeSpectrum(float* spectrum)
 {
-	wxASSERT(spectrum != NULL);
+	ASSERT(spectrum != NULL);
 
 	unsigned int half = m_size / 2;
 	unsigned int i, j;
@@ -243,8 +242,8 @@ void CSpectrum::computeSpectrum(float* spectrum)
 
 void CSpectrum::computeScopeReal(float* results, unsigned int numpoints)
 {
-	wxASSERT(results != NULL);
-	wxASSERT(numpoints <= m_size);
+	ASSERT(results != NULL);
+	ASSERT(numpoints <= m_size);
 
 	for (unsigned int i = 0; i < numpoints; i++)
 		results[i] = CXBreal(m_timebuf, i);
@@ -252,8 +251,8 @@ void CSpectrum::computeScopeReal(float* results, unsigned int numpoints)
 
 void CSpectrum::computeScopeComplex(float* results, unsigned int numpoints)
 {
-	wxASSERT(results != NULL);
-	wxASSERT(numpoints <= m_size);
+	ASSERT(results != NULL);
+	ASSERT(numpoints <= m_size);
 
 	unsigned int i, j;
 	for (i = 0, j = 0; i < numpoints; i++, j += 2) {

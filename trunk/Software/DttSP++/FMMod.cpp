@@ -33,7 +33,6 @@ Bridgewater, NJ 08807
 
 #include "FMMod.h"
 
-#include <wx/wx.h>
 
 
 CFMMod::CFMMod(float sampleRate, float deviation, CXB* buf) :
@@ -42,8 +41,8 @@ m_deviation(0.0F),
 m_buf(buf),
 m_phase(0.0F)
 {
-	wxASSERT(deviation >= 0.0F);
-	wxASSERT(buf != NULL);
+	ASSERT(deviation >= 0.0F);
+	ASSERT(buf != NULL);
 
 	m_deviation = deviation * M_PI / m_sampleRate;
 }
@@ -54,7 +53,7 @@ CFMMod::~CFMMod()
 
 void CFMMod::setDeviation(float value)
 {
-	wxASSERT(value >= 0.0F);
+	ASSERT(value >= 0.0F);
 
 	m_deviation = value * M_PI / m_sampleRate;
 }

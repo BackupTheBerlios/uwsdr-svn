@@ -34,8 +34,6 @@ Bridgewater, NJ 08807
 #include "BlockLMS.h"
 #include "Utils.h"
 
-#include <wx/wx.h>
-
 
 const float BLKSCL = 1.0F / 256.0F;
 
@@ -60,9 +58,9 @@ m_yPlan(NULL),
 m_errHatPlan(NULL),
 m_updPlan(NULL)
 {
-	wxASSERT(signal != NULL);
-	wxASSERT(filterType == BLMS_INTERFERENCE || filterType == BLMS_NOISE);
-	wxASSERT(pbits > 0);
+	ASSERT(signal != NULL);
+	ASSERT(filterType == BLMS_INTERFERENCE || filterType == BLMS_NOISE);
+	ASSERT(pbits > 0);
 
 	m_delayLine = (COMPLEX*)::fftwf_malloc(256 * sizeof(COMPLEX));
 	m_y         = (COMPLEX*)::fftwf_malloc(256 * sizeof(COMPLEX));
@@ -74,15 +72,15 @@ m_updPlan(NULL)
 	m_update1   = (COMPLEX*)::fftwf_malloc(256 * sizeof(COMPLEX));
 	m_update2   = (COMPLEX*)::fftwf_malloc(256 * sizeof(COMPLEX));
 
-	wxASSERT(m_delayLine != NULL);
-	wxASSERT(m_y != NULL);
-	wxASSERT(m_wHat != NULL);
-	wxASSERT(m_xHat != NULL);
-	wxASSERT(m_yHat != NULL);
-	wxASSERT(m_error != NULL);
-	wxASSERT(m_errHat != NULL);
-	wxASSERT(m_update1 != NULL);
-	wxASSERT(m_update2 != NULL);
+	ASSERT(m_delayLine != NULL);
+	ASSERT(m_y != NULL);
+	ASSERT(m_wHat != NULL);
+	ASSERT(m_xHat != NULL);
+	ASSERT(m_yHat != NULL);
+	ASSERT(m_error != NULL);
+	ASSERT(m_errHat != NULL);
+	ASSERT(m_update1 != NULL);
+	ASSERT(m_update2 != NULL);
 
 	::memset(m_delayLine, 0x00, 256 * sizeof(COMPLEX));
 	::memset(m_y,         0x00, 256 * sizeof(COMPLEX));
@@ -160,7 +158,13 @@ void CBlockLMS::process()
 				::memcpy(&CXBdata(m_signal, sigidx), &m_y[128],     128 * sizeof(COMPLEX));	// if noise filter, output y
 				break;
 			default:
-				wxLogError(wxT("Unknown filter type in Block LMS = %d"), m_filterType);
+// #if defined(__WXMSW__) || defined(__WXGTK__)
+// 				wxLogError(wxT("Unknown filter type in Block LMS = %d"), m_filterType);
+#if defined(WIN32)
+				// No WIN32 logging yet
+#else
+				::syslog(LOG_ERR, "Unknown filter type in Block LMS = %d", m_filterType);
+#endif
 				break;
 		}
 

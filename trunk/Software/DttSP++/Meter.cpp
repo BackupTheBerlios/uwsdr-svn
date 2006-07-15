@@ -35,8 +35,6 @@ Bridgewater, NJ 08807
 #include "FromSys.h"
 #include "Utils.h"
 
-#include <wx/wx.h>
-
 
 CMeter::CMeter() :
 m_rxval(),
@@ -76,7 +74,7 @@ void CMeter::reset()
 
 void CMeter::setRXMeter(RXMETERTAP tap, CXB* buf, float agcGain)
 {
-	wxASSERT(buf != NULL);
+	ASSERT(buf != NULL);
 
 	COMPLEX* vec = CXBbase(buf);
 
@@ -119,7 +117,7 @@ void CMeter::setRXMeter(RXMETERTAP tap, CXB* buf, float agcGain)
 
 void CMeter::setTXMeter(TXMETERTYPE type, CXB* buf, float alcGain, float levelerGain)
 {
-	wxASSERT(buf != NULL);
+	ASSERT(buf != NULL);
 
 	COMPLEX *vec = CXBbase(buf);
 

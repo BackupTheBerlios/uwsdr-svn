@@ -37,8 +37,6 @@ Bridgewater, NJ 08807
 #include "Utils.h"
 #include "CXB.h"
 
-#include <wx/wx.h>
-
 
 CFilterOVSV::CFilterOVSV(unsigned int bufLen, unsigned int pbits, float sampleRate, float lowFreq, float highFreq) :
 m_pbits(pbits),
@@ -52,7 +50,7 @@ m_pfwd(),
 m_pinv(),
 m_scale(0.0F)
 {
-	wxASSERT(sampleRate > 0.0F);
+	ASSERT(sampleRate > 0.0F);
 
 	unsigned int fftLen = 2 * m_bufLen;
 
@@ -61,10 +59,10 @@ m_scale(0.0F)
 	m_zivec = (COMPLEX*)::fftwf_malloc(fftLen * sizeof(COMPLEX));
 	m_zovec = (COMPLEX*)::fftwf_malloc(fftLen * sizeof(COMPLEX));
 
-	wxASSERT(m_zrvec != NULL);
-	wxASSERT(m_zfvec != NULL);
-	wxASSERT(m_zivec != NULL);
-	wxASSERT(m_zovec != NULL);
+	ASSERT(m_zrvec != NULL);
+	ASSERT(m_zfvec != NULL);
+	ASSERT(m_zivec != NULL);
+	ASSERT(m_zovec != NULL);
 
 	::memset(m_zrvec, 0x00, fftLen * sizeof(COMPLEX));
 	::memset(m_zfvec, 0x00, fftLen * sizeof(COMPLEX));
@@ -93,9 +91,9 @@ CFilterOVSV::~CFilterOVSV()
 
 void CFilterOVSV::setFilter(float lowFreq, float highFreq)
 {
-	wxASSERT(::fabs(lowFreq) < 0.5 * m_samprate);
-	wxASSERT(::fabs(highFreq) < 0.5 * m_samprate);
-	wxASSERT((lowFreq + 10.0F) < highFreq);
+	ASSERT(::fabs(lowFreq) < 0.5 * m_samprate);
+	ASSERT(::fabs(highFreq) < 0.5 * m_samprate);
+	ASSERT((lowFreq + 10.0F) < highFreq);
 
 	unsigned int fftLen = 2 * m_bufLen;
 	unsigned int ncoef  =  m_bufLen + 1;
@@ -103,7 +101,7 @@ void CFilterOVSV::setFilter(float lowFreq, float highFreq)
 	COMPLEX* coefs = CFIR::bandpass(lowFreq, highFreq, m_samprate, ncoef);
 
 	COMPLEX* zcvec = (COMPLEX*)::fftwf_malloc(fftLen * sizeof(COMPLEX));
-	wxASSERT(zcvec != NULL);
+	ASSERT(zcvec != NULL);
 	::memset(zcvec, 0x00, fftLen * sizeof(COMPLEX));
 
 	fftwf_plan ptmp = ::fftwf_plan_dft_1d(fftLen, (fftwf_complex *)zcvec, (fftwf_complex *)m_zfvec, FFTW_FORWARD, m_pbits);

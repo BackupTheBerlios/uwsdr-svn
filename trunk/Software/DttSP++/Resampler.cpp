@@ -35,8 +35,6 @@ Bridgewater, NJ 08807
 #include "Utils.h"
 #include "CXOps.h"
 
-#include <wx/wx.h>
-
 
 const unsigned int FILTER_LENGTH = 19839;
 
@@ -50,9 +48,9 @@ m_filterPhaseNum(0),
 m_deciFactor(0),
 m_mask(0)
 {
-	wxASSERT(filterMemoryBuffLength > 0);
-	wxASSERT(sampRateIn > 0.0F);
-	wxASSERT(sampRateOut > 0.0F);
+	ASSERT(filterMemoryBuffLength > 0);
+	ASSERT(sampRateIn > 0.0F);
+	ASSERT(sampRateOut > 0.0F);
 
 	m_interpFactor = (unsigned int)(28224000.0F / sampRateIn  + 0.5F);
 	m_deciFactor   = (unsigned int)(28224000.0F / sampRateOut + 0.5F);
@@ -74,8 +72,8 @@ CResampler::~CResampler()
 
 void CResampler::process(CXB* inBuf, CXB* outBuf)
 {
-	wxASSERT(inBuf != NULL);
-	wxASSERT(outBuf != NULL);
+	ASSERT(inBuf != NULL);
+	ASSERT(outBuf != NULL);
 
 	unsigned int outLen = 0;
 	unsigned int inLen  = CXBhave(inBuf);

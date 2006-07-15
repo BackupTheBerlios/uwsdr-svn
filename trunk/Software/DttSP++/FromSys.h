@@ -40,6 +40,38 @@ Bridgewater, NJ 08807
 #include <cstring>
 #include <cmath>
 
+// For semaphores and logging
+#if defined(__WXMSW__) || defined(__WXGTK__)
+#include <wx/wx.h>
+
+#define	ASSERT(x)	wxASSERT(x)
+#define	SEM_POST(x)	(x)->Post()
+#define	SEM_WAIT(x)	(x)->Wait()
+
+#define	NEED_MINMAX	1
+
+#elif defined(WIN32)
+#include <windows.h>
+#include <cassert>
+
+#define	ASSERT(x)	assert(x)
+#define	SEM_POST(x)	::ReleaseSemaphore(x, 1, NULL)
+#define	SEM_WAIT(x)	::WaitForSingleObject(x, INFINITE)
+
+#else
+#include <pthread.h>
+#include <semaphore.h>
+#include <syslog.h>
+#include <cassert>
+
+#define	ASSERT(x)	assert(x)
+#define	SEM_POST(x)	::sem_post(&(x))
+#define	SEM_WAIT(x)	::sem_wait(&(x))
+
+#define	NEED_MINMAX	1
+#endif
+
+
 #ifndef M_PI
 const double M_PI = 3.14159265358979323846;
 #endif
@@ -48,4 +80,4 @@ const double M_PI = 3.14159265358979323846;
 const double TWOPI = 2.0 * M_PI;
 #endif
 
-#endif // _fromsys_h
+#endif

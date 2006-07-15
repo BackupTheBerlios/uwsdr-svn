@@ -36,12 +36,9 @@ Bridgewater, NJ 08807
 #include "Compand.h"
 #include "FromSys.h"
 
-#include <wx/wx.h>
-
 
 // fac < 0: compression
 // fac > 0: expansion
-
 CCompand::CCompand(unsigned int npts, float fac, CXB* buff) :
 m_npts(npts),
 m_nend(npts - 1),
@@ -49,8 +46,8 @@ m_fac(fac),
 m_tbl(NULL),
 m_buff(buff)
 {
-	wxASSERT(npts > 1);
-	wxASSERT(buff != NULL);
+	ASSERT(npts > 1);
+	ASSERT(buff != NULL);
 
 	m_tbl  = new float[npts];
 	::memset(m_tbl, 0x00, npts * sizeof(float));

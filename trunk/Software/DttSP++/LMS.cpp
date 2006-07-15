@@ -34,8 +34,6 @@ Bridgewater, NJ 08807
 #include "LMS.h"
 #include "Utils.h"
 
-#include <wx/wx.h>
-
 
 CLMS::CLMS(CXB* signal, unsigned int delay, float adaptionRate, float leakage, unsigned int adaptiveFilterSize, unsigned int filterType) :
 m_signal(signal),
@@ -50,8 +48,8 @@ m_delayLinePtr(0),
 m_size(512),
 m_mask(511)
 {
-	wxASSERT(signal != NULL);
-	wxASSERT(filterType == LMS_INTERFERENCE || filterType == LMS_NOISE);
+	ASSERT(signal != NULL);
+	ASSERT(filterType == LMS_INTERFERENCE || filterType == LMS_NOISE);
 
 	m_delayLine      = new float[m_size];
 	m_adaptiveFilter = new float[128];
@@ -99,7 +97,13 @@ void CLMS::process()
 			break;
 
 		default:
-			wxLogError(wxT("Unknown filter type in LMS = %d"), m_filterType);
+// #if defined(__WXMSW__) || defined(__WXGTK__)
+// 			wxLogError(wxT("Unknown filter type in LMS = %d"), m_filterType);
+#if defined(WIN32)
+			// No WIN32 logging yet
+#else
+			::syslog(LOG_ERR, "Unknown filter type in LMS = %d", m_filterType);
+#endif
 			break;
 	}
 }

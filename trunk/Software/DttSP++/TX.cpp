@@ -33,8 +33,6 @@ Bridgewater, NJ 08807
 
 #include "TX.h"
 
-#include <wx/wx.h>
-
 
 CTX::CTX(unsigned int bufLen, unsigned int bits, unsigned int cpdLen, float sampleRate, CMeter* meter, CSpectrum* spectrum) :
 m_meter(meter),
@@ -64,8 +62,8 @@ m_companderFlag(false),
 m_mode(USB),
 m_tick(0UL)
 {
-	wxASSERT(meter != NULL);
-	wxASSERT(spectrum != NULL);
+	ASSERT(meter != NULL);
+	ASSERT(spectrum != NULL);
 
 	m_filter = new CFilterOVSV(bufLen, bits, sampleRate, 300.0F, 3000.0F);
 

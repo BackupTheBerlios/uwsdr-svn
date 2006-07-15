@@ -35,8 +35,6 @@ Bridgewater, NJ 08807
 #include "FromSys.h"
 #include "Utils.h"
 
-#include <wx/wx.h>
-
 
 CAGC::CAGC(AGCMODE mode, CXB* buff, float limit, float attack,
 		   float decay, float slope, float hangtime, float samprate, float maxGain,
@@ -70,8 +68,8 @@ m_hangIndex(0),
 m_fastIndex(FASTLEAD),
 m_fastHang(0)			//wa6ahl:  added to structure
 {
-	wxASSERT(buff != NULL);
-	wxASSERT(samprate > 0.0F);
+	ASSERT(buff != NULL);
+	ASSERT(samprate > 0.0F);
 
 	m_mask = 2 * CXBsize(buff);
 

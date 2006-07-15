@@ -38,8 +38,6 @@ Bridgewater, NJ 08807
 #include "FromSys.h"
 #include "FIR.h"
 
-#include <wx/wx.h>
-
 
 const float EQ_Num_48000[] = {0.99220706371F, -1.98392450292F, 0.99220706371F};
 const float EQ_Den_48000[] = {1.98392450292f, -0.98441412742F};
@@ -61,8 +59,8 @@ m_notchFlag(false),
 m_eqNum(),
 m_eqDen()
 {
-	wxASSERT(d != NULL);
-	wxASSERT(sampleRate > 0.0F);
+	ASSERT(d != NULL);
+	ASSERT(sampleRate > 0.0F);
 
 	m_p = new CFilterOVSV(256, bits, sampleRate, -6000.0F, 6000.0F);
 
@@ -115,7 +113,7 @@ void CGraphicEQ::setEQ(float preamp, float gain0, float gain1, float gain2)
 	::memset(tmpcoef, 0x00, 257 * sizeof(COMPLEX));
 
 	COMPLEX* filtcoef = (COMPLEX*)::fftwf_malloc(512 * sizeof(COMPLEX));
-	wxASSERT(filtcoef != NULL);
+	ASSERT(filtcoef != NULL);
 	::memset(filtcoef, 0x00, 512 * sizeof(COMPLEX));
 
 	preamp = dB2lin(preamp) * 0.5F;

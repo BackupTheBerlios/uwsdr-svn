@@ -34,8 +34,6 @@ Bridgewater, NJ 08807
 #include "DCBlock.h"
 #include "FromSys.h"
 
-#include <wx/wx.h>
-
 
 // NB may have to ramify this a little
 // for other sampling rates; maybe not  
@@ -49,8 +47,8 @@ m_buf(buf),
 m_input(),
 m_output()
 {
-	wxASSERT(buf != NULL);
-	wxASSERT(sampleRate > 0.0F);
+	ASSERT(buf != NULL);
+	ASSERT(sampleRate > 0.0F);
 
 	::memset(m_input,  0x00, BLKMEM * sizeof(float));
 	::memset(m_output, 0x00, BLKMEM * sizeof(float));

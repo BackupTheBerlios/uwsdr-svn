@@ -36,15 +36,13 @@ Bridgewater, NJ 08807
 
 #include "CorrectIQ.h"
 
-#include <wx/wx.h>
-
 
 CCorrectIQ::CCorrectIQ(CXB* buf) :
 m_buf(buf),
 m_phase(0.0F),
 m_gain(1.0F)
 {
-	wxASSERT(buf != NULL);
+	ASSERT(buf != NULL);
 }
 
 CCorrectIQ::~CCorrectIQ()
@@ -68,7 +66,7 @@ void CCorrectIQ::setPhase(float phase)
 
 void CCorrectIQ::setGain(float gain)
 {
-	wxASSERT(gain > 0.0);
+	ASSERT(gain > 0.0);
 
 	m_gain = gain;
 }

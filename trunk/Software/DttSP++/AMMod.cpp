@@ -33,15 +33,13 @@ Bridgewater, NJ 08807
 
 #include "AMMod.h"
 
-#include <wx/wx.h>
-
 
 CAMMod::CAMMod(float level, CXB* buf) :
 m_carrierLevel(level),
 m_buf(buf)
 {
-	wxASSERT(level >= 0.0F && level <= 1.0F);
-	wxASSERT(buf != NULL);
+	ASSERT(level >= 0.0F && level <= 1.0F);
+	ASSERT(buf != NULL);
 }
 
 CAMMod::~CAMMod()
@@ -50,7 +48,7 @@ CAMMod::~CAMMod()
 
 void CAMMod::setCarrierLevel(float level)
 {
-	wxASSERT(level >= 0.0F && level <= 1.0F);
+	ASSERT(level >= 0.0F && level <= 1.0F);
 
 	m_carrierLevel = level;
 }

@@ -33,8 +33,6 @@ Bridgewater, NJ 08807
 
 #include "AMDemod.h"
 
-#include <wx/wx.h>
-
 
 CAMDemod::CAMDemod(float samprate, float f_initial, float f_lobound, float f_hibound, float f_bandwid, CXB* ivec, CXB* ovec, AMMode mode) :
 m_ibuf(ivec),
@@ -54,9 +52,9 @@ m_dc(0.0F),
 m_smooth(0.0F),
 m_mode(mode)
 {
-	wxASSERT(samprate > 0.0F);
-	wxASSERT(ivec != NULL);
-	wxASSERT(ovec != NULL);
+	ASSERT(samprate > 0.0F);
+	ASSERT(ivec != NULL);
+	ASSERT(ovec != NULL);
 
 	float fac = float(TWOPI / samprate);
 

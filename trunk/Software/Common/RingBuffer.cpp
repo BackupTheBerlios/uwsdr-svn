@@ -18,9 +18,28 @@
 
 #include "RingBuffer.h"
 
+// For semaphores and logging
+#if defined(__WXMSW__) || defined(__WXGTK__)
+#include <wx/wx.h>
+
+#define	ASSERT(x)	wxASSERT((x))
+#elif defined(WIN32)
+#include <windows.h>
+#include <cassert>
+
+#define	ASSERT(x)	assert((x))
+#else
+#include <ctsdio>
+#include <cassert>
+
+#define	ASSERT(x)	assert((x))
+#endif
+
+
 const int STATE_EMPTY = 0;
 const int STATE_FULL  = 1;
 const int STATE_DATA  = 2;
+
 
 CRingBuffer::CRingBuffer(unsigned int length, unsigned int step) :
 m_length(length),
@@ -30,8 +49,8 @@ m_iPtr(0),
 m_oPtr(0),
 m_state(STATE_EMPTY)
 {
-	wxASSERT(length > 0);
-	wxASSERT(step > 0);
+	ASSERT(length > 0);
+	ASSERT(step > 0);
 
 	m_buffer = new float[length * step];
 

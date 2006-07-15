@@ -64,10 +64,18 @@ m_fade(0),
 m_tail(0),
 m_frames(audioSize)
 {
-	wxASSERT(sampleRate > 0.0F);
+	ASSERT(sampleRate > 0.0F);
 
+#if defined(__WXMSW__) || defined(__WXGTK__)
 	m_update = new wxSemaphore();
 	m_buffer = new wxSemaphore();
+#elif defined(WIN32)
+	m_update = ::CreateSemaphore(NULL, 0, 99, NULL);
+	m_buffer = ::CreateSemaphore(NULL, 0, 99, NULL);;
+#else
+	::sem_init(&m_update, 0, 0);
+	::sem_init(&m_buffer, 0, 0);
+#endif
 
 	m_meter    = new CMeter();
 	m_spectrum = new CSpectrum(DEFSPEC, FFTW_ESTIMATE, SPEC_PWR);
@@ -100,8 +108,17 @@ CDttSP::~CDttSP()
 	delete[] m_bufferI;
 	delete[] m_bufferQ;
 
+#if defined(__WXMSW__) || defined(__WXGTK__)
 	delete m_update;
 	delete m_buffer;
+#elif defined(WIN32)
+	::CloseHandle(m_update);
+	::CloseHandle(m_buffer);
+#else
+	::sem_destroy(&m_update);
+	::sem_destroy(&m_buffer);
+#endif
+
 	delete m_rx;
 	delete m_tx;
 	delete m_meter;
@@ -114,12 +131,12 @@ CDttSP::~CDttSP()
 
 void CDttSP::setMode(SDRMODE m)
 {
-	m_update->Wait();
+	SEM_WAIT(m_update);
 
 	m_tx->setMode(m);
 	m_rx->setMode(m);
 
-	m_update->Post();
+	SEM_POST(m_update);
 }
 
 void CDttSP::setDCBlockFlag(bool flag)
@@ -129,25 +146,25 @@ void CDttSP::setDCBlockFlag(bool flag)
 
 void CDttSP::setRXFilter(double lowFreq, double highFreq)
 {
-	m_update->Wait();
+	SEM_WAIT(m_update);
 
 	m_rx->setFilter(lowFreq, highFreq);
 
-	m_update->Post();
+	SEM_POST(m_update);
 }
 
 void CDttSP::setTXFilter(double lowFreq, double highFreq)
 {
-	m_update->Wait();
+	SEM_WAIT(m_update);
 
 	m_tx->setFilter(lowFreq, highFreq);
 
-	m_update->Post();
+	SEM_POST(m_update);
 }
 
 void CDttSP::releaseUpdate()
 {
-	m_update->Post();
+	SEM_POST(m_update);
 }
 
 void CDttSP::setRXFrequency(double freq)
@@ -184,7 +201,7 @@ void CDttSP::setBANRFlag(bool flag)
 	m_rx->setBANRFlag(flag);
 }
 
-void CDttSP::setANRValues(unsigned int taps, unsigned int delay, double gain, double leak)
+void CDttSP::setANRValues(unsigned int taps, unsigned int delay, float gain, float leak)
 {
 	m_rx->setANRValues(taps, delay, gain, leak);
 }
@@ -231,7 +248,7 @@ void CDttSP::setBANFFlag(bool flag)
 	m_rx->setBANFFlag(flag);
 }
 
-void CDttSP::setANFValues(unsigned int taps, unsigned int delay, double gain, double leak)
+void CDttSP::setANFValues(unsigned int taps, unsigned int delay, float gain, float leak)
 {
 	m_rx->setANFValues(taps, delay, gain, leak);
 }
@@ -378,7 +395,7 @@ void CDttSP::setCompressionLevel(float level)
 
 void CDttSP::setTRX(TRXMODE trx)
 {
-	m_update->Wait();
+	SEM_WAIT(m_update);
 
 	switch (trx) {
 		case TX:
@@ -406,7 +423,7 @@ void CDttSP::setTRX(TRXMODE trx)
 
 	m_state = RUN_SWITCH;
 
-	m_update->Post();
+	SEM_POST(m_update);
 }
 
 void CDttSP::setALCGainTop(float gain)
@@ -426,39 +443,39 @@ void CDttSP::setSpotToneValues(float gain, float freq, float rise, float fall)
 
 void CDttSP::getSpectrum(float *results)
 {
-	wxASSERT(results != NULL);
+	ASSERT(results != NULL);
 
 	m_spectrum->setScale(SPEC_PWR);
 
-	m_update->Wait();
+	SEM_WAIT(m_update);
 	m_spectrum->snapSpectrum();
-	m_update->Post();
+	SEM_POST(m_update);
 
 	m_spectrum->computeSpectrum(results);
 }
 
 void CDttSP::getPhase(float* results, unsigned int numpoints)
 {
-	wxASSERT(results != NULL);
+	ASSERT(results != NULL);
 
 	m_spectrum->setScale(SPEC_PWR);
 
-	m_update->Wait();
+	SEM_WAIT(m_update);
 	m_spectrum->snapScope();
-	m_update->Post();
+	SEM_POST(m_update);
 
 	m_spectrum->computeScopeComplex(results, numpoints);
 }
 
 void CDttSP::getScope(float* results, unsigned int numpoints)
 {
-	wxASSERT(results != NULL);
+	ASSERT(results != NULL);
 
 	m_spectrum->setScale(SPEC_PWR);
 
-	m_update->Wait();
+	SEM_WAIT(m_update);
 	m_spectrum->snapScope();
-	m_update->Post();
+	SEM_POST(m_update);
 
 	m_spectrum->computeScopeReal(results, numpoints);
 }
@@ -467,7 +484,7 @@ float CDttSP::getMeter(METERTYPE mt)
 {
 	float returnval = -200.0F;
 
-	m_update->Wait();
+	SEM_WAIT(m_update);
 
 	switch (m_trx) {
 		case RX:
@@ -529,7 +546,7 @@ float CDttSP::getMeter(METERTYPE mt)
 			break;
     }
 
-	m_update->Post();
+	SEM_POST(m_update);
 
 	return returnval;
 }
@@ -542,14 +559,14 @@ void CDttSP::setDeviation(float value)
 
 void CDttSP::ringBufferReset()
 {
-	m_update->Wait();
+	SEM_WAIT(m_update);
 
 	m_inputI->clear();
 	m_inputQ->clear();
 	m_outputI->clear();
 	m_outputQ->clear();
 
-	m_update->Post();
+	SEM_POST(m_update);
 }
 
 // [pos]  0.0 <= pos <= 1.0
@@ -563,10 +580,10 @@ void CDttSP::setRXPan(float pos)
 
 void CDttSP::audioEntry(float* input_i, float* input_q, float* output_i, float* output_q, unsigned int nframes)
 {
-	wxASSERT(input_i != NULL);
-	wxASSERT(input_q != NULL);
-	wxASSERT(output_i != NULL);
-	wxASSERT(output_q != NULL);
+	ASSERT(input_i != NULL);
+	ASSERT(input_q != NULL);
+	ASSERT(output_i != NULL);
+	ASSERT(output_q != NULL);
 
 	if (m_suspend) {
 		::memset(output_i, 0x00, nframes * sizeof(float));
@@ -586,7 +603,13 @@ void CDttSP::audioEntry(float* input_i, float* input_q, float* output_i, float* 
 		::memset(output_i, 0x00, nframes * sizeof(float));
 		::memset(output_q, 0x00, nframes * sizeof(float));
 
-		::wxLogError(wxT("Not enough space in the output ring buffers"));
+// #if defined(__WXMSW__) || defined(__WXGTK__)
+// 		wxLogError(wxT("Not enough data in the output ring buffer"));
+#if defined(WIN32)
+		// No WIN32 logging yet
+#else
+		::syslog(LOG_ERR, "Not enough data in the output ring buffer");
+#endif
 	}
 
 	// input: copy from port to ring
@@ -599,18 +622,24 @@ void CDttSP::audioEntry(float* input_i, float* input_q, float* output_i, float* 
 		m_outputI->clear();
 		m_outputQ->clear();
 
-		::wxLogError(wxT("Not enough data in the input ring buffers"));
+// #if defined(__WXMSW__) || defined(__WXGTK__)
+// 		wxLogError(wxT("Not enough space in the input ring buffer"));
+#if defined(WIN32)
+		// No WIN32 logging yet
+#else
+		::syslog(LOG_ERR, "Not enough space in the input ring buffer");
+#endif
 	}
 
 	// if enough accumulated in ring, fire dsp
 	if (m_inputI->dataSpace() >= m_frames && m_inputQ->dataSpace() >= m_frames)
-		m_buffer->Post();
+		SEM_POST(m_buffer);
 }
 
 void CDttSP::audioEntry(float* input, float* output, unsigned int nframes)
 {
-	wxASSERT(input != NULL);
-	wxASSERT(output != NULL);
+	ASSERT(input != NULL);
+	ASSERT(output != NULL);
 
 	if (m_suspend) {
 		::memset(output, 0x00, 2 * nframes * sizeof(float));
@@ -633,7 +662,13 @@ void CDttSP::audioEntry(float* input, float* output, unsigned int nframes)
 
 		::memset(output, 0x00, 2 * nframes * sizeof(float));
 
-		::wxLogError(wxT("Not enough data in the output ring buffers"));
+// #if defined(__WXMSW__) || defined(__WXGTK__)
+// 		wxLogError(wxT("Not enough data in the output ring buffer"));
+#if defined(WIN32)
+		// No WIN32 logging yet
+#else
+		::syslog(LOG_ERR, "Not enough data in the output ring buffer");
+#endif
 	}
 
 	// input: copy from port to ring
@@ -651,19 +686,31 @@ void CDttSP::audioEntry(float* input, float* output, unsigned int nframes)
 		m_outputI->clear();
 		m_outputQ->clear();
 
-		::wxLogError(wxT("Not enough space in the input ring buffers"));
+// #if defined(__WXMSW__) || defined(__WXGTK__)
+// 		wxLogError(wxT("Not enough space in the input ring buffer"));
+#if defined(WIN32)
+		// No WIN32 logging yet
+#else
+		::syslog(LOG_ERR, "Not enough space in the input ring buffer");
+#endif
 	}
 
 	// if enough accumulated in ring, fire dsp
 	if (m_inputI->dataSpace() >= m_frames && m_inputQ->dataSpace() >= m_frames)
-		m_buffer->Post();
+		SEM_POST(m_buffer);
 }
 
 void CDttSP::getHold()
 {
 	if (m_outputI->freeSpace() < m_frames) {
 		// pathology
-		::wxLogError(wxT("Not enough space in output ring buffer"));
+// #if defined(__WXMSW__) || defined(__WXGTK__)
+// 		wxLogError(wxT("Not enough space in the output ring buffer"));
+#if defined(WIN32)
+		// No WIN32 logging yet
+#else
+		::syslog(LOG_ERR, "Not enough space in the output ring buffer");
+#endif
 	} else {
 		m_outputI->addData(m_bufferI, m_frames);
 		m_outputQ->addData(m_bufferQ, m_frames);
@@ -674,7 +721,13 @@ void CDttSP::getHold()
 		::memset(m_bufferI, 0x00, m_frames * sizeof(float));
 		::memset(m_bufferQ, 0x00, m_frames * sizeof(float));
 
-		::wxLogError(wxT("Not enough data in input ring buffers"));
+// #if defined(__WXMSW__) || defined(__WXGTK__)
+// 		wxLogError(wxT("Not enough data in the output ring buffer"));
+#if defined(WIN32)
+		// No WIN32 logging yet
+#else
+		::syslog(LOG_ERR, "Not enough data in the output ring buffer");
+#endif
 	} else {
 		m_inputI->getData(m_bufferI, m_frames);
 		m_inputQ->getData(m_bufferQ, m_frames);
@@ -689,12 +742,12 @@ bool CDttSP::canHold()
 void CDttSP::process()
 {
 	while (m_running) {
-		m_buffer->Wait();
+		SEM_WAIT(m_buffer);
 
 		while (canHold()) {
 			getHold();
 
-			m_update->Wait();
+			SEM_WAIT(m_update);
 
 			switch (m_state) {
 				case RUN_MUTE:
@@ -714,7 +767,7 @@ void CDttSP::process()
 					break;
 			}
 
-			m_update->Post();
+			SEM_POST(m_update);
 		}
 	}
 }

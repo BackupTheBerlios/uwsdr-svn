@@ -33,15 +33,13 @@ Bridgewater, NJ 08807
 
 #include "SSBDemod.h"
 
-#include <wx/wx.h>
-
 
 CSSBDemod::CSSBDemod(CXB* ibuf, CXB* obuf) :
 m_ibuf(ibuf),
 m_obuf(obuf)
 {
-	wxASSERT(ibuf != NULL);
-	wxASSERT(obuf != NULL);
+	ASSERT(ibuf != NULL);
+	ASSERT(obuf != NULL);
 }
 
 CSSBDemod::~CSSBDemod()

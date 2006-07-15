@@ -36,8 +36,6 @@ Bridgewater, NJ 08807
 #include "Oscillator.h"
 #include "FromSys.h"
 
-#include <wx/wx.h>
-
 
 const double HUGE_PHASE = 1256637061.43593;
 
@@ -48,8 +46,8 @@ m_sampleRate(sampleRate),
 m_phase(phase),
 m_delta(0.0)
 {
-	wxASSERT(buf != NULL);
-	wxASSERT(sampleRate > 0.0F);
+	ASSERT(buf != NULL);
+	ASSERT(sampleRate > 0.0F);
 
 	setFrequency(frequency);
 }

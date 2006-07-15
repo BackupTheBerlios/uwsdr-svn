@@ -34,8 +34,6 @@ Bridgewater, NJ 08807
 #include "FMDemod.h"
 #include "FromSys.h"
 
-#include <wx/wx.h>
-
 
 CFMDemod::CFMDemod(float samprate, float f_initial, float f_lobound, float f_hibound, float f_bandwid, CXB* ivec, CXB* ovec) :
 m_samprate(samprate),
@@ -53,9 +51,9 @@ m_lock(0.5F),
 m_afc(0.0F),
 m_cvt(0.0F)
 {
-	wxASSERT(ivec != NULL);
-	wxASSERT(ovec != NULL);
-	wxASSERT(samprate > 0.0F);
+	ASSERT(ivec != NULL);
+	ASSERT(ovec != NULL);
+	ASSERT(samprate > 0.0F);
 
 	float fac = TWOPI / samprate;
 

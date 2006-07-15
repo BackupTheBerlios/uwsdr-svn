@@ -33,8 +33,6 @@ Bridgewater, NJ 08807
 
 #include "RX.h"
 
-#include <wx/wx.h>
-
 
 CRX::CRX(unsigned int bufLen, unsigned int bits, unsigned int cpdLen, float sampleRate, CMeter* meter, CSpectrum* spectrum) :
 m_meter(meter),
@@ -75,8 +73,8 @@ m_binFlag(false),
 m_azim(),
 m_tick(0UL)
 {
-	wxASSERT(meter != NULL);
-	wxASSERT(spectrum != NULL);
+	ASSERT(meter != NULL);
+	ASSERT(spectrum != NULL);
 
 	m_filter = new CFilterOVSV(bufLen, bits, sampleRate, -4800.0F, 4800.0F);
 

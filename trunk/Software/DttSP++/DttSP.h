@@ -40,8 +40,6 @@ Bridgewater, NJ 08807
 #include "Spectrum.h"
 #include "RingBuffer.h"
 
-#include <wx/wx.h>
-
 typedef enum {
    RUN_MUTE,
    RUN_PASS,
@@ -68,7 +66,7 @@ class CDttSP {
 	virtual void  setTXFrequency(double freq);
 	virtual void  setANRFlag(bool flag);
 	virtual void  setBANRFlag(bool flag);
-	virtual void  setANRValues(unsigned int taps, unsigned int delay, double gain, double leak);
+	virtual void  setANRValues(unsigned int taps, unsigned int delay, float gain, float leak);
 	virtual void  setCompandFlag(bool flag);
 	virtual void  setCompandFactor(float factor);
 	virtual void  setRXSquelchFlag(bool flag);
@@ -77,7 +75,7 @@ class CDttSP {
 	virtual void  setTXSquelchThreshold(float threshold);
 	virtual void  setANFFlag(bool flag);
 	virtual void  setBANFFlag(bool flag);
-	virtual void  setANFValues(unsigned int taps, unsigned int delay, double gain, double leak);
+	virtual void  setANFValues(unsigned int taps, unsigned int delay, float gain, float leak);
 	virtual void  setNBFlag(bool flag);
 	virtual void  setNBThreshold(float threshold);
 	virtual void  setNBSDROMFlag(bool flag);
@@ -137,8 +135,16 @@ class CDttSP {
 	float        m_sampleRate;
 	bool         m_running;
 	bool         m_suspend;
+#if defined(__WXMSW__) || defined(__WXGTK__)
 	wxSemaphore* m_update;
 	wxSemaphore* m_buffer;
+#elif defined(WIN32)
+	HANDLE		 m_update;
+	HANDLE		 m_buffer;
+#else
+	sem_t		 m_update;
+	sem_t		 m_buffer;
+#endif
 	CRX*         m_rx;
 	CTX*         m_tx;
 	CMeter*      m_meter;

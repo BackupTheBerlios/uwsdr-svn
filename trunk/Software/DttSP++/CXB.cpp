@@ -37,8 +37,6 @@ Bridgewater, NJ 08807
 #include "FromSys.h"
 #include "Utils.h"
 
-#include <wx/wx.h>
-
 
 void CXBscl(CXB* buff, float scl)
 {

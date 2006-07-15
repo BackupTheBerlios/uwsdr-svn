@@ -103,7 +103,7 @@ void SetBlkNR(bool setit)
 
 void SetNRvals(unsigned int taps, unsigned int delay, double gain, double leak)
 {
-	dttsp->setANRValues(taps, delay, gain, leak);
+	dttsp->setANRValues(taps, delay, float(gain), float(leak));
 }
 
 void SetTXCompandSt(bool setit)
@@ -111,7 +111,7 @@ void SetTXCompandSt(bool setit)
 	dttsp->setCompandFlag(setit);
 }
 
-void SetTXCompand(double setit)
+void SetTXCompand(float setit)
 {
 	dttsp->setCompandFactor(setit);
 }
@@ -138,7 +138,7 @@ void SetBlkANF(bool setit)
 
 void SetANFvals(unsigned int taps, unsigned int delay, double gain, double leak)
 {
-	dttsp->setANFValues(taps, delay, gain, leak);
+	dttsp->setANFValues(taps, delay, float(gain), float(leak));
 }
 
 void SetNB(bool setit)
@@ -176,7 +176,7 @@ void SetTXALCAttack(float attack)
 	dttsp->setALCAttack(attack);
 }
 
-void SetTXCarrierLevel(double setit)
+void SetTXCarrierLevel(float setit)
 {
 	dttsp->setCarrierLevel(setit);
 }

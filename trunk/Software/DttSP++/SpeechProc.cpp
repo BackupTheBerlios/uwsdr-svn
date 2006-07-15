@@ -36,8 +36,6 @@ Bridgewater, NJ 08807
 #include "FromSys.h"
 #include "Utils.h"
 
-#include <wx/wx.h>
-
 
 CSpeechProc::CSpeechProc(float k, float maxCompression, CXB* spdat) :
 m_CG(NULL),
@@ -47,7 +45,7 @@ m_k(k),
 m_maxGain(0.0F),
 m_fac(0.0F)
 {
-	wxASSERT(spdat != NULL);
+	ASSERT(spdat != NULL);
 
 	unsigned int size = CXBsize(spdat);
 

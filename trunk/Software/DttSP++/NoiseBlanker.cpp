@@ -34,8 +34,6 @@ Bridgewater, NJ 08807
 #include "NoiseBlanker.h"
 #include "FromSys.h"
 
-#include <wx/wx.h>
-
 
 CNoiseBlanker::CNoiseBlanker(CXB* sigbuf, float threshold) :
 m_sigbuf(sigbuf),
@@ -47,7 +45,7 @@ m_delayIndex(2),
 m_sigIndex(0),
 m_hangTime(0)
 {
-	wxASSERT(sigbuf != NULL);
+	ASSERT(sigbuf != NULL);
 
 	::memset(m_delay, 0x00, 8 * sizeof(COMPLEX));
 }

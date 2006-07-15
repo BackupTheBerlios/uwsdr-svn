@@ -32,13 +32,12 @@ Bridgewater, NJ 08807
 */
 
 #include "SSBMod.h"
-#include <wx/wx.h>
 
 
 CSSBMod::CSSBMod(CXB* buf) :
 m_buf(buf)
 {
-	wxASSERT(buf != NULL);
+	ASSERT(buf != NULL);
 }
 
 CSSBMod::~CSSBMod()
