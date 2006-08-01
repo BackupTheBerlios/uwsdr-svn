@@ -109,7 +109,10 @@ bool CFrequency::setFrequency(const wxString& freq)
 	int pos = freq.Find(wxT('.'));
 
 	if (pos == -1) {
-		m_mhz = ::atoi(freq.c_str());
+		unsigned long temp;
+		freq.ToULong(&temp);
+		m_mhz = temp;
+
 		m_hz  = 0.0;
 	} else {
 		wxString hertz = freq.Mid(pos + 1);
@@ -118,8 +121,11 @@ bool CFrequency::setFrequency(const wxString& freq)
 		hertz.Truncate(8);				// Maybe wrong
 		hertz.insert(6, wxT("."));
 
-		m_mhz = ::atoi(freq.Left(pos).c_str());
-		m_hz  = ::atof(hertz.c_str());
+		unsigned long temp;
+		freq.Left(pos).ToULong(&temp);
+		m_mhz = temp;
+
+		hertz.ToDouble(&m_hz);
 	}
 
 	return true;

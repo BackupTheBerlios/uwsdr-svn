@@ -245,30 +245,34 @@ void CSDREmulatorFrame::processCommand(wxSocketBase& socket, wxChar* buffer)
 				ack = true;
 			}	
 		} else if (command.Cmp(wxT("ET")) == 0) {
-			int n = ::atoi(message.Mid(2).c_str());
+			long n;
+			message.Mid(2).ToLong(&n);
 
-			if (n == 0 || n == 1) {
-				m_txEnable = (n == 1);
+			if (n == 0L || n == 1L) {
+				m_txEnable = (n == 1L);
 				ack = true;
 			}
 		} else if (command.Cmp(wxT("ER")) == 0) {
-			int n = ::atoi(message.Mid(2).c_str());
+			long n;
+			message.Mid(2).ToLong(&n);
 
-			if (n == 0 || n == 1) {
-				m_rxEnable = (n == 1);
+			if (n == 0L || n == 1L) {
+				m_rxEnable = (n == 1L);
 				ack = true;
 			}
 		} else if (command.Cmp(wxT("TX")) == 0) {
-			int n = ::atoi(message.Mid(2).c_str());
+			long n;
+			message.Mid(2).ToLong(&n);
 
-			if (m_txEnable && (n == 0 || n == 1)) {
-				m_txOn = (n == 1);
+			if (m_txEnable && (n == 0L || n == 1L)) {
+				m_txOn = (n == 1L);
 				ack = true;
 			}
 		} else if (command.Cmp(wxT("RG")) == 0) {
-			int n = ::atoi(message.Mid(2).c_str());
+			long n;
+			message.Mid(2).ToLong(&n);
 
-			if (n >= 0) {
+			if (n >= 0L) {
 				m_rxGain = n;
 				ack = true;
 			}

@@ -239,8 +239,10 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 		::wxMessageBox(_("The SDR Control Port is not allowed to be empty"));
 		return;
 	}
-	int controlPort = ::atoi(control.c_str());
-	if (controlPort < 1 || controlPort > 65536) {
+
+	long controlPort;
+	control.ToLong(&controlPort);
+	if (controlPort < 1L || controlPort > 65536L) {
 		::wxMessageBox(_("The SDR Control Port must be between 1 and 65536"));
 		return;
 	}
@@ -250,8 +252,10 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 		::wxMessageBox(_("The SDR Data Port is not allowed to be empty"));
 		return;
 	}
-	int dataPort = ::atoi(data.c_str());
-	if (dataPort < 1 || dataPort > 65536) {
+
+	long dataPort;
+	data.ToLong(&dataPort);
+	if (dataPort < 1L || dataPort > 65536L) {
 		::wxMessageBox(_("The SDR Data Port must be between 1 and 65536"));
 		return;
 	}
@@ -278,8 +282,8 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 	config->Write(audioOutDevKey, audioOutDev);
 	config->Write(audioInDevKey,  audioInDev);
 	config->Write(ipAddressKey,   ipAddress);
-	config->Write(controlPortKey, long(controlPort));
-	config->Write(dataPortKey,    long(dataPort));
+	config->Write(controlPortKey, controlPort);
+	config->Write(dataPortKey,    dataPort);
 	config->Flush();
 
 #ifdef __WXMSW__

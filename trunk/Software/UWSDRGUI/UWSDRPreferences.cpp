@@ -178,9 +178,10 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 		return;
 	}
 
-	int shift = ::atoi(text.c_str());
+	long shift;
+	text.ToLong(&shift);
 
-	if (shift < 0) {
+	if (shift < 0L) {
 		::wxMessageBox(_("The shift may not be negative."));
 		return;
 	}
@@ -262,7 +263,8 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 		return;
 	}
 
-	double stepVeryFast = ::atof(text.c_str());
+	double stepVeryFast;
+	text.ToDouble(&stepVeryFast);
 
 	if (stepVeryFast <= 0.0) {
 		::wxMessageBox(_("The Very fast step size may not be zero or negative."));
@@ -276,7 +278,8 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 		return;
 	}
 
-	double stepFast = ::atof(text.c_str());
+	double stepFast;
+	text.ToDouble(&stepFast);
 
 	if (stepFast <= 0.0) {
 		::wxMessageBox(_("The Fast step size may not be zero or negative."));
@@ -290,7 +293,8 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 		return;
 	}
 
-	double stepMedium = ::atof(text.c_str());
+	double stepMedium;
+	text.ToDouble(&stepMedium);
 
 	if (stepMedium <= 0.0) {
 		::wxMessageBox(_("The Medium step size may not be zero or negative."));
@@ -304,7 +308,8 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 		return;
 	}
 
-	double stepSlow = ::atof(text.c_str());
+	double stepSlow;
+	text.ToDouble(&stepSlow);
 
 	if (stepSlow <= 0.0) {
 		::wxMessageBox(_("The Slow step size may not be zero or negative."));
@@ -318,7 +323,8 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 		return;
 	}
 
-	double stepVerySlow = ::atof(text.c_str());
+	double stepVerySlow;
+	text.ToDouble(&stepVerySlow);
 
 	if (stepVerySlow <= 0.0) {
 		::wxMessageBox(_("The Very slow step size may not be zero or negative."));

@@ -53,14 +53,23 @@ m_valid(false)
 				m_maxFreq.setFrequency(line.Mid(9));
 			else if (line.Left(8).Cmp(wxT("lowFreq=")) == 0)
 				m_minFreq.setFrequency(line.Mid(8));
-			else if (line.Left(9).Cmp(wxT("stepSize=")) == 0)
-				m_stepSize = ::atoi(line.Mid(9).c_str());
-			else if (line.Left(11).Cmp(wxT("sampleRate=")) == 0)
-				m_sampleRate = ::atof(line.Mid(11).c_str());
-			else if (line.Left(16).Cmp(wxT("protocolVersion=")) == 0)
-				m_protocolVersion = ::atoi(line.Mid(16).c_str());
-			else if (line.Left(12).Cmp(wxT("receiveOnly=")) == 0)
-				m_receiveOnly = ::atoi(line.Mid(12).c_str()) == 1;
+			else if (line.Left(9).Cmp(wxT("stepSize=")) == 0) {
+				unsigned long temp;
+				line.Mid(9).ToULong(&temp);
+				m_stepSize = temp;
+			} else if (line.Left(11).Cmp(wxT("sampleRate=")) == 0) {
+				double temp;
+				line.Mid(11).ToDouble(&temp);
+				m_sampleRate = temp;
+			} else if (line.Left(16).Cmp(wxT("protocolVersion=")) == 0) {
+				unsigned long temp;
+				line.Mid(16).ToULong(&temp);
+				m_protocolVersion = temp;
+			} else if (line.Left(12).Cmp(wxT("receiveOnly=")) == 0) {
+				unsigned long temp;
+				line.Mid(12).ToULong(&temp);
+				m_receiveOnly = temp == 1L;
+			}
 		}
 	}
 

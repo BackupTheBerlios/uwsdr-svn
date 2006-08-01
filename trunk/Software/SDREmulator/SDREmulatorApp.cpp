@@ -45,12 +45,15 @@ bool CSDREmulatorApp::OnCmdLineParsed(wxCmdLineParser& parser)
 	if (!wxApp::OnCmdLineParsed(parser))
 		return false;
 
-	m_port = ::atoi(parser.GetParam(0).c_str());
+	long temp;
+	parser.GetParam(0).ToLong(&temp);
 
-	if (m_port < 1 || m_port >= 65536) {
+	if (m_port < 1L || m_port >= 65536L) {
 		::wxMessageBox(wxT("Port number must be between 1 and 65536"));
 		return false;
 	}
+
+	m_port = temp;
 
 	return true;
 }
