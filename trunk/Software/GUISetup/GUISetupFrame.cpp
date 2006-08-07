@@ -138,7 +138,7 @@ m_startMenu(NULL)
 	wxStaticText* dummy8 = new wxStaticText(panel, -1, wxEmptyString);
 	panelSizer->Add(dummy8, 0, wxALL, BORDER_SIZE);
 
-#ifdef __WXMSW__
+#if defined(__WXMSW__)
 	wxStaticText* label10 = new wxStaticText(panel, -1, _("Create Desktop icon:"));
 	panelSizer->Add(label10, 0, wxALL, BORDER_SIZE);
 
@@ -286,7 +286,7 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 	config->Write(dataPortKey,    dataPort);
 	config->Flush();
 
-#ifdef __WXMSW__
+#if defined(__WXMSW__)
 	wxString instDirKey = wxT("/InstPath");
 
 	wxString dir;
@@ -440,7 +440,7 @@ void CGUISetupFrame::enumerateAudio(int api)
 	::Pa_Terminate();
 }
 
-#ifdef __WXMSW__
+#if defined(__WXMSW__)
 void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 {
 	TCHAR folder[MAX_PATH];
@@ -580,7 +580,7 @@ void CGUISetupFrame::writeDeskTop(const wxString& name, const wxString& dir)
 }
 #endif
 
-#ifdef __WXGTK__
+#if defined(__WXGTK__)
 void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 {
 	wxString fileName = "";
@@ -608,3 +608,9 @@ void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 }
 #endif
 
+#if defined(__WXMAC__) || defined(__WXCOCOA__)
+void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
+{
+   // To be filled in later
+}
+#endif

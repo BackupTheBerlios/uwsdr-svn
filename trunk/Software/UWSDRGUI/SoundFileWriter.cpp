@@ -21,7 +21,7 @@
 #include <wx/debug.h>
 #include <wx/log.h>
 
-#ifdef __WINDOWS__
+#if defined(__WINDOWS__)
 
 CSoundFileWriter::CSoundFileWriter(const wxString& fileName, unsigned int sampleWidth) :
 m_fileName(fileName),

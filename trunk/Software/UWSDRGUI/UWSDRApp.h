@@ -42,7 +42,7 @@ class CUWSDRApp : public wxApp {
 
 	virtual void showHelp(const wxString& chapter);
 
-#ifdef __WXDEBUG__
+#if defined(__WXDEBUG__)
 	virtual void OnAssert(const wxChar* file, int line, const wxChar* cond, const wxChar* msg);
 #endif
 

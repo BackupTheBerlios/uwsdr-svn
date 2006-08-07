@@ -21,7 +21,7 @@
 
 #include <wx/wx.h>
 
-#ifdef __WINDOWS__
+#if defined(__WINDOWS__)
 #include <windows.h>
 #include <mmsystem.h>
 
@@ -48,7 +48,7 @@ class CSoundFileWriter : public IDataWriter {
     private:
 	wxString     m_fileName;
 	float        m_sampleWidth;
-#ifdef __WINDOWS__
+#if defined(__WINDOWS__)
 	unsigned int m_blockSize;
 	HMMIO        m_handle;
 	MMCKINFO     m_parent;

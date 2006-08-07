@@ -67,7 +67,7 @@ void CSoundFileReader::setCallback(IDataCallback* callback, int id)
 	m_id       = id;
 }
 
-#ifdef __WINDOWS__
+#if defined(__WINDOWS__)
 
 CSoundFileReader::CSoundFileReader(const wxString& fileName) :
 wxThread(),

@@ -21,7 +21,7 @@
 
 #include <wx/wx.h>
 
-#ifdef __WINDOWS__
+#if defined(__WINDOWS__)
 #include <windows.h>
 #include <mmsystem.h>
 
@@ -53,7 +53,7 @@ class CSoundFileReader : public wxThread, public IDataReader {
 	unsigned int   m_blockSize;
 	IDataCallback* m_callback;
 	int            m_id;
-#ifdef __WINDOWS__
+#if defined(__WINDOWS__)
 	unsigned int m_sampleWidth;
 	HMMIO        m_handle;
 	MMCKINFO     m_parent;

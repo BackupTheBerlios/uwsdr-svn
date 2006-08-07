@@ -574,7 +574,7 @@ wxString CUWSDRApp::getHelpDir()
 #endif
 }
 
-#ifdef __WXDEBUG__
+#if defined(__WXDEBUG__)
 void CUWSDRApp::OnAssert(const wxChar* file, int line, const wxChar* cond, const wxChar* msg)
 {
 	::wxLogFatalError(wxT("Assertion failed on line %d in file %s: %s %s"), line, file, cond, msg);
