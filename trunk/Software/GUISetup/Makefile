@@ -8,7 +8,7 @@ OBJS :=		GUISetupApp.o GUISetupFrame.o
 GUISetup:	$(OBJS)
 		$(CC) $(LDFLAGS) -o GUISetup $(OBJS) $(LIBS)
 
-GUISetupApp.o:	GUISetupApp.cpp GUISetupApp.h GUISetupFrame.h GUISetup.xpm
+GUISetupApp.o:	GUISetupApp.cpp GUISetupApp.h GUISetupFrame.h GUISetupXpm.h
 		$(CC) $(CFLAGS) -c GUISetupApp.cpp
 
 GUISetupFrame.o: GUISetupFrame.cpp GUISetupFrame.h

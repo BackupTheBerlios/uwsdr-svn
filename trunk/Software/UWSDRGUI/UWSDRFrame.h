@@ -37,6 +37,8 @@
 #include "InfoBox.h"
 #include "SMeter.h"
 
+#include "CWKeyboard.h"
+
 class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterface {
     public:
 	CUWSDRFrame(const wxString& title);
@@ -63,6 +65,8 @@ class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterf
 	virtual void sdrCommandNAK(int id);
 	virtual void sdrConnectionLost(int id);
 
+	virtual void sendCW(unsigned int speed, const wxString& text);
+
     private:
 	wxTimer           m_timer;
 	CSDRParameters*   m_parameters;
@@ -88,6 +92,8 @@ class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterf
 	CVolumeDial*      m_squelch;
 
 	float*            m_spectrum;
+
+	CCWKeyboard*      m_cwKeyboard;
 
 	void      createMenu();
 	wxButton* createMenuButton(wxWindow* window);

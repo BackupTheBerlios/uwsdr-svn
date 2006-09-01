@@ -5,10 +5,10 @@ OBJS :=		SDRSetupApp.o SDRSetupFrame.o Frequency.o
 SDRSetup:	$(OBJS)
 		$(CC) $(LDFLAGS) -o SDRSetup $(OBJS) $(LIBS)
 
-SDRSetupApp.o:	SDRSetupApp.cpp SDRSetupApp.h SDRSetupFrame.h SDRSetup.xpm
+SDRSetupApp.o:	SDRSetupApp.cpp SDRSetupApp.h SDRSetupFrame.h
 		$(CC) $(CFLAGS) -c SDRSetupApp.cpp
 
-SDRSetupFrame.o: SDRSetupFrame.cpp SDRSetupFrame.h
+SDRSetupFrame.o: SDRSetupFrame.cpp SDRSetupFrame.h SDRSetupXpm.h
 		$(CC) $(CFLAGS) -c SDRSetupFrame.cpp
 
 Frequency.o:	../UWSDRGUI/Frequency.cpp ../UWSDRGUI/Frequency.h

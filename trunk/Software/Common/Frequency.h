@@ -38,7 +38,7 @@ class CFrequency {
 	virtual void setHz(double hz);
 	virtual void setMHz(unsigned int mhz);
 
-	virtual wxString     getString() const;
+	virtual wxString     getString(unsigned int decimals = 8) const;
 	virtual unsigned int getMHz() const;
 	virtual double       getHz() const;
 

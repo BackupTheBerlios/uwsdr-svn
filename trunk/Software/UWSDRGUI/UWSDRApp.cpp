@@ -88,6 +88,13 @@ const wxString KEY_AF_GAIN         = wxT("/AFGain");
 const wxString KEY_SQUELCH         = wxT("/Squelch");
 const wxString KEY_MIC_GAIN        = wxT("/MicGain");
 const wxString KEY_POWER           = wxT("/Power");
+const wxString KEY_CW_SPEED        = wxT("/CWSpeed");
+const wxString KEY_CW_LOCAL        = wxT("/CWLocalCallsign");
+const wxString KEY_CW_REMOTE       = wxT("/CWRemoteCallsign");
+const wxString KEY_CW_LOCATOR      = wxT("/CWLocator");
+const wxString KEY_CW_REPORT       = wxT("/CWReport");
+const wxString KEY_CW_SERIAL       = wxT("/CWSerialNumber");
+const wxString KEY_CW_MESSAGE      = wxT("/CWMessage");
 
 IMPLEMENT_APP(CUWSDRApp)
 
@@ -292,6 +299,21 @@ bool CUWSDRApp::readConfig()
 	wxString keySquelch       = wxT("/") + m_parameters->m_name + KEY_SQUELCH;
 	wxString keyMicGain       = wxT("/") + m_parameters->m_name + KEY_MIC_GAIN;
 	wxString keyPower         = wxT("/") + m_parameters->m_name + KEY_POWER;
+	wxString keyCwSpeed       = wxT("/") + m_parameters->m_name + KEY_CW_SPEED;
+	wxString keyCwLocal       = wxT("/") + m_parameters->m_name + KEY_CW_LOCAL;
+	wxString keyCwRemote      = wxT("/") + m_parameters->m_name + KEY_CW_REMOTE;
+	wxString keyCwLocator     = wxT("/") + m_parameters->m_name + KEY_CW_LOCATOR;
+	wxString keyCwReport      = wxT("/") + m_parameters->m_name + KEY_CW_REPORT;
+	wxString keyCwSerial      = wxT("/") + m_parameters->m_name + KEY_CW_SERIAL;
+
+	wxString keyCwMessage[CWKEYBOARD_COUNT];
+	for (unsigned int i = 0; i < CWKEYBOARD_COUNT; i++) {
+		wxString number;
+		number.Printf(wxT("%u"), i);
+
+		keyCwMessage[i] = wxT("/") + m_parameters->m_name + KEY_CW_MESSAGE;
+		keyCwMessage[i].Append(number);
+	}
 
 	wxConfig* profile = new wxConfig(APPNAME);
 	wxASSERT(profile != NULL);
@@ -416,6 +438,18 @@ bool CUWSDRApp::readConfig()
 	profile->Read(keyPower,            &num, 0);
 	m_parameters->m_power = num;
 
+	profile->Read(keyCwSpeed,          &num, KEYER_SPEED);
+	m_parameters->m_cwSpeed = num;
+
+	profile->Read(keyCwLocal,          &m_parameters->m_cwLocal,   wxEmptyString);
+	profile->Read(keyCwRemote,         &m_parameters->m_cwRemote,  wxEmptyString);
+	profile->Read(keyCwLocator,        &m_parameters->m_cwLocator, wxEmptyString);
+	profile->Read(keyCwReport,         &m_parameters->m_cwReport,  KEYER_REPORT);
+	profile->Read(keyCwSerial,         &m_parameters->m_cwSerial,  KEYER_SERIAL);
+
+	for (unsigned int n = 0; n < CWKEYBOARD_COUNT; n++)
+		profile->Read(keyCwMessage[n], &m_parameters->m_cwMessage[n], KEYER_MESSAGE[n]);
+
 	profile->Flush();
 
 	delete profile;
@@ -480,6 +514,21 @@ void CUWSDRApp::writeConfig()
 	wxString keySquelch       = wxT("/") + m_parameters->m_name + KEY_SQUELCH;
 	wxString keyMicGain       = wxT("/") + m_parameters->m_name + KEY_MIC_GAIN;
 	wxString keyPower         = wxT("/") + m_parameters->m_name + KEY_POWER;
+	wxString keyCwSpeed       = wxT("/") + m_parameters->m_name + KEY_CW_SPEED;
+	wxString keyCwLocal       = wxT("/") + m_parameters->m_name + KEY_CW_LOCAL;
+	wxString keyCwRemote      = wxT("/") + m_parameters->m_name + KEY_CW_REMOTE;
+	wxString keyCwLocator     = wxT("/") + m_parameters->m_name + KEY_CW_LOCATOR;
+	wxString keyCwReport      = wxT("/") + m_parameters->m_name + KEY_CW_REPORT;
+	wxString keyCwSerial      = wxT("/") + m_parameters->m_name + KEY_CW_SERIAL;
+
+	wxString keyCwMessage[CWKEYBOARD_COUNT];
+	for (unsigned int i = 0; i < CWKEYBOARD_COUNT; i++) {
+		wxString number;
+		number.Printf(wxT("%u"), i);
+
+		keyCwMessage[i] = wxT("/") + m_parameters->m_name + KEY_CW_MESSAGE;
+		keyCwMessage[i].Append(number);
+	}
 
 	wxConfig* profile = new wxConfig(APPNAME);
 	wxASSERT(profile != NULL);
@@ -539,6 +588,15 @@ void CUWSDRApp::writeConfig()
 	profile->Write(keySquelch,          int(m_parameters->m_squelch));
 	profile->Write(keyMicGain,          int(m_parameters->m_micGain));
 	profile->Write(keyPower,            int(m_parameters->m_power));
+	profile->Write(keyCwSpeed,          int(m_parameters->m_cwSpeed));
+	profile->Write(keyCwLocal,          m_parameters->m_cwLocal);
+	profile->Write(keyCwRemote,         m_parameters->m_cwRemote);
+	profile->Write(keyCwLocator,        m_parameters->m_cwLocator);
+	profile->Write(keyCwReport,         m_parameters->m_cwReport);
+	profile->Write(keyCwSerial,         m_parameters->m_cwSerial);
+
+	for (unsigned int n = 0; n < CWKEYBOARD_COUNT; n++)
+		profile->Write(keyCwMessage[n], m_parameters->m_cwMessage[n]);
 
 	profile->Flush();
 
@@ -548,6 +606,11 @@ void CUWSDRApp::writeConfig()
 void CUWSDRApp::showHelp(const wxString& chapter)
 {
 	m_help->Display(chapter);
+}
+
+void CUWSDRApp::sendCW(unsigned int speed, const wxString& text)
+{
+	m_frame->sendCW(speed, text);
 }
 
 wxString CUWSDRApp::getHelpDir()

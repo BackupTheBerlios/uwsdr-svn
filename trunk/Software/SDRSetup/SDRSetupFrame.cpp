@@ -21,7 +21,7 @@
 #include <wx/file.h>
 #include <wx/socket.h>
 
-#include "SDRSetup.xpm"
+#include "SDRSetupXpm.h"
 
 const int EXECUTE_BUTTON  = 4549;
 

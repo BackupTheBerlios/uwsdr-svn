@@ -30,7 +30,7 @@ class CUWSDRPreferences : public wxDialog {
 
     public:
 	CUWSDRPreferences(wxWindow* parent, int id, CSDRParameters* parameters, CDSPControl* dsp);
-	virtual ~CUWSDRPreferences();
+	~CUWSDRPreferences();
 
 	void onIQChanged(wxSpinEvent& event);
 	void onOK(wxCommandEvent& event);
@@ -45,8 +45,8 @@ class CUWSDRPreferences : public wxDialog {
 	wxTextCtrl*     m_maxTXFreq;
 	wxTextCtrl*     m_minTXFreq;
 	wxTextCtrl*     m_shift;
-   wxChoice*       m_deviationFMW;
-   wxChoice*       m_deviationFMN;
+	wxChoice*       m_deviationFMW;
+	wxChoice*       m_deviationFMN;
 	wxChoice*       m_agcAM;
 	wxChoice*       m_agcSSB;
 	wxChoice*       m_agcCW;

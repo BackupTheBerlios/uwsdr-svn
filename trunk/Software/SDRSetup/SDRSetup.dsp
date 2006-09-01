@@ -112,6 +112,10 @@ SOURCE=.\SDRSetupApp.h
 
 SOURCE=.\SDRSetupFrame.h
 # End Source File
+# Begin Source File
+
+SOURCE=.\SDRSetupXpm.h
+# End Source File
 # End Group
 # Begin Group "Resource Files"
 

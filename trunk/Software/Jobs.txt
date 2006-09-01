@@ -17,6 +17,7 @@ Write Help
 Upgrade SDREmulator for more commands and data sending/receiving
 Get transmit working
 Set of screenshots for all platforms
+Convert to Weaver method
 
 
 Future
@@ -24,6 +25,5 @@ Future
 
 CW Keyboard
 I+Q storage for different frequencies
-Mac OS X version
 Voice keyer?
 Frequency database with display on the spectrum.

@@ -43,7 +43,7 @@ Bridgewater, NJ 08807
 void *
 safealloc (int count, int nbytes, char *tag)
 {
-  void *p = fftw_malloc (count * nbytes);
+  void *p = fftwf_malloc (count * nbytes);
   if (!p)
     {
       if (tag && *tag)
@@ -60,7 +60,7 @@ void
 safefree (void *p)
 {
   if (p)
-    fftw_free (p);
+    fftwf_free (p);
 }
 
 /*------------------------------------------------------------------------*/

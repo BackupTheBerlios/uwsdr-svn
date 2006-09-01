@@ -112,6 +112,10 @@ SOURCE=.\GUISetupApp.h
 
 SOURCE=.\GUISetupFrame.h
 # End Source File
+# Begin Source File
+
+SOURCE=.\GUISetupXpm.h
+# End Source File
 # End Group
 # Begin Group "Resource Files"
 

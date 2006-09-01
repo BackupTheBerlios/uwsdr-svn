@@ -115,10 +115,10 @@ m_txIQGain(NULL)
 	text.Printf(wxT("%u"), m_parameters->m_shift / 1000);
 	m_shift->SetValue(text);
 
-	m_minRXFreq->SetValue(m_parameters->m_minReceiveFreq.getString());
-	m_maxRXFreq->SetValue(m_parameters->m_maxReceiveFreq.getString());
-	m_minTXFreq->SetValue(m_parameters->m_minTransmitFreq.getString());
-	m_maxTXFreq->SetValue(m_parameters->m_maxTransmitFreq.getString());
+	m_minRXFreq->SetValue(m_parameters->m_minReceiveFreq.getString(3));
+	m_maxRXFreq->SetValue(m_parameters->m_maxReceiveFreq.getString(3));
+	m_minTXFreq->SetValue(m_parameters->m_minTransmitFreq.getString(3));
+	m_maxTXFreq->SetValue(m_parameters->m_maxTransmitFreq.getString(3));
 
 	m_deviationFMW->SetSelection(m_parameters->m_deviationFMW);
 	m_deviationFMN->SetSelection(m_parameters->m_deviationFMN);

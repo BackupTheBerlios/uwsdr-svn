@@ -132,11 +132,17 @@ bool CFrequency::setFrequency(const wxString& freq)
 }
 
 
-wxString CFrequency::getString() const
+wxString CFrequency::getString(unsigned int decimals) const
 {
-	wxString text;
+	wxASSERT(decimals < 9);
 
-	text.Printf(wxT("%u.%08d"), m_mhz, int(m_hz * 100.0 + 0.5));
+	wxString hertz;
+	hertz.Printf(wxT("%08d"), int(m_hz * 100.0F + 0.5F));
+
+	hertz.Truncate(decimals);
+
+	wxString text;
+	text.Printf(wxT("%u.%s"), m_mhz, hertz.c_str());
 
 	return text;
 }

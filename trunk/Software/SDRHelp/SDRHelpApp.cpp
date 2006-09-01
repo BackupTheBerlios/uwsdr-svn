@@ -20,7 +20,6 @@
 
 #include <wx/fs_zip.h>
 
-#include "SDRHelp.xpm"
 
 
 IMPLEMENT_APP(CSDRHelpApp)

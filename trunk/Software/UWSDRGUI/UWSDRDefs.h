@@ -50,6 +50,8 @@ const int CONTROL_WIDTH    = 100;
 const int SMETER_WIDTH     = 195;
 const int SMETER_HEIGHT    = 70;
 
+const int CWTEXT_WIDTH     = 650;
+
 #elif defined(__WXGTK__)
 const int BUTTON_HEIGHT    = 22;
 
@@ -75,6 +77,8 @@ const int CONTROL_WIDTH    = 105;
 
 const int SMETER_WIDTH     = 210;
 const int SMETER_HEIGHT    = 70;
+
+const int CWTEXT_WIDTH     = 700;
 
 #else
 #error "Unknown platform"
@@ -178,6 +182,8 @@ enum {
 	SPECTRUM_1000MS
 };
 
+const int CWKEYBOARD_COUNT    = 6;
+
 const int CW_OFFSET           = 800;
 
 const double FREQ_VERY_FAST_STEP = 500.0;
@@ -187,5 +193,18 @@ const double FREQ_SLOW_STEP      = 10.0;
 const double FREQ_VERY_SLOW_STEP = 3.0;
 
 const int SPECTRUM_SIZE = 4096;
+
+const int      KEYER_SPEED  = 12;
+const wxString KEYER_REPORT = wxT("599");
+const wxString KEYER_SERIAL = wxT("001");
+
+const wxString KEYER_MESSAGE[CWKEYBOARD_COUNT] = {
+	wxT("CQ CQ CQ DE %M %M CQ CQ CQ DE %M %M CQ CQ CQ DE %M %M PSE K"),
+	wxT("QRZ DE %M PSE K"),
+	wxT("RR %R DE %M = TNX FER CALL = UR RST %S %S = MY LOC ES %Q %Q = SO HW? %R DE %M K"),
+	wxT("RR %R DE %M = TNX FER QSO ES HPE CUAGN = 73 73 ES GUD DX = %R DE %M SK"),
+	wxT("73 73 DE %M K"),
+	wxT("%R DE %M %M PSE K")
+};
 
 #endif

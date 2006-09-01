@@ -104,6 +104,10 @@ SOURCE=.\SDRHelpApp.cpp
 
 SOURCE=.\SDRHelpApp.h
 # End Source File
+# Begin Source File
+
+SOURCE=.\SDRHelpXpm.h
+# End Source File
 # End Group
 # Begin Group "Resource Files"
 

@@ -22,7 +22,7 @@
 #include <wx/file.h>
 #include <wx/config.h>
 
-#include "GUISetup.xpm"
+#include "GUISetupXpm.h"
 
 #ifdef __WXMSW__
 #include <windows.h>
@@ -277,13 +277,48 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 			return;
 	}
 
-	config->Write(fileNameKey,    fileName);
-	config->Write(audioAPIKey,    audioAPI);
-	config->Write(audioOutDevKey, audioOutDev);
-	config->Write(audioInDevKey,  audioInDev);
-	config->Write(ipAddressKey,   ipAddress);
-	config->Write(controlPortKey, controlPort);
-	config->Write(dataPortKey,    dataPort);
+	bool ret = config->Write(fileNameKey, fileName);
+	if (!ret) {
+		::wxMessageBox(_("Unable to write configuration data - FileName"));
+		return;
+	}
+
+	ret = config->Write(audioAPIKey, audioAPI);
+	if (!ret) {
+		::wxMessageBox(_("Unable to write configuration data - AudioAPI"));
+		return;
+	}
+
+	ret = config->Write(audioOutDevKey, audioOutDev);
+	if (!ret) {
+		::wxMessageBox(_("Unable to write configuration data - AudioOutDev"));
+		return;
+	}
+
+	ret = config->Write(audioInDevKey, audioInDev);
+	if (!ret) {
+		::wxMessageBox(_("Unable to write configuration data - AudioInDev"));
+		return;
+	}
+
+	ret = config->Write(ipAddressKey, ipAddress);
+	if (!ret) {
+		::wxMessageBox(_("Unable to write configuration data - IPAddress"));
+		return;
+	}
+
+	ret = config->Write(controlPortKey, controlPort);
+	if (!ret) {
+		::wxMessageBox(_("Unable to write configuration data - ControlPort"));
+		return;
+	}
+
+	ret = config->Write(dataPortKey, dataPort);
+	if (!ret) {
+		::wxMessageBox(_("Unable to write configuration data - DataPort"));
+		return;
+	}
+
 	config->Flush();
 
 #if defined(__WXMSW__)

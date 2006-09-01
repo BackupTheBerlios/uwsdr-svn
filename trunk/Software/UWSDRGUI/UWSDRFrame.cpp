@@ -31,7 +31,7 @@
 #include "SoundFileReader.h"
 #include "SoundFileWriter.h"
 
-#include "UWSDR.xpm"
+#include "UWSDRXpm.h"
 
 enum {
 	MENU_KEYPAD = 36427,
@@ -74,6 +74,7 @@ enum {
 BEGIN_EVENT_TABLE(CUWSDRFrame, wxFrame)
 	EVT_BUTTON(MENU_BUTTON, CUWSDRFrame::onMenuButton)
 	EVT_MENU(MENU_KEYPAD, CUWSDRFrame::onMenuSelection)
+	EVT_MENU(MENU_CW_KEYBOARD, CUWSDRFrame::onMenuSelection)
 	EVT_MENU(MENU_PREFERENCES, CUWSDRFrame::onMenuSelection)
 	EVT_MENU(MENU_RECORD, CUWSDRFrame::onMenuSelection)
 	EVT_MENU(wxID_HELP, CUWSDRFrame::onMenuSelection)
@@ -122,7 +123,8 @@ m_micGain(NULL),
 m_power(NULL),
 m_afGain(NULL),
 m_squelch(NULL),
-m_spectrum(NULL)
+m_spectrum(NULL),
+m_cwKeyboard(NULL)
 {
 	SetIcon(wxIcon(UWSDR_xpm));
 
@@ -190,12 +192,15 @@ m_spectrum(NULL)
 
 	SetSizer(mainSizer);
 	mainSizer->SetSizeHints(this);
+
+	m_cwKeyboard = new CCWKeyboard(this, -1);
 }
 
 CUWSDRFrame::~CUWSDRFrame()
 {
 	delete[] m_spectrum;
 	delete   m_menu;
+	delete   m_cwKeyboard;
 }
 
 void CUWSDRFrame::setParameters(CSDRParameters* parameters)
@@ -226,8 +231,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_spectrumDisplay->setSpeed(m_parameters->m_spectrumSpeed);
 
 	// Set the spectrum width depending on the step size and sample rate,
-	float lowFreq = float(m_parameters->m_hardwareSampleRate) / 4.0F -
-					float(m_parameters->m_hardwareStepSize) / 2.0F;
+	float lowFreq = float(m_parameters->m_hardwareSampleRate) / 4.0F - m_parameters->m_hardwareStepSize / 2.0F;
 	wxASSERT(lowFreq > 0.0F);
 
 	if (lowFreq >= 20000.0F)
@@ -299,6 +303,15 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_sMeter->setRXMeter(m_parameters->m_rxMeter);
 	m_sMeter->setTXMeter(m_parameters->m_txMeter);
+
+	m_cwKeyboard->setSpeed(m_parameters->m_cwSpeed);
+	m_cwKeyboard->setLocal(m_parameters->m_cwLocal);
+	m_cwKeyboard->setRemote(m_parameters->m_cwRemote);
+	m_cwKeyboard->setLocator(m_parameters->m_cwLocator);
+	m_cwKeyboard->setReport(m_parameters->m_cwReport);
+	m_cwKeyboard->setSerial(m_parameters->m_cwSerial);
+	for (unsigned int i = 0; i < CWKEYBOARD_COUNT; i++)
+		m_cwKeyboard->setMessage(i, m_parameters->m_cwMessage[i]);
 
 	m_timer.SetOwner(this, DISPLAY_TIMER);
 	m_timer.Start(100);
@@ -915,8 +928,8 @@ void CUWSDRFrame::normaliseFreq()
 
 	// Now take into account the frequency steps of the SDR ...
 	double offset = 0.0;
-	if (m_parameters->m_hardwareStepSize > 1) {
-		double stepSize = double(m_parameters->m_hardwareStepSize);
+	if (m_parameters->m_hardwareStepSize > 1.0F) {		// FIXME XXX
+		double stepSize = m_parameters->m_hardwareStepSize;
 		double hz       = freq.getHz();
 
 		offset = ::fmod(hz, stepSize);
@@ -1068,6 +1081,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 			}
 			break;
 		case MENU_CW_KEYBOARD:
+			m_cwKeyboard->Show(true);
 			break;
 		case MENU_RECORD: {
 				m_record = !m_record;
@@ -1083,7 +1097,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 			break;
 		case MENU_HARDWARE_INFO: {
 				wxString stepSize;
-				stepSize.Printf(wxT("%u"), m_parameters->m_hardwareStepSize / 1000);
+				stepSize.Printf(wxT("%.1f"), m_parameters->m_hardwareStepSize);
 
 				wxString sampleRate;
 				sampleRate.Printf(wxT("%.0f"), m_parameters->m_hardwareSampleRate);
@@ -1095,9 +1109,9 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 
 				::wxMessageBox(_("The hardware parameters are:\n\n"
 					"Name:\t\t") + m_parameters->m_hardwareName + _("\n"
-					"Max. Freq:\t") + m_parameters->m_maxHardwareFreq.getString() + _(" MHz\n"
-					"Min. Freq:\t") + m_parameters->m_minHardwareFreq.getString() + _(" MHz\n"
-					"Step Size:\t") + stepSize + _(" kHz\n"
+					"Max. Freq:\t") + m_parameters->m_maxHardwareFreq.getString(3) + _(" MHz\n"
+					"Min. Freq:\t") + m_parameters->m_minHardwareFreq.getString(3) + _(" MHz\n"
+					"Step Size:\t") + stepSize + _(" Hz\n"
 					"Sample Rate:\t") + sampleRate + _(" samples/sec\n"
 					"Protocol Version:\t") + protocolVersion + _("\n"
 					"Transmit:\t\t") + transmit,
@@ -1199,8 +1213,28 @@ void CUWSDRFrame::onClose(wxCloseEvent& event)
 		m_sdr->enableRX(false);
 		m_sdr->close();
 		m_dsp->Delete();
+
+		// Grab the parameters from the CW keyboard
+		m_parameters->m_cwSpeed   = m_cwKeyboard->getSpeed();
+		m_parameters->m_cwLocal   = m_cwKeyboard->getLocal();
+		m_parameters->m_cwRemote  = m_cwKeyboard->getRemote();
+		m_parameters->m_cwLocator = m_cwKeyboard->getLocator();
+		m_parameters->m_cwReport  = m_cwKeyboard->getReport();
+		m_parameters->m_cwSerial  = m_cwKeyboard->getSerial();
+		for (unsigned int i = 0; i < CWKEYBOARD_COUNT; i++)
+			m_parameters->m_cwMessage[i] = m_cwKeyboard->getMessage(i);
+
 		Destroy();
 	} else {
 		event.Veto();
+	}
+}
+
+void CUWSDRFrame::sendCW(unsigned int speed, const wxString& text)
+{
+	// If we're not in CW mode; show an error
+	if (m_parameters->m_mode != MODE_CWW && m_parameters->m_mode != MODE_CWN) {
+		::wxMessageBox(_("Cannot send CW as not in a CW mode"), _("uWave SDR Error"), wxICON_ERROR);
+		return;
 	}
 }

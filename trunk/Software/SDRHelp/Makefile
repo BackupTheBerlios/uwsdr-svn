@@ -5,7 +5,7 @@ OBJS :=	SDRHelpApp.o
 SDRHelp:	$(OBJS)
 		$(CC) $(LDFLAGS) -o SDRHelp $(OBJS) $(LIBS)
 
-SDRHelpApp.o:	SDRHelpApp.cpp SDRHelpApp.h SDRHelp.xpm
+SDRHelpApp.o:	SDRHelpApp.cpp SDRHelpApp.h
 		$(CC) $(CFLAGS) -c SDRHelpApp.cpp
 
 install:	SDRHelp

@@ -1704,6 +1704,14 @@ SetTXSquelchVal (float setit)
 }
 
 void
+SetTXCompressionSt (bool setit)
+{
+}
+void
+SetTXCompressionLevel (float setit)
+{
+}
+void
 SetANF (bool setit)
 {
   char buffer[64];

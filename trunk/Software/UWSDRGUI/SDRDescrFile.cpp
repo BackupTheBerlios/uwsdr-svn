@@ -26,7 +26,7 @@ CSDRDescrFile::CSDRDescrFile(const wxString& fileName) :
 m_name(),
 m_maxFreq(),
 m_minFreq(),
-m_stepSize(0),
+m_stepSize(0.0F),
 m_sampleRate(0.0F),
 m_protocolVersion(0),
 m_receiveOnly(true),
@@ -54,8 +54,8 @@ m_valid(false)
 			else if (line.Left(8).Cmp(wxT("lowFreq=")) == 0)
 				m_minFreq.setFrequency(line.Mid(8));
 			else if (line.Left(9).Cmp(wxT("stepSize=")) == 0) {
-				unsigned long temp;
-				line.Mid(9).ToULong(&temp);
+				double temp;
+				line.Mid(9).ToDouble(&temp);
 				m_stepSize = temp;
 			} else if (line.Left(11).Cmp(wxT("sampleRate=")) == 0) {
 				double temp;
@@ -97,7 +97,7 @@ CFrequency CSDRDescrFile::getMinFreq() const
 	return m_minFreq;
 }
 
-unsigned int CSDRDescrFile::getStepSize() const
+float CSDRDescrFile::getStepSize() const
 {
 	return m_stepSize;
 }

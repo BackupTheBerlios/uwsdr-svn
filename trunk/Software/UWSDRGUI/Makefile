@@ -1,10 +1,10 @@
 all:		UWSDR
 
-CFLAGS	:= -I../Common $(CFLAGS)
+CFLAGS		:= -I../Common $(CFLAGS)
 
 LIBS		:= -lportaudio -lfftw3f -lfftw3 -lsndfile  $(LIBS)
 
-OBJS :=	DSPControl.o DTTSPControl.o FreqDial.o FreqDisplay.o FreqKeypad.o \
+OBJS :=		CWKeyboard.o DSPControl.o DTTSPControl.o FreqDial.o FreqDisplay.o FreqKeypad.o \
 		InfoBox.o Log.o NullReader.o NullWriter.o \
 		SDRDescrFile.o SDRParameters.o SMeter.o SignalReader.o SoundCardReader.o \
 		SoundCardWriter.o SoundFileReader.o SoundFileWriter.o SpectrumDisplay.o \
@@ -13,6 +13,9 @@ OBJS :=	DSPControl.o DTTSPControl.o FreqDial.o FreqDisplay.o FreqKeypad.o \
 
 UWSDR:		$(OBJS)
 		$(CC) $(LDFLAGS) -o UWSDR $(OBJS) ../Common/Common.a ../DttSP++/DttSP.a $(LIBS)
+
+CWKeyboard.o:	CWKeyboard.cpp CWKeyboard.h UWSDRApp.h UWSDRDefs.h
+		$(CC) $(CFLAGS) -c CWKeyboard.cpp
 
 DSPControl.o:	DSPControl.cpp DSPControl.h DataReader.h DataWriter.h DTTSPControl.h ../Common/RingBuffer.h SoundFileWriter.h 
 		$(CC) $(CFLAGS) -c DSPControl.cpp
@@ -44,7 +47,7 @@ NullWriter.o:	NullWriter.cpp NullWriter.h DataWriter.h
 SDRDescrFile.o:	SDRDescrFile.cpp SDRDescrFile.h ../Common/Frequency.h
 		$(CC) $(CFLAGS) -c SDRDescrFile.cpp
 
-SDRParameters.o: SDRParameters.cpp SDRParameters.h ../Common/Frequency.h
+SDRParameters.o: SDRParameters.cpp SDRParameters.h UWSDRDefs.h ../Common/Frequency.h
 		$(CC) $(CFLAGS) -c SDRParameters.cpp
 
 SMeter.o:	SMeter.cpp SMeter.h UWSDRDefs.h
@@ -77,10 +80,10 @@ UWSDRControl.o:	UWSDRControl.cpp UWSDRControl.h ControlInterface.h ../Common/Fre
 UWSDRData.o:	UWSDRData.cpp UWSDRData.h DataReader.h DataWriter.h ../Common/RingBuffer.h
 		$(CC) $(CFLAGS) -c UWSDRData.cpp
 
-UWSDRFrame.o:	UWSDRFrame.cpp UWSDRFrame.h ControlInterface.h DialInterface.h DSPControl.h FreqDial.h FreqDisplay.h \
+UWSDRFrame.o:	UWSDRFrame.cpp UWSDRFrame.h ControlInterface.h CWKeyboard.h DialInterface.h DSPControl.h FreqDial.h FreqDisplay.h \
 		FreqKeypad.h ../Common/Frequency.h InfoBox.h NullReader.h NullWriter.h SDRControl.h SDRParameters.h \
 		SignalReader.h SMeter.h SoundCardReader.h SoundCardWriter.h SoundFileReader.h SoundFileWriter.h \
-		SpectrumDisplay.h UWSDRApp.h UWSDRControl.h UWSDRData.h UWSDRDefs.h UWSDRPreferences.h UWSDR.xpm \
+		SpectrumDisplay.h UWSDRApp.h UWSDRControl.h UWSDRData.h UWSDRDefs.h UWSDRPreferences.h UWSDRXpm.h \
 		../Common/Version.h
 		$(CC) $(CFLAGS) -c UWSDRFrame.cpp
 

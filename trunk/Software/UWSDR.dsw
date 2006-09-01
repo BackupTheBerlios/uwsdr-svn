@@ -23,9 +23,6 @@ Package=<5>
 
 Package=<4>
 {{{
-    Begin Project Dependency
-    Project_Dep_Name Common
-    End Project Dependency
 }}}
 
 ###############################################################################
@@ -90,10 +87,10 @@ Package=<5>
 Package=<4>
 {{{
     Begin Project Dependency
-    Project_Dep_Name DttSP
+    Project_Dep_Name Common
     End Project Dependency
     Begin Project Dependency
-    Project_Dep_Name Common
+    Project_Dep_Name DttSP
     End Project Dependency
 }}}
 

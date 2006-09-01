@@ -15,16 +15,15 @@ lowFreq=2300
 highFreq=2450
 
 #
-# The oscillator in the SDR may not be able to step in small steps and the
-# interpolation will be done in software. The step size is in Hertz.
+# The local oscillator step size in Hertz.
 #
-stepSize=10000
+stepSize=10000.0
 
 #
 # This is the sample rate of the CODEC, this is somewhat important. The value
 # is in samples per second.
 #
-sampleRate=96000
+sampleRate=48000
 
 #
 # Over time we may make changes to the ethernet protocol, so we specify which

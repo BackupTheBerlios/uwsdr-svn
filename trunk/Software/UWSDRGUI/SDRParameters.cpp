@@ -22,7 +22,7 @@ CSDRParameters::CSDRParameters() :
 m_hardwareName(),
 m_maxHardwareFreq(),
 m_minHardwareFreq(),
-m_hardwareStepSize(0),
+m_hardwareStepSize(0.0F),
 m_hardwareSampleRate(0.0F),
 m_hardwareProtocolVersion(0),
 m_hardwareReceiveOnly(true),
@@ -89,7 +89,14 @@ m_txIQgain(0),
 m_afGain(0),
 m_squelch(0),
 m_micGain(0),
-m_power(0)
+m_power(0),
+m_cwSpeed(0),
+m_cwLocal(),
+m_cwRemote(),
+m_cwLocator(),
+m_cwReport(),
+m_cwSerial(),
+m_cwMessage()
 {
 }
 

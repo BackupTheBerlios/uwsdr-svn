@@ -21,6 +21,7 @@
 
 #include <wx/wx.h>
 
+#include "UWSDRDefs.h"
 #include "Frequency.h"
 
 class CSDRParameters {
@@ -32,7 +33,7 @@ class CSDRParameters {
 	wxString     m_hardwareName;
 	CFrequency   m_maxHardwareFreq;
 	CFrequency   m_minHardwareFreq;
-	unsigned int m_hardwareStepSize;
+	float        m_hardwareStepSize;
 	float        m_hardwareSampleRate;
 	unsigned int m_hardwareProtocolVersion;
 	bool         m_hardwareReceiveOnly;
@@ -66,8 +67,8 @@ class CSDRParameters {
 
 	int          m_mode;
 
-   int          m_deviationFMW;
-   int          m_deviationFMN;
+	int          m_deviationFMW;
+	int          m_deviationFMN;
 	int          m_agcAM;
 	int          m_agcSSB;
 	int          m_agcCW;
@@ -116,6 +117,14 @@ class CSDRParameters {
 	unsigned int m_squelch;
 	unsigned int m_micGain;
 	unsigned int m_power;
+
+	unsigned int m_cwSpeed;
+	wxString     m_cwLocal;
+	wxString     m_cwRemote;
+	wxString     m_cwLocator;
+	wxString     m_cwReport;
+	wxString     m_cwSerial;
+	wxString     m_cwMessage[CWKEYBOARD_COUNT];
 };
 
 #endif
