@@ -98,6 +98,10 @@ SOURCE=.\CWKeyboard.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\CWKeyer.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\DSPControl.cpp
 # End Source File
 # Begin Source File
@@ -203,6 +207,10 @@ SOURCE=.\ControlInterface.h
 # Begin Source File
 
 SOURCE=.\CWKeyboard.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\CWKeyer.h
 # End Source File
 # Begin Source File
 

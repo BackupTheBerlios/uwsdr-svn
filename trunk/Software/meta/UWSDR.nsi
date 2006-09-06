@@ -30,7 +30,7 @@
 ;--------------------------------
 ;Pages
 
-  !insertmacro MUI_PAGE_LICENSE "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Copying.txt"
+  !insertmacro MUI_PAGE_LICENSE "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Copying.txt"
   !insertmacro MUI_PAGE_DIRECTORY
 
   !insertmacro MUI_PAGE_INSTFILES
@@ -49,26 +49,26 @@ Section "UWSDR Program Files" SecProgram
 
   SetOutPath "$INSTDIR"
   
-  File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Release\UWSDR.exe"
-  File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Release\GUISetup.exe"
-  File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Release\SDRHelp.exe"
-  File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Release\SDRSetup.exe"
-  File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Release\SDREmulator.exe"
-  File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Release\libfftw3f-3.dll"
-  File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Release\PA19.dll"
-  File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Release\wxbase26_vc_custom.dll"
-  File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Release\wxbase26_net_vc_custom.dll"
-  File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Release\wxmsw26_core_vc_custom.dll"
-  File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Release\wxmsw26_html_vc_custom.dll"
-  File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Copying.txt"
-  File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Changes.txt"
-  File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Jobs.txt"
-  File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\Usage.txt"
-  File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\meta\UWSDR.ico"
-  File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\meta\GUISetup.ico"
-  File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\meta\SDRSetup.ico"
-  File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\meta\SDRHelp.ico"
-  File "C:\Documents and Settings\Administrator\My Documents\UWSDR_SVN\Software\13cms.sdr"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\UWSDR.exe"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\GUISetup.exe"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\SDRHelp.exe"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\SDRSetup.exe"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\SDREmulator.exe"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\libfftw3f-3.dll"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\PA19.dll"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxbase26_vc_custom.dll"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxbase26_net_vc_custom.dll"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxmsw26_core_vc_custom.dll"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxmsw26_html_vc_custom.dll"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Copying.txt"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Changes.txt"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Jobs.txt"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Usage.txt"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\meta\UWSDR.ico"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\meta\GUISetup.ico"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\meta\SDRSetup.ico"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\meta\SDRHelp.ico"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\13cms.sdr"
 
   ;Create start menu entry
   CreateDirectory "$SMPROGRAMS\UWSDR"

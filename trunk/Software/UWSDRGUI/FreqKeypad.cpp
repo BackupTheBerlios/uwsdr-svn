@@ -172,7 +172,7 @@ void CFreqKeypad::onOK(wxCommandEvent& event)
 {
 	wxString text = m_text->GetValue();
 
-	if (text.Length() == 0) {
+	if (text.length() == 0) {
 		::wxBell();
 		return;
 	}

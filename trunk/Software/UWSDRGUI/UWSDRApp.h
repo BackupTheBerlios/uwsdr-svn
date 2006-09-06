@@ -36,20 +36,20 @@ class CUWSDRApp : public wxApp {
 	virtual bool OnCmdLineParsed(wxCmdLineParser& parser);
 	virtual void OnInitCmdLine(wxCmdLineParser& parser);
 
-	virtual bool readDescrFile();
-	virtual bool readConfig();
-	virtual void writeConfig();
+	bool readDescrFile();
+	bool readConfig();
+	void writeConfig();
 
-	virtual void showHelp(const wxString& chapter);
+	void showHelp(const wxString& chapter);
 
-	virtual void sendCW(unsigned int speed, const wxString& text);
+	void sendCW(unsigned int speed, const wxString& text);
 
 #if defined(__WXDEBUG__)
 	virtual void OnAssert(const wxChar* file, int line, const wxChar* cond, const wxChar* msg);
 #endif
 
     protected:
-	virtual wxString getHelpDir();
+	wxString getHelpDir();
 
     private:
 	CUWSDRFrame*          m_frame;

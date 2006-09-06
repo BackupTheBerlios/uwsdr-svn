@@ -199,7 +199,7 @@ void CSDREmulatorFrame::processCommand(wxSocketBase& socket, wxChar* buffer)
 		wxString message = messages.Left(pos);
 		messages = messages.Mid(pos + 1);
 
-		if (message.Length() < 3) {
+		if (message.length() < 3) {
 			::sprintf(buffer, wxT("NK%s;"), message.c_str());
 			socket.Write(buffer, ::strlen(buffer));
 

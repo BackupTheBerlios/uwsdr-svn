@@ -46,7 +46,7 @@ m_valid(false)
 	for (unsigned int i = 0; i < nLines; i++) {
 		wxString line = file.GetLine(i);
 
-		if (line.Length() > 0 && line.GetChar(0) != wxT('#')) {
+		if (line.length() > 0 && line.GetChar(0) != wxT('#')) {
 			if (line.Left(5).Cmp(wxT("name=")) == 0)
 				m_name = line.Mid(5);
 			else if (line.Left(9).Cmp(wxT("highFreq=")) == 0)

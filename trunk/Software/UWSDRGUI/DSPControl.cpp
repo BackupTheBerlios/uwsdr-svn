@@ -18,11 +18,14 @@
 
 #include "DSPControl.h"
 
+#include "UWSDRDefs.h"
+
 #include <wx/datetime.h>
 
 
 const int TX_READER = 77;
 const int RX_READER = 88;
+const int CW_READER = 99;
 
 const int RINGBUFFER_SIZE = 100001;
 const int BLOCK_SIZE      = 2048;		// XXXX
@@ -30,6 +33,7 @@ const int BLOCK_SIZE      = 2048;		// XXXX
 CDSPControl::CDSPControl(float sampleRate, float centreFreq) :
 wxThread(),
 m_dttsp(NULL),
+m_cwKeyer(NULL),
 m_sampleRate(sampleRate),
 m_centreFreq(centreFreq),
 m_txReader(NULL),
@@ -47,10 +51,15 @@ m_transmit(false),
 m_running(false),
 m_afGain(0.0),
 m_micGain(0.0),
-m_power(0.0)
+m_power(0.0),
+m_mode(MODE_USB)
 {
 	m_dttsp = new CDTTSPControl();
 	m_dttsp->open(m_sampleRate, BLOCK_SIZE);
+
+	m_cwKeyer = new CCWKeyer();
+	m_cwKeyer->setCallback(this, CW_READER);
+	m_cwKeyer->open(m_sampleRate, BLOCK_SIZE);
 
 	m_txBuffer = new float[BLOCK_SIZE * 2];
 	m_rxBuffer = new float[BLOCK_SIZE * 2];
@@ -63,6 +72,7 @@ CDSPControl::~CDSPControl()
 	delete[] m_txBuffer;
 	delete[] m_rxBuffer;
 	delete[] m_outBuffer;
+	delete   m_cwKeyer;
 }
 
 void CDSPControl::setTXReader(IDataReader* reader)
@@ -101,6 +111,7 @@ void* CDSPControl::Entry()
 	bool ret = openIO();
 	if (!ret) {
 		m_dttsp->close();
+		m_cwKeyer->close();
 
 		// We have a problem so wait for death
 		while (!TestDestroy())
@@ -126,16 +137,18 @@ void* CDSPControl::Entry()
 			}
 		} else {
 			unsigned int nSamples = m_rxRingBuffer.getData(m_rxBuffer, BLOCK_SIZE);
-			if (nSamples != BLOCK_SIZE)
-				::wxLogError(wxT("Underrun in RX ring buffer, wanted %u available %u"), BLOCK_SIZE, nSamples);
 
-			if (nSamples > 0) {
-				scaleBuffer(m_rxBuffer, nSamples, m_afGain);
-				m_rxWriter->write(m_rxBuffer, nSamples);
-
-				if (m_record != NULL)
-					m_record->write(m_rxBuffer, nSamples);
+			// If we don't have enough data then pad with silence
+			if (nSamples != BLOCK_SIZE) {
+				for (unsigned int i = nSamples; i < BLOCK_SIZE; i++)
+					m_rxBuffer[i] = 0.0F;
 			}
+
+			scaleBuffer(m_rxBuffer, BLOCK_SIZE, m_afGain);
+			m_rxWriter->write(m_rxBuffer, BLOCK_SIZE);
+
+			if (m_record != NULL)
+				m_record->write(m_rxBuffer, nSamples);
 		}
 	}
 
@@ -144,6 +157,7 @@ void* CDSPControl::Entry()
 	closeIO();
 
 	m_dttsp->close();
+	m_cwKeyer->close();
 
 	return (void*)0;
 }
@@ -211,7 +225,8 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 				unsigned int n = m_rxRingBuffer.addData(m_outBuffer, nSamples);
 				if (n != nSamples)
 					::wxLogError(wxT("Overrun in RX ring buffer, needed %u available %u"), nSamples, n);
-				else
+
+				if (n > 0)
 					m_waiting.Post();
 			}
 			break;
@@ -220,6 +235,12 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 				if (!m_transmit)
 					return;
 
+				// We use the timing of the sound card to drive the keyer in CW mode
+				if (m_mode == MODE_CWN || m_mode == MODE_CWW) {
+					m_cwKeyer->clock();
+					return;
+				}
+
 				scaleBuffer(inBuffer, nSamples, m_micGain);
 
 				m_dttsp->dataIO(inBuffer, m_outBuffer, nSamples);
@@ -227,7 +248,32 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 				unsigned int n = m_txRingBuffer.addData(m_outBuffer, nSamples);
 				if (n != nSamples)
 					::wxLogError(wxT("Overrun in TX ring buffer, needed %u available %u"), nSamples, n);
-				else
+
+				if (n > 0)
+					m_waiting.Post();
+			}
+			break;
+
+		case CW_READER: {
+				if (!m_transmit)
+					return;
+
+				if (m_mode != MODE_CWN && m_mode != MODE_CWW)
+					return;
+
+				scaleBuffer(inBuffer, nSamples, 0.9F);
+
+				// The tone is used as a side tone first
+				m_rxWriter->write(inBuffer, nSamples);
+
+				// Now transmit it
+				m_dttsp->dataIO(inBuffer, m_outBuffer, nSamples);
+
+				unsigned int n = m_txRingBuffer.addData(m_outBuffer, nSamples);
+				if (n != nSamples)
+					::wxLogError(wxT("Overrun in TX ring buffer, needed %u available %u"), nSamples, n);
+
+				if (n > 0)
 					m_waiting.Post();
 			}
 			break;
@@ -240,6 +286,9 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 
 void CDSPControl::setMode(int mode)
 {
+	// We need a copy too ...
+	m_mode = mode;
+
 	m_dttsp->setMode(mode);
 }
 
@@ -395,4 +444,12 @@ void CDSPControl::scaleBuffer(float* buffer, unsigned int nSamples, float scale)
 
 	for (unsigned int i = 0; i < nSamples * 2; i++)
 		buffer[i] *= scale;
+}
+
+void CDSPControl::sendCW(unsigned int speed, const wxString& text)
+{
+	if (speed == 0)
+		m_cwKeyer->abort();
+	else
+		m_cwKeyer->send(speed, text);
 }

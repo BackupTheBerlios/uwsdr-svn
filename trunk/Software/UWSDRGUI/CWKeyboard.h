@@ -31,6 +31,7 @@ class CCWKeyboard : public wxDialog {
 	~CCWKeyboard();
 
 	void onTransmit(wxCommandEvent& event);
+	void onAbort(wxCommandEvent& event);
 	void onHelp(wxCommandEvent& event);
 
 	void     setLocal(const wxString& text);

@@ -4,8 +4,8 @@ CFLAGS		:= -I../Common $(CFLAGS)
 
 LIBS		:= -lportaudio -lfftw3f -lfftw3 -lsndfile  $(LIBS)
 
-OBJS :=		CWKeyboard.o DSPControl.o DTTSPControl.o FreqDial.o FreqDisplay.o FreqKeypad.o \
-		InfoBox.o Log.o NullReader.o NullWriter.o \
+OBJS :=		CWKeyboard.o CWKeyer.o DSPControl.o DTTSPControl.o FreqDial.o FreqDisplay.o \
+		FreqKeypad.o InfoBox.o Log.o NullReader.o NullWriter.o \
 		SDRDescrFile.o SDRParameters.o SMeter.o SignalReader.o SoundCardReader.o \
 		SoundCardWriter.o SoundFileReader.o SoundFileWriter.o SpectrumDisplay.o \
 		UWSDRApp.o UWSDRControl.o UWSDRData.o UWSDRFrame.o UWSDRPreferences.o \
@@ -17,7 +17,11 @@ UWSDR:		$(OBJS)
 CWKeyboard.o:	CWKeyboard.cpp CWKeyboard.h UWSDRApp.h UWSDRDefs.h
 		$(CC) $(CFLAGS) -c CWKeyboard.cpp
 
-DSPControl.o:	DSPControl.cpp DSPControl.h DataReader.h DataWriter.h DTTSPControl.h ../Common/RingBuffer.h SoundFileWriter.h 
+CWKeyer.o:	CWKeyer.cpp CWKeyer.h DataReader.h UWSDRApp.h ../Common/RingBuffer.h
+		$(CC) $(CFLAGS) -c CWKeyer.cpp
+
+DSPControl.o:	DSPControl.cpp DSPControl.h CWKeyer.h DataReader.h DataWriter.h DTTSPControl.h \
+		../Common/RingBuffer.h SoundFileWriter.h UWSDRDefs.h
 		$(CC) $(CFLAGS) -c DSPControl.cpp
 
 DTTSPControl.o:	DTTSPControl.cpp DTTSPControl.h DTTSPExports.h UWSDRDefs.h

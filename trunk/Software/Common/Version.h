@@ -23,6 +23,6 @@
 
 
 const wxString VERSION  = wxT("uWave SDR 0.5.2");
-const wxString REL_DATE = wxT("21 June 2006");
+const wxString REL_DATE = wxT("6 September 2006");
 
 #endif

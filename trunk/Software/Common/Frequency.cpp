@@ -86,7 +86,7 @@ bool CFrequency::setFrequency(const wxString& freq)
 	if (freq.Freq(wxT('.')) > 1)
 		return false;
 
-	int n = freq.Length();
+	int n = freq.length();
 
 	bool error = false;
 	for (int i = 0; i < n; i++) {

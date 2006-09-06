@@ -42,7 +42,7 @@
 class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterface {
     public:
 	CUWSDRFrame(const wxString& title);
-	virtual ~CUWSDRFrame();
+	~CUWSDRFrame();
 
 	void onMenuButton(wxCommandEvent& event);
 	void onMenuSelection(wxCommandEvent& event);
@@ -57,15 +57,15 @@ class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterf
 	void onTimer(wxTimerEvent& event);
 	void onClose(wxCloseEvent& event);
 
-	virtual void            setParameters(CSDRParameters* parameters);
-	virtual CSDRParameters* getParameters();
+	void            setParameters(CSDRParameters* parameters);
+	CSDRParameters* getParameters();
 
-	virtual void dialMoved(int id, int value);
+	void dialMoved(int id, int value);
 
-	virtual void sdrCommandNAK(int id);
-	virtual void sdrConnectionLost(int id);
+	void sdrCommandNAK(int id);
+	void sdrConnectionLost(int id);
 
-	virtual void sendCW(unsigned int speed, const wxString& text);
+	void sendCW(unsigned int speed, const wxString& text);
 
     private:
 	wxTimer           m_timer;
@@ -85,6 +85,8 @@ class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterf
 	wxChoice*         m_filter;
 	wxToggleButton*   m_ritCtrl;
 	CVolumeDial*      m_rit;
+	wxToggleButton*   m_mute;
+	wxToggleButton*   m_transmit;
 	CSMeter*          m_sMeter;
 	CVolumeDial*      m_micGain;
 	CVolumeDial*      m_power;
@@ -105,7 +107,7 @@ class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterf
 	wxSizer*  createRITButton(wxWindow* window);
 	wxSizer*  createMuteButton(wxWindow* window);
 	wxSizer*  createRIT(wxWindow* window);
-	wxToggleButton* createTransmitButton(wxWindow* window);
+	wxSizer*  createTransmitButton(wxWindow* window);
 	wxPanel*  createFreqDisplay(wxWindow* window);
 	wxPanel*  createSpectrumDisplay(wxWindow* window);
 	wxPanel*  createInfoBox(wxWindow* window);
@@ -120,6 +122,8 @@ class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterf
 	void freqChange(double value);
 	void normaliseFreq();
 	void normaliseMode();
+
+	bool setTransmit();
 };
 
 #endif

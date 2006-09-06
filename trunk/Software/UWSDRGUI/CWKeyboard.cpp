@@ -19,7 +19,11 @@
 #include "CWKeyboard.h"
 #include "UWSDRApp.h"
 
+#include <wx/statline.h>
 
+/*
+ * This is the lookup table to convert characters to morse code.
+ */
 static struct {
 	wxChar  character;
 	wxChar* cwString;
@@ -67,6 +71,7 @@ static struct {
 	{wxT(','), wxT("--..--")},
 	{wxT('='), wxT("-...-")},
 	{wxT('*'), wxT("...-.-")},
+	{wxT('.'), wxT(".-.-.")},
 
 	{wxT(' '), wxT(" ")}
 };
@@ -85,11 +90,13 @@ enum {
 	BUTTON_8,
 	BUTTON_9,
 	BUTTON_10,
-	BUTTON_TRANSMIT
+	BUTTON_TRANSMIT,
+	BUTTON_ABORT
 };
 
 BEGIN_EVENT_TABLE(CCWKeyboard, wxDialog)
 	EVT_BUTTON(BUTTON_TRANSMIT, CCWKeyboard::onTransmit)
+	EVT_BUTTON(BUTTON_ABORT,    CCWKeyboard::onAbort)
 	EVT_BUTTON(wxID_HELP,       CCWKeyboard::onHelp)
 END_EVENT_TABLE()
 
@@ -152,6 +159,9 @@ m_speed(NULL)
 
 	mainSizer->Add(entrySizer, 0, wxALL, BORDER_SIZE);
 
+	wxStaticLine* line1 = new wxStaticLine(this, -1, wxDefaultPosition, wxSize(CWKEYB_WIDTH, -1), wxLI_HORIZONTAL);
+	mainSizer->Add(line1, 0, wxALL, BORDER_SIZE);
+
 	wxFlexGridSizer* textSizer = new wxFlexGridSizer(3);
 
 	for (unsigned int i = 0; i < CWKEYBOARD_COUNT; i++) {
@@ -172,16 +182,22 @@ m_speed(NULL)
 
 	mainSizer->Add(textSizer, 0, wxALL, BORDER_SIZE);
 
+	wxStaticLine* line2 = new wxStaticLine(this, -1, wxDefaultPosition, wxSize(CWKEYB_WIDTH, -1), wxLI_HORIZONTAL);
+	mainSizer->Add(line2, 0, wxALL, BORDER_SIZE);
+
 	wxBoxSizer* buttonSizer = new wxBoxSizer(wxHORIZONTAL);
 
-	wxButton* txButton = new wxButton(this, BUTTON_TRANSMIT, _("Transmit"));
-	buttonSizer->Add(txButton, 0, wxALL, BORDER_SIZE);
+	wxButton* transmitButton = new wxButton(this, BUTTON_TRANSMIT, _("Transmit"));
+	buttonSizer->Add(transmitButton, 0, wxALL, BORDER_SIZE);
 
-	wxButton* helpButton = new wxButton(this, wxID_HELP, _("Help"));
-	buttonSizer->Add(helpButton, 0, wxALL, BORDER_SIZE);
+	wxButton* abortButton = new wxButton(this, BUTTON_ABORT, _("Abort"));
+	buttonSizer->Add(abortButton, 0, wxALL, BORDER_SIZE);
 
 	wxButton* closeButton = new wxButton(this, wxID_CANCEL, _("Close"));
 	buttonSizer->Add(closeButton, 0, wxALL, BORDER_SIZE);
+
+	wxButton* helpButton = new wxButton(this, wxID_HELP, _("Help"));
+	buttonSizer->Add(helpButton, 0, wxALL, BORDER_SIZE);
 
 	mainSizer->Add(buttonSizer, 0, wxALL, BORDER_SIZE);
 
@@ -279,6 +295,10 @@ void CCWKeyboard::onHelp(wxCommandEvent& event)
 	::wxGetApp().showHelp(wxT("CWKeyboard"));
 }
 
+/*
+ * Convert the input string to the required dashes, dots, and spaces. This is where
+ * substitutions are also done.
+ */
 void CCWKeyboard::onTransmit(wxCommandEvent& event)
 {
 	wxString text;
@@ -298,14 +318,11 @@ void CCWKeyboard::onTransmit(wxCommandEvent& event)
 	text.Replace(wxT("%S"), m_report->GetValue(), true);
 	text.Replace(wxT("%N"), m_serial->GetValue(), true);
 
-	text.Replace(wxT(" VA"), wxT(" *"), true);
-	text.Replace(wxT(" SK"), wxT(" *"), true);
-
 	text.UpperCase();
 
-	wxString cwData;
+	wxString cwData = wxT(" ");
 
-	for (unsigned int n = 0; n < text.Len(); n++) {
+	for (unsigned int n = 0; n < text.length(); n++) {
 		wxChar c = text.GetChar(n);
 
 		for (unsigned int m = 0; m < cwLookupLen; m++)	{
@@ -317,7 +334,15 @@ void CCWKeyboard::onTransmit(wxCommandEvent& event)
 		}
 	}
 
-	cwData.Trim();
+	cwData.Append(wxT(" "));
 
 	::wxGetApp().sendCW(getSpeed(), cwData);
+}
+
+/*
+ * Tell the system to stop transmitting.
+ */
+void CCWKeyboard::onAbort(wxCommandEvent& event)
+{
+	::wxGetApp().sendCW(0, wxEmptyString);
 }

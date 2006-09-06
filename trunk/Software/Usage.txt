@@ -11,7 +11,11 @@ The Frequency Keypad is what the names suggests, a calculator type entry of freq
 
 The Preferences allows for the setting of the maximum and minimum frequencies for the SDR which must be within the limits set for the hardware which is held in the SDR file. The Shift value in kHz is also set here. You can also set the different step sizes for tuning and also the different filters and AGC values for each mode.
 
-The CW keyboard will eventually allow for the entering of text for sending as CW. It will include memories and macros.
+The CW keyboard brings up a new windows where a number of pre-set messages may be chosen from. The keyboard doesn't allow for real-time typing of messages, but having a number of pre-set messages will probably be enough, at least initially. It is possible to embed repeated text like callsigns in a message by using one of the text boxes at the top, labelled: "My callsign (%M)", "Remote callsign (%R)", "Locator (%Q)", "Report (%S)" and "Serial (%N)". These are subsituted in the message whenever the %M, %R, %Q, %S or %N characters are found in the text. The speed that the message is sent at may also be set.
+
+The messages may consist of the letters A to Z, the numbers 0 - 9, and the punctuation "/?,". In addition the character "=" is translated as "-...-", "." as ".-.-.", and "*" as "...-.-".
+
+The four buttons are labelled "Send", "Abort, "Close" and "help". Send starts the transmitter and begins sending the chosen message. Abort stops an already started transmission, Close closes the window and Help will eventually bring up a help screen for the CW keyboard.
 
 The Record option switches audio capture on and off. The status of this is shown by a mark at the side of the menu entry. The name of the audio file is made up of the date and time that the file was opened.
 

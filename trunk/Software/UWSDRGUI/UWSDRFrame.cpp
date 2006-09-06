@@ -118,6 +118,8 @@ m_mode(NULL),
 m_filter(NULL),
 m_ritCtrl(NULL),
 m_rit(NULL),
+m_mute(NULL),
+m_transmit(NULL),
 m_sMeter(NULL),
 m_micGain(NULL),
 m_power(NULL),
@@ -166,7 +168,7 @@ m_cwKeyboard(NULL)
 
 	belowFreqSizer->Add(bandModeSizer, 0, wxEXPAND |wxLEFT | wxRIGHT, BORDER_SIZE);
 	belowFreqSizer->Add(createRIT(panel), 0, wxLEFT | wxRIGHT, BORDER_SIZE);
-	belowFreqSizer->Add(createTransmitButton(panel), 0, wxTOP | wxLEFT, BORDER_SIZE);
+	belowFreqSizer->Add(createTransmitButton(panel), 0, wxLEFT, BORDER_SIZE);
 
 	freqSizer->Add(belowFreqSizer, 0, wxRIGHT | wxBOTTOM, BORDER_SIZE);
 
@@ -230,7 +232,10 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_spectrumDisplay->setType(m_parameters->m_spectrumType);
 	m_spectrumDisplay->setSpeed(m_parameters->m_spectrumSpeed);
 
+	m_spectrumDisplay->setBandwidth(20000.0F);
+
 	// Set the spectrum width depending on the step size and sample rate,
+/*
 	float lowFreq = float(m_parameters->m_hardwareSampleRate) / 4.0F - m_parameters->m_hardwareStepSize / 2.0F;
 	wxASSERT(lowFreq > 0.0F);
 
@@ -248,7 +253,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 		m_spectrumDisplay->setBandwidth(10000.0F);
 	else
 		m_spectrumDisplay->setBandwidth(5000.0F);
-
+*/
 	// FIXME
 	// (m_parameters->m_ipAddress, m_parameters->m_dataPort, m_parameters->m_hardwareProtocolVersion, m_parameters->m_sdrEnabled);
 
@@ -274,6 +279,8 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_filter->SetSelection(m_parameters->m_filter);
 
 	m_ritCtrl->SetValue(m_parameters->m_ritOn);
+	m_ritCtrl->SetLabel(m_parameters->m_ritOn ? _("Off") : _("On"));
+
 	m_rit->setValue(m_parameters->m_ritFreq);
 	if (m_ritCtrl)
 		m_dsp->setRIT(float(m_parameters->m_ritFreq));
@@ -463,7 +470,7 @@ wxSizer* CUWSDRFrame::createRITButton(wxWindow* window)
 {
 	wxStaticBoxSizer* sizer = new wxStaticBoxSizer(new wxStaticBox(window, -1, _("RIT")), wxVERTICAL);
 
-	m_ritCtrl = new wxToggleButton(window, RIT_BUTTON, _("On/Off"), wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
+	m_ritCtrl = new wxToggleButton(window, RIT_BUTTON, _("On"), wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
 
 	sizer->Add(m_ritCtrl, 0, wxLEFT | wxRIGHT | wxBOTTOM, BORDER_SIZE);
 	sizer->SetSizeHints(window);
@@ -475,17 +482,24 @@ wxSizer* CUWSDRFrame::createMuteButton(wxWindow* window)
 {
 	wxStaticBoxSizer* sizer = new wxStaticBoxSizer(new wxStaticBox(window, -1, _("Mute")), wxVERTICAL);
 
-	wxToggleButton* button = new wxToggleButton(window, MUTE_BUTTON, _("On/Off"), wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
+	m_mute = new wxToggleButton(window, MUTE_BUTTON, _("On"), wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
 
-	sizer->Add(button, 0, wxLEFT | wxRIGHT | wxBOTTOM, BORDER_SIZE);
+	sizer->Add(m_mute, 0, wxLEFT | wxRIGHT | wxBOTTOM, BORDER_SIZE);
 	sizer->SetSizeHints(window);
 
 	return sizer;
 }
 
-wxToggleButton* CUWSDRFrame::createTransmitButton(wxWindow* window)
+wxSizer* CUWSDRFrame::createTransmitButton(wxWindow* window)
 {
-	return new wxToggleButton(window, TX_BUTTON, _("TRANSMIT"), wxDefaultPosition, wxSize(CONTROL_WIDTH, CONTROL_WIDTH));
+	wxStaticBoxSizer* sizer = new wxStaticBoxSizer(new wxStaticBox(window, -1, _("Transmit")), wxVERTICAL);
+
+	m_transmit = new wxToggleButton(window, TX_BUTTON, _("On"), wxDefaultPosition, wxSize(TXBUTTON_WIDTH, TXBUTTON_HEIGHT));
+
+	sizer->Add(m_transmit, 0, wxALL, BORDER_SIZE);
+	sizer->SetSizeHints(window);
+
+	return sizer;
 }
 
 wxSizer* CUWSDRFrame::createRIT(wxWindow* window)
@@ -766,6 +780,8 @@ void CUWSDRFrame::onRITButton(wxCommandEvent& event)
 
 	m_infoBox->setRIT(m_parameters->m_ritOn);
 
+	m_ritCtrl->SetLabel(m_parameters->m_ritOn ? _("Off") : _("On"));
+
 	if (m_txOn)
 		return;
 
@@ -776,14 +792,26 @@ void CUWSDRFrame::onMuteButton(wxCommandEvent& event)
 {
 	m_rxOn = !m_rxOn;
 
+	m_mute->SetLabel(m_rxOn ? _("On") : _("Off"));
+
 	m_sdr->enableRX(m_rxOn);
 }
 
 void CUWSDRFrame::onTXButton(wxCommandEvent& event)
 {
+	// If we're not in CW mode; don't go to TX/RX
+	if (m_parameters->m_mode != MODE_CWW && m_parameters->m_mode != MODE_CWN)
+		setTransmit();
+
+	m_transmit->SetValue(m_txOn);
+	m_transmit->SetLabel(m_txOn ? _("Off") : _("On"));
+}
+
+bool CUWSDRFrame::setTransmit()
+{
 	if (!m_txOn && m_parameters->m_hardwareReceiveOnly) {
 		::wxMessageBox(_("This SDR is only a receiver!"), _("uWave SDR Error"), wxICON_ERROR);
-		return;
+		return false;
 	}
 
 	// Sanity check on the transmit frequency
@@ -826,7 +854,7 @@ void CUWSDRFrame::onTXButton(wxCommandEvent& event)
 
 		if (freq >= m_parameters->m_maxTransmitFreq || freq < m_parameters->m_minTransmitFreq) {
 			::wxBell();
-			return;
+			return false;
 		}
 	}
 
@@ -846,6 +874,8 @@ void CUWSDRFrame::onTXButton(wxCommandEvent& event)
 	m_infoBox->setTX(m_txOn);
 
 	normaliseFreq();
+
+	return true;
 }
 
 void CUWSDRFrame::normaliseFreq()
@@ -1234,7 +1264,25 @@ void CUWSDRFrame::sendCW(unsigned int speed, const wxString& text)
 {
 	// If we're not in CW mode; show an error
 	if (m_parameters->m_mode != MODE_CWW && m_parameters->m_mode != MODE_CWN) {
-		::wxMessageBox(_("Cannot send CW as not in a CW mode"), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("Not in a CW mode!"), _("uWave SDR Error"), wxICON_ERROR);
 		return;
 	}
+
+	if (speed == 0) {
+		if (!m_txOn)
+			return;
+	} else {
+		if (m_txOn) {
+			::wxMessageBox(_("Cannot send as already transmitting"), _("uWave SDR Error"), wxICON_ERROR);
+			return;
+		}
+	}
+
+	bool ret = setTransmit();
+
+	// Going to TX (or RX) has failed
+	if (!ret)
+		return;
+
+	m_dsp->sendCW(speed, text);
 }
