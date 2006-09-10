@@ -146,3 +146,11 @@ Changed to using the new C++ version of DttSP. Transmit not tested yet.
 Hardware step size is now floating point to allow for sub one Hertz steps.
 
 CW keyboard included.
+
+
+Version 0.5.3 - 16 September 2006
+=================================
+
+Added Help for GUISetup and SDRSetup.
+
+Changed keying leading and trailing edges to a raised cosine shape.

@@ -110,6 +110,7 @@ m_rxOn(true),
 m_txOn(false),
 m_stepSize(0.0),
 m_record(false),
+m_offset(0.0F),
 m_menu(NULL),
 m_freqDisplay(NULL),
 m_spectrumDisplay(NULL),
@@ -233,6 +234,8 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_spectrumDisplay->setSpeed(m_parameters->m_spectrumSpeed);
 
 	m_spectrumDisplay->setBandwidth(20000.0F);
+
+	m_offset = m_parameters->m_hardwareSampleRate / 4.0F;		// XXX FIXME
 
 	// Set the spectrum width depending on the step size and sample rate,
 /*
@@ -799,9 +802,15 @@ void CUWSDRFrame::onMuteButton(wxCommandEvent& event)
 
 void CUWSDRFrame::onTXButton(wxCommandEvent& event)
 {
-	// If we're not in CW mode; don't go to TX/RX
-	if (m_parameters->m_mode != MODE_CWW && m_parameters->m_mode != MODE_CWN)
+	// If we're not in CW mode, go to TX/RX
+	if (m_parameters->m_mode != MODE_CWW && m_parameters->m_mode != MODE_CWN) {
 		setTransmit();
+	} else {
+		// Else is in CW mode we can use the main Transmit button to abort a CW
+		// transmission, but not start one.
+		if (m_txOn)
+			::wxGetApp().sendCW(0, wxEmptyString);
+	}
 
 	m_transmit->SetValue(m_txOn);
 	m_transmit->SetLabel(m_txOn ? _("Off") : _("On"));
@@ -954,7 +963,7 @@ void CUWSDRFrame::normaliseFreq()
 	m_freqDisplay->setFrequency(dispFreq);
 
 	// Subtract the IF frequency
-	freq -= m_parameters->m_hardwareSampleRate / 4.0F;
+	freq -= m_offset;
 
 	// Now take into account the frequency steps of the SDR ...
 	double offset = 0.0;

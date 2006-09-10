@@ -79,7 +79,7 @@ m_dspAddress(NULL)
 	m_sdrDataPort = new wxTextCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
 	panelSizer->Add(m_sdrDataPort, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label7 = new wxStaticText(panel, -1, _("DSP Address:"));
+	wxStaticText* label7 = new wxStaticText(panel, -1, _("DSP IP Address:"));
 	panelSizer->Add(label7, 0, wxALL, BORDER_SIZE);
 
 	m_dspAddress = new wxTextCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
@@ -153,7 +153,7 @@ void CSDRSetupFrame::onExecute(wxCommandEvent& event)
 	}
 
    valid = sdrControlPort.ToLong(&port);
-   if (!valid || port < 1 || port > 65535) {
+   if (!valid || port < 1L || port > 65535L) {
 		::wxMessageBox(_("The new SDR control port is not valid (1-65535)"));
 		return;
 	}
@@ -165,7 +165,7 @@ void CSDRSetupFrame::onExecute(wxCommandEvent& event)
 	}
 
    valid = sdrDataPort.ToLong(&port);
-   if (!valid || port < 1 || port > 65535) {
+   if (!valid || port < 1L || port > 65535L) {
 		::wxMessageBox(_("The new SDR data port is not valid (1-65535)"));
 		return;
 	}

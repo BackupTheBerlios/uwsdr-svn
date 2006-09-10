@@ -15,7 +15,7 @@ The CW keyboard brings up a new windows where a number of pre-set messages may b
 
 The messages may consist of the letters A to Z, the numbers 0 - 9, and the punctuation "/?,". In addition the character "=" is translated as "-...-", "." as ".-.-.", and "*" as "...-.-".
 
-The four buttons are labelled "Send", "Abort, "Close" and "help". Send starts the transmitter and begins sending the chosen message. Abort stops an already started transmission, Close closes the window and Help will eventually bring up a help screen for the CW keyboard.
+The four buttons are labelled "Send", "Abort, "Close" and "help". Send starts the transmitter and begins sending the chosen message. Abort stops an already started transmission, Close closes the window and Help will eventually bring up a help screen for the CW keyboard. The main Transmit button on the GUI may also be used to abort a CW transmission.
 
 The Record option switches audio capture on and off. The status of this is shown by a mark at the side of the menu entry. The name of the audio file is made up of the date and time that the file was opened.
 

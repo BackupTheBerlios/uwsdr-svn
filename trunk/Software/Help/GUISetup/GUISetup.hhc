@@ -1,0 +1,65 @@
+<ul>
+
+  <li> <object type="text/sitemap">
+           <param name="Name" value="Overview">
+           <param name="ID" value=1>
+           <param name="Local" value="Overview.htm">
+       </object>
+  <li> <object type="text/sitemap">
+           <param name="Name" value="The GUISetup Screen">
+           <param name="ID" value=2>
+           <param name="Local" value="GUI.htm">
+       </object>
+       <ul>
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="Name">
+                  <param name="ID" value=3>
+                  <param name="Local" value="Name.htm">
+              </object>
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="SDR File Name">
+                  <param name="ID" value=4>
+                  <param name="Local" value="SDRFileName.htm">
+              </object>
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="Audio API">
+                  <param name="ID" value=5>
+                  <param name="Local" value="AudioAPI.htm">
+              </object>
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="Audio Device">
+                  <param name="ID" value=6>
+                  <param name="Local" value="AudioDevice.htm">
+              </object>
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="SDR IP Address">
+                  <param name="ID" value=7>
+                  <param name="Local" value="SDRIPAddress.htm">
+              </object>
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="SDR Control Port">
+                  <param name="ID" value=8>
+                  <param name="Local" value="SDRControlPort.htm">
+              </object>
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="SDR Data Port">
+                  <param name="ID" value=9>
+                  <param name="Local" value="SDRDataPort.htm">
+              </object>
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="Create Start Menu entry">
+                  <param name="ID" value=10>
+                  <param name="Local" value="CreateStartMenu.htm">
+              </object>
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="Create Desktop icon">
+                  <param name="ID" value=11>
+                  <param name="Local" value="CreateDesktopIcon.htm">
+              </object>
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="Create Button">
+                  <param name="ID" value=12>
+                  <param name="Local" value="CreateButton.htm">
+              </object>
+       </ul>
+</ul>

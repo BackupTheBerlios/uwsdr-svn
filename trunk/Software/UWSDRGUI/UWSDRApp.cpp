@@ -19,6 +19,7 @@
 #include <wx/config.h>
 #include <wx/cmdline.h>
 #include <wx/fs_zip.h>
+#include <wx/image.h>
 
 #include "UWSDRApp.h"
 #include "UWSDRDefs.h"
@@ -119,6 +120,8 @@ bool CUWSDRApp::OnInit()
 
 	wxLog* logger = new CLog(m_parameters->m_name + ".log");
 	wxLog::SetActiveTarget(logger);
+
+	::wxInitAllImageHandlers();
 
 	wxFileSystem::AddHandler(new wxZipFSHandler);
 	m_help = new wxHtmlHelpController();

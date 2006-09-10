@@ -1,0 +1,50 @@
+<ul>
+
+  <li> <object type="text/sitemap">
+           <param name="Name" value="Overview">
+           <param name="ID" value=1>
+           <param name="Local" value="Overview.htm">
+       </object>
+  <li> <object type="text/sitemap">
+           <param name="Name" value="The SDRSetup Screen">
+           <param name="ID" value=2>
+           <param name="Local" value="GUI.htm">
+       </object>
+       <ul>
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="Old SDR IP Address">
+                  <param name="ID" value=3>
+                  <param name="Local" value="OldSDRIPAddress.htm">
+              </object>
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="Old SDR Control Port">
+                  <param name="ID" value=4>
+                  <param name="Local" value="OldSDRControlPort.htm">
+              </object>
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="New SDR IP Address">
+                  <param name="ID" value=5>
+                  <param name="Local" value="NewSDRIPAddress.htm">
+              </object>
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="New SDR Control Port">
+                  <param name="ID" value=6>
+                  <param name="Local" value="NewSDRControlPort.htm">
+              </object>
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="New SDR Data Port">
+                  <param name="ID" value=7>
+                  <param name="Local" value="NewSDRDataPort.htm">
+              </object>
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="DSP IP Address">
+                  <param name="ID" value=8>
+                  <param name="Local" value="DSPIPAddress.htm">
+              </object>
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="Execute Button">
+                  <param name="ID" value=9>
+                  <param name="Local" value="ExecuteButton.htm">
+              </object>
+       </ul>
+</ul>

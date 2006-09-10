@@ -48,7 +48,7 @@ bool CSDREmulatorApp::OnCmdLineParsed(wxCmdLineParser& parser)
 	long temp;
 	parser.GetParam(0).ToLong(&temp);
 
-	if (m_port < 1L || m_port >= 65536L) {
+	if (temp < 1L || temp >= 65536L) {
 		::wxMessageBox(wxT("Port number must be between 1 and 65536"));
 		return false;
 	}

@@ -1,0 +1,48 @@
+<ul>
+
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="DSP IP Address">
+                  <param name="Local" value="DSPIPAddress.htm">
+              </object>
+
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="Execute Button">
+                  <param name="Local" value="ExecuteButton.htm">
+              </object>
+
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="GUI">
+                  <param name="Local" value="GUI.htm">
+              </object>
+
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="New SDR Control Port">
+                  <param name="Local" value="NewSDRControlPort.htm">
+              </object>
+
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="New SDR Data Port">
+                  <param name="Local" value="NewSDRDataPort.htm">
+              </object>
+
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="New SDR IP Address">
+                  <param name="Local" value="NewSDRIPAddress.htm">
+              </object>
+
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="Old SDR Control Port">
+                  <param name="Local" value="OldSDRControlPort.htm">
+              </object>
+
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="Old SDR IP Address">
+                  <param name="Local" value="OldSDRIPAddress.htm">
+              </object>
+
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="Overview">
+                  <param name="Local" value="Overview.htm">
+              </object>
+
+</ul>

@@ -18,6 +18,7 @@
 
 #include "SDRHelpApp.h"
 
+#include <wx/image.h>
 #include <wx/fs_zip.h>
 
 
@@ -38,6 +39,8 @@ bool CSDRHelpApp::OnInit()
 {
 	if (!wxApp::OnInit())
 		return false;
+
+	::wxInitAllImageHandlers();
 
 	wxFileSystem::AddHandler(new wxZipFSHandler);
 

@@ -181,8 +181,8 @@ void CCWKeyer::send(unsigned int speed, const wxString& text)
 }
 
 /*
- * Create a sine wave of the correct tone of the desired length and shape it for
- * minimum key clicks.
+ * Create a sine wave of the correct tone of the desired length and shape it with
+ * a raised cosine to minimise key clicks.
  */
 void CCWKeyer::createSymbol(float* buffer, unsigned int len)
 {
@@ -209,7 +209,7 @@ void CCWKeyer::createSymbol(float* buffer, unsigned int len)
 
 	// Now shape it
 	for (unsigned int j = 0; j < l; j++) {
-		float ampl = (float)::sin((M_PI / 2.0) * (float(j) / float(l)));
+		float ampl = 0.5F * (1.0F + ::cos(M_PI + M_PI * (float(j) / float(l))));
 
 		buffer[j]       *= ampl;
 		buffer[len - j] *= ampl;

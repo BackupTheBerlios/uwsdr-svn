@@ -13,8 +13,8 @@
 ;Configuration
 
   ;General
-  Name "UWSDR 0.5.2"
-  OutFile "UWSDR-0.5.2.exe"
+  Name "UWSDR 0.5.3"
+  OutFile "UWSDR-0.5.3.exe"
 
   ;Folder selection page
   InstallDir "$PROGRAMFILES\UWSDR"
@@ -60,6 +60,8 @@ Section "UWSDR Program Files" SecProgram
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxbase26_net_vc_custom.dll"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxmsw26_core_vc_custom.dll"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxmsw26_html_vc_custom.dll"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Help\GUISetup\GUISetup.zip"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Help\SDRSetup\SDRSetup.zip"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Copying.txt"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Changes.txt"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Jobs.txt"
