@@ -65,6 +65,9 @@ const int FREQDIAL_HEIGHT  = 165;
 const int VOLSQL_WIDTH     = 85;
 const int VOLSQL_HEIGHT    = 85;
 
+const int TXBUTTON_WIDTH   = 90;
+const int TXBUTTON_HEIGHT  = 85;
+
 const int SPECTRUM_WIDTH   = 500;
 const int SPECTRUM_HEIGHT  = 105;
 

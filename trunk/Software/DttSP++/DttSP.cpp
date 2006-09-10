@@ -603,9 +603,9 @@ void CDttSP::audioEntry(float* input_i, float* input_q, float* output_i, float* 
 		::memset(output_i, 0x00, nframes * sizeof(float));
 		::memset(output_q, 0x00, nframes * sizeof(float));
 
-// #if defined(__WXMSW__) || defined(__WXGTK__)
-// 		wxLogError(wxT("Not enough data in the output ring buffer"));
-#if defined(WIN32)
+#if defined(__WXMSW__) || defined(__WXGTK__)
+		wxLogError(wxT("Not enough data in the output ring buffer"));
+#elif defined(WIN32)
 		// No WIN32 logging yet
 #else
 		::syslog(LOG_ERR, "Not enough data in the output ring buffer");
@@ -622,9 +622,9 @@ void CDttSP::audioEntry(float* input_i, float* input_q, float* output_i, float* 
 		m_outputI->clear();
 		m_outputQ->clear();
 
-// #if defined(__WXMSW__) || defined(__WXGTK__)
-// 		wxLogError(wxT("Not enough space in the input ring buffer"));
-#if defined(WIN32)
+#if defined(__WXMSW__) || defined(__WXGTK__)
+		wxLogError(wxT("Not enough space in the input ring buffer"));
+#elif defined(WIN32)
 		// No WIN32 logging yet
 #else
 		::syslog(LOG_ERR, "Not enough space in the input ring buffer");
@@ -662,9 +662,9 @@ void CDttSP::audioEntry(float* input, float* output, unsigned int nframes)
 
 		::memset(output, 0x00, 2 * nframes * sizeof(float));
 
-// #if defined(__WXMSW__) || defined(__WXGTK__)
-// 		wxLogError(wxT("Not enough data in the output ring buffer"));
-#if defined(WIN32)
+#if defined(__WXMSW__) || defined(__WXGTK__)
+		wxLogError(wxT("Not enough data in the output ring buffer"));
+#elif defined(WIN32)
 		// No WIN32 logging yet
 #else
 		::syslog(LOG_ERR, "Not enough data in the output ring buffer");
@@ -686,9 +686,9 @@ void CDttSP::audioEntry(float* input, float* output, unsigned int nframes)
 		m_outputI->clear();
 		m_outputQ->clear();
 
-// #if defined(__WXMSW__) || defined(__WXGTK__)
-// 		wxLogError(wxT("Not enough space in the input ring buffer"));
-#if defined(WIN32)
+#if defined(__WXMSW__) || defined(__WXGTK__)
+		wxLogError(wxT("Not enough space in the input ring buffer"));
+#elif defined(WIN32)
 		// No WIN32 logging yet
 #else
 		::syslog(LOG_ERR, "Not enough space in the input ring buffer");
@@ -704,9 +704,9 @@ void CDttSP::getHold()
 {
 	if (m_outputI->freeSpace() < m_frames) {
 		// pathology
-// #if defined(__WXMSW__) || defined(__WXGTK__)
-// 		wxLogError(wxT("Not enough space in the output ring buffer"));
-#if defined(WIN32)
+#if defined(__WXMSW__) || defined(__WXGTK__)
+		wxLogError(wxT("Not enough space in the output ring buffer"));
+#elif defined(WIN32)
 		// No WIN32 logging yet
 #else
 		::syslog(LOG_ERR, "Not enough space in the output ring buffer");
@@ -721,9 +721,9 @@ void CDttSP::getHold()
 		::memset(m_bufferI, 0x00, m_frames * sizeof(float));
 		::memset(m_bufferQ, 0x00, m_frames * sizeof(float));
 
-// #if defined(__WXMSW__) || defined(__WXGTK__)
-// 		wxLogError(wxT("Not enough data in the output ring buffer"));
-#if defined(WIN32)
+#if defined(__WXMSW__) || defined(__WXGTK__)
+		wxLogError(wxT("Not enough data in the output ring buffer"));
+#elif defined(WIN32)
 		// No WIN32 logging yet
 #else
 		::syslog(LOG_ERR, "Not enough data in the output ring buffer");

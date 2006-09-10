@@ -388,25 +388,25 @@ void CUWSDRPreferences::onHelp(wxCommandEvent& event)
 
 	switch (page) {
 		case 0:
-			::wxGetApp().showHelp(wxT("PrefFreq"));
+			::wxGetApp().showHelp(401);
 			break;
 		case 1:
-			::wxGetApp().showHelp(wxT("PrefShift"));
+			::wxGetApp().showHelp(402);
 			break;
 		case 2:
-			::wxGetApp().showHelp(wxT("PrefModes"));
+			::wxGetApp().showHelp(403);
 			break;
 		case 3:
-			::wxGetApp().showHelp(wxT("PrefStepSize"));
+			::wxGetApp().showHelp(404);
 			break;
 		case 4:
-			::wxGetApp().showHelp(wxT("PrefRXDSP"));
+			::wxGetApp().showHelp(405);
 			break;
 		case 5:
-			::wxGetApp().showHelp(wxT("PrefTXDSP"));
+			::wxGetApp().showHelp(406);
 			break;
 		case 6:
-			::wxGetApp().showHelp(wxT("PrefIQ"));
+			::wxGetApp().showHelp(407);
 			break;
 	}
 }

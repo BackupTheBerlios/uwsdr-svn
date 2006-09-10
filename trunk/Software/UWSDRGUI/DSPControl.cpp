@@ -27,8 +27,8 @@ const int TX_READER = 77;
 const int RX_READER = 88;
 const int CW_READER = 99;
 
-const int RINGBUFFER_SIZE = 100001;
-const int BLOCK_SIZE      = 2048;		// XXXX
+const unsigned int RINGBUFFER_SIZE = 100001;
+const unsigned int BLOCK_SIZE      = 2048;		// XXXX
 
 CDSPControl::CDSPControl(float sampleRate, float centreFreq) :
 wxThread(),

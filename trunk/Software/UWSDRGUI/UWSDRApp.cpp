@@ -310,9 +310,9 @@ bool CUWSDRApp::readConfig()
 	wxString keyCwSerial      = wxT("/") + m_parameters->m_name + KEY_CW_SERIAL;
 
 	wxString keyCwMessage[CWKEYBOARD_COUNT];
-	for (unsigned int i = 0; i < CWKEYBOARD_COUNT; i++) {
+	for (int i = 0; i < CWKEYBOARD_COUNT; i++) {
 		wxString number;
-		number.Printf(wxT("%u"), i);
+		number.Printf(wxT("%d"), i);
 
 		keyCwMessage[i] = wxT("/") + m_parameters->m_name + KEY_CW_MESSAGE;
 		keyCwMessage[i].Append(number);
@@ -450,7 +450,7 @@ bool CUWSDRApp::readConfig()
 	profile->Read(keyCwReport,         &m_parameters->m_cwReport,  KEYER_REPORT);
 	profile->Read(keyCwSerial,         &m_parameters->m_cwSerial,  KEYER_SERIAL);
 
-	for (unsigned int n = 0; n < CWKEYBOARD_COUNT; n++)
+	for (int n = 0; n < CWKEYBOARD_COUNT; n++)
 		profile->Read(keyCwMessage[n], &m_parameters->m_cwMessage[n], KEYER_MESSAGE[n]);
 
 	profile->Flush();
@@ -525,9 +525,9 @@ void CUWSDRApp::writeConfig()
 	wxString keyCwSerial      = wxT("/") + m_parameters->m_name + KEY_CW_SERIAL;
 
 	wxString keyCwMessage[CWKEYBOARD_COUNT];
-	for (unsigned int i = 0; i < CWKEYBOARD_COUNT; i++) {
+	for (int i = 0; i < CWKEYBOARD_COUNT; i++) {
 		wxString number;
-		number.Printf(wxT("%u"), i);
+		number.Printf(wxT("%d"), i);
 
 		keyCwMessage[i] = wxT("/") + m_parameters->m_name + KEY_CW_MESSAGE;
 		keyCwMessage[i].Append(number);
@@ -598,7 +598,7 @@ void CUWSDRApp::writeConfig()
 	profile->Write(keyCwReport,         m_parameters->m_cwReport);
 	profile->Write(keyCwSerial,         m_parameters->m_cwSerial);
 
-	for (unsigned int n = 0; n < CWKEYBOARD_COUNT; n++)
+	for (int n = 0; n < CWKEYBOARD_COUNT; n++)
 		profile->Write(keyCwMessage[n], m_parameters->m_cwMessage[n]);
 
 	profile->Flush();
@@ -606,9 +606,9 @@ void CUWSDRApp::writeConfig()
 	delete profile;
 }
 
-void CUWSDRApp::showHelp(const wxString& chapter)
+void CUWSDRApp::showHelp(int id)
 {
-	m_help->Display(chapter);
+	m_help->Display(id);
 }
 
 void CUWSDRApp::sendCW(unsigned int speed, const wxString& text)

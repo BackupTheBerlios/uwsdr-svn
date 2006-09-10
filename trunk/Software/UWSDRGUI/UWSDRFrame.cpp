@@ -320,7 +320,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_cwKeyboard->setLocator(m_parameters->m_cwLocator);
 	m_cwKeyboard->setReport(m_parameters->m_cwReport);
 	m_cwKeyboard->setSerial(m_parameters->m_cwSerial);
-	for (unsigned int i = 0; i < CWKEYBOARD_COUNT; i++)
+	for (int i = 0; i < CWKEYBOARD_COUNT; i++)
 		m_cwKeyboard->setMessage(i, m_parameters->m_cwMessage[i]);
 
 	m_timer.SetOwner(this, DISPLAY_TIMER);
@@ -1132,7 +1132,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 			}
 			break;
 		case wxID_HELP:
-			::wxGetApp().showHelp(wxT("UWSDR"));
+			::wxGetApp().showHelp(1);
 			break;
 		case MENU_HARDWARE_INFO: {
 				wxString stepSize;
@@ -1260,7 +1260,7 @@ void CUWSDRFrame::onClose(wxCloseEvent& event)
 		m_parameters->m_cwLocator = m_cwKeyboard->getLocator();
 		m_parameters->m_cwReport  = m_cwKeyboard->getReport();
 		m_parameters->m_cwSerial  = m_cwKeyboard->getSerial();
-		for (unsigned int i = 0; i < CWKEYBOARD_COUNT; i++)
+		for (int i = 0; i < CWKEYBOARD_COUNT; i++)
 			m_parameters->m_cwMessage[i] = m_cwKeyboard->getMessage(i);
 
 		Destroy();

@@ -20,11 +20,11 @@
 
 const int SOCKET_ID = 7896;
 
-const int SAMPLE_SIZE      = 6;
-const int IN_BUFFER_SIZE   = 500;
-const int SOCK_BUFFER_SIZE = 1500;
-const int OUT_BUFFER_SIZE  = 500;
-const int PACKET_SIZE      = 200;
+const unsigned int SAMPLE_SIZE      = 6;
+const unsigned int IN_BUFFER_SIZE   = 500;
+const unsigned int SOCK_BUFFER_SIZE = 1500;
+const unsigned int OUT_BUFFER_SIZE  = 500;
+const unsigned int PACKET_SIZE      = 200;
 
 BEGIN_EVENT_TABLE(CUWSDRData, wxEvtHandler)
 	EVT_SOCKET(SOCKET_ID, CUWSDRData::onSocket)

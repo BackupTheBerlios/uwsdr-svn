@@ -634,7 +634,7 @@ void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 	file.Write(wxT("Name=") + name + wxT("\n"));
 	file.Write(wxT("Comment=\n"));
 	file.Write(wxT("Icon=UWSDR.png\n"));
-	file.Write(wxT("Exec=") + BIN_DIR + wxT("/UWSDR -s ") + name + wxT("\n"));
+	file.Write(wxT("Exec=") + wxString(BIN_DIR) + wxT("/UWSDR -s ") + name + wxT("\n"));
 	file.Write(wxT("Path=.\n"));
 	file.Write(wxT("Terminal=false\n"));
 

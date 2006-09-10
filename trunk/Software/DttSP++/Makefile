@@ -4,7 +4,7 @@ CFLAGS :=	-I../Common $(CFLAGS)
 
 OBJS :=		AGC.o AMDemod.o AMMod.o BlockLMS.o Compand.o CorrectIQ.o CXB.o DCBlock.o DttSP.o FIR.o FMDemod.o \
 		FMMod.o FilterOVSV.o GraphicEQ.o LMS.o Meter.o NoiseBlanker.o Oscillator.o Resampler.o RX.o Spectrum.o \
-		SpeechProc.o SpotTone.o Squelch.o TX.o Window.o SSBDemod.o SSBMod.o Utils;o update.o
+		SpeechProc.o SpotTone.o Squelch.o TX.o Window.o SSBDemod.o SSBMod.o Utils.o update.o
 
 DttSP.a:	$(OBJS)
 		ar rcs DttSP.a $(OBJS)
@@ -18,7 +18,7 @@ AMDemod.o:	AMDemod.cpp AMDemod.h Complex.h CXB.h Demod.h FromSys.h
 AMMod.o:	AMMod.cpp AMMod.h Complex.h CXB.h FromSys.h Mod.h
 		$(CC) $(CFLAGS) -c AMMod.cpp
 
-BlockLMS.o:	BlockLMS.cpp BlockLMS.h CXB.h CXOps.h DataTypes.h Utils.h
+BlockLMS.o:	BlockLMS.cpp BlockLMS.h CXB.h CXOps.h Utils.h
 		$(CC) $(CFLAGS) -c BlockLMS.cpp
 
 Compand.o:	Compand.cpp Compand.h CXB.h FromSys.h
@@ -51,7 +51,7 @@ FilterOVSV.o: 	FilterOVSV.cpp FilterOVSV.h Complex.h CXB.h CXOps.h FIR.h Utils.h
 GraphicEQ.o: 	GraphicEQ.cpp GraphicEQ.h Complex.h CXB.h FilterOVSV.h FIR.h FromSys.h
 		$(CC) $(CFLAGS) -c GraphicEQ.cpp
 
-LMS.o:		LMS.cpp LMS.h CXB.h CXOps.h DataTypes.h Utils.h
+LMS.o:		LMS.cpp LMS.h CXB.h CXOps.h Utils.h
 		$(CC) $(CFLAGS) -c LMS.cpp
 
 Meter.o:	Meter.cpp Meter.h CXB.h FromSys.h Utils.h
@@ -91,6 +91,9 @@ SSBMod.o:	SSBMod.cpp SSBMod.h Complex.h CXB.h FromSys.h Mod.h
 TX.o:		TX.cpp TX.h AGC.h AMMod.h Compand.h CorrectIQ.h CXB.h DCBlock.h Defs.h FilterOVSV.h FMMod.h GraphicEQ.h \
 		Meter.h Mod.h Oscillator.h Spectrum.h SpeechProc.h Squelch.h SSBMod.h
 		$(CC) $(CFLAGS) -c TX.cpp
+
+update.o:	update.cpp DttSP.h
+		$(CC) $(CFLAGS) -c update.cpp
 
 Utils.o:	Utils.cpp Utils.h CXB.h FromSys.h
 		$(CC) $(CFLAGS) -c Utils.cpp

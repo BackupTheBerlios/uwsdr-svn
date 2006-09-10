@@ -56,7 +56,7 @@ void CSSBDemod::demodulate()
 	for (unsigned int i = 0; i < n; i++)
 		CXBdata(m_obuf, i) = CXBdata(m_ibuf, i);
 
-	CXBhave(m_obuf) = i;
+	CXBhave(m_obuf) = n;
 }
 
 bool CSSBDemod::hasBinaural() const

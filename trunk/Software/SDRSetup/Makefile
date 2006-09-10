@@ -11,8 +11,8 @@ SDRSetupApp.o:	SDRSetupApp.cpp SDRSetupApp.h SDRSetupFrame.h
 SDRSetupFrame.o: SDRSetupFrame.cpp SDRSetupFrame.h SDRSetupXpm.h
 		$(CC) $(CFLAGS) -c SDRSetupFrame.cpp
 
-Frequency.o:	../UWSDRGUI/Frequency.cpp ../UWSDRGUI/Frequency.h
-		$(CC) $(CFLAGS) -c ../UWSDRGUI/Frequency.cpp
+Frequency.o:	../Common/Frequency.cpp ../Common/Frequency.h
+		$(CC) $(CFLAGS) -c ../Common/Frequency.cpp
 
 install:	SDRSetup
 		install -g bin -o root -m 0775 SDRSetup $(BINDIR)

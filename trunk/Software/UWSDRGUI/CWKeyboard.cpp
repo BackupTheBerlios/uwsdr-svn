@@ -164,7 +164,7 @@ m_speed(NULL)
 
 	wxFlexGridSizer* textSizer = new wxFlexGridSizer(3);
 
-	for (unsigned int i = 0; i < CWKEYBOARD_COUNT; i++) {
+	for (int i = 0; i < CWKEYBOARD_COUNT; i++) {
 		wxString text;
 		text.Printf(_("Message %d:"), i + 1);
 
@@ -292,7 +292,7 @@ unsigned int CCWKeyboard::getSpeed() const
 
 void CCWKeyboard::onHelp(wxCommandEvent& event)
 {
-	::wxGetApp().showHelp(wxT("CWKeyboard"));
+	::wxGetApp().showHelp(500);
 }
 
 /*
@@ -303,7 +303,7 @@ void CCWKeyboard::onTransmit(wxCommandEvent& event)
 {
 	wxString text;
 
-	for (unsigned int i = 0; i < CWKEYBOARD_COUNT; i++) {
+	for (int i = 0; i < CWKEYBOARD_COUNT; i++) {
 		if (m_button[i]->GetValue()) {
 			text = m_text[i]->GetValue();
 			break;
@@ -325,7 +325,7 @@ void CCWKeyboard::onTransmit(wxCommandEvent& event)
 	for (unsigned int n = 0; n < text.length(); n++) {
 		wxChar c = text.GetChar(n);
 
-		for (unsigned int m = 0; m < cwLookupLen; m++)	{
+		for (int m = 0; m < cwLookupLen; m++)	{
 			if (cwLookup[m].character == c) {
 				cwData.Append(cwLookup[m].cwString);
 				cwData.Append(wxT(" "));

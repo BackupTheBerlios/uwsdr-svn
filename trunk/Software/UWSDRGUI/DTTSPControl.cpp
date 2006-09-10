@@ -31,8 +31,8 @@ m_rxFreq(99999.9F),
 m_txFreq(99999.9F),
 m_rit(99999.9F),
 m_transmit(false),
-m_agc(-1),
 m_deviation(-1),
+m_agc(-1),
 m_nb(false),
 m_nbValue(0),
 m_nb2(false),
@@ -65,7 +65,7 @@ void CDTTSPControl::open(float sampleRate, unsigned int blockSize)
 
 	::SetSquelchState(true);
 
-    ::SetWindow(HANN_WINDOW);
+	::SetWindow(HANN_WINDOW);
 
 	Create();
 

@@ -40,7 +40,7 @@ class CUWSDRApp : public wxApp {
 	bool readConfig();
 	void writeConfig();
 
-	void showHelp(const wxString& chapter);
+	void showHelp(int id);
 
 	void sendCW(unsigned int speed, const wxString& text);
 
