@@ -135,17 +135,17 @@ void* CDSPControl::Entry()
 				scaleBuffer(m_txBuffer, nSamples, m_power);
 				m_txWriter->write(m_txBuffer, nSamples);
 			}
-		} else {
-			unsigned int nSamples = m_rxRingBuffer.getData(m_rxBuffer, BLOCK_SIZE);
+		}
 
-			// If we don't have enough data then pad with silence
-			if (nSamples != BLOCK_SIZE) {
-				for (unsigned int i = nSamples; i < BLOCK_SIZE; i++)
-					m_rxBuffer[i] = 0.0F;
-			}
+		unsigned int nSamples = m_rxRingBuffer.getData(m_rxBuffer, BLOCK_SIZE);
 
-			scaleBuffer(m_rxBuffer, BLOCK_SIZE, m_afGain);
-			m_rxWriter->write(m_rxBuffer, BLOCK_SIZE);
+		// If we don't have enough data then pad with silence
+		if (nSamples != BLOCK_SIZE)
+			::wxLogError(wxT("Underrun in RX ring buffer, wanted %u available %u"), BLOCK_SIZE, nSamples);
+
+		if (nSamples > 0) {
+			scaleBuffer(m_rxBuffer, nSamples, m_afGain);
+			m_rxWriter->write(m_rxBuffer, nSamples);
 
 			if (m_record != NULL)
 				m_record->write(m_rxBuffer, nSamples);
@@ -263,17 +263,19 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 
 				scaleBuffer(inBuffer, nSamples, 0.9F);
 
-				// The tone is used as a side tone first
-				m_rxWriter->write(inBuffer, nSamples);
+				// Send the tone out for the side tone
+				unsigned int n1 = m_rxRingBuffer.addData(inBuffer, nSamples);
+				if (n1 != nSamples)
+					::wxLogError(wxT("Overrun in RX ring buffer, needed %u available %u"), nSamples, n1);
 
 				// Now transmit it
 				m_dttsp->dataIO(inBuffer, m_outBuffer, nSamples);
 
-				unsigned int n = m_txRingBuffer.addData(m_outBuffer, nSamples);
-				if (n != nSamples)
-					::wxLogError(wxT("Overrun in TX ring buffer, needed %u available %u"), nSamples, n);
+				unsigned int n2 = m_txRingBuffer.addData(m_outBuffer, nSamples);
+				if (n2 != nSamples)
+					::wxLogError(wxT("Overrun in TX ring buffer, needed %u available %u"), nSamples, n2);
 
-				if (n > 0)
+				if (n1 > 0 || n2 > 0)
 					m_waiting.Post();
 			}
 			break;

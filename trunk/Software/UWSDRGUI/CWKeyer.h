@@ -53,7 +53,6 @@ class CCWKeyer : public IDataReader {
 	float*         m_dashBuffer;
 	float*         m_silBuffer;
 	CRingBuffer*   m_cwBuffer;
-	unsigned int   m_count;
 
 	void         createSymbol(float* buffer, unsigned int len);
 	unsigned int calcDotLength(int speed);

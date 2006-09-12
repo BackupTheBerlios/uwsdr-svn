@@ -10,6 +10,7 @@ export LIBS := $(shell wx-config --libs)
 export CFLAGS := -O2 -Wall -march=pentium -DDATA_DIR=$(DATADIR) -DBIN_DIR=$(BINDIR) $(shell wx-config --cxxflags)
 
 all:		GUISetup/GUISetup SDREmulator/SDREmulator SDRHelp/SDRHelp SDRSetup/SDRSetup UWSDRGUI/UWSDR
+		make -C Help
 
 GUISetup/GUISetup:
 		make -C GUISetup
@@ -39,6 +40,7 @@ install:
 		make -C SDRHelp install
 		make -C SDRSetup install
 		make -C UWSDRGUI install
+		make -C Help install
 		make -C meta install
 
 clean:
@@ -50,3 +52,4 @@ clean:
 		make -C SDRHelp clean
 		make -C SDRSetup clean
 		make -C UWSDRGUI clean
+		make -C Help clean

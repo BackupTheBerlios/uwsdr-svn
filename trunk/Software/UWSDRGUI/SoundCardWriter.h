@@ -48,6 +48,7 @@ class CSoundCardWriter : public IDataWriter {
 	int          m_dev;
 	PaStream*    m_stream;
 	CRingBuffer* m_buffer;
+	float*       m_lastBuffer;
 };
 
 #endif

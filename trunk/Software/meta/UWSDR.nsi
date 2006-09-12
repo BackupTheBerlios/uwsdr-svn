@@ -13,8 +13,8 @@
 ;Configuration
 
   ;General
-  Name "UWSDR 0.5.3"
-  OutFile "UWSDR-0.5.3.exe"
+  Name "UWSDR 0.5.2a"
+  OutFile "UWSDR-0.5.2a.exe"
 
   ;Folder selection page
   InstallDir "$PROGRAMFILES\UWSDR"
@@ -62,8 +62,10 @@ Section "UWSDR Program Files" SecProgram
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxmsw26_html_vc_custom.dll"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Help\GUISetup\GUISetup.zip"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Help\SDRSetup\SDRSetup.zip"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Help\UWSDR\UWSDR.zip"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Copying.txt"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Changes.txt"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Install.txt"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Jobs.txt"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Usage.txt"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\meta\UWSDR.ico"
@@ -79,6 +81,7 @@ Section "UWSDR Program Files" SecProgram
   CreateShortCut "$SMPROGRAMS\UWSDR\SDRSetup.lnk"  "$INSTDIR\SDRSetup.exe"   "" "$INSTDIR\SDRSetup.ico"
   CreateShortCut "$SMPROGRAMS\UWSDR\Licence.lnk"   "$INSTDIR\Copying.txt"
   CreateShortCut "$SMPROGRAMS\UWSDR\Changes.lnk"   "$INSTDIR\Changes.txt"
+  CreateShortCut "$SMPROGRAMS\UWSDR\Install.lnk"   "$INSTDIR\Install.txt"
   CreateShortCut "$SMPROGRAMS\UWSDR\TODO.lnk"      "$INSTDIR\Jobs.txt"
   CreateShortCut "$SMPROGRAMS\UWSDR\Usage.lnk"     "$INSTDIR\Usage.txt"
   CreateShortCut "$SMPROGRAMS\UWSDR\Uninstall.lnk" "$INSTDIR\Uninstall.exe"

@@ -40,8 +40,7 @@ m_buffer(NULL),
 m_dotBuffer(NULL),
 m_dashBuffer(NULL),
 m_silBuffer(NULL),
-m_cwBuffer(NULL),
-m_count(0)
+m_cwBuffer(NULL)
 {
 }
 
@@ -124,30 +123,6 @@ void CCWKeyer::clock()
 	}
 
 	m_callback->callback(m_buffer, m_blockSize, m_id);
-	m_count++;
-
-	// First time through send four sets of data to keep ring buffers full
-	if (m_count == 1 && m_cwBuffer->dataSpace() > 0) {
-		if (m_cwBuffer->dataSpace() < m_blockSize)
-			fillBuffer();
-
-		for (unsigned int j = 0; j < 3 && m_cwBuffer->dataSpace() > 0; j++) {
-			for (unsigned int i = 0; i < m_blockSize; i++) {
-				float f;
-				unsigned int n = m_cwBuffer->getData(&f, 1);
-
-				// No more data, so fill with silence
-				if (n == 0)
-					f = 0.0F;
-
-				m_buffer[i * 2 + 0] = f;
-				m_buffer[i * 2 + 1] = f;
-			}
-
-			m_callback->callback(m_buffer, m_blockSize, m_id);
-			m_count++;
-		}
-	}
 }
 
 void CCWKeyer::setCallback(IDataCallback* callback, int id)
@@ -175,9 +150,8 @@ void CCWKeyer::send(unsigned int speed, const wxString& text)
 
 	m_cwBuffer->clear();
 
-	m_stop  = false;
-	m_text  = text;
-	m_count = 0;
+	m_stop = false;
+	m_text = text;
 }
 
 /*

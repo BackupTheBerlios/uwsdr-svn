@@ -33,7 +33,8 @@ CSoundCardWriter::CSoundCardWriter(int api, int dev) :
 m_api(api),
 m_dev(dev),
 m_stream(NULL),
-m_buffer(NULL)
+m_buffer(NULL),
+m_lastBuffer(NULL)
 {
 }
 
@@ -44,6 +45,9 @@ CSoundCardWriter::~CSoundCardWriter()
 bool CSoundCardWriter::open(float sampleRate, unsigned int blockSize)
 {
 	m_buffer = new CRingBuffer(blockSize * 5, 2);
+
+	m_lastBuffer = new float[blockSize * 2];
+	::memset(m_lastBuffer, 0x00, blockSize * 2 * sizeof(float));
 
 	PaError error = ::Pa_Initialize();
 	if (error != paNoError) {
@@ -93,12 +97,13 @@ int CSoundCardWriter::callback(void* output, unsigned long nSamples, const PaStr
 {
 	wxASSERT(output != NULL);
 
-	// No output data may not be a problem, we could be on transmit
 	if (m_buffer->dataSpace() >= nSamples)
 		m_buffer->getData((float*)output, nSamples);
 	else
-		::memset(output, 0x00, nSamples * 2 * sizeof(float));
+		::memcpy(output, m_lastBuffer, nSamples * 2 * sizeof(float));
 
+	::memcpy(m_lastBuffer, output, nSamples * 2 * sizeof(float));
+	
 	return paContinue;
 }
 
@@ -116,5 +121,6 @@ void CSoundCardWriter::close()
 	if (error != paNoError)
 		::wxLogError(wxT("Received %d:%s from Pa_Terminate() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
 
-	delete m_buffer;
+	delete   m_buffer;
+	delete[] m_lastBuffer;
 }

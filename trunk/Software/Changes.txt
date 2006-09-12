@@ -151,6 +151,6 @@ CW keyboard included.
 Version 0.5.3 - 16 September 2006
 =================================
 
-Added Help for GUISetup and SDRSetup.
+Added Help for GUISetup, SDRSetup and UWSDRGUI.
 
 Changed keying leading and trailing edges to a raised cosine shape.
