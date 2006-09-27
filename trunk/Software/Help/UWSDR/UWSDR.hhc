@@ -83,7 +83,7 @@
               </object>
 
          <li> <object type="text/sitemap">
-                  <param name="Name" value="S Meter/Power">
+                  <param name="Name" value="S/Power Meter">
                   <param name="ID" value=300>
                   <param name="Local" value="Meter.htm">
               </object>
