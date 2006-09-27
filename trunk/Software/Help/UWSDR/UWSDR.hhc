@@ -216,13 +216,18 @@
                   <param name="Local" value="CWChars.htm">
               </object>
          <li> <object type="text/sitemap">
-                  <param name="Name" value="Macros">
+                  <param name="Name" value="Messages">
                   <param name="ID" value=502>
+                  <param name="Local" value="CWMessages.htm">
+              </object>
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="Macros">
+                  <param name="ID" value=503>
                   <param name="Local" value="CWMacros.htm">
               </object>
          <li> <object type="text/sitemap">
                   <param name="Name" value="Buttons">
-                  <param name="ID" value=503>
+                  <param name="ID" value=504>
                   <param name="Local" value="CWButtons.htm">
               </object>
        </ul>
