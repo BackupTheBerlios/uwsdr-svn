@@ -26,7 +26,7 @@
 #include "SpectrumDisplay.h"
 #include "SDRParameters.h"
 #include "SDRControl.h"
-#include "UWSDRData.h"
+#include "SDRData.h"
 #include "DialInterface.h"
 #include "ControlInterface.h"
 #include "DSPControl.h"

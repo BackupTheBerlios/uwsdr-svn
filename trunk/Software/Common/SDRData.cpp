@@ -16,7 +16,7 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "UWSDRData.h"
+#include "SDRData.h"
 
 const int SOCKET_ID = 7896;
 

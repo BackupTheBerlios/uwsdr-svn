@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GR /GX /O2 /Ob0 /I "C:\wxWidgets-2.6.3\lib\vc_dll\msw" /I "C:\wxWidgets-2.6.3\include" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D "__WXMSW__" /D "WXUSINGDLL" /FD /c
+# ADD CPP /nologo /MT /W3 /GR /GX /O2 /Ob0 /I "C:\wxWidgets-2.6.3\lib\vc_dll\msw" /I "C:\wxWidgets-2.6.3\include" /I "..\PA19" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D "__WXMSW__" /D "WXUSINGDLL" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -65,7 +65,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GR /GX /ZI /Od /I "C:\wxWidgets-2.6.3\lib\vc_dll\mswd" /I "C:\wxWidgets-2.6.3\include" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "__WXMSW__" /D "__WXDEBUG__" /D "WXUSINGDLL" /FR /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GR /GX /ZI /Od /I "C:\wxWidgets-2.6.3\lib\vc_dll\mswd" /I "C:\wxWidgets-2.6.3\include" /I "..\PA19" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "__WXMSW__" /D "__WXDEBUG__" /D "WXUSINGDLL" /FR /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
@@ -91,7 +91,39 @@ SOURCE=.\Frequency.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\NullReader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\NullWriter.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\RingBuffer.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SDRData.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SignalReader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SoundCardReader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SoundCardWriter.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SoundFileReader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SoundFileWriter.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -99,11 +131,55 @@ SOURCE=.\RingBuffer.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
+SOURCE=.\DataCallback.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\DataReader.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\DataWriter.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\Frequency.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\NullReader.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\NullWriter.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\RingBuffer.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SDRData.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SignalReader.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SoundCardReader.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SoundCardWriter.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SoundFileReader.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SoundFileWriter.h
 # End Source File
 # Begin Source File
 

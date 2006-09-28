@@ -111,7 +111,7 @@
                   <param name="Local" value="Power.htm">
               </object>
          <li> <object type="text/sitemap">
-                  <param name="Name" value="Audio Gain">
+                  <param name="Name" value="AF Gain">
                   <param name="ID" value=15>
                   <param name="Local" value="AFGain.htm">
               </object>

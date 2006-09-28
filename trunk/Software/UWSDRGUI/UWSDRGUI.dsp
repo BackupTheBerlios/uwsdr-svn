@@ -130,14 +130,6 @@ SOURCE=.\Log.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\NullReader.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\NullWriter.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\SDRDescrFile.cpp
 # End Source File
 # Begin Source File
@@ -146,27 +138,7 @@ SOURCE=.\SDRParameters.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\SignalReader.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\SMeter.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\SoundCardReader.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\SoundCardWriter.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\SoundFileReader.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\SoundFileWriter.cpp
 # End Source File
 # Begin Source File
 
@@ -179,10 +151,6 @@ SOURCE=.\UWSDRApp.cpp
 # Begin Source File
 
 SOURCE=.\UWSDRControl.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\UWSDRData.cpp
 # End Source File
 # Begin Source File
 
@@ -211,18 +179,6 @@ SOURCE=.\CWKeyboard.h
 # Begin Source File
 
 SOURCE=.\CWKeyer.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\DataCallback.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\DataReader.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\DataWriter.h
 # End Source File
 # Begin Source File
 
@@ -262,14 +218,6 @@ SOURCE=.\Log.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\NullReader.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\NullWriter.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\SDRControl.h
 # End Source File
 # Begin Source File
@@ -282,27 +230,7 @@ SOURCE=.\SDRParameters.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\SignalReader.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\SMeter.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SoundCardReader.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SoundCardWriter.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SoundFileReader.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SoundFileWriter.h
 # End Source File
 # Begin Source File
 
@@ -315,10 +243,6 @@ SOURCE=.\UWSDRApp.h
 # Begin Source File
 
 SOURCE=.\UWSDRControl.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\UWSDRData.h
 # End Source File
 # Begin Source File
 
