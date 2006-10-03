@@ -1,0 +1,44 @@
+# This file describes the hardware configuration of the 13cms SDR. User
+# settings are not stored here, these settings are for the hardware and
+# should not be modified.
+#
+
+#
+# The name of the SDR hardware that this file refers to.
+#
+name=13cms SDR
+
+#
+# The frequency limits of the hardware, in MHz
+#
+lowFreq=2300
+highFreq=2450
+
+#
+# The local oscillator step size in Hertz.
+#
+stepSize=10000.0
+
+#
+# This is the sample rate of the CODEC, this is somewhat important. The value
+# is in samples per second.
+#
+sampleRate=48000
+
+#
+# Over time we may make changes to the ethernet protocol, so we specify which
+# version this radio talks. It is hoped that the SDR GUI will be backwards
+# compatible.
+#
+protocolVersion=1
+
+#
+# It is possible that a receive only SDR will be produced, so there is no point
+# sending it transmit commands or data to it. 1 for receive only, 0 for the full
+# monty.
+#
+receiveOnly=0
+
+#
+# End of file
+#
