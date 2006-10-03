@@ -180,8 +180,8 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 180216809;
-			PBXWorkspaceStateSaveDate = 180216809;
+			PBXPerProjectTemplateStateSaveDate = 181600400;
+			PBXWorkspaceStateSaveDate = 181600400;
 		};
 		sourceControlManager = 4C1968D40A87C9B100436DD0 /* Source Control */;
 		userBuildSettings = {
@@ -388,8 +388,8 @@
 	4C3F0F3A0A8D32F90081969D /* FreqDial.cpp */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {908, 2842}}";
-			sepNavSelRange = "{2294, 0}";
-			sepNavVisRect = "{{0, 950}, {775, 293}}";
+			sepNavSelRange = "{4821, 0}";
+			sepNavVisRect = "{{0, 1065}, {731, 209}}";
 		};
 	};
 	4C3F0F490A8D32F90081969D /* SDRControl.h */ = {
@@ -422,41 +422,11 @@
 			sepNavWindowFrame = "{{84, 71}, {878, 607}}";
 		};
 	};
-	4C3F0F530A8D32F90081969D /* SoundCardReader.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1040, 770}}";
-			sepNavSelRange = "{902, 24}";
-			sepNavVisRect = "{{0, 244}, {775, 293}}";
-		};
-	};
-	4C3F0F570A8D32F90081969D /* SoundFileReader.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {937, 980}}";
-			sepNavSelRange = "{807, 0}";
-			sepNavVisRect = "{{0, 0}, {937, 526}}";
-			sepNavWindowFrame = "{{15, 86}, {976, 655}}";
-		};
-	};
-	4C3F0F590A8D32F90081969D /* SoundFileWriter.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {724, 896}}";
-			sepNavSelRange = "{1046, 0}";
-			sepNavVisRect = "{{0, 359}, {724, 136}}";
-		};
-	};
-	4C3F0F5C0A8D32F90081969D /* UWSDR.xpm */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {884, 1960}}";
-			sepNavSelRange = "{11, 4333}";
-			sepNavVisRect = "{{0, 1468}, {884, 492}}";
-			sepNavWindowFrame = "{{15, 120}, {923, 621}}";
-		};
-	};
 	4C3F0F5D0A8D32F90081969D /* UWSDRApp.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {884, 8372}}";
-			sepNavSelRange = "{5008, 0}";
-			sepNavVisRect = "{{0, 1470}, {884, 492}}";
+			sepNavIntBoundsRect = "{{0, 0}, {731, 9114}}";
+			sepNavSelRange = "{31420, 0}";
+			sepNavVisRect = "{{0, 8835}, {731, 209}}";
 			sepNavWindowFrame = "{{92, 71}, {923, 621}}";
 		};
 	};
@@ -484,27 +454,19 @@
 			sepNavWindowFrame = "{{38, 113}, {878, 607}}";
 		};
 	};
-	4C3F0F620A8D32F90081969D /* UWSDRData.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {839, 966}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRect = "{{0, 488}, {839, 478}}";
-			sepNavWindowFrame = "{{15, 134}, {878, 607}}";
-		};
-	};
 	4C3F0F630A8D32F90081969D /* UWSDRDefs.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {839, 2688}}";
-			sepNavSelRange = "{975, 0}";
-			sepNavVisRect = "{{0, 2210}, {839, 478}}";
+			sepNavIntBoundsRect = "{{0, 0}, {731, 3066}}";
+			sepNavSelRange = "{4444, 0}";
+			sepNavVisRect = "{{0, 1177}, {731, 209}}";
 			sepNavWindowFrame = "{{130, 29}, {878, 607}}";
 		};
 	};
 	4C3F0F640A8D32F90081969D /* UWSDRFrame.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {950, 16912}}";
-			sepNavSelRange = "{6172, 0}";
-			sepNavVisRect = "{{0, 2872}, {740, 68}}";
+			sepNavIntBoundsRect = "{{0, 0}, {950, 18172}}";
+			sepNavSelRange = "{984, 0}";
+			sepNavVisRect = "{{0, 140}, {884, 492}}";
 			sepNavWindowFrame = "{{110, 25}, {923, 621}}";
 		};
 	};
@@ -625,9 +587,9 @@
 	};
 	4C3F1B820A8E31D10081969D /* RingBuffer.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {775, 2142}}";
-			sepNavSelRange = "{911, 0}";
-			sepNavVisRect = "{{0, 216}, {775, 293}}";
+			sepNavIntBoundsRect = "{{0, 0}, {876, 2142}}";
+			sepNavSelRange = "{3047, 0}";
+			sepNavVisRect = "{{0, 0}, {876, 282}}";
 		};
 	};
 	4C59F5180AA8B14E006E7DAC /* UWSDRControl.cpp:65 */ = {
@@ -651,6 +613,14 @@
 			sepNavSelRange = "{362, 0}";
 			sepNavVisRect = "{{0, 0}, {500, 604}}";
 			sepNavWindowFrame = "{{15, 8}, {539, 733}}";
+		};
+	};
+	4C79E23E0AD2DEBA00348A78 /* NullReader.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {839, 672}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRect = "{{0, 0}, {839, 478}}";
+			sepNavWindowFrame = "{{84, 263}, {878, 607}}";
 		};
 	};
 	F5F5A69A02CDB0E101000133 /* wxmac.icns */ = {

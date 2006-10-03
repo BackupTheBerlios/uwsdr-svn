@@ -635,6 +635,8 @@ wxString CUWSDRApp::getHelpDir()
 	return dir;
 #elif defined(__WXGTK__)
 	return DATA_DIR;
+#elif defined (__WXMAC__)
+return "" ;
 #else
 #error "Unknown platform"
 #endif

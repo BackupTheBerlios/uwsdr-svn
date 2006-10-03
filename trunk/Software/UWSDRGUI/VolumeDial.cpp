@@ -93,7 +93,7 @@ void CVolumeDial::drawDial()
 		bgColour = wxColour(0xEC, 0xE9, 0xD8);		// Windows XP and newer
 	else
 		bgColour = wxColour(0xD4, 0xD0, 0xC8);		// Windows 2000 and earlier
-#elif defined(__WXGTK__)
+#elif defined(__WXGTK__) || (__WXMAC__)
 	wxColour bgColour = wxSystemSettings::GetColour(wxSYS_COLOUR_BACKGROUND);
 #else
 #error "Unknown platform"

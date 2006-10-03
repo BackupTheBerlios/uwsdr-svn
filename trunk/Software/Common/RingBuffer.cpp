@@ -19,7 +19,7 @@
 #include "RingBuffer.h"
 
 // For semaphores and logging
-#if defined(__WXMSW__) || defined(__WXGTK__)
+#if defined(__WXMSW__) || defined(__WXGTK__) || (__WXMAC__)
 #include <wx/wx.h>
 
 #define	ASSERT(x)	wxASSERT((x))
