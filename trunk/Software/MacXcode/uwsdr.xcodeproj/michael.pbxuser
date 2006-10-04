@@ -180,8 +180,8 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 181600400;
-			PBXWorkspaceStateSaveDate = 181600400;
+			PBXPerProjectTemplateStateSaveDate = 181683489;
+			PBXWorkspaceStateSaveDate = 181683489;
 		};
 		sourceControlManager = 4C1968D40A87C9B100436DD0 /* Source Control */;
 		userBuildSettings = {
@@ -416,7 +416,7 @@
 	};
 	4C3F0F4D0A8D32F90081969D /* SDRParameters.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {839, 1708}}";
+			sepNavIntBoundsRect = "{{0, 0}, {839, 1834}}";
 			sepNavSelRange = "{0, 0}";
 			sepNavVisRect = "{{0, 0}, {839, 478}}";
 			sepNavWindowFrame = "{{84, 71}, {878, 607}}";
@@ -424,15 +424,15 @@
 	};
 	4C3F0F5D0A8D32F90081969D /* UWSDRApp.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {731, 9114}}";
+			sepNavIntBoundsRect = "{{0, 0}, {884, 9114}}";
 			sepNavSelRange = "{31420, 0}";
-			sepNavVisRect = "{{0, 8835}, {731, 209}}";
-			sepNavWindowFrame = "{{92, 71}, {923, 621}}";
+			sepNavVisRect = "{{0, 0}, {884, 492}}";
+			sepNavWindowFrame = "{{178, 207}, {923, 621}}";
 		};
 	};
 	4C3F0F5E0A8D32F90081969D /* UWSDRApp.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {884, 868}}";
+			sepNavIntBoundsRect = "{{0, 0}, {884, 882}}";
 			sepNavSelRange = "{1246, 0}";
 			sepNavVisRect = "{{0, 0}, {884, 492}}";
 			sepNavWindowFrame = "{{66, 100}, {923, 621}}";
@@ -440,9 +440,9 @@
 	};
 	4C3F0F5F0A8D32F90081969D /* UWSDRControl.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {731, 3122}}";
+			sepNavIntBoundsRect = "{{0, 0}, {839, 3122}}";
 			sepNavSelRange = "{1606, 0}";
-			sepNavVisRect = "{{0, 727}, {731, 268}}";
+			sepNavVisRect = "{{0, 1962}, {839, 478}}";
 			sepNavWindowFrame = "{{15, 134}, {878, 607}}";
 		};
 	};
@@ -466,7 +466,7 @@
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {950, 18172}}";
 			sepNavSelRange = "{984, 0}";
-			sepNavVisRect = "{{0, 140}, {884, 492}}";
+			sepNavVisRect = "{{0, 11252}, {884, 492}}";
 			sepNavWindowFrame = "{{110, 25}, {923, 621}}";
 		};
 	};
@@ -592,6 +592,14 @@
 			sepNavVisRect = "{{0, 0}, {876, 282}}";
 		};
 	};
+	4C3F1B840A8E31D10081969D /* Version.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {839, 478}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRect = "{{0, 0}, {839, 478}}";
+			sepNavWindowFrame = "{{15, 326}, {878, 607}}";
+		};
+	};
 	4C59F5180AA8B14E006E7DAC /* UWSDRControl.cpp:65 */ = {
 		isa = PBXFileBreakpoint;
 		actions = (
@@ -604,7 +612,7 @@
 		hitCount = 1;
 		lineNumber = 65;
 		location = uwsdr;
-		modificationTime = 179877217.867086;
+		modificationTime = 181682993.611084;
 		state = 1;
 	};
 	4C619DEF0A9E473F000EA008 /* Info.plist */ = {
@@ -621,6 +629,22 @@
 			sepNavSelRange = "{0, 0}";
 			sepNavVisRect = "{{0, 0}, {839, 478}}";
 			sepNavWindowFrame = "{{84, 263}, {878, 607}}";
+		};
+	};
+	4C79E2410AD2DEBA00348A78 /* SDRData.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {839, 3290}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRect = "{{0, 0}, {839, 478}}";
+			sepNavWindowFrame = "{{38, 305}, {878, 607}}";
+		};
+	};
+	4C79E2420AD2DEBA00348A78 /* SDRData.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {839, 966}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRect = "{{0, 0}, {839, 478}}";
+			sepNavWindowFrame = "{{61, 284}, {878, 607}}";
 		};
 	};
 	F5F5A69A02CDB0E101000133 /* wxmac.icns */ = {

@@ -365,7 +365,7 @@
 		1842CAF9085664390032BCF7 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		1842CAFA085664390032BCF7 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = /System/Library/Frameworks/WebKit.framework; sourceTree = "<absolute>"; };
 		1864B4F208566CAB00E32E9B /* uwsdrDynamic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = uwsdrDynamic.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		1864B4F408566CAB00E32E9B /* uwsdr.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = uwsdr.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1864B4F408566CAB00E32E9B /* uwsdr.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = uwsdr.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		20286C33FDCF999611CA2CEA /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		4C1968D60A87C9B400436DD0 /* info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = info.plist; sourceTree = "<group>"; };
 		4C196A4D0A87D4EC00436DD0 /* sample.xpm */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = sample.xpm; sourceTree = "<group>"; };
