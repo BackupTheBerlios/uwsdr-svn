@@ -1,4 +1,4 @@
-List of Bugs and JObs for the UWSDR Software
+List of Bugs and Jobs for the UWSDR Software
 ============================================
 
 BUGS
@@ -14,11 +14,9 @@ Finish SDRSetup
 Upgrade GUISetup for Linux icons
 Finish "make install" for Linux with .desktop files
 Write Help
-Upgrade SDREmulator for more commands and data sending/receiving
 Get transmit working
 Set of screenshots for all platforms
 Convert to Weaver method
-Set shaping on the CW waveform
 
 
 Future

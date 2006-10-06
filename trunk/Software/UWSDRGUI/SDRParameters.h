@@ -81,7 +81,6 @@ class CSDRParameters {
 	int          m_filterCWW;
 	int          m_filterCWN;
 
-	bool         m_sdrEnabled;
 	wxString     m_ipAddress;
 	unsigned int m_controlPort;
 	unsigned int m_dataPort;

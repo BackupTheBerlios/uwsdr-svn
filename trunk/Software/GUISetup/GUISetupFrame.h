@@ -21,8 +21,7 @@
 
 #include <wx/wx.h>
 
-#include <vector>
-using namespace std;
+#include "SoundCardInfo.h"
 
 class CGUISetupFrame : public wxFrame {
 
@@ -36,16 +35,15 @@ class CGUISetupFrame : public wxFrame {
 	void onCreate(wxCommandEvent& event);
 
     private:
-	wxComboBox* m_name;
-	wxTextCtrl* m_filename;
-	wxChoice*   m_apiChoice;
-	wxChoice*   m_devChoice;
-	wxTextCtrl* m_address;
-	wxTextCtrl* m_control;
-	wxTextCtrl* m_data;
-	vector<int> m_inDevs;
-	vector<int> m_outDevs;
-	wxCheckBox* m_startMenu;
+	wxComboBox*    m_name;
+	wxTextCtrl*    m_filename;
+	wxChoice*      m_apiChoice;
+	wxChoice*      m_devChoice;
+	wxTextCtrl*    m_address;
+	wxTextCtrl*    m_control;
+	wxTextCtrl*    m_data;
+	wxCheckBox*    m_startMenu;
+	CSoundCardInfo m_info;
 #ifdef __WXMSW__
 	wxCheckBox* m_deskTop;
 #endif
@@ -55,7 +53,7 @@ class CGUISetupFrame : public wxFrame {
 	void enumerateConfigs();
 	void readConfig(const wxString& name);
 	void enumerateAPI();
-	void enumerateAudio(int api);
+	void enumerateAudio(const CSoundCardAPI& api);
 	void writeStartMenu(const wxString& name, const wxString& instDir);
 #ifdef __WXMSW__
 	void writeDeskTop(const wxString& name, const wxString& instDir);

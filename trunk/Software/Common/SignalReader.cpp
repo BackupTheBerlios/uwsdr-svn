@@ -23,14 +23,20 @@
 
 
 CSignalReader::CSignalReader(unsigned int frequency, float noiseAmplitude, float signalAmplitude) :
-wxThread(),
 m_frequency(frequency),
 m_noiseAmplitude(noiseAmplitude),
 m_signalAmplitude(signalAmplitude),
-m_sampleRate(0.0F),
 m_blockSize(0),
 m_callback(NULL),
-m_id(0)
+m_id(0),
+m_buffer(NULL),
+m_awgn(NULL),
+m_noiseSize(0),
+m_cosVal(0.0F),
+m_sinVal(0.0F),
+m_cosDelta(0.0F),
+m_sinDelta(0.0F),
+m_awgnN(0)
 {
 	wxASSERT(m_noiseAmplitude >= 0.0 && m_noiseAmplitude < 1.0);
 	wxASSERT(m_signalAmplitude >= 0.0 && m_signalAmplitude < 1.0);
@@ -50,37 +56,23 @@ void CSignalReader::setCallback(IDataCallback* callback, int id)
 
 bool CSignalReader::open(float sampleRate, unsigned int blockSize)
 {
-	m_sampleRate = sampleRate;
-	m_blockSize  = blockSize;
+	wxASSERT(m_frequency < (unsigned int)(sampleRate + 0.5F) / 2);
 
-	Create();
-	Run();
+	m_blockSize = blockSize;
 
-	return true;
-}
+	m_noiseSize = int(sampleRate + 0.5F) * 10 * 2;
 
-void* CSignalReader::Entry()
-{
-	wxASSERT(m_callback != NULL);
-	wxASSERT(m_frequency < (unsigned int)(m_sampleRate + 0.5F) / 2);
+	m_buffer = new float[m_blockSize * 2];
+	m_awgn   = new float[m_noiseSize];
 
-	unsigned int noiseSize = int(m_sampleRate + 0.5F) * 10 * 2;
+	m_cosVal = 1.0F;
+	m_sinVal = 0.0F;
 
-	long interval = (1000L * m_blockSize) / int(m_sampleRate + 0.5F);
+	float delta = float(m_frequency) / sampleRate * 2.0 * M_PI;
+	m_cosDelta = ::cos(delta);
+	m_sinDelta = ::sin(delta);
 
-	float* buffer = new float[m_blockSize * 2];
-	float* awgn   = new float[noiseSize];
-
-	float delta = float(m_frequency) / m_sampleRate * 2.0 * M_PI;
-
-	float cosVal = 1.0;
-	float sinVal = 0.0;
-	float tmpVal;
-
-	float cosDelta = ::cos(delta);
-	float sinDelta = ::sin(delta);
-
-	for (unsigned int i = 0; i < noiseSize / 2; i++) {
+	for (unsigned int i = 0; i < m_noiseSize / 2; i++) {
 		float x1, x2, w;
 
 		do {
@@ -91,45 +83,41 @@ void* CSignalReader::Entry()
 
 		w = ::sqrt((-2.0 * ::log(w)) / w);
 
-		awgn[i * 2 + 0] = x1 * w * m_noiseAmplitude;
-		awgn[i * 2 + 1] = x2 * w * m_noiseAmplitude;
+		m_awgn[i * 2 + 0] = x1 * w * m_noiseAmplitude;
+		m_awgn[i * 2 + 1] = x2 * w * m_noiseAmplitude;
 	}
 
-	unsigned int awgnN = 0;
+	m_awgnN = 0;
 
-	::wxStartTimer();
-
-	while (!TestDestroy()) {
-		for (unsigned int i = 0; i < m_blockSize; i++) {
-			tmpVal = cosVal * cosDelta - sinVal * sinDelta;
-			sinVal = cosVal * sinDelta + sinVal * cosDelta;
-			cosVal = tmpVal;
-
-			buffer[i * 2 + 0] = awgn[awgnN++] + cosVal * m_signalAmplitude;
-			buffer[i * 2 + 1] = awgn[awgnN++] + sinVal * m_signalAmplitude;
-
-			if (awgnN >= noiseSize)
-				awgnN = 0;
-		}
-
-		m_callback->callback(buffer, m_blockSize, m_id);
-
-		long diff = ::wxGetElapsedTime();
-
-		int sleepTime = interval - diff;
-		if (sleepTime > 0)
-			Sleep(sleepTime);
-
-		::wxStartTimer();
-	}
-
-	delete[] awgn;
-	delete[] buffer;
-
-	return (void*)0;
+	return true;
 }
 
 void CSignalReader::close()
 {
-	Delete();
+	delete[] m_buffer;
+	delete[] m_awgn;
+}
+
+bool CSignalReader::needsClock()
+{
+	return true;
+}
+
+void CSignalReader::clock()
+{
+	wxASSERT(m_callback != NULL);
+
+	for (unsigned int i = 0; i < m_blockSize; i++) {
+		float tmpVal = m_cosVal * m_cosDelta - m_sinVal * m_sinDelta;
+		m_sinVal = m_cosVal * m_sinDelta + m_sinVal * m_cosDelta;
+		m_cosVal = tmpVal;
+
+		m_buffer[i * 2 + 0] = m_awgn[m_awgnN++] + m_cosVal * m_signalAmplitude;
+		m_buffer[i * 2 + 1] = m_awgn[m_awgnN++] + m_sinVal * m_signalAmplitude;
+
+		if (m_awgnN >= m_noiseSize)
+			m_awgnN = 0;
+	}
+
+	m_callback->callback(m_buffer, m_blockSize, m_id);
 }

@@ -26,6 +26,8 @@
 #include "NullReader.h"
 #include "NullWriter.h"
 #include "SignalReader.h"
+#include "SDRDataReader.h"
+#include "SDRDataWriter.h"
 #include "SoundCardReader.h"
 #include "SoundCardWriter.h"
 #include "SoundFileReader.h"
@@ -212,8 +214,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_parameters = parameters;
 
-	m_sdr = new CUWSDRControl(m_parameters->m_ipAddress, m_parameters->m_controlPort, m_parameters->m_hardwareProtocolVersion, m_parameters->m_sdrEnabled);
-
+	m_sdr = new CUWSDRControl(m_parameters->m_ipAddress, m_parameters->m_controlPort, m_parameters->m_hardwareProtocolVersion);
 	m_sdr->setCallback(this, -1);
 
 	bool ret = m_sdr->open();
@@ -258,15 +259,15 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 		m_spectrumDisplay->setBandwidth(5000.0F);
 */
 	// FIXME
-	// (m_parameters->m_ipAddress, m_parameters->m_dataPort, m_parameters->m_hardwareProtocolVersion, m_parameters->m_sdrEnabled);
-
 	m_dsp = new CDSPControl(m_parameters->m_hardwareSampleRate, float(m_parameters->m_hardwareSampleRate) / 4.0F);
 
 	// m_dsp->setTXReader(new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev));
 	m_dsp->setTXReader(new CSignalReader(750, 0.0F, 0.5F));
-	m_dsp->setTXWriter(new CNullWriter());
+	m_dsp->setTXWriter(new CSDRDataWriter(m_parameters->m_ipAddress, m_parameters->m_dataPort, m_parameters->m_hardwareProtocolVersion));
+	// m_dsp->setTXWriter(new CNullWriter());
 
-	m_dsp->setRXReader(new CSignalReader(int(m_parameters->m_hardwareSampleRate / 4.0F + 1000.5F), 0.0008F, 0.001F));
+	// m_dsp->setRXReader(new CSignalReader(int(m_parameters->m_hardwareSampleRate / 4.0F + 1000.5F), 0.0008F, 0.001F));
+	m_dsp->setRXReader(new CSDRDataReader(m_parameters->m_ipAddress, m_parameters->m_dataPort, m_parameters->m_hardwareProtocolVersion));
 	m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
 	// m_dsp->setRXWriter(new CNullWriter());
 

@@ -110,6 +110,8 @@ void* CDSPControl::Entry()
 {
 	bool ret = openIO();
 	if (!ret) {
+		closeIO();
+
 		m_dttsp->close();
 		m_cwKeyer->close();
 
@@ -124,31 +126,33 @@ void* CDSPControl::Entry()
 	m_running = true;
 
 	while (!TestDestroy()) {
-		m_waiting.Wait();
+		wxSemaError ret = m_waiting.WaitTimeout(500UL);
 
-		if (m_transmit) {
-			unsigned int nSamples = m_txRingBuffer.getData(m_txBuffer, BLOCK_SIZE);
+		if (ret == wxSEMA_NO_ERROR) {
+			if (m_transmit) {
+				unsigned int nSamples = m_txRingBuffer.getData(m_txBuffer, BLOCK_SIZE);
+				if (nSamples != BLOCK_SIZE)
+					::wxLogError(wxT("Underrun in TX ring buffer, wanted %u available %u"), BLOCK_SIZE, nSamples);
+
+				if (nSamples > 0) {
+					scaleBuffer(m_txBuffer, nSamples, m_power);
+					m_txWriter->write(m_txBuffer, nSamples);
+				}
+			}
+
+			unsigned int nSamples = m_rxRingBuffer.getData(m_rxBuffer, BLOCK_SIZE);
+
+			// If we don't have enough data then pad with silence
 			if (nSamples != BLOCK_SIZE)
-				::wxLogError(wxT("Underrun in TX ring buffer, wanted %u available %u"), BLOCK_SIZE, nSamples);
+				::wxLogError(wxT("Underrun in RX ring buffer, wanted %u available %u"), BLOCK_SIZE, nSamples);
 
 			if (nSamples > 0) {
-				scaleBuffer(m_txBuffer, nSamples, m_power);
-				m_txWriter->write(m_txBuffer, nSamples);
+				scaleBuffer(m_rxBuffer, nSamples, m_afGain);
+				m_rxWriter->write(m_rxBuffer, nSamples);
+
+				if (m_record != NULL)
+					m_record->write(m_rxBuffer, nSamples);
 			}
-		}
-
-		unsigned int nSamples = m_rxRingBuffer.getData(m_rxBuffer, BLOCK_SIZE);
-
-		// If we don't have enough data then pad with silence
-		if (nSamples != BLOCK_SIZE)
-			::wxLogError(wxT("Underrun in RX ring buffer, wanted %u available %u"), BLOCK_SIZE, nSamples);
-
-		if (nSamples > 0) {
-			scaleBuffer(m_rxBuffer, nSamples, m_afGain);
-			m_rxWriter->write(m_rxBuffer, nSamples);
-
-			if (m_record != NULL)
-				m_record->write(m_rxBuffer, nSamples);
 		}
 	}
 
@@ -173,25 +177,16 @@ bool CDSPControl::openIO()
 		return false;
 
 	ret = m_rxWriter->open(m_sampleRate, BLOCK_SIZE);
-	if (!ret) {
-		m_txWriter->close();
+	if (!ret)
 		return false;
-	}
 
 	ret = m_txReader->open(m_sampleRate, BLOCK_SIZE);
-	if (!ret) {
-		m_txWriter->close();
-		m_rxWriter->close();
+	if (!ret)
 		return false;
-	}
 
 	ret = m_rxReader->open(m_sampleRate, BLOCK_SIZE);
-	if (!ret) {
-		m_txWriter->close();
-		m_rxWriter->close();
-		m_txReader->close();
+	if (!ret)
 		return false;
-	}
 
 	return true;
 }
@@ -200,10 +195,25 @@ void CDSPControl::closeIO()
 {
 	setRecord(false);
 
-	m_txReader->close();
-	m_rxReader->close();
-	m_txWriter->close();
-	m_rxWriter->close();
+	if (m_txReader != NULL) {
+		m_txReader->close();
+		delete m_txReader;
+	}
+
+	if (m_rxReader != NULL) {
+		m_rxReader->close();
+		delete m_rxReader;
+	}
+
+	if (m_txWriter != NULL) {
+		m_txWriter->close();
+		delete m_txWriter;
+	}
+
+	if (m_rxWriter != NULL) {
+		m_rxWriter->close();
+		delete m_rxWriter;
+	}
 }
 
 void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)

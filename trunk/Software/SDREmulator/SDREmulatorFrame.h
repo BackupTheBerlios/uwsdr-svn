@@ -23,39 +23,47 @@
 #include <wx/socket.h>
 
 #include "Frequency.h"
+#include "DataControl.h"
 
 class CSDREmulatorFrame : public wxFrame {
 
     public:
-	CSDREmulatorFrame(unsigned int port);
+	CSDREmulatorFrame(const wxString& address, unsigned int controlPort, unsigned int dataPort);
 	virtual ~CSDREmulatorFrame();
 
 	void onClose(wxCloseEvent& event);
+	void onExit(wxCommandEvent& event);
+	void onInternal(wxCommandEvent& event);
+	void onSoundFile(wxCommandEvent& event);
+	void onSoundCard(wxCommandEvent& event);
 
 	void onParentSocket(wxSocketEvent& event);
 	void onChildSocket(wxSocketEvent& event);
 
     private:
-	CFrequency   m_txFreq;
-	CFrequency   m_rxFreq;
-	bool         m_txEnable;
-	bool         m_rxEnable;
-	bool         m_txOn;
-	unsigned int m_rxGain;
+	CFrequency    m_txFreq;
+	CFrequency    m_rxFreq;
+	bool          m_txEnable;
+	bool          m_rxEnable;
+	bool          m_txOn;
+	CDataControl* m_data;
 
 	wxSocketServer* m_server;
+	wxMenuBar*      m_menuBar;
+	wxStaticText*   m_sourceLabel;
 	wxStaticText*   m_connectLabel;
 	wxStaticText*   m_txFreqLabel;
 	wxStaticText*   m_rxFreqLabel;
 	wxStaticText*   m_txEnabledLabel;
 	wxStaticText*   m_rxEnabledLabel;
 	wxStaticText*   m_txOnLabel;
-	wxStaticText*   m_rxGainLabel;
 	wxListBox*      m_messages;
 
 	DECLARE_EVENT_TABLE()
 
 	bool createListener(unsigned int port);
+	void createDataThread(const wxString& address, unsigned int port, int api, long inDev, long outDev);
+
 	void processCommand(wxSocketBase& socket, wxChar* buffer);
 };
 

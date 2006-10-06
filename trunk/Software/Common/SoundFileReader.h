@@ -33,7 +33,7 @@ typedef signed short  sint16;
 
 #include "DataReader.h"
 
-class CSoundFileReader : public wxThread, public IDataReader {
+class CSoundFileReader : public IDataReader {
 
     public:
     CSoundFileReader(const wxString& fileName);
@@ -43,9 +43,10 @@ class CSoundFileReader : public wxThread, public IDataReader {
 
 	virtual bool open(float sampleRate, unsigned int blockSize);
 
-	virtual void* Entry();
-
 	virtual void close();
+
+	virtual bool needsClock();
+	virtual void clock();
 
     private:
 	wxString       m_fileName;
@@ -53,19 +54,17 @@ class CSoundFileReader : public wxThread, public IDataReader {
 	unsigned int   m_blockSize;
 	IDataCallback* m_callback;
 	int            m_id;
+	float*         m_buffer;
 #if defined(__WINDOWS__)
-	unsigned int m_sampleWidth;
-	HMMIO        m_handle;
-	MMCKINFO     m_parent;
-	MMCKINFO     m_child;
-	uint8*       m_buffer8;
-	sint16*      m_buffer16;
+	unsigned int   m_sampleWidth;
+	HMMIO          m_handle;
+	MMCKINFO       m_parent;
+	MMCKINFO       m_child;
+	uint8*         m_buffer8;
+	sint16*        m_buffer16;
 #else
-	SNDFILE*     m_file;
+	SNDFILE*       m_file;
 #endif
-
-	bool         readFile(float* buffer, unsigned int nSamples);
-	void         closeFile();
 };
 
 #endif

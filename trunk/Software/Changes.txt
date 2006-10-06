@@ -148,9 +148,13 @@ Hardware step size is now floating point to allow for sub one Hertz steps.
 CW keyboard included.
 
 
-Version 0.5.3 - 16 September 2006
+Version 0.5.3 - October 2006
 =================================
 
 Added Help for GUISetup, SDRSetup and UWSDRGUI.
 
 Changed keying leading and trailing edges to a raised cosine shape.
+
+Upgraded the SDREmulator substantially to use sound files, a sound card, or an internal signal.
+
+The "-s" has been removed from the UWSDR GUI so it must be used with real hardware, or the emulator.

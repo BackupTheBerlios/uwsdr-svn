@@ -23,7 +23,7 @@
 
 #include "DataReader.h"
 
-class CNullReader : public wxThread, public IDataReader {
+class CNullReader : public IDataReader {
 
     public:
     CNullReader();
@@ -33,13 +33,14 @@ class CNullReader : public wxThread, public IDataReader {
 
 	virtual bool open(float sampleRate, unsigned int blockSize);
 
-	virtual void* Entry();
-
 	virtual void close();
 
+	virtual bool needsClock();
+	virtual void clock();
+
     private:
-	float          m_sampleRate;
 	unsigned int   m_blockSize;
+	float*         m_buffer;
 	IDataCallback* m_callback;
 	int            m_id;
 };

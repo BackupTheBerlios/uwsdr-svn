@@ -15,22 +15,6 @@ If nothing changes, you shouldn't need to run GUISetup again, unless you get ano
 
 It is possible to have multiple names for one physical SDR, this can happen if the SDR is used (for example) for both tropo and EME work. If you have two such names (say 13cms-Tropo and 13cms-EME) then each will have it's own settings for the VFO's and other parameters. Obviously only one GUI for each physical SDR may be running at a time.
 
-You can either run the GUI with the SDR Emulator or without.
-
-
-With the SDR Emulator
----------------------
-
 Now you need to run the SDREmulator. Run the program with the port number that you used for the control port above, as an argument. So in my case I use "SDREmulator 5003". This will bring up a window where you can see interaction with the GUI. You will need to run this every time you use the SDR GUI, until we have a real SDR to play with.
 
 Now run the SDR GUI itself, this is named UWSDR/UWSDR.exe and now takes a mandatory argument. This is the name that you entered into the Name entry in GUISetup above. You may have a desktop icon or menu entry for it, this will currently *not* be useful since it assumes that you will be running without the SDR Emulator. You must start it manually via the command line interface or modify the shortcut/menu entry and remove the "-s" in the program parameters.
-
-
-Without the SDR Emulator
-------------------------
-
-Currently the program menu entries and/or desktop icons created by GUISetup for using the GUI will run without needing the SDR Emulator. Simply click the icons instead.
-
-To run the SDR GUI manually, the program is named UWSDR/UWSDR.exe and give it two arguments, the first is "-s" to tell it not to use the SDR emulator (or a real SDR) and the second is the name that you entered into the Name entry in GUISetup above.
-
-Now go to the Usage.txt document.

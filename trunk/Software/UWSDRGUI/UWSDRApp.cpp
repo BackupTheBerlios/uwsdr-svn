@@ -190,8 +190,6 @@ bool CUWSDRApp::OnInit()
 
 void CUWSDRApp::OnInitCmdLine(wxCmdLineParser& parser)
 {
-	parser.AddSwitch(wxT("s"), wxEmptyString, _("Switch SDR Control off"));
-
 	parser.AddParam(_("SDR configuration name"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_OPTION_MANDATORY);
 
 	wxApp::OnInitCmdLine(parser);
@@ -203,8 +201,6 @@ bool CUWSDRApp::OnCmdLineParsed(wxCmdLineParser& parser)
 		return false;
 
 	m_parameters->m_name = parser.GetParam(0);
-
-	m_parameters->m_sdrEnabled = !parser.Found(wxT("s"));
 
 	return true;
 }
@@ -635,8 +631,8 @@ wxString CUWSDRApp::getHelpDir()
 	return dir;
 #elif defined(__WXGTK__)
 	return DATA_DIR;
-#elif defined (__WXMAC__)
-return "" ;
+#elif defined(__WXMAC__)
+	return wxEmptyString;
 #else
 #error "Unknown platform"
 #endif

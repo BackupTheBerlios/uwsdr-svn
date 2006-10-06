@@ -16,12 +16,38 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	DataCallback_H
-#define	DataCallback_H
+#ifndef	SoundCardDialog_H
+#define	SoundCardDialog_H
 
-class IDataCallback {
+#include <wx/wx.h>
+
+#include "SoundCardInfo.h"
+
+class CSoundCardDialog : public wxDialog {
+
     public:
-	virtual void callback(float* buffer, unsigned int nSamples, int id) = 0;
+	CSoundCardDialog(wxWindow* parent, int id = -1);
+	virtual ~CSoundCardDialog();
+
+	void onAPI(wxCommandEvent& event);
+	void onOK(wxCommandEvent& event);
+
+	int  getAPI() const;
+	long getInDev() const;
+	long getOutDev() const;
+
+    private:
+	wxChoice*      m_apiChoice;
+	wxChoice*      m_devChoice;
+	CSoundCardInfo m_info;
+	int            m_api;
+	long           m_inDev;
+	long           m_outDev;
+
+	DECLARE_EVENT_TABLE()
+
+	void enumerateAPI();
+	void enumerateAudio(const CSoundCardAPI& api);
 };
 
 #endif

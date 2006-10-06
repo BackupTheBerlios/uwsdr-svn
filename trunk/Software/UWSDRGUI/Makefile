@@ -2,7 +2,7 @@ all:		UWSDR
 
 CFLAGS		:= -I../Common $(CFLAGS)
 
-LIBS		:= -lportaudio -lfftw3f -lfftw3 -lsndfile  $(LIBS)
+LIBS		:= -lportaudio -lfftw3f -lfftw3 -lsndfile $(LIBS)
 
 OBJS :=		CWKeyboard.o CWKeyer.o DSPControl.o DTTSPControl.o FreqDial.o FreqDisplay.o \
 		FreqKeypad.o InfoBox.o Log.o SDRDescrFile.o SDRParameters.o SMeter.o SpectrumDisplay.o \
@@ -58,8 +58,8 @@ UWSDRControl.o:	UWSDRControl.cpp UWSDRControl.h ControlInterface.h ../Common/Fre
 		$(CC) $(CFLAGS) -c UWSDRControl.cpp
 
 UWSDRFrame.o:	UWSDRFrame.cpp UWSDRFrame.h ControlInterface.h CWKeyboard.h DialInterface.h DSPControl.h FreqDial.h FreqDisplay.h \
-		FreqKeypad.h ../Common/Frequency.h InfoBox.h SDRControl.h ../Common/SDRData.h SDRParameters.h SMeter.h \
-		../Common/SoundCardReader.h ../Common/SoundCardWriter.h ../Common/SoundFileReader.h ../Common/SoundFileWriter.h \
+		FreqKeypad.h ../Common/Frequency.h InfoBox.h SDRControl.h ../Common/SDRDataReader.h ../Common/SDRDataWriter.h \
+		SDRParameters.h SMeter.h ../Common/SoundCardReader.h ../Common/SoundCardWriter.h ../Common/SoundFileWriter.h \
 		SpectrumDisplay.h UWSDRApp.h UWSDRControl.h UWSDRDefs.h UWSDRPreferences.h UWSDRXpm.h ../Common/Version.h
 		$(CC) $(CFLAGS) -c UWSDRFrame.cpp
 

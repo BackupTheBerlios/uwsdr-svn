@@ -33,6 +33,7 @@ class CCWKeyer : public IDataReader {
 	virtual bool open(float sampleRate, unsigned int blockSize);
 	virtual void close();
 
+	virtual bool needsClock();
 	virtual void clock();
 
 	virtual void setCallback(IDataCallback* callback, int id);

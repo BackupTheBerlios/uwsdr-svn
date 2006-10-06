@@ -29,7 +29,7 @@
 class CUWSDRControl : public wxEvtHandler, public ISDRControl {
 
     public:
-	CUWSDRControl(const wxString& address, int port, unsigned int version, bool enable);
+	CUWSDRControl(const wxString& address, int port, unsigned int version);
 	virtual ~CUWSDRControl();
 
 	virtual void setCallback(IControlInterface* callback, int id);
@@ -47,7 +47,6 @@ class CUWSDRControl : public wxEvtHandler, public ISDRControl {
 	wxString           m_address;
 	int                m_port;
 	int                m_id;
-	bool               m_enabled;
 	wxSocketClient     m_socket;
 	IControlInterface* m_callback;
 	unsigned int       m_version;

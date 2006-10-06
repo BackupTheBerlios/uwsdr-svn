@@ -23,59 +23,26 @@
 #include <wx/datetime.h>
 
 
-void CSoundFileReader::close()
-{
-	Delete();
-}
-
-void* CSoundFileReader::Entry()
-{
-	wxASSERT(m_callback != NULL);
-
-	long interval = (1000L * m_blockSize) / int(m_sampleRate + 0.5F);
-
-	float* buffer = new float[m_blockSize * 2];
-
-	::wxStartTimer();
-
-	while (!TestDestroy()) {
-		bool ret = readFile(buffer, m_blockSize);
-		if (!ret)
-			break;
-
-		m_callback->callback(buffer, m_blockSize, m_id);
-
-		long diff = ::wxGetElapsedTime();
-
-		int sleepTime = interval - diff;
-		if (sleepTime > 0)
-			Sleep(sleepTime);
-
-		::wxStartTimer();
-	}
-
-	delete[] buffer;
-
-	closeFile();
-
-	return (void*)0;
-}
-
 void CSoundFileReader::setCallback(IDataCallback* callback, int id)
 {
 	m_callback = callback;
 	m_id       = id;
 }
 
+bool CSoundFileReader::needsClock()
+{
+	return true;
+}
+
 #if defined(__WINDOWS__)
 
 CSoundFileReader::CSoundFileReader(const wxString& fileName) :
-wxThread(),
 m_fileName(fileName),
 m_sampleRate(0.0F),
 m_blockSize(0),
 m_callback(NULL),
 m_id(0),
+m_buffer(NULL),
 m_sampleWidth(0),
 m_handle(NULL),
 m_parent(),
@@ -175,45 +142,45 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 	else
 		m_buffer16 = new sint16[m_blockSize * 2];
 
-	Create();
-	Run();
+	m_buffer = new float[m_blockSize * 2];
 
 	return true;
 }
 
-bool CSoundFileReader::readFile(float* buffer, unsigned int nSamples)
+void CSoundFileReader::clock()
 {
-	wxASSERT(buffer != NULL);
-	wxASSERT(nSamples > 0 && nSamples <= m_blockSize);
+	LONG n;
 
 	if (m_sampleWidth == 8) {
-		LONG n = ::mmioRead(m_handle, (char *)m_buffer8, nSamples * 2 * sizeof(uint8));
+		n = ::mmioRead(m_handle, (char *)m_buffer8, m_blockSize * 2 * sizeof(uint8));
 
 		if (n <= 0)
-			return false;
+			return;
 
 		for (int i = 0; i < n; i++)
-			buffer[i] = (float(m_buffer8[i]) - 127.0) / 128.0;
+			m_buffer[i] = (float(m_buffer8[i]) - 127.0) / 128.0;
 	} else {
-		LONG n = ::mmioRead(m_handle, (char *)m_buffer16, nSamples * 2 * sizeof(sint16));
+		n = ::mmioRead(m_handle, (char *)m_buffer16, m_blockSize * 2 * sizeof(sint16));
 
 		if (n <= 0)
-			return false;
+			return;
 
 		n /= 2;
 
 		for (int i = 0; i < n; i++)
-			buffer[i] = float(m_buffer16[i]) / 32768.0;
+			m_buffer[i] = float(m_buffer16[i]) / 32768.0;
 	}
 
-	return true;
+	m_callback->callback(m_buffer, n / 2, m_id);
 }
 
-void CSoundFileReader::closeFile()
+void CSoundFileReader::close()
 {
 	wxASSERT(m_handle != NULL);
 
 	::mmioClose(m_handle, 0);
+
+	delete[] m_buffer;
 }
 
 #else
@@ -224,6 +191,7 @@ m_sampleRate(0.0F),
 m_blockSize(0),
 m_callback(NULL),
 m_id(0),
+m_buffer(NULL),
 m_file(NULL)
 {
 }
@@ -256,27 +224,26 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 		return false;
 	}
 
-	Create();
-	Run();
+	m_buffer = new float[m_blockSize * 2];
 
 	return true;
 }
 
-bool CSoundFileReader::readFile(float* buffer, unsigned int nSamples)
+void CSoundFileReader::clock()
 {
-	wxASSERT(buffer != NULL);
-
-	int n = ::sf_read_float(m_file, buffer, nSamples);
+	int n = ::sf_read_float(m_file, m_buffer, m_blockSize);
 
 	if (n <= 0)
-		return false;
+		return;
 
-	return true;
+	m_callback->callback(m_buffer, n, m_id);
 }
 
-void CSoundFileReader::closeFile()
+void CSoundFileReader::close()
 {
 	::sf_close(m_file);
+
+	delete[] m_buffer;
 }
 
 #endif

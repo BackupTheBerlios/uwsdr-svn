@@ -17,12 +17,21 @@
  */
 
 #include "SDREmulatorFrame.h"
+#include "SoundCardDialog.h"
 
 #include <wx/statline.h>
 
-const int SOCKET_PARENT = 37549;
-const int SOCKET_CHILD  = 37550;
-const int EXIT_BUTTON   = 37551;
+#include "SignalReader.h"
+#include "NullWriter.h"
+#include "SoundFileReader.h"
+#include "SDRDataReader.h"
+#include "SDRDataWriter.h"
+
+const int SOCKET_PARENT = 17549;
+const int SOCKET_CHILD  = 17550;
+const int MENU_INTERNAL = 17551;
+const int MENU_FILE     = 17552;
+const int MENU_CARD     = 17553;
 
 const int BORDER_SIZE     = 5;
 const int DATA_WIDTH      = 100;
@@ -36,20 +45,39 @@ const CFrequency minFreq = CFrequency(2300, 0);
 BEGIN_EVENT_TABLE(CSDREmulatorFrame, wxFrame)
 	EVT_SOCKET(SOCKET_PARENT, CSDREmulatorFrame::onParentSocket)
 	EVT_SOCKET(SOCKET_CHILD,  CSDREmulatorFrame::onChildSocket)
+	EVT_MENU(wxID_EXIT,       CSDREmulatorFrame::onExit)
+	EVT_MENU(MENU_INTERNAL,   CSDREmulatorFrame::onInternal)
+	EVT_MENU(MENU_FILE,       CSDREmulatorFrame::onSoundFile)
+	EVT_MENU(MENU_CARD,       CSDREmulatorFrame::onSoundCard)
 	EVT_CLOSE(CSDREmulatorFrame::onClose)
 END_EVENT_TABLE()
 
-CSDREmulatorFrame::CSDREmulatorFrame(unsigned int port) :
+CSDREmulatorFrame::CSDREmulatorFrame(const wxString& address, unsigned int controlPort, unsigned int dataPort) :
 wxFrame(NULL, -1, wxString(wxT("uWave SDR Emulator")), wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX  | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN),
 m_txFreq(),
 m_rxFreq(),
 m_txEnable(false),
 m_rxEnable(false),
 m_txOn(false),
-m_rxGain(0),
 m_server(NULL),
-m_messages(NULL)
+m_messages(NULL),
+m_data(NULL)
 {
+	wxMenu* fileMenu = new wxMenu();
+	fileMenu->Append(wxID_EXIT, wxT("Exit\tAlt-F4"));
+
+	wxMenu* sourceMenu = new wxMenu();
+	sourceMenu->AppendCheckItem(MENU_INTERNAL, wxT("Internal"));
+	sourceMenu->Check(MENU_INTERNAL,  true);
+	sourceMenu->AppendCheckItem(MENU_CARD,     wxT("Sound Card"));
+	sourceMenu->Check(MENU_CARD,      false);
+	sourceMenu->AppendCheckItem(MENU_FILE,     wxT("Sound File..."));
+	sourceMenu->Check(MENU_FILE,      false);
+
+	m_menuBar = new wxMenuBar();
+	m_menuBar->Append(fileMenu,   wxT("File"));
+	m_menuBar->Append(sourceMenu, wxT("Source"));
+
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
 	wxPanel* panel = new wxPanel(this, -1);
@@ -57,6 +85,12 @@ m_messages(NULL)
 	wxBoxSizer* vertSizer = new wxBoxSizer(wxVERTICAL);
 
 	wxFlexGridSizer* panelSizer = new wxFlexGridSizer(2);
+
+	wxStaticText* label0 = new wxStaticText(panel, -1, wxT("Source:"));
+	panelSizer->Add(label0, 0, wxALL, BORDER_SIZE);
+
+	m_sourceLabel = new wxStaticText(panel, -1, wxT("Internal"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	panelSizer->Add(m_sourceLabel, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label1 = new wxStaticText(panel, -1, wxT("Status:"));
 	panelSizer->Add(label1, 0, wxALL, BORDER_SIZE);
@@ -67,13 +101,13 @@ m_messages(NULL)
 	wxStaticText* label2 = new wxStaticText(panel, -1, wxT("TX Freq:"));
 	panelSizer->Add(label2, 0, wxALL, BORDER_SIZE);
 
-	m_txFreqLabel = new wxStaticText(panel, -1, wxEmptyString, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	m_txFreqLabel = new wxStaticText(panel, -1, wxT("None"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
 	panelSizer->Add(m_txFreqLabel, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label3 = new wxStaticText(panel, -1, wxT("RX Freq:"));
 	panelSizer->Add(label3, 0, wxALL, BORDER_SIZE);
 
-	m_rxFreqLabel = new wxStaticText(panel, -1, wxEmptyString, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	m_rxFreqLabel = new wxStaticText(panel, -1, wxT("None"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
 	panelSizer->Add(m_rxFreqLabel, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label4 = new wxStaticText(panel, -1, wxT("TX Enabled:"));
@@ -94,12 +128,6 @@ m_messages(NULL)
 	m_txOnLabel = new wxStaticText(panel, -1, wxT("No"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
 	panelSizer->Add(m_txOnLabel, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label7 = new wxStaticText(panel, -1, wxT("RX Gain:"));
-	panelSizer->Add(label7, 0, wxALL, BORDER_SIZE);
-
-	m_rxGainLabel = new wxStaticText(panel, -1, wxT("0"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
-	panelSizer->Add(m_rxGainLabel, 0, wxALL, BORDER_SIZE);
-
 	vertSizer->Add(panelSizer);
 
 	m_messages = new wxListBox(panel, -1, wxDefaultPosition, wxSize(MESSAGES_WIDTH, MESSAGES_HEIGHT));
@@ -113,11 +141,31 @@ m_messages(NULL)
 
 	mainSizer->SetSizeHints(this);
 
-	createListener(port);
+	SetMenuBar(m_menuBar);
+
+	CSoundCardDialog soundCard(this);
+	int ret = soundCard.ShowModal();
+
+	if (ret == wxID_CANCEL)
+		::wxExit();
+
+	int api     = soundCard.getAPI();
+	long inDev  = soundCard.getInDev();
+	long outDev = soundCard.getOutDev();
+
+	// Start the data reading and writing thread
+	createDataThread(address, dataPort, api, inDev, outDev);
+
+	// Start the listening port for the emulator
+	createListener(controlPort);
 }
 
 CSDREmulatorFrame::~CSDREmulatorFrame()
 {
+	if (m_server != NULL)
+		m_server->Destroy();
+
+	delete m_data;
 }
 
 bool CSDREmulatorFrame::createListener(unsigned int port)
@@ -136,6 +184,14 @@ bool CSDREmulatorFrame::createListener(unsigned int port)
 	m_server->Notify(true);
 
 	return true;
+}
+
+void CSDREmulatorFrame::createDataThread(const wxString& address, unsigned int port, int api, long inDev, long outDev)
+{
+	m_data = new CDataControl(48000.0F, address, port, api, inDev, outDev);
+
+	m_data->Create();
+	m_data->Run();
 }
 
 void CSDREmulatorFrame::onParentSocket(wxSocketEvent& event)
@@ -182,6 +238,11 @@ void CSDREmulatorFrame::onChildSocket(wxSocketEvent& event)
 			break;
 		case wxSOCKET_LOST:
 			m_connectLabel->SetLabel(wxT("Not connected"));
+			m_txOn = false;
+			m_data->setTX(false);
+			m_txEnable = false;
+			m_rxEnable = false;
+			m_data->setMute(true);
 			socket->Destroy();
 			break;
 		default:
@@ -259,6 +320,8 @@ void CSDREmulatorFrame::processCommand(wxSocketBase& socket, wxChar* buffer)
 			if (n == 0L || n == 1L) {
 				m_rxEnable = (n == 1L);
 				ack = true;
+
+				m_data->setMute(!m_rxEnable);
 			}
 		} else if (command.Cmp(wxT("TX")) == 0) {
 			long n;
@@ -267,14 +330,8 @@ void CSDREmulatorFrame::processCommand(wxSocketBase& socket, wxChar* buffer)
 			if (m_txEnable && (n == 0L || n == 1L)) {
 				m_txOn = (n == 1L);
 				ack = true;
-			}
-		} else if (command.Cmp(wxT("RG")) == 0) {
-			long n;
-			message.Mid(2).ToLong(&n);
 
-			if (n >= 0L) {
-				m_rxGain = n;
-				ack = true;
+				m_data->setTX(m_txOn);
 			}
 		}
 
@@ -296,8 +353,7 @@ void CSDREmulatorFrame::processCommand(wxSocketBase& socket, wxChar* buffer)
 
 			m_txOnLabel->SetLabel(m_txOn ? wxT("Yes") : wxT("No"));
 
-			text.Printf(wxT("%u"), m_rxGain);
-			m_rxGainLabel->SetLabel(text);
+			m_data->setTX(m_txOn);
 		} else {
 			::sprintf(buffer, "NK%s;", command.c_str());
 			socket.Write(buffer, ::strlen(buffer));
@@ -328,11 +384,74 @@ void CSDREmulatorFrame::onClose(wxCloseEvent& event)
 	}
 
 	int reply = ::wxMessageBox(wxT("Do you want to exit the uWave SDR Emulator"),
+		wxT("Exit"),
+		wxOK | wxCANCEL | wxICON_QUESTION);
+
+	if (reply == wxOK) {
+		m_data->Delete();
+		Destroy();
+	} else {
+		event.Veto();
+	}
+}
+
+void CSDREmulatorFrame::onExit(wxCommandEvent& event)
+{
+	if (m_txOn)
+		return;
+
+	int reply = ::wxMessageBox(wxT("Do you want to exit the uWave SDR Emulator"),
 		wxT("Exit uWSDR"),
 		wxOK | wxCANCEL | wxICON_QUESTION);
 
-	if (reply == wxOK)
+	if (reply == wxOK) {
+		m_data->Delete();
 		Destroy();
-	else
-		event.Veto();
+	}
 }
+
+void CSDREmulatorFrame::onInternal(wxCommandEvent& event)
+{
+	m_menuBar->Check(MENU_INTERNAL, true);
+	m_menuBar->Check(MENU_FILE,     false);
+	m_menuBar->Check(MENU_CARD,     false);
+
+	m_sourceLabel->SetLabel(wxT("Internal"));
+
+	m_data->setSource(SOURCE_INTERNAL);
+}
+
+void CSDREmulatorFrame::onSoundFile(wxCommandEvent& event)
+{
+	wxFileDialog fileDialog(this, wxT("Select a Wave File"), wxEmptyString, wxEmptyString, wxT("WAV files (*.wav)|*.WAV;*.wav"), wxOPEN);
+	int ret1 = fileDialog.ShowModal();
+
+	if (ret1 == wxID_CANCEL)
+		return;
+
+	wxString fileName = fileDialog.GetPath();
+
+	bool ret2 = m_data->setSoundFileReader(fileName);
+	if (!ret2) {
+		::wxMessageBox(wxT("Problem opening the sound file"));
+		return;
+	}
+
+	m_menuBar->Check(MENU_INTERNAL, false);
+	m_menuBar->Check(MENU_FILE,     true);
+	m_menuBar->Check(MENU_CARD,     false);
+
+	m_sourceLabel->SetLabel(wxT("Sound File"));
+}
+
+void CSDREmulatorFrame::onSoundCard(wxCommandEvent& event)
+{
+	m_menuBar->Check(MENU_INTERNAL, false);
+	m_menuBar->Check(MENU_FILE,     false);
+	m_menuBar->Check(MENU_CARD,     true);
+
+	m_sourceLabel->SetLabel(wxT("Sound Card"));
+
+	m_data->setSource(SOURCE_SOUNDCARD);
+}
+

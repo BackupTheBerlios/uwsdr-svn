@@ -23,7 +23,7 @@
 
 #include "DataReader.h"
 
-class CSignalReader : public wxThread, public IDataReader {
+class CSignalReader : public IDataReader {
 
     public:
     CSignalReader(unsigned int frequency, float noiseAmplitude, float signalAmplitude);
@@ -33,18 +33,26 @@ class CSignalReader : public wxThread, public IDataReader {
 
 	virtual bool open(float sampleRate, unsigned int blockSize);
 
-	virtual void* Entry();
-
 	virtual void close();
+
+	virtual bool needsClock();
+	virtual void clock();
 
     private:
 	unsigned int   m_frequency;
 	float          m_noiseAmplitude;
 	float          m_signalAmplitude;
-	float          m_sampleRate;
 	unsigned int   m_blockSize;
 	IDataCallback* m_callback;
 	int            m_id;
+	float*         m_buffer;
+	float*         m_awgn;
+	unsigned int   m_noiseSize;
+	float          m_cosVal;
+	float          m_sinVal;
+	float          m_cosDelta;
+	float          m_sinDelta;
+	unsigned int   m_awgnN;
 };
 
 #endif

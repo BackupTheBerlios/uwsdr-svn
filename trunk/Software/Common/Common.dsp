@@ -91,6 +91,10 @@ SOURCE=.\Frequency.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\Hilbert.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\NullReader.cpp
 # End Source File
 # Begin Source File
@@ -103,11 +107,19 @@ SOURCE=.\RingBuffer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\SDRData.cpp
+SOURCE=.\SDRDataReader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SDRDataWriter.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\SignalReader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SoundCardInfo.cpp
 # End Source File
 # Begin Source File
 
@@ -147,6 +159,10 @@ SOURCE=.\Frequency.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\Hilbert.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\NullReader.h
 # End Source File
 # Begin Source File
@@ -159,11 +175,19 @@ SOURCE=.\RingBuffer.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\SDRData.h
+SOURCE=.\SDRDataReader.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SDRDataWriter.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\SignalReader.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SoundCardInfo.h
 # End Source File
 # Begin Source File
 

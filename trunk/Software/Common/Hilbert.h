@@ -1,6 +1,9 @@
 /*
  *   Copyright (C) 2006 by Jonathan Naylor G4KLX
  *
+ *   Based on code written by Peter Martinez G3PLX publiched in RadCom June 2004
+ *   pages 84-86.
+ *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -16,14 +19,24 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	DataWriter_H
-#define	DataWriter_H
+#ifndef	Hilbert_H
+#define	Hilbert_H
 
-class IDataWriter {
+
+const unsigned int NTAPS = 81;
+
+class CHilbert {
+
     public:
-	virtual bool open(float sampleRate, unsigned int blockSize) = 0;
-	virtual void write(const float* buffer, unsigned int nSamples) = 0;
-	virtual void close() = 0;
+	CHilbert(float sampleRate);
+	virtual ~CHilbert();
+
+	virtual unsigned int process(const float* inBuffer, float* outBuffer, unsigned int nSamples);
+
+    private:
+	float        m_coeffs[NTAPS];
+	float        m_delayLine[NTAPS];
+	unsigned int m_dptr;
 };
 
 #endif

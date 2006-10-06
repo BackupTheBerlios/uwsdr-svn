@@ -1,7 +1,7 @@
 all:		GUISetup
 
-CFLAGS := -I../UWSDRGUI $(CFLAGS)
-LIBS   := -lportaudio $(LIBS)
+CFLAGS :=	-I../UWSDRGUI -I../Common $(CFLAGS)
+LIBS   :=	-lportaudio $(LIBS)
 
 OBJS :=		GUISetupApp.o GUISetupFrame.o
 
@@ -11,7 +11,7 @@ GUISetup:	$(OBJS)
 GUISetupApp.o:	GUISetupApp.cpp GUISetupApp.h GUISetupFrame.h GUISetupXpm.h
 		$(CC) $(CFLAGS) -c GUISetupApp.cpp
 
-GUISetupFrame.o: GUISetupFrame.cpp GUISetupFrame.h
+GUISetupFrame.o: GUISetupFrame.cpp GUISetupFrame.h ../Common/SoundCardInfo.h
 		$(CC) $(CFLAGS) -c GUISetupFrame.cpp
 
 install:	GUISetup

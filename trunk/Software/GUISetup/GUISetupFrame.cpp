@@ -17,7 +17,6 @@
  */
 
 #include "GUISetupFrame.h"
-#include "portaudio.h"
 
 #include <wx/file.h>
 #include <wx/config.h>
@@ -39,7 +38,7 @@ const int BORDER_SIZE     = 5;
 const int DATA_WIDTH      = 150;
 
 BEGIN_EVENT_TABLE(CGUISetupFrame, wxFrame)
-	EVT_COMBOBOX(API_COMBO, CGUISetupFrame::onAPI)
+	EVT_CHOICE(API_COMBO, CGUISetupFrame::onAPI)
 	EVT_COMBOBOX(NAME_COMBO, CGUISetupFrame::onName)
 	EVT_BUTTON(CREATE_BUTTON, CGUISetupFrame::onCreate)
 	EVT_BUTTON(BROWSE_BUTTON, CGUISetupFrame::onBrowse)
@@ -54,9 +53,8 @@ m_devChoice(NULL),
 m_address(NULL),
 m_control(NULL),
 m_data(NULL),
-m_inDevs(),
-m_outDevs(),
-m_startMenu(NULL)
+m_startMenu(NULL),
+m_info()
 {
 	SetIcon(wxIcon(GUISetup_xpm));
 
@@ -87,7 +85,7 @@ m_startMenu(NULL)
 	wxStaticText* label3 = new wxStaticText(panel, -1, _("Audio API:"));
 	panelSizer->Add(label3, 0, wxALL, BORDER_SIZE);
 
-	m_apiChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	m_apiChoice = new wxChoice(panel, API_COMBO, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
 	panelSizer->Add(m_apiChoice, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* dummy2 = new wxStaticText(panel, -1, wxEmptyString);
@@ -180,9 +178,11 @@ void CGUISetupFrame::onName(wxCommandEvent& event)
 
 void CGUISetupFrame::onAPI(wxCommandEvent& event)
 {
-	int api = event.GetSelection();
+	int n = event.GetSelection();
 
-	enumerateAudio(api);
+	CSoundCardAPI* api = m_info.getAPIs().at(n);
+
+	enumerateAudio(*api);
 }
 
 void CGUISetupFrame::onBrowse(wxCommandEvent& event)
@@ -225,8 +225,9 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 		::wxMessageBox(_("The Audio Device is not allowed to be empty"));
 		return;
 	}
-	long audioInDev  = m_inDevs.at(devChoice);
-	long audioOutDev = m_outDevs.at(devChoice);
+
+	long audioInDev  = m_info.getDevs().at(devChoice)->getInDev();
+	long audioOutDev = m_info.getDevs().at(devChoice)->getOutDev();
 
 	wxString ipAddress = m_address->GetValue();
 	if (ipAddress.IsEmpty()) {
@@ -390,9 +391,10 @@ void CGUISetupFrame::readConfig(const wxString& name)
 	long outDev;
 	config->Read(audioOutDevKey, &outDev);
 
-	unsigned int i;
-	for (i = 0; i < m_outDevs.size(); i++)
-		if (m_outDevs.at(i) == outDev)
+	vector<CSoundCardDev*>& devs = m_info.getDevs();
+
+	for (unsigned int i = 0; i < devs.size(); i++)
+		if (devs.at(i)->getOutDev() == outDev)
 			m_devChoice->SetSelection(i);
 
 	config->Read(ipAddressKey, &text);
@@ -412,67 +414,52 @@ void CGUISetupFrame::readConfig(const wxString& name)
 
 void CGUISetupFrame::enumerateAPI()
 {
-	PaError error = ::Pa_Initialize();
-	if (error != paNoError) {
-		::wxMessageBox(_("Cannot initialise the sound access system."));
+	bool ret = m_info.enumerateAPIs();
+
+	if (!ret) {
+		::wxMessageBox(_("Cannot access the sound access system."));
 		return;
 	}
 
-	PaHostApiIndex n = ::Pa_GetHostApiCount();
+	vector<CSoundCardAPI*>& apis = m_info.getAPIs();
+	CSoundCardAPI* defAPI = NULL;
 
-	if (n <= 0) {
-		::wxMessageBox(_("There appear to be no audio APIs\navailable on your PC!"));
-		::Pa_Terminate();
-		return;
+	for (unsigned int i = 0; i < apis.size(); i++) {
+		CSoundCardAPI* api = apis.at(i);
+
+		m_apiChoice->Append(api->getName());
+
+		if (api->getDefault()) {
+			m_apiChoice->SetSelection(i);
+			defAPI = api;
+		}
 	}
 
-	int defAPI = ::Pa_GetDefaultHostApi();
-
-	for (PaHostApiIndex i = 0; i < n; i++) {
-		const PaHostApiInfo* hostAPI = ::Pa_GetHostApiInfo(i);
-
-		m_apiChoice->Append(hostAPI->name);
-	}
-
-	m_apiChoice->SetSelection(defAPI);
-
-	::Pa_Terminate();
-
-	enumerateAudio(defAPI);
+	if (defAPI != NULL)
+		enumerateAudio(*defAPI);
 }
 
-void CGUISetupFrame::enumerateAudio(int api)
+void CGUISetupFrame::enumerateAudio(const CSoundCardAPI& api)
 {
-	PaError error = ::Pa_Initialize();
-	if (error != paNoError) {
-		::wxMessageBox(_("Cannot initialise the sound access system."));
+	bool ret = m_info.enumerateDevs(api);
+
+	if (!ret) {
+		::wxMessageBox(_("Cannot access the sound access system."));
 		return;
 	}
 
-	PaDeviceIndex n = ::Pa_GetDeviceCount();
+	m_devChoice->Clear();
 
-	if (n <= 0) {
-		::wxMessageBox(_("There appear to be no audio devices\nattached to your PC!"));
-		::Pa_Terminate();
-		return;
+	vector<CSoundCardDev*>& devs = m_info.getDevs();
+
+	for (unsigned int  i = 0; i < devs.size(); i++) {
+		CSoundCardDev* dev = devs.at(i);
+
+		m_devChoice->Append(dev->getName());
+
+		if (dev->getInDefault())
+			m_devChoice->SetSelection(i);
 	}
-
-	for (PaDeviceIndex i = 0; i < n; i++) {
-		const PaDeviceInfo* device = ::Pa_GetDeviceInfo(i);
-
-		if (device->maxInputChannels > 0 && device->hostApi == api) {
-			m_devChoice->Append(device->name);
-			m_inDevs.push_back(i);
-		}
-
-		if (device->maxOutputChannels > 0 && device->hostApi == api)
-			m_outDevs.push_back(i);
-	}
-
-	if (n > 0)
-		m_devChoice->SetSelection(0);
-
-	::Pa_Terminate();
 }
 
 #if defined(__WXMSW__)
@@ -490,7 +477,7 @@ void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 	wxString linkPath = wxString(folder) + wxT("\\UWSDR\\") + linkName;
 	wxString iconPath = dir + wxT("\\UWSDR.ico");
 	wxString exePath  = dir + wxT("\\UWSDR.exe");
-	wxString args = wxT("-s ") + name;
+	wxString args     = name;
 
 	HRESULT hRes = ::CoInitialize(NULL);
 	if (!SUCCEEDED(hRes)) {
@@ -559,7 +546,7 @@ void CGUISetupFrame::writeDeskTop(const wxString& name, const wxString& dir)
 	wxString linkPath = wxString(folder) + wxT("\\") + linkName;
 	wxString iconPath = dir + wxT("\\UWSDR.ico");
 	wxString exePath  = dir + wxT("\\UWSDR.exe");
-	wxString args = wxT("-s ") + name;
+	wxString args     = name;
 
 	HRESULT hRes = ::CoInitialize(NULL);
 	if (!SUCCEEDED(hRes)) {
@@ -634,7 +621,7 @@ void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 	file.Write(wxT("Name=") + name + wxT("\n"));
 	file.Write(wxT("Comment=\n"));
 	file.Write(wxT("Icon=UWSDR.png\n"));
-	file.Write(wxT("Exec=") + wxString(BIN_DIR) + wxT("/UWSDR -s ") + name + wxT("\n"));
+	file.Write(wxT("Exec=") + wxString(BIN_DIR) + wxT("/UWSDR ") + name + wxT("\n"));
 	file.Write(wxT("Path=.\n"));
 	file.Write(wxT("Terminal=false\n"));
 

@@ -43,6 +43,9 @@ class CSoundCardReader : public IDataReader {
 
 	virtual int  callback(const void* input, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags);
 
+	virtual bool needsClock();
+	virtual void clock();
+
     private:
 	int            m_api;
 	int            m_dev;

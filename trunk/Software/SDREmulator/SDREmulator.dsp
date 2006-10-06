@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GR /GX /O2 /Ob0 /I "C:\wxWidgets-2.6.3\lib\vc_dll\msw" /I "C:\wxWidgets-2.6.3\include" /I "..\Common" /D "WIN32" /D "__WXMSW__" /D "WXUSINGDLL" /D "_WINDOWS" /D "NOPCH" /FD /c
+# ADD CPP /nologo /MT /W3 /GR /GX /O2 /Ob0 /I "C:\wxWidgets-2.6.3\lib\vc_dll\msw" /I "C:\wxWidgets-2.6.3\include" /I "..\Common" /I "..\PA19" /D "WIN32" /D "__WXMSW__" /D "WXUSINGDLL" /D "_WINDOWS" /D "NOPCH" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
@@ -54,7 +54,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wxbase26.lib wxbase26_net.lib wxmsw26_core.lib /nologo /subsystem:windows /machine:I386 /out:"../Release/SDREmulator.exe" /libpath:"C:\wxWidgets-2.6.3\lib\vc_dll"
+# ADD LINK32 wxbase26.lib wxbase26_net.lib wxmsw26_core.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib winmm.lib PA19.lib /nologo /subsystem:windows /machine:I386 /out:"../Release/SDREmulator.exe" /libpath:"C:\wxWidgets-2.6.3\lib\vc_dll" /libpath:"..\PA19"
 
 !ELSEIF  "$(CFG)" == "SDR Emulator - Win32 Debug"
 
@@ -70,7 +70,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GR /GX /ZI /Od /I "C:\wxWidgets-2.6.3\lib\vc_dll\mswd" /I "C:\wxWidgets-2.6.3\include" /I "..\Common" /D "WIN32" /D "_DEBUG" /D "__WXMSW__" /D "__WXDEBUG__" /D "WXUSINGDLL" /D "_WINDOWS" /D "NOPCH" /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GR /GX /ZI /Od /I "C:\wxWidgets-2.6.3\lib\vc_dll\mswd" /I "C:\wxWidgets-2.6.3\include" /I "..\Common" /I "..\PA19" /D "WIN32" /D "_DEBUG" /D "__WXMSW__" /D "__WXDEBUG__" /D "WXUSINGDLL" /D "_WINDOWS" /D "NOPCH" /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -81,7 +81,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wxbase26d.lib wxbase26d_net.lib wxmsw26d_core.lib /nologo /subsystem:windows /debug /machine:I386 /out:"../Debug/SDREmulator.exe" /pdbtype:sept /libpath:"C:\wxWidgets-2.6.3\lib\vc_dll"
+# ADD LINK32 wxbase26d.lib wxbase26d_net.lib wxmsw26d_core.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib winmm.lib PA19.lib /nologo /subsystem:windows /debug /machine:I386 /out:"../Debug/SDREmulator.exe" /pdbtype:sept /libpath:"C:\wxWidgets-2.6.3\lib\vc_dll" /libpath:"..\PA19"
 
 !ENDIF 
 
@@ -94,11 +94,19 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=.\DataControl.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\SDREmulatorApp.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\SDREmulatorFrame.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SoundCardDialog.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -106,11 +114,19 @@ SOURCE=.\SDREmulatorFrame.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
+SOURCE=.\DataControl.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SDREmulatorApp.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\SDREmulatorFrame.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SoundCardDialog.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

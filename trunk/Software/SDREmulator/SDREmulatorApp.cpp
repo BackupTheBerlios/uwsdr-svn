@@ -25,7 +25,9 @@ IMPLEMENT_APP(CSDREmulatorApp)
 CSDREmulatorApp::CSDREmulatorApp() :
 wxApp(),
 m_frame(NULL),
-m_port(0)
+m_address(),
+m_controlPort(0),
+m_dataPort(0)
 {
 }
 
@@ -35,7 +37,9 @@ CSDREmulatorApp::~CSDREmulatorApp()
 
 void CSDREmulatorApp::OnInitCmdLine(wxCmdLineParser& parser)
 {
-	parser.AddParam(wxT("Port number"), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_OPTION_MANDATORY);
+	parser.AddParam(wxT("IP_Address"),          wxCMD_LINE_VAL_STRING, wxCMD_LINE_OPTION_MANDATORY);
+	parser.AddParam(wxT("Control_Port_Number"), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_OPTION_MANDATORY);
+	parser.AddParam(wxT("Data_Port_Number"),    wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_OPTION_MANDATORY);
 
 	wxApp::OnInitCmdLine(parser);
 }
@@ -45,15 +49,27 @@ bool CSDREmulatorApp::OnCmdLineParsed(wxCmdLineParser& parser)
 	if (!wxApp::OnCmdLineParsed(parser))
 		return false;
 
+	m_address = parser.GetParam(0);
+
 	long temp;
-	parser.GetParam(0).ToLong(&temp);
+
+	parser.GetParam(1).ToLong(&temp);
 
 	if (temp < 1L || temp >= 65536L) {
-		::wxMessageBox(wxT("Port number must be between 1 and 65536"));
+		::wxMessageBox(wxT("The Control Port number must be between 1 and 65536"));
 		return false;
 	}
 
-	m_port = temp;
+	m_controlPort = temp;
+
+	parser.GetParam(2).ToLong(&temp);
+
+	if (temp < 1L || temp >= 65536L) {
+		::wxMessageBox(wxT("The Data Port number must be between 1 and 65536"));
+		return false;
+	}
+
+	m_dataPort = temp;
 
 	return true;
 }
@@ -63,7 +79,7 @@ bool CSDREmulatorApp::OnInit()
 	if (!wxApp::OnInit())
 		return false;
 
-	m_frame = new CSDREmulatorFrame(m_port);
+	m_frame = new CSDREmulatorFrame(m_address, m_controlPort, m_dataPort);
 	m_frame->Show();
 
 	SetTopWindow(m_frame);
