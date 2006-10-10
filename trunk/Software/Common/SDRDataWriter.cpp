@@ -18,31 +18,18 @@
 
 #include "SDRDataWriter.h"
 
-const int SOCKET_ID = 7897;
 
-const unsigned int SAMPLE_SIZE      = 6;
-const unsigned int IN_BUFFER_SIZE   = 500;
-const unsigned int SOCK_BUFFER_SIZE = 1500;
-const unsigned int OUT_BUFFER_SIZE  = 500;
-const unsigned int PACKET_SIZE      = 200;
-
-BEGIN_EVENT_TABLE(CSDRDataWriter, wxEvtHandler)
-	EVT_SOCKET(SOCKET_ID, CSDRDataWriter::onSocket)
-END_EVENT_TABLE()
+const unsigned int HEADER_SIZE = 6;
+const unsigned int SAMPLE_SIZE = 6;
 
 
-CSDRDataWriter::CSDRDataWriter(const wxString& address, int port, unsigned int version) :
-wxEvtHandler(),
+CSDRDataWriter::CSDRDataWriter(const wxString& address, int port) :
 m_address(address),
 m_port(port),
-m_version(version),
-m_socket(NULL),
-m_ipAddress(),
+m_fd(-1),
+m_remAddr(),
 m_sequence(0),
-m_event(true),
-m_buffer(NULL),
-m_sockBuffer(NULL),
-m_txBuffer(10000, 2)
+m_sockBuffer(NULL)
 {
 }
 
@@ -52,24 +39,30 @@ CSDRDataWriter::~CSDRDataWriter()
 
 bool CSDRDataWriter::open(float sampleRate, unsigned int blockSize)
 {
-	m_buffer     = new float[PACKET_SIZE * 2];
-	m_sockBuffer = new unsigned char[SOCK_BUFFER_SIZE];
+	struct hostent* host = ::gethostbyname(m_address.c_str());
 
-	m_ipAddress.Hostname(m_address);
-	m_ipAddress.Service(m_port);
+	if (host == NULL) {
+		::wxLogError(wxT("Cannot resolve host name: %s"), m_address.c_str());
+		return false;
+	}
 
-	m_address = m_ipAddress.IPAddress();
-	m_port    = m_ipAddress.Service();
+	::memset(&m_remAddr, 0x00, sizeof(struct sockaddr_in));
+	m_remAddr.sin_family = AF_INET;
+	m_remAddr.sin_port   = htons(m_port);
+	::memcpy(&m_remAddr.sin_addr.s_addr, host->h_addr, host->h_length);
 
-	wxIPV4address myAddress;
-	myAddress.AnyAddress();
-	myAddress.Service(m_port + 1);
+	m_fd = ::socket(AF_INET, SOCK_DGRAM, 0);
+	if (m_fd < 0) {
+		::wxLogError(wxT("Error %d when creating the writing datagram socket"),
+#if defined(__WXMSW__)
+			::WSAGetLastError());
+#else
+			errno);
+#endif
+		return false;
+	}
 
-	m_socket = new wxDatagramSocket(myAddress);
-
-	m_socket->SetEventHandler(*this, SOCKET_ID);
-	m_socket->SetNotify(wxSOCKET_OUTPUT_FLAG);
-	m_socket->Notify(true);
+	m_sockBuffer = new unsigned char[HEADER_SIZE + blockSize * SAMPLE_SIZE];
 
 	return true;
 }
@@ -82,38 +75,6 @@ void CSDRDataWriter::write(const float* buffer, unsigned int nSamples)
 	wxASSERT(nSamples > 0);
 	wxASSERT(buffer != NULL);
 
-	if (m_version != 1) {
-		::wxLogError(wxT("Invalid version of the protocol = %u"), m_version);
-		return;
-	}
-
-	m_txBuffer.addData(buffer, nSamples);
-
-	if (m_event) {
-		wxSocketEvent event;
-		onSocket(event);
-	}
-}
-
-void CSDRDataWriter::close()
-{
-	m_socket->Destroy();
-
-	delete[] m_buffer;
-	delete[] m_sockBuffer;
-}
-
-void CSDRDataWriter::onSocket(wxSocketEvent& event)
-{
-	if (m_txBuffer.dataSpace() == 0) {
-		m_event = true;
-		return;
-	}
-
-	m_event = false;
-
-	unsigned int nSamples = m_txBuffer.getData(m_buffer, PACKET_SIZE);
-
 	m_sockBuffer[0] = 'D';
 	m_sockBuffer[1] = 'A';
 
@@ -124,12 +85,13 @@ void CSDRDataWriter::onSocket(wxSocketEvent& event)
 	if (m_sequence == 0xFFFF)
 		m_sequence = 0;
 
-	m_sockBuffer[4] = nSamples;
+	m_sockBuffer[4] = (nSamples >> 8) & 0xFF;
+	m_sockBuffer[5] = nSamples & 0xFF;
 
-	unsigned int len = 5;
-	for (unsigned int i = 0; i < nSamples && len < OUT_BUFFER_SIZE; i++) {
-		unsigned int qData = (unsigned int)(m_buffer[i * 2 + 0] * 8388607.5 + 8388607.5);
-		unsigned int iData = (unsigned int)(m_buffer[i * 2 + 1] * 8388607.5 + 8388607.5);
+	unsigned int len = HEADER_SIZE;
+	for (unsigned int i = 0; i < nSamples; i++) {
+		unsigned int qData = (unsigned int)(buffer[i * 2 + 0] * 8388607.5 + 8388607.5);
+		unsigned int iData = (unsigned int)(buffer[i * 2 + 1] * 8388607.5 + 8388607.5);
 
 		m_sockBuffer[len++] = (iData >> 16) & 0xFF;
 		m_sockBuffer[len++] = (iData >> 8)  & 0xFF;
@@ -140,5 +102,31 @@ void CSDRDataWriter::onSocket(wxSocketEvent& event)
 		m_sockBuffer[len++] = (qData >> 0)  & 0xFF;
 	}
 
-	m_socket->SendTo(m_ipAddress, m_sockBuffer, len);
+	ssize_t ret = ::sendto(m_fd, (char *)m_sockBuffer, len, 0, (struct sockaddr *)&m_remAddr, sizeof(struct sockaddr_in));
+	if (ret < 0) {
+		::wxLogError(wxT("Error %d writing to the datagram socket"),
+#if defined(__WXMSW__)
+			::WSAGetLastError());
+#else
+			errno);
+#endif
+		return;
+	}
+
+	if (ret != int(len)) {
+		::wxLogError(wxT("Error only wrote %d of %u bytes to the datagram socket"), ret, len);
+		return;
+	}
+}
+
+void CSDRDataWriter::close()
+{
+#if defined(__WXMSW__)
+	::closesocket(m_fd);
+#else
+	::close(m_fd);
+#endif
+	m_fd = -1;
+
+	delete[] m_sockBuffer;
 }

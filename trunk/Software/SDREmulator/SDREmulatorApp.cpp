@@ -19,6 +19,8 @@
 #include <wx/cmdline.h>
 
 #include "SDREmulatorApp.h"
+#include "Log.h"
+
 
 IMPLEMENT_APP(CSDREmulatorApp)
 
@@ -79,6 +81,12 @@ bool CSDREmulatorApp::OnInit()
 	if (!wxApp::OnInit())
 		return false;
 
+	wxLog* logger = new CLog(wxT("Emulator.log"));
+	wxLog::SetActiveTarget(logger);
+
+	::wxLogMessage(wxT("Starting the SDREmulator"));
+	::wxLogMessage(wxT("GUI is at address: %s, control port: %u, data port: %u"), m_address.c_str(), m_controlPort, m_dataPort);
+
 	m_frame = new CSDREmulatorFrame(m_address, m_controlPort, m_dataPort);
 	m_frame->Show();
 
@@ -86,3 +94,17 @@ bool CSDREmulatorApp::OnInit()
 
 	return true;
 }
+
+int CSDREmulatorApp::OnExit()
+{
+	::wxLogMessage(wxT("Ending the SDREmulator"));
+
+	return 0;
+}
+
+#if defined(__WXDEBUG__)
+void CSDREmulatorApp::OnAssert(const wxChar* file, int line, const wxChar* cond, const wxChar* msg)
+{
+	::wxLogFatalError(wxT("Assertion failed on line %d in file %s: %s %s"), line, file, cond, msg);
+}
+#endif

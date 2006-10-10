@@ -23,6 +23,7 @@
 #include "SoundCardReader.h"
 #include "SDRDataReader.h"
 #include "NullWriter.h"
+#include "NullReader.h"
 #include "SoundCardWriter.h"
 #include "SDRDataWriter.h"
 
@@ -79,7 +80,7 @@ void* CDataControl::Entry()
 
 		// We have a problem so wait for death
 		while (!TestDestroy())
-			Sleep(500);
+			Sleep(500UL);
 
 		return (void*)1;
 	}
@@ -145,11 +146,11 @@ bool CDataControl::openIO()
 {
 	m_internalReader  = new CSignalReader(m_sampleRate / 4.0F + 1000.5F, 0.0008F, 0.001F);
 	m_soundCardReader = new CSoundCardReader(m_api, m_inDev);
-	m_rxWriter        = new CSDRDataWriter(m_address, m_port, 1);
+	m_rxWriter        = new CSDRDataWriter(m_address, m_port);
 
 	m_nullWriter      = new CNullWriter();
 	m_soundCardWriter = new CSoundCardWriter(m_api, m_outDev);
-	m_txReader        = new CSDRDataReader(m_address, m_port, 1);
+	m_txReader        = new CSDRDataReader(m_address, m_port);
 
 	// This should be done before opening
 	m_internalReader->setCallback(this,  INTERNAL_READER);
@@ -242,16 +243,12 @@ void CDataControl::callback(float* inBuffer, unsigned int nSamples, int id)
 			break;
 
 		case SOUNDCARD_READER: {
-				if (m_internalReader->needsClock())
-					m_internalReader->clock();
+				m_internalReader->clock();
 
-				if (m_soundFileReader != NULL) {
-					if (m_soundFileReader->needsClock())
-						m_soundFileReader->clock();
-				}
+				if (m_soundFileReader != NULL)
+					m_soundFileReader->clock();
 
-				if (m_txReader->needsClock())
-					m_txReader->clock();
+				m_txReader->clock();
 
 				if (m_transmit || m_source != SOURCE_SOUNDCARD || m_mute)
 					return;

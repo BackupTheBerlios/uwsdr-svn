@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GR /GX /O2 /I "." /I "..\fftw" /I "C:\wxWidgets-2.6.3\lib\vc_dll\msw" /I "C:\wxWidgets-2.6.3\include" /D "NDEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D "__WXMSW__" /D "WXUSINGDLL" /D "_WINDOWS" /D "NOPCH" /FD /c
+# ADD CPP /nologo /MT /W3 /GR /GX /O2 /I "." /I "..\fftw" /I "C:\wxWidgets-2.7.0-1\lib\vc_dll\msw" /I "C:\wxWidgets-2.7.0-1\include" /D "NDEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D "__WXMSW__" /D "WXUSINGDLL" /D "_WINDOWS" /D "NOPCH" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x809 /d "NDEBUG"
 # ADD RSC /l 0x809 /d "NDEBUG"
@@ -65,7 +65,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ  /c
-# ADD CPP /nologo /MTd /W3 /Gm /GR /GX /ZI /Od /I "." /I "..\fftw" /I "C:\wxWidgets-2.6.3\lib\vc_dll\mswd" /I "C:\wxWidgets-2.6.3\include" /D "_DEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D "__WXMSW__" /D "__WXDEBUG__" /D "WXUSINGDLL" /D "_WINDOWS" /D "NOPCH" /FR /FD /GZ  /c
+# ADD CPP /nologo /MTd /W3 /Gm /GR /GX /ZI /Od /I "." /I "..\fftw" /I "C:\wxWidgets-2.7.0-1\lib\vc_dll\mswd" /I "C:\wxWidgets-2.7.0-1\include" /D "_DEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D "__WXMSW__" /D "__WXDEBUG__" /D "WXUSINGDLL" /D "_WINDOWS" /D "NOPCH" /FR /FD /GZ  /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x809 /d "_DEBUG"
 # ADD RSC /l 0x809 /d "_DEBUG"

@@ -27,7 +27,6 @@ class IDataReader {
 	virtual void setCallback(IDataCallback* callback, int id) = 0;
 	virtual void close() = 0;
 
-	virtual bool needsClock() = 0;
 	virtual void clock() = 0;
 };
 

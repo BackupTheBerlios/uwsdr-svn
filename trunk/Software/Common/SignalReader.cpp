@@ -98,11 +98,6 @@ void CSignalReader::close()
 	delete[] m_awgn;
 }
 
-bool CSignalReader::needsClock()
-{
-	return true;
-}
-
 void CSignalReader::clock()
 {
 	wxASSERT(m_callback != NULL);

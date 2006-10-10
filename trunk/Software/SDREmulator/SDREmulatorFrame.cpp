@@ -144,10 +144,7 @@ m_data(NULL)
 	SetMenuBar(m_menuBar);
 
 	CSoundCardDialog soundCard(this);
-	int ret = soundCard.ShowModal();
-
-	if (ret == wxID_CANCEL)
-		::wxExit();
+	soundCard.ShowModal();
 
 	int api     = soundCard.getAPI();
 	long inDev  = soundCard.getInDev();
@@ -164,8 +161,6 @@ CSDREmulatorFrame::~CSDREmulatorFrame()
 {
 	if (m_server != NULL)
 		m_server->Destroy();
-
-	delete m_data;
 }
 
 bool CSDREmulatorFrame::createListener(unsigned int port)

@@ -20,15 +20,14 @@
 #define	UWSDRDataWriter_H
 
 #include <wx/wx.h>
-#include <wx/socket.h>
 
 #include "RingBuffer.h"
 #include "DataWriter.h"
 
-class CSDRDataWriter : public wxEvtHandler, public IDataWriter {
+class CSDRDataWriter : public IDataWriter {
 
     public:
-	CSDRDataWriter(const wxString& address, int port, unsigned int version);
+	CSDRDataWriter(const wxString& address, int port);
 	virtual ~CSDRDataWriter();
 
 	virtual bool open(float sampleRate, unsigned int blockSize);
@@ -37,21 +36,13 @@ class CSDRDataWriter : public wxEvtHandler, public IDataWriter {
 
 	virtual void close();
 
-	void onSocket(wxSocketEvent& event);
-
     private:
-	wxString          m_address;
-	unsigned short    m_port;
-	unsigned int      m_version;
-	wxDatagramSocket* m_socket;
-	wxIPV4address     m_ipAddress;
-	int               m_sequence;
-	bool              m_event;
-	float*            m_buffer;
-	unsigned char*    m_sockBuffer;
-	CRingBuffer       m_txBuffer;
-
-	DECLARE_EVENT_TABLE()
+	wxString           m_address;
+	int                m_port;
+	int                m_fd;
+	struct sockaddr_in m_remAddr;
+	int                m_sequence;
+	unsigned char*     m_sockBuffer;
 };
 
 #endif

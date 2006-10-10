@@ -13,8 +13,8 @@
 ;Configuration
 
   ;General
-  Name "UWSDR 0.5.3"
-  OutFile "UWSDR-0.5.3.exe"
+  Name "UWSDR 0.6"
+  OutFile "UWSDR-0.6.exe"
 
   ;Folder selection page
   InstallDir "$PROGRAMFILES\UWSDR"
@@ -56,10 +56,10 @@ Section "UWSDR Program Files" SecProgram
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\SDREmulator.exe"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\libfftw3f-3.dll"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\PA19.dll"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxbase26_vc_custom.dll"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxbase26_net_vc_custom.dll"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxmsw26_core_vc_custom.dll"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxmsw26_html_vc_custom.dll"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxbase270_vc_custom.dll"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxbase270_net_vc_custom.dll"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxmsw270_core_vc_custom.dll"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxmsw270_html_vc_custom.dll"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Help\GUISetup\GUISetup.zip"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Help\SDRSetup\SDRSetup.zip"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Help\UWSDR\UWSDR.zip"

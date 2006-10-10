@@ -33,6 +33,8 @@ bool CNullWriter::open(float sampleRate, unsigned int blockSize)
 
 void CNullWriter::write(const float* buffer, unsigned int nSamples)
 {
+	wxASSERT(buffer != NULL);
+	wxASSERT(nSamples > 0);
 }
 
 void CNullWriter::close()

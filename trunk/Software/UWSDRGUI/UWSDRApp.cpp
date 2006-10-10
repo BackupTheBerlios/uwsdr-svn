@@ -118,7 +118,7 @@ bool CUWSDRApp::OnInit()
 	if (!wxApp::OnInit())
 		return false;
 
-	wxLog* logger = new CLog(m_parameters->m_name + ".log");
+	wxLog* logger = new CLog(m_parameters->m_name + wxT(".log"));
 	wxLog::SetActiveTarget(logger);
 
 	::wxInitAllImageHandlers();

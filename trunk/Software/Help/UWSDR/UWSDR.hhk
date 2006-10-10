@@ -70,6 +70,11 @@
        </object>
 
   <li> <object type="text/sitemap">
+           <param name="Name" value="Logging">
+           <param name="Local" value="Logging.htm">
+       </object>
+
+  <li> <object type="text/sitemap">
            <param name="Name" value="Macros (CW Keyboard)">
            <param name="Local" value="CWMacros.htm">
        </object>

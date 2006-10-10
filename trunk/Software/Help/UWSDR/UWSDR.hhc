@@ -231,4 +231,11 @@
                   <param name="Local" value="CWButtons.htm">
               </object>
        </ul>
+
+  <li> <object type="text/sitemap">
+           <param name="Name" value="Logging">
+           <param name="ID" value=20>
+           <param name="Local" value="Logging.htm">
+       </object>
+
 </ul>

@@ -35,7 +35,6 @@ class CSignalReader : public IDataReader {
 
 	virtual void close();
 
-	virtual bool needsClock();
 	virtual void clock();
 
     private:

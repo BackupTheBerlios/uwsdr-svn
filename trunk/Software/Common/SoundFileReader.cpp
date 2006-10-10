@@ -29,11 +29,6 @@ void CSoundFileReader::setCallback(IDataCallback* callback, int id)
 	m_id       = id;
 }
 
-bool CSoundFileReader::needsClock()
-{
-	return true;
-}
-
 #if defined(__WINDOWS__)
 
 CSoundFileReader::CSoundFileReader(const wxString& fileName) :

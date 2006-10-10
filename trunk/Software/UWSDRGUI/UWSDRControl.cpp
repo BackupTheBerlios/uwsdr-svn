@@ -163,7 +163,7 @@ void CUWSDRControl::sendCommand(const char* command)
 
 void CUWSDRControl::close()
 {
-	m_socket.Destroy();
+	m_socket.Close();
 }
 
 void CUWSDRControl::onSocket(wxSocketEvent& event)

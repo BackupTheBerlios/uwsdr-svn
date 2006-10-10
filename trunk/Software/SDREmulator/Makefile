@@ -9,7 +9,7 @@ OBJS :=		SDREmulatorApp.o SDREmulatorFrame.o DataControl.o SoundCardDialog.o
 SDREmulator:	$(OBJS)
 		$(CC) $(LDFLAGS) -o SDREmulator $(OBJS) ../Common/Common.a $(LIBS)
 
-SDREmulatorApp.o:	SDREmulatorApp.cpp SDREmulatorApp.h SDREmulatorFrame.h ../Common/Version.h
+SDREmulatorApp.o:	SDREmulatorApp.cpp SDREmulatorApp.h SDREmulatorFrame.h ../Common/Log.h ../Common/Version.h
 		$(CC) $(CFLAGS) -c SDREmulatorApp.cpp
 
 SDREmulatorFrame.o:	SDREmulatorFrame.cpp SDREmulatorFrame.h DataControl.h ../Common/Frequency.h SoundCardDialog.h \

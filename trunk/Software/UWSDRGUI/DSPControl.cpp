@@ -117,7 +117,7 @@ void* CDSPControl::Entry()
 
 		// We have a problem so wait for death
 		while (!TestDestroy())
-			Sleep(500);
+			Sleep(500UL);
 
 		return (void*)1;
 	}

@@ -42,8 +42,6 @@ void CNullReader::setCallback(IDataCallback* callback, int id)
 
 bool CNullReader::open(float sampleRate, unsigned int blockSize)
 {
-	wxASSERT(m_blockSize > 0);
-
 	m_blockSize = blockSize;
 
 	m_buffer = new float[m_blockSize * 2];
@@ -57,11 +55,6 @@ bool CNullReader::open(float sampleRate, unsigned int blockSize)
 void CNullReader::close()
 {
 	delete[] m_buffer;
-}
-
-bool CNullReader::needsClock()
-{
-	return true;
 }
 
 void CNullReader::clock()

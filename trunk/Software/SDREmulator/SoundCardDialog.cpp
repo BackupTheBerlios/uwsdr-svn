@@ -58,12 +58,11 @@ m_outDev(-1)
 	m_devChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
 	panelSizer->Add(m_devChoice, 0, wxALL, BORDER_SIZE);
 
-	wxButton* okButton = new wxButton(panel, wxID_OK, wxT("OK"));
-	panelSizer->Add(okButton, 0, wxALL, BORDER_SIZE);
-
 	panel->SetSizer(panelSizer);
 
 	mainSizer->Add(panel);
+
+	mainSizer->Add(CreateButtonSizer(wxOK), 0, wxALL, BORDER_SIZE);
 
 	SetSizer(mainSizer);
 

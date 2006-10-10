@@ -30,8 +30,13 @@ class CSDREmulatorApp : public wxApp {
 	virtual ~CSDREmulatorApp();
 
 	virtual bool OnInit();
+	virtual int  OnExit();
 	virtual void OnInitCmdLine(wxCmdLineParser& parser);
 	virtual bool OnCmdLineParsed(wxCmdLineParser& parser);
+
+#if defined(__WXDEBUG__)
+	virtual void OnAssert(const wxChar* file, int line, const wxChar* cond, const wxChar* msg);
+#endif
 
     private:
 	CSDREmulatorFrame* m_frame;

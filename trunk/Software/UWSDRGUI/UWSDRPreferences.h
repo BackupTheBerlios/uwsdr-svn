@@ -21,6 +21,7 @@
 
 #include <wx/wx.h>
 #include <wx/spinctrl.h>
+#include <wx/notebook.h>
 
 #include "SDRParameters.h"
 #include "DSPControl.h"

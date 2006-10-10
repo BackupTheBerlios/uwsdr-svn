@@ -20,14 +20,13 @@
 #define	UWSDRDataReader_H
 
 #include <wx/wx.h>
-#include <wx/socket.h>
 
 #include "DataReader.h"
 
-class CSDRDataReader : public wxEvtHandler, public IDataReader {
+class CSDRDataReader : public IDataReader {
 
     public:
-	CSDRDataReader(const wxString& address, int port, unsigned int version);
+	CSDRDataReader(const wxString& address, int port);
 	virtual ~CSDRDataReader();
 
 	virtual void setCallback(IDataCallback* callback, int id);
@@ -36,24 +35,22 @@ class CSDRDataReader : public wxEvtHandler, public IDataReader {
 
 	virtual void close();
 
-	void onSocket(wxSocketEvent& event);
-
-	virtual bool needsClock();
 	virtual void clock();
 
     private:
 	wxString          m_address;
 	unsigned short    m_port;
-	unsigned int      m_version;
+	unsigned int      m_size;
+	char*             m_remAddr;
+	unsigned int      m_remAddrLen;
 	int               m_id;
 	IDataCallback*    m_callback;
-	wxDatagramSocket* m_socket;
-	wxIPV4address     m_ipAddress;
+	int               m_fd;
 	int               m_sequence;
 	float*            m_buffer;
 	unsigned char*    m_sockBuffer;
-
-	DECLARE_EVENT_TABLE()
+	unsigned int      m_requests;
+	unsigned int      m_underruns;
 };
 
 #endif
