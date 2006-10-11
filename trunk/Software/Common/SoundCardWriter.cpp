@@ -34,7 +34,9 @@ m_api(api),
 m_dev(dev),
 m_stream(NULL),
 m_buffer(NULL),
-m_lastBuffer(NULL)
+m_lastBuffer(NULL),
+m_requests(0),
+m_underruns(0)
 {
 }
 
@@ -97,10 +99,14 @@ int CSoundCardWriter::callback(void* output, unsigned long nSamples, const PaStr
 {
 	wxASSERT(output != NULL);
 
-	if (m_buffer->dataSpace() >= nSamples)
+	m_requests++;
+
+	if (m_buffer->dataSpace() >= nSamples) {
 		m_buffer->getData((float*)output, nSamples);
-	else
+	} else {
 		::memcpy(output, m_lastBuffer, nSamples * 2 * sizeof(float));
+		m_underruns++;
+	}
 
 	::memcpy(m_lastBuffer, output, nSamples * 2 * sizeof(float));
 	
@@ -123,4 +129,6 @@ void CSoundCardWriter::close()
 
 	delete   m_buffer;
 	delete[] m_lastBuffer;
+
+	::wxLogMessage(wxT("SoundCardWriter: %u underruns from %u requests"), m_underruns, m_requests);
 }

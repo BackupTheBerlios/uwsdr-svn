@@ -49,6 +49,8 @@ class CSoundCardWriter : public IDataWriter {
 	PaStream*    m_stream;
 	CRingBuffer* m_buffer;
 	float*       m_lastBuffer;
+	unsigned int m_requests;
+	unsigned int m_underruns;
 };
 
 #endif

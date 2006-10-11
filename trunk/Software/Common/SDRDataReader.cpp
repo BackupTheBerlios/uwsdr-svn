@@ -184,7 +184,7 @@ void CSDRDataReader::clock()
 	if (m_sequence != -1 && seqNo != m_sequence) {
 		if (seqNo < m_sequence && 1) {
 			::wxLogWarning(wxT("Packet dropped at sequence no: %d"), m_sequence);
-			return;
+			// return;
 		}
 	}
 
