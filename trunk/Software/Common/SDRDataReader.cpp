@@ -64,7 +64,7 @@ bool CSDRDataReader::open(float sampleRate, unsigned int blockSize)
 	m_remAddr = new char[m_remAddrLen];
 	::memcpy(m_remAddr, host->h_addr, m_remAddrLen);
 
-	m_fd = ::socket(AF_INET, SOCK_DGRAM, 0);
+	m_fd = ::socket(PF_INET, SOCK_DGRAM, 0);
 	if (m_fd < 0) {
 		::wxLogError(wxT("Error %d when creating the reading datagram socket"),
 #if defined(__WXMSW__)
@@ -147,10 +147,10 @@ void CSDRDataReader::clock()
 		return;	
 	}
 
-	struct sockaddr_in addr;
-	int size = sizeof(struct sockaddr_in);
+	struct sockaddr addr;
+	int size = sizeof(struct sockaddr);
 
-	ssize_t len = ::recvfrom(m_fd, (char *)m_sockBuffer, m_size, 0, (struct sockaddr *)&addr, &len);
+	ssize_t len = ::recvfrom(m_fd, (char *)m_sockBuffer, m_size, 0, &addr, &size);
 	if (len < 0) {
 		::wxLogError(wxT("Error %d reading from the datagram socket"),
 #if defined(__WXMSW__)
@@ -161,15 +161,24 @@ void CSDRDataReader::clock()
 		return;
 	}
 
+	if (addr.sa_family != AF_INET) {
+		::wxLogError(wxT("Received datagram from a non IP address!"));
+		return;
+	}
+
 	if (m_callback == NULL) {
 		::wxLogWarning(wxT("No callback set for the SDR data"));
 		return;
 	}
 
+	struct sockaddr_in* inaddr = (struct sockaddr_in *)&addr;
+
 	// Check if the data is for us
-	if (::memcmp(m_remAddr, &addr.sin_addr.s_addr, m_remAddrLen) == 0) {
-		unsigned char* p = (unsigned char *)&addr.sin_addr.s_addr;
-		::wxLogWarning(wxT("SDR Data received from an invalid IP address: %u.%u.%u.%u"), p[0], p[1], p[2], p[3]);
+	if (::memcmp(m_remAddr, &inaddr->sin_addr.s_addr, m_remAddrLen) != 0) {
+		unsigned char* p = (unsigned char *)&inaddr->sin_addr.s_addr;
+		unsigned char* q = (unsigned char *)m_remAddr;
+		::wxLogWarning(wxT("SDR Data received from an invalid IP address: %u.%u.%u.%u, wanted: %u.%u.%u.%u"),
+			p[0], p[1], p[2], p[3], q[0], q[1], q[2], q[3]);
 		return;
 	}
 
@@ -180,29 +189,31 @@ void CSDRDataReader::clock()
 
 	int seqNo = (m_sockBuffer[2] << 8) + m_sockBuffer[3];
 
-	// FIXME check the sequence no
 	if (m_sequence != -1 && seqNo != m_sequence) {
-		if (seqNo < m_sequence && 1) {
-			::wxLogWarning(wxT("Packet dropped at sequence no: %d"), m_sequence);
-			// return;
+		if (seqNo < m_sequence && (seqNo % 2) == (m_sequence % 2)) {
+			::wxLogWarning(wxT("Packet dropped at sequence no: %d, wanted: %d"), seqNo, m_sequence);
+			return;
 		}
 	}
 
-	m_sequence = seqNo + 1;
-	if (m_sequence == 0xFFFF)
-		m_sequence = 0;
+	m_sequence = seqNo + 2;
+	if (m_sequence > 0xFFFF) {
+		if ((m_sequence % 2) == 0)
+			m_sequence = 1;
+		else
+			m_sequence = 0;
+	}
 
 	unsigned int nSamples = (m_sockBuffer[4] << 8) + m_sockBuffer[5];
 
 	int n = HEADER_SIZE;
 	unsigned int i = 0;
-	for (; i < nSamples && n < len; n += SAMPLE_SIZE, i++) {
+	for (; i < nSamples && n < len; n += SAMPLE_SIZE, i += 2) {
 		unsigned int iData = (m_sockBuffer[n + 0] << 16) + (m_sockBuffer[n + 1] << 8) + m_sockBuffer[n + 2];
 		unsigned int qData = (m_sockBuffer[n + 3] << 16) + (m_sockBuffer[n + 4] << 8) + m_sockBuffer[n + 5];
 
-		m_buffer[i * 2 + 0] = (float(qData) - 8388607.5) / 8388607.5;
-		m_buffer[i * 2 + 1] = (float(iData) - 8388607.5) / 8388607.5;
-		i++;
+		m_buffer[i * 2 + 0] = float(qData) / 8388607.0F - 1.0F;
+		m_buffer[i * 2 + 1] = float(iData) / 8388607.0F - 1.0F;
 	}
 
 	m_callback->callback(m_buffer, i, m_id);

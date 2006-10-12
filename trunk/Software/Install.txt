@@ -5,7 +5,7 @@ There are five programs. UWSDR/UWSDR.exe which is the SDR GUI itself, SDREmulato
 
 To start you need to setup the GUI. Run GUISetup/GUISetup.exe and choose a name for your SDR, then an SDR filename. A suitable file, named 13cms.sdr is included, choose that one. The Audio API to use should be selected, followed by the Audio  Device. On Windows the API choice is MME, DirectAudio and ASIO. These are in reverse order of preference with ASIO better than DirectAudio which is in turn better than MME. Choose the best that your sound card supports. For Linux the choices are ALSA or OSS. With modern versions of Linux, OSS is a layer on top of ALSA, so choose ALSA.
 
-The IP Address of the SDR will be "localhost" unless you intend to test between two PCs. The control port hould be an unused port number on your PC, I use 5003.
+The IP Address of the SDR will be "localhost" or "127.0.0.1" unless you intend to test between two PCs. The control port hould be an unused port number on your PC, I use 5001, and the data port should also be an unused port number, I use 5003.
 
 You then have the option to create a start menu entry for your new SDR instance and, depending on the platform, an option to create a desktop icon for it also. For running the GUI, all you need to do is click on the menu entry/icon that is created by GUISetup.
 
@@ -15,6 +15,12 @@ If nothing changes, you shouldn't need to run GUISetup again, unless you get ano
 
 It is possible to have multiple names for one physical SDR, this can happen if the SDR is used (for example) for both tropo and EME work. If you have two such names (say 13cms-Tropo and 13cms-EME) then each will have it's own settings for the VFO's and other parameters. Obviously only one GUI for each physical SDR may be running at a time.
 
-Now you need to run the SDREmulator. Run the program with the port number that you used for the control port above, as an argument. So in my case I use "SDREmulator 5003". This will bring up a window where you can see interaction with the GUI. You will need to run this every time you use the SDR GUI, until we have a real SDR to play with.
+Now you need to run the SDREmulator. Run the program with the IP address of your GUI ("localhost" or "127.0.0.1" for the same machine), the port number for the control port, and the port nummber for the data port.
 
-Now run the SDR GUI itself, this is named UWSDR/UWSDR.exe and now takes a mandatory argument. This is the name that you entered into the Name entry in GUISetup above. You may have a desktop icon or menu entry for it, this will currently *not* be useful since it assumes that you will be running without the SDR Emulator. You must start it manually via the command line interface or modify the shortcut/menu entry and remove the "-s" in the program parameters.
+So in my case I use "SDREmulator localhost 5001 5003". The SDREmulator will first ask you for the Audio API and Device of an audio device. I am not sure if they can be shared between the GUI and the SDREmulator. This is used for timing purposes, so it needs no actual audio input.
+
+Then the main emulator window where you can see interaction with the GUI will appear. At the top of the window is a menu under "Source" which control the source of the data used by the emulator. The startup default is "Internal" which is the simple noisy carrier which has been available up until now within the GUI. The other options are "Sound Card" which expects the input of an I/Q receiver using the sound card that you specified at the beginning, or "Sound File" which allows you to choose a WAV file containing I/Q audio samples.
+
+You will need to run the emulator every time you use the SDR GUI, until we have a real SDR to play with.
+
+Now run the SDR GUI itself, this is named UWSDR/UWSDR.exe and now takes a mandatory argument. This is the name that you entered into the Name entry in GUISetup above. You may have a desktop icon or menu entry for it, this may *not* be useful since it assumes that you will be running without the SDR Emulator. You must start it manually via the command line interface or modify the shortcut/menu entry and remove the "-s" in the program parameters.

@@ -110,6 +110,8 @@ void* CDSPControl::Entry()
 {
 	bool ret = openIO();
 	if (!ret) {
+		::wxLogError(wxT("Cannot open the input/output ports, waiting to end"));
+
 		closeIO();
 
 		m_dttsp->close();
@@ -124,6 +126,8 @@ void* CDSPControl::Entry()
 
 	// Open for business
 	m_running = true;
+
+	::wxLogMessage(wxT("DttSP started"));
 
 	while (!TestDestroy()) {
 		wxSemaError ret = m_waiting.WaitTimeout(500UL);
@@ -142,10 +146,6 @@ void* CDSPControl::Entry()
 
 			unsigned int nSamples = m_rxRingBuffer.getData(m_rxBuffer, BLOCK_SIZE);
 
-			// If we don't have enough data then pad with silence
-			if (nSamples != BLOCK_SIZE)
-				::wxLogError(wxT("Underrun in RX ring buffer, wanted %u available %u"), BLOCK_SIZE, nSamples);
-
 			if (nSamples > 0) {
 				scaleBuffer(m_rxBuffer, nSamples, m_afGain);
 				m_rxWriter->write(m_rxBuffer, nSamples);
@@ -157,6 +157,8 @@ void* CDSPControl::Entry()
 	}
 
 	m_running = false;
+
+	::wxLogMessage(wxT("DttSP ended"));
 
 	closeIO();
 
@@ -242,6 +244,8 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 			break;
 
 		case TX_READER: {
+				m_rxReader->clock();
+
 				if (!m_transmit)
 					return;
 

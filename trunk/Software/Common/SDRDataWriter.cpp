@@ -51,7 +51,7 @@ bool CSDRDataWriter::open(float sampleRate, unsigned int blockSize)
 	m_remAddr.sin_port   = htons(m_port);
 	::memcpy(&m_remAddr.sin_addr.s_addr, host->h_addr, host->h_length);
 
-	m_fd = ::socket(AF_INET, SOCK_DGRAM, 0);
+	m_fd = ::socket(PF_INET, SOCK_DGRAM, 0);
 	if (m_fd < 0) {
 		::wxLogError(wxT("Error %d when creating the writing datagram socket"),
 #if defined(__WXMSW__)
@@ -81,17 +81,21 @@ void CSDRDataWriter::write(const float* buffer, unsigned int nSamples)
 	m_sockBuffer[2] = (m_sequence >> 8) & 0xFF;
 	m_sockBuffer[3] =  m_sequence & 0xFF;
 
-	m_sequence++;
-	if (m_sequence == 0xFFFF)
-		m_sequence = 0;
+	m_sequence += 2;
+	if (m_sequence > 0xFFFF) {
+		if ((m_sequence % 2) == 0)
+			m_sequence = 1;
+		else
+			m_sequence = 0;
+	}
 
 	m_sockBuffer[4] = (nSamples >> 8) & 0xFF;
 	m_sockBuffer[5] = nSamples & 0xFF;
 
 	unsigned int len = HEADER_SIZE;
 	for (unsigned int i = 0; i < nSamples; i++) {
-		unsigned int qData = (unsigned int)(buffer[i * 2 + 0] * 8388607.5 + 8388607.5);
-		unsigned int iData = (unsigned int)(buffer[i * 2 + 1] * 8388607.5 + 8388607.5);
+		unsigned int qData = (unsigned int)((buffer[i * 2 + 0] + 1.0F) * 8388607.0F + 0.5F);
+		unsigned int iData = (unsigned int)((buffer[i * 2 + 1] + 1.0F) * 8388607.0F + 0.5F);
 
 		m_sockBuffer[len++] = (iData >> 16) & 0xFF;
 		m_sockBuffer[len++] = (iData >> 8)  & 0xFF;
