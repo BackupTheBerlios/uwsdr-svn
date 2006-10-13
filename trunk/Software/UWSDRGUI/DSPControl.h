@@ -104,7 +104,13 @@ class CDSPControl : public wxThread, public IDataCallback {
 	float          m_power;
 	int            m_mode;
 
-	void scaleBuffer(float* buffer, unsigned int length, float scale);
+	int            m_clockId;
+
+	void scaleBuffer(float* buffer, unsigned int nSamples, float scale);
+
+#if defined(__WXDEBUG__)
+	void dumpBuffer(const wxString& title, float* buffer, unsigned int nSamples) const;
+#endif
 };
 
 #endif

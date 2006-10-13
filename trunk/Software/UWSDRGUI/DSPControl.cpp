@@ -52,7 +52,8 @@ m_running(false),
 m_afGain(0.0),
 m_micGain(0.0),
 m_power(0.0),
-m_mode(MODE_USB)
+m_mode(MODE_USB),
+m_clockId(-1)
 {
 	m_dttsp = new CDTTSPControl();
 	m_dttsp->open(m_sampleRate, BLOCK_SIZE);
@@ -145,6 +146,8 @@ void* CDSPControl::Entry()
 			}
 
 			unsigned int nSamples = m_rxRingBuffer.getData(m_rxBuffer, BLOCK_SIZE);
+			if (nSamples != BLOCK_SIZE)
+				::wxLogError(wxT("Underrun in RX ring buffer, wanted %u available %u"), BLOCK_SIZE, nSamples);
 
 			if (nSamples > 0) {
 				scaleBuffer(m_rxBuffer, nSamples, m_afGain);
@@ -182,13 +185,24 @@ bool CDSPControl::openIO()
 	if (!ret)
 		return false;
 
+	if (m_rxReader->hasClock())
+		m_clockId = RX_READER;
+
 	ret = m_txReader->open(m_sampleRate, BLOCK_SIZE);
 	if (!ret)
 		return false;
 
+	if (m_txReader->hasClock())
+		m_clockId = TX_READER;
+
 	ret = m_rxReader->open(m_sampleRate, BLOCK_SIZE);
 	if (!ret)
 		return false;
+
+	if (m_clockId == -1) {
+		::wxLogError(wxT("No reader can provide a suitable clock"));
+		return false;
+	}
 
 	return true;
 }
@@ -204,7 +218,7 @@ void CDSPControl::closeIO()
 
 	if (m_rxReader != NULL) {
 		m_rxReader->close();
-		delete m_rxReader;
+		// delete m_rxReader;		It's a thread, it self-deletes
 	}
 
 	if (m_txWriter != NULL) {
@@ -227,6 +241,18 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 	if (!m_running)
 		return;
 
+	// Use whatever clock is available to run everything
+	if (id == m_clockId) {
+		if (m_transmit) {
+			m_txReader->clock();
+
+			if (m_mode == MODE_CWN || m_mode == MODE_CWW)
+				m_cwKeyer->clock();
+		} else {
+			m_rxReader->clock();
+		}
+	}
+
 	switch (id) {
 		case RX_READER: {
 				if (m_transmit)
@@ -244,16 +270,8 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 			break;
 
 		case TX_READER: {
-				m_rxReader->clock();
-
 				if (!m_transmit)
 					return;
-
-				// We use the timing of the sound card to drive the keyer in CW mode
-				if (m_mode == MODE_CWN || m_mode == MODE_CWW) {
-					m_cwKeyer->clock();
-					return;
-				}
 
 				scaleBuffer(inBuffer, nSamples, m_micGain);
 
@@ -336,6 +354,10 @@ void CDSPControl::setTXAndFreq(bool transmit, float freq)
 
 		m_txRingBuffer.clear();
 		m_rxRingBuffer.clear();
+
+		m_txReader->purge();
+		m_rxReader->purge();
+		m_cwKeyer->purge();
 	}
 
 	m_transmit = transmit;
@@ -469,3 +491,33 @@ void CDSPControl::sendCW(unsigned int speed, const wxString& text)
 	else
 		m_cwKeyer->send(speed, text);
 }
+
+#if defined(__WXDEBUG__)
+void CDSPControl::dumpBuffer(const wxString& title, float* buffer, unsigned int nSamples) const
+{
+	wxASSERT(buffer != NULL);
+	wxASSERT(nSamples > 0);
+
+	::wxLogMessage(title);
+	::wxLogMessage(wxT("Length: %05X"), nSamples);
+
+	::wxLogMessage(wxT(":"));
+
+	unsigned int n = 0;
+	for (unsigned int i = 0; i < nSamples; i += 16) {
+		wxString text;
+		text.Printf(wxT("%05X:  "), i);
+
+		for (unsigned int j = 0; j < 16; j++) {
+			wxString buf;
+			buf.Printf(wxT("%f:%f "), buffer[n++], buffer[n++]);
+			text.Append(buf);
+
+			if ((i + j) >= nSamples)
+				break;
+		}
+
+		::wxLogMessage(text);
+	}
+}
+#endif

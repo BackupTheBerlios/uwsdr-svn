@@ -35,6 +35,9 @@ class CNullReader : public IDataReader {
 
 	virtual void close();
 
+	virtual void purge();
+
+	virtual bool hasClock();
 	virtual void clock();
 
     private:

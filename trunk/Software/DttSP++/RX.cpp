@@ -64,10 +64,6 @@ m_ssbDemodulator(NULL),
 m_spotTone(NULL),
 m_spotToneFlag(false),
 m_squelch(NULL),
-m_compander(NULL),
-m_companderFlag(false),
-m_graphicEQ(NULL),
-m_graphicEQFlag(false),
 m_mode(USB),
 m_binFlag(false),
 m_azim(),
@@ -98,8 +94,6 @@ m_tick(0UL)
 				    31622.8F,	// Maximum gain as a multipler, linear not dB
 				    0.00001F,	// Minimum gain as a multipler, linear not dB
 				    1.0); 	// Set the current gain
-
-	m_graphicEQ = new CGraphicEQ(m_oBuf, sampleRate, bits);
 
 	m_amDemodulator = new CAMDemod(sampleRate,	// float samprate
 			 0.0F,	// float f_initial
@@ -155,8 +149,6 @@ m_tick(0UL)
 
 	m_squelch = new CSquelch(m_oBuf, -150.0F, 0.0F, bufLen - 48);
 
-	m_compander = new CCompand(cpdLen, 0.0F, m_oBuf);
-
 	float pos = 0.5;		// 0 <= pos <= 1, left->right
 	float theta = float((1.0 - pos) * M_PI / 2.0);
 	m_azim = Cmplx((float)::cos(theta), (float)::sin(theta));
@@ -164,12 +156,10 @@ m_tick(0UL)
 
 CRX::~CRX()
 {
-	delete m_compander;
 	delete m_spotTone;
 	delete m_agc;
 	delete m_nbSDROM;
 	delete m_nb;
-	delete m_graphicEQ;
 	delete m_anf;
 	delete m_anr;
 	delete m_banf;
@@ -212,9 +202,6 @@ void CRX::process()
 
 	meter(m_oBuf, RXMETER_POST_FILT);
 	spectrum(m_oBuf, SPEC_POST_FILT);
-
-	if (m_companderFlag)
-		m_compander->process();
 
 	if (m_squelch->isSquelch())
 		m_squelch->doSquelch();
@@ -266,9 +253,6 @@ void CRX::process()
 				CXBdata(m_oBuf, i) = Cadd(CXBdata(m_oBuf, i), CXBdata(m_spotTone->getData(), i));
 		}
 	}
-
-	if (m_graphicEQFlag)
-		m_graphicEQ->equalise();
 
 	spectrum(m_oBuf, SPEC_POST_DET);
 
@@ -339,16 +323,6 @@ void CRX::setFrequency(double freq)
 void CRX::setRITFrequency(double freq)
 {
 	m_rit->setFrequency(freq);
-}
-
-void CRX::setCompandFlag(bool flag)
-{
-	m_companderFlag = flag;
-}
-
-void CRX::setCompandFactor(float factor)
-{
-	m_compander->setFactor(factor);
 }
 
 void CRX::setSquelchFlag(bool flag)
@@ -430,16 +404,6 @@ void CRX::setNBSDROMFlag(bool flag)
 void CRX::setNBSDROMThreshold(float threshold)
 {
 	m_nbSDROM->setThreshold(threshold);
-}
-
-void CRX::setGraphicEQFlag(bool flag)
-{
-	m_graphicEQFlag = flag;
-}
-
-void CRX::setGraphicEQValues(float preamp, float gain0, float gain1, float gain2)
-{
-	m_graphicEQ->setEQ(preamp, gain0, gain1, gain2);
 }
 
 void CRX::setBinauralFlag(bool flag)

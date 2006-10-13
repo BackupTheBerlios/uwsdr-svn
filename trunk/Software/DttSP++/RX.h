@@ -51,8 +51,6 @@ Bridgewater, NJ 08807
 #include "SSBDemod.h"
 #include "SpotTone.h"
 #include "Squelch.h"
-#include "Compand.h"
-#include "GraphicEQ.h"
 
 
 class CRX {
@@ -71,9 +69,6 @@ class CRX {
 
 	virtual void setFrequency(double freq);
 	virtual void setRITFrequency(double freq);
-
-	virtual void setCompandFlag(bool flag);
-	virtual void setCompandFactor(float factor);
 
 	virtual void setSquelchFlag(bool flag);
 	virtual void setSquelchThreshold(float threshold);
@@ -95,9 +90,6 @@ class CRX {
 
 	virtual void setNBSDROMFlag(bool flag);
 	virtual void setNBSDROMThreshold(float threshold);
-
-	virtual void setGraphicEQFlag(bool flag);
-	virtual void setGraphicEQValues(float preamp, float gain0, float gain1, float gain2);
 
 	virtual void setBinauralFlag(bool flag);
 
@@ -155,12 +147,6 @@ class CRX {
 	bool           m_spotToneFlag;
 
 	CSquelch*      m_squelch;
-
-	CCompand*      m_compander;
-	bool           m_companderFlag;
-
-	CGraphicEQ*    m_graphicEQ;
-	bool           m_graphicEQFlag;
 
 	SDRMODE        m_mode;
 

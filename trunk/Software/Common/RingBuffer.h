@@ -19,6 +19,8 @@
 #ifndef	RingBuffer_H
 #define	RingBuffer_H
 
+#include <wx/wx.h>
+
 
 class CRingBuffer {
 
@@ -35,6 +37,10 @@ class CRingBuffer {
 
 	virtual bool isEmpty() const;
 	virtual bool isFull() const;
+
+#if defined(__WXDEBUG__)
+	virtual void dump(const wxString& title) const;
+#endif
 
     private:
 	unsigned int m_length;

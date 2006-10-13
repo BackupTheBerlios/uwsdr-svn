@@ -22,8 +22,10 @@
 #include <wx/wx.h>
 
 #include "DataReader.h"
+#include "RingBuffer.h"
 
-class CSDRDataReader : public IDataReader {
+
+class CSDRDataReader : public wxThread, public IDataReader {
 
     public:
 	CSDRDataReader(const wxString& address, int port);
@@ -33,24 +35,34 @@ class CSDRDataReader : public IDataReader {
 
 	virtual bool open(float sampleRate, unsigned int blockSize);
 
+	virtual void* Entry();
+
 	virtual void close();
 
+	virtual void purge();
+
+	virtual bool hasClock();
 	virtual void clock();
 
     private:
-	wxString          m_address;
-	unsigned short    m_port;
-	unsigned int      m_size;
-	char*             m_remAddr;
-	unsigned int      m_remAddrLen;
-	int               m_id;
-	IDataCallback*    m_callback;
-	int               m_fd;
-	int               m_sequence;
-	float*            m_buffer;
-	unsigned char*    m_sockBuffer;
-	unsigned int      m_requests;
-	unsigned int      m_underruns;
+	wxString       m_address;
+	unsigned short m_port;
+	unsigned int   m_blockSize;
+	unsigned int   m_size;
+	char*          m_remAddr;
+	unsigned int   m_remAddrLen;
+	int            m_id;
+	IDataCallback* m_callback;
+	int            m_fd;
+	int            m_sequence;
+	CRingBuffer*   m_buffer;
+	unsigned char* m_sockBuffer;
+	float*         m_sampBuffer;
+	unsigned int   m_missed;
+	unsigned int   m_requests;
+	unsigned int   m_underruns;
+
+	bool readSocket();
 };
 
 #endif

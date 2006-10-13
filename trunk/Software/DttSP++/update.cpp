@@ -106,16 +106,6 @@ void SetNRvals(unsigned int taps, unsigned int delay, double gain, double leak)
 	dttsp->setANRValues(taps, delay, float(gain), float(leak));
 }
 
-void SetTXCompandSt(bool setit)
-{
-	dttsp->setCompandFlag(setit);
-}
-
-void SetTXCompand(float setit)
-{
-	dttsp->setCompandFactor(setit);
-}
-
 void SetTXSquelchSt(bool setit)
 {
 	dttsp->setTXSquelchFlag(setit);
@@ -244,31 +234,6 @@ void SetWindow(Windowtype window)
 void SetSpectrumPolyphase(bool setit)
 {
 	dttsp->setSpectrumPolyphaseFlag(setit);
-}
-
-void SetGrphTXEQ(int *txeq)
-{
-	dttsp->setTXGraphicEQValues(float(txeq[0]), float(txeq[1]), float(txeq[2]), float(txeq[3]));
-}
-
-void SetGrphTXEQcmd(bool state)
-{
-	dttsp->setTXGraphicEQFlag(state);
-}
-
-void SetNotch160(bool state)
-{
-	dttsp->setTXNotchFlag(state);
-}
-
-void SetGrphRXEQ(int *rxeq)
-{
-	dttsp->setRXGraphicEQValues(float(rxeq[0]), float(rxeq[1]), float(rxeq[2]), float(rxeq[3]));
-}
-
-void SetGrphRXEQcmd(bool state)
-{
-	dttsp->setRXGraphicEQFlag(state);
 }
 
 void SetTXCompressionSt(bool setit)

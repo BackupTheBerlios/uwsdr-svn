@@ -53,12 +53,8 @@ m_leveler(NULL),
 m_levelerFlag(true),
 m_alc(NULL),
 m_alcFlag(true),
-m_graphicEQ(NULL),
-m_graphicEQFlag(false),
 m_speechProc(NULL),
 m_speechProcFlag(false),
-m_compander(NULL),
-m_companderFlag(false),
 m_mode(USB),
 m_tick(0UL)
 {
@@ -107,18 +103,12 @@ m_tick(0UL)
 			    0.000001F,	// Minimum gain as a multipler, linear not dB
 			    1.0);		// Set the current gain
 
-	m_graphicEQ = new CGraphicEQ(m_iBuf, sampleRate, bits);
-
 	m_speechProc = new CSpeechProc(0.4F, 3.0, m_iBuf);
-
-	m_compander = new CCompand(cpdLen, -3.0F, m_iBuf);
 }
 
 CTX::~CTX()
 {
-	delete m_compander;
 	delete m_speechProc;
-	delete m_graphicEQ;
 	delete m_alc;
 	delete m_leveler;
 	delete m_squelch;
@@ -152,9 +142,6 @@ void CTX::process()
 		if (!m_squelch->isSet())
 			m_squelch->noSquelch();
 
-		if (m_graphicEQFlag)
-			m_graphicEQ->equalise();
-
 		meter(m_iBuf, TX_EQtap);
 
 		if (m_levelerFlag)
@@ -166,11 +153,6 @@ void CTX::process()
 			m_speechProc->process();
 
 		meter(m_iBuf, TX_COMP);
-
-		if (m_companderFlag)
-			m_compander->process();
-
-		meter(m_iBuf, TX_CPDR);
 	}
 
 	if (m_alcFlag)
@@ -263,16 +245,6 @@ void CTX::setFrequency(double freq)
 	m_oscillator->setFrequency(freq);
 }
 
-void CTX::setCompandFlag(bool flag)
-{
-	m_companderFlag = flag;
-}
-
-void CTX::setCompandFactor(float factor)
-{
-	m_compander->setFactor(factor);
-}
-
 void CTX::setSquelchFlag(bool flag)
 {
 	m_squelch->setFlag(flag);
@@ -354,16 +326,6 @@ void CTX::setALCHangTime(float time)
 	m_alc->setHangTime(time);
 }
 
-void CTX::setGraphicEQFlag(bool flag)
-{
-	m_graphicEQFlag = flag;
-}
-
-void CTX::setGraphicEQValues(float preamp, float gain0, float gain1, float gain2)
-{
-	m_graphicEQ->setEQ(preamp, gain0, gain1, gain2);
-}
-
 void CTX::setCompressionFlag(bool flag)
 {
 	m_speechProcFlag = flag;
@@ -372,9 +334,4 @@ void CTX::setCompressionFlag(bool flag)
 void CTX::setCompressionLevel(float level)
 {
 	m_speechProc->setCompression(level);
-}
-
-void CTX::setNotchFlag(bool flag)
-{
-	m_graphicEQ->setNotchFlag(flag);
 }

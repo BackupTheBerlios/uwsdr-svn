@@ -25,7 +25,7 @@ NullWriter.o:	NullWriter.cpp NullWriter.h DataWriter.h
 RingBuffer.o:	RingBuffer.cpp RingBuffer.h
 		$(CC) $(CFLAGS) -c RingBuffer.cpp
 
-SDRDataReader.o: SDRDataReader.cpp SDRDataReader.h DataReader.h
+SDRDataReader.o: SDRDataReader.cpp SDRDataReader.h DataReader.h RingBuffer.h
 		$(CC) $(CFLAGS) -c SDRDataReader.cpp
 
 SDRDataWriter.o: SDRDataWriter.cpp SDRDataWriter.h DataWriter.h RingBuffer.h

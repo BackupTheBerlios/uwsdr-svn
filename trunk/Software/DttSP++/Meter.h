@@ -38,7 +38,7 @@ Bridgewater, NJ 08807
 
 
 const int RXMETERPTS = 5;
-const int TXMETERPTS = 9;
+const int TXMETERPTS = 8;
 
 typedef enum {
 	SIGNAL_STRENGTH,
@@ -52,7 +52,6 @@ typedef enum {
 	EQtap,
 	LEVELER,
 	COMP,
-	CPDR,
 	ALC_G,
 	LVL_G
 } METERTYPE;
@@ -78,7 +77,6 @@ typedef enum {
 	TX_EQtap,
 	TX_LEVELER,
 	TX_COMP,
-	TX_CPDR,
 	TX_ALC_G,
 	TX_LVL_G
 } TXMETERTYPE;
@@ -107,7 +105,6 @@ class CMeter {
 	float       m_eqTapSave;
 	float       m_levelerSave;
 	float       m_compSave;
-	float       m_cpdrSave;
 };
 
 #endif

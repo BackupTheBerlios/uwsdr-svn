@@ -41,8 +41,11 @@ class CSoundCardReader : public IDataReader {
 	virtual bool open(float sampleRate, unsigned int blockSize);
 	virtual void close();
 
+	virtual void purge();
+
 	virtual int  callback(const void* input, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags);
 
+	virtual bool hasClock();
 	virtual void clock();
 
     private:

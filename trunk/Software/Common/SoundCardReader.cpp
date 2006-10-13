@@ -112,6 +112,15 @@ void CSoundCardReader::close()
 		::wxLogError(wxT("Received %d:%s from Pa_Terminate() in SoundCardReader"), error, ::Pa_GetErrorText(error));
 }
 
+void CSoundCardReader::purge()
+{
+}
+
+bool CSoundCardReader::hasClock()
+{
+	return true;
+}
+
 void CSoundCardReader::clock()
 {
 }

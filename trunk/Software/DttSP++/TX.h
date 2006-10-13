@@ -46,9 +46,7 @@ Bridgewater, NJ 08807
 #include "SSBMod.h"
 #include "Squelch.h"
 #include "AGC.h"
-#include "GraphicEQ.h"
 #include "SpeechProc.h"
-#include "Compand.h"
 #include "Meter.h"
 #include "Spectrum.h"
 
@@ -73,9 +71,6 @@ class CTX {
 
 	virtual void setFrequency(double freq);
 
-	virtual void setCompandFlag(bool flag);
-	virtual void setCompandFactor(float factor);
-
 	virtual void setSquelchFlag(bool flag);
 	virtual void setSquelchThreshold(float threshold);
 
@@ -98,13 +93,8 @@ class CTX {
 	virtual void setALCGainTop(float top);
 	virtual void setALCHangTime(float hang);
 
-	virtual void setGraphicEQFlag(bool flag);
-	virtual void setGraphicEQValues(float preamp, float gain0, float gain1, float gain2);
-
 	virtual void setCompressionFlag(bool flag);
 	virtual void setCompressionLevel(float level);
-
-	virtual void setNotchFlag(bool flag);
 
 
     private:
@@ -136,14 +126,8 @@ class CTX {
 	CAGC*         m_alc;
 	bool          m_alcFlag;
 
-	CGraphicEQ*   m_graphicEQ;
-	bool          m_graphicEQFlag;
-
 	CSpeechProc*  m_speechProc;
 	bool          m_speechProcFlag;
-
-    CCompand*     m_compander;
-    bool          m_companderFlag;
 
 	SDRMODE       m_mode;
 

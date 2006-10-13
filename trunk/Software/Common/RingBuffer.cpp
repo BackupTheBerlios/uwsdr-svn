@@ -150,3 +150,37 @@ bool CRingBuffer::isFull() const
 {
 	return m_state == STATE_FULL;
 }
+
+#if defined(__WXDEBUG__)
+void CRingBuffer::dump(const wxString& title) const
+{
+	::wxLogMessage(title);
+	::wxLogMessage(wxT("Length: 0x%05X  Step: %u  oPtr: 0x%05X  iPtr: 0x%05X  State: %d"), m_length, m_step, m_oPtr / m_step, m_iPtr / m_step, m_state);
+
+	::wxLogMessage(wxT(":"));
+
+	unsigned int n = 0;
+	for (unsigned int i = 0; i < m_length; i += 16) {
+		wxString text;
+		text.Printf(wxT("%05X:  "), i);
+
+		for (unsigned int j = 0; j < 16; j++) {
+			for (unsigned int k = 0; k < m_step; k++) {
+				if (k > 0)
+					text.Append(wxT(":"));
+
+				wxString buf;
+				buf.Printf(wxT("%f"), m_buffer[n++]);
+				text.Append(buf);
+			}
+
+			if ((i + j) >= m_length)
+				break;
+
+			text.Append(wxT("  "));
+		}
+
+		::wxLogMessage(text);
+	}
+}
+#endif

@@ -2,8 +2,8 @@ all:		DttSP.a
 
 CFLAGS :=	-I../Common $(CFLAGS)
 
-OBJS :=		AGC.o AMDemod.o AMMod.o BlockLMS.o Compand.o CorrectIQ.o CXB.o DCBlock.o DttSP.o FIR.o FMDemod.o \
-		FMMod.o FilterOVSV.o GraphicEQ.o LMS.o Meter.o NoiseBlanker.o Oscillator.o Resampler.o RX.o Spectrum.o \
+OBJS :=		AGC.o AMDemod.o AMMod.o BlockLMS.o CorrectIQ.o CXB.o DCBlock.o DttSP.o FIR.o FMDemod.o \
+		FMMod.o FilterOVSV.o LMS.o Meter.o NoiseBlanker.o Oscillator.o Resampler.o RX.o Spectrum.o \
 		SpeechProc.o SpotTone.o Squelch.o TX.o Window.o SSBDemod.o SSBMod.o Utils.o update.o
 
 DttSP.a:	$(OBJS)
@@ -20,9 +20,6 @@ AMMod.o:	AMMod.cpp AMMod.h Complex.h CXB.h FromSys.h Mod.h
 
 BlockLMS.o:	BlockLMS.cpp BlockLMS.h CXB.h CXOps.h Utils.h
 		$(CC) $(CFLAGS) -c BlockLMS.cpp
-
-Compand.o:	Compand.cpp Compand.h CXB.h FromSys.h
-		$(CC) $(CFLAGS) -c Compand.cpp
 
 CorrectIQ.o: 	CorrectIQ.cpp CorrectIQ.h CXB.h
 		$(CC) $(CFLAGS) -c CorrectIQ.cpp
@@ -48,9 +45,6 @@ FMMod.o:	FMMod.cpp FMMod.h Complex.h CXB.h FromSys.h Mod.h Utils.h
 FilterOVSV.o: 	FilterOVSV.cpp FilterOVSV.h Complex.h CXB.h CXOps.h FIR.h Utils.h
 		$(CC) $(CFLAGS) -c FilterOVSV.cpp
 
-GraphicEQ.o: 	GraphicEQ.cpp GraphicEQ.h Complex.h CXB.h FilterOVSV.h FIR.h FromSys.h
-		$(CC) $(CFLAGS) -c GraphicEQ.cpp
-
 LMS.o:		LMS.cpp LMS.h CXB.h CXOps.h Utils.h
 		$(CC) $(CFLAGS) -c LMS.cpp
 
@@ -66,8 +60,8 @@ Oscillator.o: 	Oscillator.cpp Oscillator.h CXB.h FromSys.h
 Resampler.o: 	Resampler.cpp Resampler.h CXB.h CXOps.h FIR.h Utils.h
 		$(CC) $(CFLAGS) -c Resampler.cpp
 
-RX.o:		RX.cpp RX.h AGC.h AMDemod.h BlockLMS.h Compand.h CorrectIQ.h CXB.h Defs.h Demod.h FilterOVSV.h FMDemod.h \
-		GraphicEQ.h LMS.h Meter.h NoiseBlanker.h Oscillator.h Spectrum.h SpotTone.h Squelch.h SSBDemod.h
+RX.o:		RX.cpp RX.h AGC.h AMDemod.h BlockLMS.h CorrectIQ.h CXB.h Defs.h Demod.h FilterOVSV.h FMDemod.h \
+		LMS.h Meter.h NoiseBlanker.h Oscillator.h Spectrum.h SpotTone.h Squelch.h SSBDemod.h
 		$(CC) $(CFLAGS) -c RX.cpp
 
 Spectrum.o:	Spectrum.cpp Spectrum.h CXB.h FIR.h FromSys.h Utils.h Window.h
@@ -88,7 +82,7 @@ SSBDemod.o:	SSBDemod.cpp SSBDemod.h Complex.h CXB.h Demod.h FromSys.h
 SSBMod.o:	SSBMod.cpp SSBMod.h Complex.h CXB.h FromSys.h Mod.h
 		$(CC) $(CFLAGS) -c SSBMod.cpp
 
-TX.o:		TX.cpp TX.h AGC.h AMMod.h Compand.h CorrectIQ.h CXB.h DCBlock.h Defs.h FilterOVSV.h FMMod.h GraphicEQ.h \
+TX.o:		TX.cpp TX.h AGC.h AMMod.h CorrectIQ.h CXB.h DCBlock.h Defs.h FilterOVSV.h FMMod.h \
 		Meter.h Mod.h Oscillator.h Spectrum.h SpeechProc.h Squelch.h SSBMod.h
 		$(CC) $(CFLAGS) -c TX.cpp
 

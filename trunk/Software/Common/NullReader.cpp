@@ -57,6 +57,15 @@ void CNullReader::close()
 	delete[] m_buffer;
 }
 
+void CNullReader::purge()
+{
+}
+
+bool CNullReader::hasClock()
+{
+	return false;
+}
+
 void CNullReader::clock()
 {
 	wxASSERT(m_callback != NULL);

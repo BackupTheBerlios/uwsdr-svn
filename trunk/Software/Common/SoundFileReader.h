@@ -43,6 +43,9 @@ class CSoundFileReader : public IDataReader {
 
 	virtual bool open(float sampleRate, unsigned int blockSize);
 
+	virtual void purge();
+
+	virtual bool hasClock();
 	virtual void close();
 
 	virtual void clock();

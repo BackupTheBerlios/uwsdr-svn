@@ -206,18 +206,6 @@ void CDttSP::setANRValues(unsigned int taps, unsigned int delay, float gain, flo
 	m_rx->setANRValues(taps, delay, gain, leak);
 }
 
-void CDttSP::setCompandFlag(bool flag)
-{
-	m_rx->setCompandFlag(flag);
-	m_tx->setCompandFlag(flag);
-}
-
-void CDttSP::setCompandFactor(float factor)
-{
-	m_rx->setCompandFactor(factor);
-	m_tx->setCompandFactor(-factor);
-}
-
 void CDttSP::setTXSquelchFlag(bool flag)
 {
 	m_tx->setSquelchFlag(flag);
@@ -356,31 +344,6 @@ void CDttSP::setSpectrumWindowType(Windowtype window)
 void CDttSP::setSpectrumPolyphaseFlag(bool flag)
 {
 	m_spectrum->setPolyphaseFlag(flag);
-}
-
-void CDttSP::setTXGraphicEQValues(float preamp, float gain0, float gain1, float gain2)
-{
-	m_tx->setGraphicEQValues(preamp, gain0, gain1, gain2);
-}
-
-void CDttSP::setTXGraphicEQFlag(bool flag)
-{
-	m_tx->setGraphicEQFlag(flag);
-}
-
-void CDttSP::setTXNotchFlag(bool flag)
-{
-	m_tx->setNotchFlag(flag);
-}
-
-void CDttSP::setRXGraphicEQValues(float preamp, float gain0, float gain1, float gain2)
-{
-	m_rx->setGraphicEQValues(preamp, gain0, gain1, gain2);
-}
-
-void CDttSP::setRXGraphicEQFlag(bool flag)
-{
-	m_rx->setGraphicEQFlag(flag);
 }
 
 void CDttSP::setCompressionFlag(bool flag)
@@ -529,9 +492,6 @@ float CDttSP::getMeter(METERTYPE mt)
 					break;
 				case COMP:
 					returnval = m_meter->getTXMeter(TX_COMP);
-					break;
-				case CPDR:
-					returnval = m_meter->getTXMeter(TX_CPDR);
 					break;
 				case ALC_G:
 					returnval = m_meter->getTXMeter(TX_ALC_G);

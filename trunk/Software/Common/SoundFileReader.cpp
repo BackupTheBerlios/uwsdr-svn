@@ -142,6 +142,15 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 	return true;
 }
 
+void CSoundFileReader::purge()
+{
+}
+
+bool CSoundFileReader::hasClock()
+{
+	return false;
+}
+
 void CSoundFileReader::clock()
 {
 	LONG n;

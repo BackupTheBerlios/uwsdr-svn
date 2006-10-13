@@ -54,7 +54,6 @@ typedef enum {
 	EQtap,
 	LEVELER,
 	COMP,
-	CPDR,
 	ALC_G,
 	LVL_G
 } METERTYPE;
@@ -94,8 +93,6 @@ extern void    SetTXOsc(double newfreq);
 extern void    SetNR(bool setit);
 extern void    SetBlkNR(bool setit);
 extern void    SetNRvals(unsigned int taps, unsigned int delay, double gain, double leak);
-extern void    SetTXCompandSt(bool setit);
-extern void    SetTXCompand(float setit);
 extern void    SetTXSquelchSt(bool setit);
 extern void    SetTXSquelchVal(float setit);
 extern void    SetANF(bool setit);
@@ -125,11 +122,6 @@ extern void    SetCorrectTXIQ(double phase, double gain);
 extern void    SetPWSmode(SPECTRUMtype type);
 extern void    SetWindow(Windowtype Windowset);
 extern void    SetSpectrumPolyphase(bool setit);
-extern void    SetGrphTXEQ(int* txeq);
-extern void    SetGrphTXEQcmd(bool state);
-extern void    SetNotch160(bool state);
-extern void    SetGrphRXEQ(int* rxeq);
-extern void    SetGrphRXEQcmd(bool state);
 extern void    SetSquelchVal(float setit);
 extern void    SetSquelchState(bool setit);
 extern void    SetTRX(TRXMODE setit);

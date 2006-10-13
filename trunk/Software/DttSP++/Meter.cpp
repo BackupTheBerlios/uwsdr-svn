@@ -45,8 +45,7 @@ m_micSave(0.0F),
 m_alcSave(0.0F),
 m_eqTapSave(0.0F),
 m_levelerSave(0.0F),
-m_compSave(0.0F),
-m_cpdrSave(0.0F)
+m_compSave(0.0F)
 {
 	int i;
 
@@ -164,12 +163,6 @@ void CMeter::setTXMeter(TXMETERTYPE type, CXB* buf, float alcGain, float leveler
 			for (i = 0; i < len; i++)
 				m_compSave = float(0.9995 * m_compSave +	0.0005 * Csqrmag(vec[i]));
 			m_txval[TX_COMP] = float(-10.0 * ::log10(m_compSave + 1e-16));
-			break;
-
-		case TX_CPDR:
-			for (i = 0; i < len; i++)
-				m_cpdrSave = float(0.9995 * m_cpdrSave + 0.0005 * Csqrmag(vec[i]));
-			m_txval[TX_CPDR] = float(-10.0 * ::log10(m_cpdrSave + 1e-16));
 			break;
 
 		case TX_ALC_G:

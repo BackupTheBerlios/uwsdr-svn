@@ -67,8 +67,6 @@ class CDttSP {
 	virtual void  setANRFlag(bool flag);
 	virtual void  setBANRFlag(bool flag);
 	virtual void  setANRValues(unsigned int taps, unsigned int delay, float gain, float leak);
-	virtual void  setCompandFlag(bool flag);
-	virtual void  setCompandFactor(float factor);
 	virtual void  setRXSquelchFlag(bool flag);
 	virtual void  setRXSquelchThreshold(float threshold);
 	virtual void  setTXSquelchFlag(bool flag);
@@ -97,11 +95,6 @@ class CDttSP {
 	virtual void  setSpectrumType(SPECTRUMtype type);
 	virtual void  setSpectrumWindowType(Windowtype window);
 	virtual void  setSpectrumPolyphaseFlag(bool flag);
-	virtual void  setTXGraphicEQValues(float preamp, float gain0, float gain1, float gain2);
-	virtual void  setTXGraphicEQFlag(bool flag);
-	virtual void  setTXNotchFlag(bool flag);
-	virtual void  setRXGraphicEQValues(float preamp, float gain0, float gain1, float gain2);
-	virtual void  setRXGraphicEQFlag(bool flag);
 	virtual void  setCompressionFlag(bool flag);
 	virtual void  setCompressionLevel(float level);
 	virtual void  setTRX(TRXMODE trx);

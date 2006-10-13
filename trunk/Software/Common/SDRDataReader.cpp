@@ -24,8 +24,10 @@ const unsigned int SAMPLE_SIZE = 6;
 
 
 CSDRDataReader::CSDRDataReader(const wxString& address, int port) :
+wxThread(),
 m_address(address),
 m_port(port),
+m_blockSize(0),
 m_size(0),
 m_remAddr(),
 m_remAddrLen(0),
@@ -35,6 +37,8 @@ m_fd(-1),
 m_sequence(-1),
 m_buffer(NULL),
 m_sockBuffer(NULL),
+m_sampBuffer(NULL),
+m_missed(0),
 m_requests(0),
 m_underruns(0)
 {
@@ -42,7 +46,6 @@ m_underruns(0)
 
 CSDRDataReader::~CSDRDataReader()
 {
-	delete[] m_remAddr;
 }
 
 void CSDRDataReader::setCallback(IDataCallback* callback, int id)
@@ -53,6 +56,8 @@ void CSDRDataReader::setCallback(IDataCallback* callback, int id)
 
 bool CSDRDataReader::open(float sampleRate, unsigned int blockSize)
 {
+	m_blockSize = blockSize;
+
 	struct hostent* host = ::gethostbyname(m_address.c_str());
 
 	if (host == NULL) {
@@ -92,16 +97,37 @@ bool CSDRDataReader::open(float sampleRate, unsigned int blockSize)
 		return false;
 	}
 
-	m_size = HEADER_SIZE + blockSize * SAMPLE_SIZE;
+	m_size = HEADER_SIZE + m_blockSize * SAMPLE_SIZE;
 
-	m_buffer     = new float[blockSize * 2];
+	m_buffer     = new CRingBuffer(m_blockSize * 10, 2);
 	m_sockBuffer = new unsigned char[m_size];
+	m_sampBuffer = new float[m_blockSize * 2];
+
+	Create();
+	Run();
 
 	return true;
 }
 
 void CSDRDataReader::close()
 {
+	Delete();
+}
+
+void* CSDRDataReader::Entry()
+{
+	bool ret;
+
+	do {
+		ret = readSocket();
+	} while (!TestDestroy() && ret);
+
+	// If we died prematurely, wait until killed
+	if (!ret) {
+		while (!TestDestroy())
+			Sleep(500UL);
+	}
+
 #if defined(__WXMSW__)
 	::closesocket(m_fd);
 #else
@@ -109,24 +135,57 @@ void CSDRDataReader::close()
 #endif
 	m_fd = -1;
 
-	delete[] m_buffer;
+	delete   m_buffer;
 	delete[] m_sockBuffer;
+	delete[] m_sampBuffer;
+	delete[] m_remAddr;
 
 	m_sequence = -1;
 
-	::wxLogMessage(wxT("SDRDataReader: %u underruns in %u requests"), m_underruns, m_requests);
+	::wxLogMessage(wxT("SDRDataReader: %u missed frames, %u requests, %u underruns"), m_missed, m_requests, m_underruns);
+
+	return (void *)0;
 }
 
 void CSDRDataReader::clock()
+{
+	wxASSERT(m_callback != NULL);
+	wxASSERT(m_buffer != NULL);
+
+	m_requests++;
+
+	unsigned int len = m_buffer->getData(m_sampBuffer, m_blockSize);
+
+	if (len != m_blockSize)
+		m_underruns++;
+
+	if (len > 0)
+		m_callback->callback(m_sampBuffer, len, m_id);
+}
+
+void CSDRDataReader::purge()
+{
+	wxASSERT(m_buffer != NULL);
+
+	m_buffer->clear();
+}
+
+bool CSDRDataReader::hasClock()
+{
+	return false;
+}
+
+bool CSDRDataReader::readSocket()
 {
 	// Check that the readfrom() won't block
 	fd_set readFds;
 	FD_ZERO(&readFds);
 	FD_SET(m_fd, &readFds);
 
+	// 1/2 sec timeout
 	struct timeval tv;
 	tv.tv_sec  = 0L;
-	tv.tv_usec = 0L;
+	tv.tv_usec = 500000L;
 
 	int ret = ::select(m_fd + 1, &readFds, NULL, NULL, &tv);
 	if (ret < 0) {
@@ -136,16 +195,12 @@ void CSDRDataReader::clock()
 #else
 			errno);
 #endif
-		return;
+		return false;
 	}
-
-	m_requests++;
 
 	// No data?
-	if (ret == 0) {
-		m_underruns++;
-		return;	
-	}
+	if (ret == 0)
+		return true;
 
 	struct sockaddr addr;
 	int size = sizeof(struct sockaddr);
@@ -158,17 +213,12 @@ void CSDRDataReader::clock()
 #else
 			errno);
 #endif
-		return;
+		return false;
 	}
 
 	if (addr.sa_family != AF_INET) {
 		::wxLogError(wxT("Received datagram from a non IP address!"));
-		return;
-	}
-
-	if (m_callback == NULL) {
-		::wxLogWarning(wxT("No callback set for the SDR data"));
-		return;
+		return true;
 	}
 
 	struct sockaddr_in* inaddr = (struct sockaddr_in *)&addr;
@@ -179,20 +229,24 @@ void CSDRDataReader::clock()
 		unsigned char* q = (unsigned char *)m_remAddr;
 		::wxLogWarning(wxT("SDR Data received from an invalid IP address: %u.%u.%u.%u, wanted: %u.%u.%u.%u"),
 			p[0], p[1], p[2], p[3], q[0], q[1], q[2], q[3]);
-		return;
+		return true;
 	}
 
 	if (len < HEADER_SIZE || m_sockBuffer[0] != 'D' || m_sockBuffer[1] != 'A') {
 		::wxLogWarning(wxT("Received a badly formatted data packet"));
-		return;
+		return true;
 	}
 
 	int seqNo = (m_sockBuffer[2] << 8) + m_sockBuffer[3];
 
 	if (m_sequence != -1 && seqNo != m_sequence) {
+		m_missed++;
+
 		if (seqNo < m_sequence && (seqNo % 2) == (m_sequence % 2)) {
-			::wxLogWarning(wxT("Packet dropped at sequence no: %d, wanted: %d"), seqNo, m_sequence);
-			return;
+			::wxLogWarning(wxT("Packet dropped at sequence no: %d, expected: %d"), seqNo, m_sequence);
+			return true;
+		} else {
+			::wxLogWarning(wxT("Packet missed at sequence no: %d, expected: %d"), seqNo, m_sequence);
 		}
 	}
 
@@ -208,13 +262,16 @@ void CSDRDataReader::clock()
 
 	int n = HEADER_SIZE;
 	unsigned int i = 0;
-	for (; i < nSamples && n < len; n += SAMPLE_SIZE, i += 2) {
+	for (; i < nSamples && n < len; n += SAMPLE_SIZE, i++) {
 		unsigned int iData = (m_sockBuffer[n + 0] << 16) + (m_sockBuffer[n + 1] << 8) + m_sockBuffer[n + 2];
 		unsigned int qData = (m_sockBuffer[n + 3] << 16) + (m_sockBuffer[n + 4] << 8) + m_sockBuffer[n + 5];
 
-		m_buffer[i * 2 + 0] = float(qData) / 8388607.0F - 1.0F;
-		m_buffer[i * 2 + 1] = float(iData) / 8388607.0F - 1.0F;
+		float buffer[2];
+		buffer[0] = float(iData) / 8388607.0F - 1.0F;
+		buffer[1] = float(qData) / 8388607.0F - 1.0F;
+
+		m_buffer->addData(buffer, 1);
 	}
 
-	m_callback->callback(m_buffer, i, m_id);
+	return true;
 }

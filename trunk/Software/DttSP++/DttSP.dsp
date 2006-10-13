@@ -103,10 +103,6 @@ SOURCE=.\BlockLMS.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\Compand.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\CorrectIQ.cpp
 # End Source File
 # Begin Source File
@@ -136,10 +132,6 @@ SOURCE=.\FMDemod.cpp
 # Begin Source File
 
 SOURCE=.\FMMod.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\GraphicEQ.cpp
 # End Source File
 # Begin Source File
 
@@ -227,10 +219,6 @@ SOURCE=.\BlockLMS.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Compand.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\Complex.h
 # End Source File
 # Begin Source File
@@ -280,10 +268,6 @@ SOURCE=.\FMMod.h
 # Begin Source File
 
 SOURCE=.\FromSys.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\GraphicEQ.h
 # End Source File
 # Begin Source File
 
