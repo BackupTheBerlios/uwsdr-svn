@@ -23,9 +23,10 @@
 #include <wx/datetime.h>
 
 
-const int TX_READER = 77;
-const int RX_READER = 88;
-const int CW_READER = 99;
+const int TX_READER    = 44;
+const int RX_READER    = 55;
+const int CW_READER    = 66;
+const int VOICE_READER = 77;
 
 const unsigned int RINGBUFFER_SIZE = 100001;
 const unsigned int BLOCK_SIZE      = 2048;		// XXXX
@@ -34,6 +35,7 @@ CDSPControl::CDSPControl(float sampleRate, float centreFreq) :
 wxThread(),
 m_dttsp(NULL),
 m_cwKeyer(NULL),
+m_voiceKeyer(NULL),
 m_sampleRate(sampleRate),
 m_centreFreq(centreFreq),
 m_txReader(NULL),
@@ -62,6 +64,10 @@ m_clockId(-1)
 	m_cwKeyer->setCallback(this, CW_READER);
 	m_cwKeyer->open(m_sampleRate, BLOCK_SIZE);
 
+	m_voiceKeyer = new CVoiceKeyer();
+	m_voiceKeyer->setCallback(this, VOICE_READER);
+	m_voiceKeyer->open(m_sampleRate, BLOCK_SIZE);
+
 	m_txBuffer = new float[BLOCK_SIZE * 2];
 	m_rxBuffer = new float[BLOCK_SIZE * 2];
 
@@ -74,6 +80,7 @@ CDSPControl::~CDSPControl()
 	delete[] m_rxBuffer;
 	delete[] m_outBuffer;
 	delete   m_cwKeyer;
+	delete   m_voiceKeyer;
 }
 
 void CDSPControl::setTXReader(IDataReader* reader)
@@ -117,6 +124,7 @@ void* CDSPControl::Entry()
 
 		m_dttsp->close();
 		m_cwKeyer->close();
+		m_voiceKeyer->close();
 
 		// We have a problem so wait for death
 		while (!TestDestroy())
@@ -167,6 +175,7 @@ void* CDSPControl::Entry()
 
 	m_dttsp->close();
 	m_cwKeyer->close();
+	m_voiceKeyer->close();
 
 	return (void*)0;
 }
@@ -211,25 +220,10 @@ void CDSPControl::closeIO()
 {
 	setRecord(false);
 
-	if (m_txReader != NULL) {
-		m_txReader->close();
-		delete m_txReader;
-	}
-
-	if (m_rxReader != NULL) {
-		m_rxReader->close();
-		// delete m_rxReader;		It's a thread, it self-deletes
-	}
-
-	if (m_txWriter != NULL) {
-		m_txWriter->close();
-		delete m_txWriter;
-	}
-
-	if (m_rxWriter != NULL) {
-		m_rxWriter->close();
-		delete m_rxWriter;
-	}
+	m_txReader->close();
+	m_rxReader->close();
+	m_txWriter->close();
+	m_rxWriter->close();
 }
 
 void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
@@ -246,8 +240,11 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 		if (m_transmit) {
 			m_txReader->clock();
 
-			if (m_mode == MODE_CWN || m_mode == MODE_CWW)
+			if (m_cwKeyer->isActive() && (m_mode == MODE_CWN || m_mode == MODE_CWW))
 				m_cwKeyer->clock();
+
+			if (m_voiceKeyer->isActive() && m_mode != MODE_CWN && m_mode != MODE_CWW)
+				m_voiceKeyer->clock();
 		} else {
 			m_rxReader->clock();
 		}
@@ -272,6 +269,30 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 		case TX_READER: {
 				if (!m_transmit)
 					return;
+
+				// If the voice or CW keyer are active, exit
+				if (m_voiceKeyer->isActive() || m_cwKeyer->isActive())
+					return;
+
+				scaleBuffer(inBuffer, nSamples, m_micGain);
+
+				m_dttsp->dataIO(inBuffer, m_outBuffer, nSamples);
+
+				unsigned int n = m_txRingBuffer.addData(m_outBuffer, nSamples);
+				if (n != nSamples)
+					::wxLogError(wxT("Overrun in TX ring buffer, needed %u available %u"), nSamples, n);
+
+				if (n > 0)
+					m_waiting.Post();
+			}
+			break;
+
+		case VOICE_READER: {
+				if (!m_transmit)
+					return;
+
+				if (m_mode == MODE_CWN || m_mode == MODE_CWW)
+					return;				
 
 				scaleBuffer(inBuffer, nSamples, m_micGain);
 
@@ -358,6 +379,7 @@ void CDSPControl::setTXAndFreq(bool transmit, float freq)
 		m_txReader->purge();
 		m_rxReader->purge();
 		m_cwKeyer->purge();
+		m_voiceKeyer->purge();
 	}
 
 	m_transmit = transmit;
@@ -490,6 +512,14 @@ void CDSPControl::sendCW(unsigned int speed, const wxString& text)
 		m_cwKeyer->abort();
 	else
 		m_cwKeyer->send(speed, text);
+}
+
+void CDSPControl::sendAudio(const wxString& fileName, int state)
+{
+	if (state == VOICE_STOPPED)
+		m_voiceKeyer->abort();
+	else
+		m_voiceKeyer->send(fileName, state);
 }
 
 #if defined(__WXDEBUG__)

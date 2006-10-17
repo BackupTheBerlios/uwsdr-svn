@@ -42,6 +42,7 @@ m_sampleWidth(0),
 m_handle(NULL),
 m_parent(),
 m_child(),
+m_offset(0L),
 m_buffer8(NULL),
 m_buffer16(NULL)
 {
@@ -132,6 +133,9 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 		return false;
 	}
 
+	// Get the current location so we can rewind if needed
+	m_offset = ::mmioSeek(m_handle, 0L, SEEK_CUR);
+
 	if (m_sampleWidth == 8)
 		m_buffer8 =  new uint8[m_blockSize * 2];
 	else
@@ -153,29 +157,42 @@ bool CSoundFileReader::hasClock()
 
 void CSoundFileReader::clock()
 {
+	wxASSERT(m_callback == NULL);
+
 	LONG n;
 
 	if (m_sampleWidth == 8) {
 		n = ::mmioRead(m_handle, (char *)m_buffer8, m_blockSize * 2 * sizeof(uint8));
 
-		if (n <= 0)
+		if (n <= 0) {
+			m_callback->callback(m_buffer, 0, m_id);
 			return;
+		}
+
+		n /= sizeof(uint8);
 
 		for (int i = 0; i < n; i++)
 			m_buffer[i] = (float(m_buffer8[i]) - 127.0) / 128.0;
 	} else {
 		n = ::mmioRead(m_handle, (char *)m_buffer16, m_blockSize * 2 * sizeof(sint16));
 
-		if (n <= 0)
+		if (n <= 0) {
+			m_callback->callback(m_buffer, 0, m_id);
 			return;
+		}
 
-		n /= 2;
+		n /= sizeof(sint16);
 
 		for (int i = 0; i < n; i++)
 			m_buffer[i] = float(m_buffer16[i]) / 32768.0;
 	}
 
 	m_callback->callback(m_buffer, n / 2, m_id);
+}
+
+void CSoundFileReader::rewind()
+{
+	::mmioSeek(m_handle, m_offset, SEEK_SET);
 }
 
 void CSoundFileReader::close()
@@ -237,10 +254,17 @@ void CSoundFileReader::clock()
 {
 	int n = ::sf_read_float(m_file, m_buffer, m_blockSize);
 
-	if (n <= 0)
+	if (n <= 0) {
+		m_callback->callback(m_buffer, 0, m_id);
 		return;
+	}
 
 	m_callback->callback(m_buffer, n, m_id);
+}
+
+void CSoundFileReader::rewind()
+{
+	::sf_seek(m_file, 0, SEEK_SET);
 }
 
 void CSoundFileReader::close()

@@ -124,6 +124,9 @@ class CSDRParameters {
 	wxString     m_cwReport;
 	wxString     m_cwSerial;
 	wxString     m_cwMessage[CWKEYBOARD_COUNT];
+
+	wxString     m_voiceDir;
+	wxString     m_voiceFile[VOICEKEYER_COUNT];
 };
 
 #endif

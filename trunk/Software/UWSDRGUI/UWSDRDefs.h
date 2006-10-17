@@ -24,7 +24,7 @@ const wxString APPNAME     = wxT("UWSDR");
 
 const int BORDER_SIZE      = 5;
 
-#if defined(__WXMSW__) || (__WXMAC__)
+#if defined(__WXMSW__)
 const int BUTTON_HEIGHT    = -1;
 
 const int FREQDIAL_WIDTH   = 150;
@@ -55,6 +55,44 @@ const int SMETER_HEIGHT    = 70;
 
 const int CWTEXT_WIDTH     = 650;
 const int CWKEYB_WIDTH     = 750;
+
+const int VOICETEXT_WIDTH  = 200;
+const int VOICEKEYB_WIDTH  = 365;
+
+#elif defined(__WXMAC__)
+const int BUTTON_HEIGHT    = -1;
+
+const int FREQDIAL_WIDTH   = 150;
+const int FREQDIAL_HEIGHT  = 150;
+
+const int VOLSQL_WIDTH     = 75;
+const int VOLSQL_HEIGHT    = 75;
+
+const int TXBUTTON_WIDTH   = 90;
+const int TXBUTTON_HEIGHT  = 75;
+
+const int SPECTRUM_WIDTH   = 480;
+const int SPECTRUM_HEIGHT  = 100;
+
+const int FREQPAD_WIDTH    = 60;
+const int FREQPAD_HEIGHT   = 30;
+
+const int INFO_WIDTH       = 80;
+const int INFO_HEIGHT      = 70;
+
+const int FREQUENCY_WIDTH  = 400;
+const int FREQUENCY_HEIGHT = 70;
+
+const int CONTROL_WIDTH    = 100;
+
+const int SMETER_WIDTH     = 195;
+const int SMETER_HEIGHT    = 70;
+
+const int CWTEXT_WIDTH     = 650;
+const int CWKEYB_WIDTH     = 750;
+
+const int VOICETEXT_WIDTH  = 225;
+const int VOICEKEYB_WIDTH  = 325;
 
 #elif defined(__WXGTK__)
 const int BUTTON_HEIGHT    = 22;
@@ -87,6 +125,9 @@ const int SMETER_HEIGHT    = 70;
 
 const int CWTEXT_WIDTH     = 700;
 const int CWKEYB_WIDTH     = 800;
+
+const int VOICETEXT_WIDTH  = 225;
+const int VOICEKEYB_WIDTH  = 325;
 
 #else
 #error "Unknown platform"
@@ -190,7 +231,15 @@ enum {
 	SPECTRUM_1000MS
 };
 
+enum {
+	VOICE_STOPPED,
+	VOICE_SINGLE,
+	VOICE_CONTINUOUS
+};
+
 const int CWKEYBOARD_COUNT    = 6;
+
+const int VOICEKEYER_COUNT    = 20;
 
 const int CW_OFFSET           = 800;
 

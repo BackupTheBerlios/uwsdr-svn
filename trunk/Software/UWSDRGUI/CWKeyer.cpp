@@ -46,11 +46,6 @@ m_cwBuffer(NULL)
 
 CCWKeyer::~CCWKeyer()
 {
-	delete[] m_buffer;
-	delete[] m_dotBuffer;
-	delete[] m_dashBuffer;
-	delete[] m_silBuffer;
-	delete   m_cwBuffer;
 }
 
 bool CCWKeyer::open(float sampleRate, unsigned int blockSize)
@@ -79,6 +74,12 @@ bool CCWKeyer::open(float sampleRate, unsigned int blockSize)
 void CCWKeyer::close()
 {
 	m_stop = true;
+
+	delete[] m_buffer;
+	delete[] m_dotBuffer;
+	delete[] m_dashBuffer;
+	delete[] m_silBuffer;
+	delete   m_cwBuffer;
 }
 
 void CCWKeyer::abort()
@@ -236,4 +237,10 @@ void CCWKeyer::fillBuffer()
 unsigned int CCWKeyer::calcDotLength(int speed)
 {
 	return (unsigned int)(m_sampleRate * 1.2F / float(speed) + 0.5F);
+}
+
+// We are always active in CW mode
+bool CCWKeyer::isActive() const
+{
+	return true;
 }

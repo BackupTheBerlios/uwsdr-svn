@@ -244,6 +244,11 @@
        </object>
 
   <li> <object type="text/sitemap">
+           <param name="Name" value="Voice Keyer">
+           <param name="Local" value="VoiceKeyer.htm">
+       </object>
+
+  <li> <object type="text/sitemap">
            <param name="Name" value="VFO A/B">
            <param name="Local" value="TuningButtons.htm">
        </object>

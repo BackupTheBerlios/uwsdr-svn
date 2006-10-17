@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2002-2004,2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,60 +16,46 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	SoundFileReader_H
-#define	SoundFileReader_H
+#ifndef	VoiceKeyer_H
+#define	VoiceKeyer_H
 
 #include <wx/wx.h>
 
-#if defined(__WINDOWS__)
-#include <windows.h>
-#include <mmsystem.h>
-
-typedef unsigned char uint8;
-typedef signed short  sint16;
-#else
-#include <sndfile.h>
-#endif
-
 #include "DataReader.h"
+#include "DataCallback.h"
+#include "SoundFileReader.h"
 
-class CSoundFileReader : public IDataReader {
+
+class CVoiceKeyer : public IDataReader, public IDataCallback {
 
     public:
-    CSoundFileReader(const wxString& fileName);
-	virtual ~CSoundFileReader();
+    CVoiceKeyer();
+	virtual ~CVoiceKeyer();
 
-	virtual void setCallback(IDataCallback* callback, int id);
+	virtual void callback(float* buffer, unsigned int nSamples, int id);
 
 	virtual bool open(float sampleRate, unsigned int blockSize);
+	virtual void close();
 
 	virtual void purge();
 
 	virtual bool hasClock();
-	virtual void close();
-
 	virtual void clock();
 
-	virtual void rewind();
+	virtual bool isActive() const;
+
+	virtual void setCallback(IDataCallback* callback, int id);
+
+	virtual void send(const wxString& fileName, int state);
+	virtual void abort();
 
     private:
-	wxString       m_fileName;
-	float          m_sampleRate;
-	unsigned int   m_blockSize;
-	IDataCallback* m_callback;
-	int            m_id;
-	float*         m_buffer;
-#if defined(__WINDOWS__)
-	unsigned int   m_sampleWidth;
-	HMMIO          m_handle;
-	MMCKINFO       m_parent;
-	MMCKINFO       m_child;
-	LONG           m_offset;
-	uint8*         m_buffer8;
-	sint16*        m_buffer16;
-#else
-	SNDFILE*       m_file;
-#endif
+	float             m_sampleRate;
+	unsigned int      m_blockSize;
+	IDataCallback*    m_callback;
+	int               m_id;
+	int               m_status;
+	CSoundFileReader* m_file;
 };
 
 #endif

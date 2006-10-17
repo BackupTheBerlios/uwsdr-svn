@@ -6,7 +6,8 @@ LIBS		:= -lportaudio -lfftw3f -lfftw3 -lsndfile $(LIBS)
 
 OBJS :=		CWKeyboard.o CWKeyer.o DSPControl.o DTTSPControl.o FreqDial.o FreqDisplay.o \
 		FreqKeypad.o InfoBox.o SDRDescrFile.o SDRParameters.o SMeter.o SpectrumDisplay.o \
-		UWSDRApp.o UWSDRControl.o UWSDRFrame.o UWSDRPreferences.o VolumeDial.o
+		UWSDRApp.o UWSDRControl.o UWSDRFrame.o UWSDRPreferences.o VoiceKeyboard.o \
+		VoiceKeyer.o VolumeDial.o
 
 UWSDR:		$(OBJS)
 		$(CC) $(LDFLAGS) -o UWSDR $(OBJS) ../Common/Common.a ../DttSP++/DttSP.a $(LIBS)
@@ -17,8 +18,9 @@ CWKeyboard.o:	CWKeyboard.cpp CWKeyboard.h UWSDRApp.h UWSDRDefs.h
 CWKeyer.o:	CWKeyer.cpp CWKeyer.h ../Common/DataReader.h UWSDRApp.h ../Common/RingBuffer.h
 		$(CC) $(CFLAGS) -c CWKeyer.cpp
 
-DSPControl.o:	DSPControl.cpp DSPControl.h CWKeyer.h ../Common/DataReader.h ../Common/DataWriter.h \
-		DTTSPControl.h ../Common/RingBuffer.h ../Common/SoundFileWriter.h UWSDRDefs.h
+DSPControl.o:	DSPControl.cpp DSPControl.h CWKeyer.h ../Common/DataCallback.h ../Common/DataReader.h \
+		../Common/DataWriter.h \ DTTSPControl.h ../Common/RingBuffer.h ../Common/SoundFileWriter.h \
+		UWSDRDefs.h VoiceKeyer.h
 		$(CC) $(CFLAGS) -c DSPControl.cpp
 
 DTTSPControl.o:	DTTSPControl.cpp DTTSPControl.h DTTSPExports.h UWSDRDefs.h
@@ -57,11 +59,19 @@ UWSDRControl.o:	UWSDRControl.cpp UWSDRControl.h ControlInterface.h ../Common/Fre
 UWSDRFrame.o:	UWSDRFrame.cpp UWSDRFrame.h ControlInterface.h CWKeyboard.h DialInterface.h DSPControl.h FreqDial.h FreqDisplay.h \
 		FreqKeypad.h ../Common/Frequency.h InfoBox.h SDRControl.h ../Common/SDRDataReader.h ../Common/SDRDataWriter.h \
 		SDRParameters.h SMeter.h ../Common/SoundCardReader.h ../Common/SoundCardWriter.h ../Common/SoundFileWriter.h \
-		SpectrumDisplay.h UWSDRApp.h UWSDRControl.h UWSDRDefs.h UWSDRPreferences.h UWSDRXpm.h ../Common/Version.h
+		SpectrumDisplay.h UWSDRApp.h UWSDRControl.h UWSDRDefs.h UWSDRPreferences.h UWSDRXpm.h ../Common/Version.h \
+		VoiceKeyboard.h
 		$(CC) $(CFLAGS) -c UWSDRFrame.cpp
 
 UWSDRPreferences.o: UWSDRPreferences.cpp UWSDRPreferences.h DSPControl.h SDRParameters.h UWSDRApp.h UWSDRDefs.h
 		$(CC) $(CFLAGS) -c UWSDRPreferences.cpp
+
+VoiceKeyboard.o:	VoiceKeyboard.cpp VoiceKeyboard.h UWSDRApp.h UWSDRDefs.h
+		$(CC) $(CFLAGS) -c VoiceKeyboard.cpp
+
+VoiceKeyer.o:	VoiceKeyer.cpp VoiceKeyer.h ../Common/DataCallback.h ../Common/DataReader.h UWSDRApp.h UWSDRDefs.h \
+		../Common/SoundFileReader.h
+		$(CC) $(CFLAGS) -c VoiceKeyer.cpp
 
 VolumeDial.o:	VolumeDial.cpp VolumeDial.h DialInterface.h UWSDRDefs.h
 		$(CC) $(CFLAGS) -c VolumeDial.cpp

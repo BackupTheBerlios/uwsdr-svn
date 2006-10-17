@@ -43,6 +43,7 @@ class CUWSDRApp : public wxApp {
 	void showHelp(int id);
 
 	void sendCW(unsigned int speed, const wxString& text);
+	void sendAudio(const wxString& fileName, int state);
 
 #if defined(__WXDEBUG__)
 	virtual void OnAssert(const wxChar* file, int line, const wxChar* cond, const wxChar* msg);

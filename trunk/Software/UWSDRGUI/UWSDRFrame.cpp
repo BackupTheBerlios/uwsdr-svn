@@ -39,6 +39,7 @@ enum {
 	MENU_KEYPAD = 36427,
 	MENU_PREFERENCES,
 	MENU_CW_KEYBOARD,
+	MENU_VOICE_KEYBOARD,
 	MENU_RECORD,
 	MENU_HARDWARE_INFO,
 	MENU_ABOUT,
@@ -77,6 +78,7 @@ BEGIN_EVENT_TABLE(CUWSDRFrame, wxFrame)
 	EVT_BUTTON(MENU_BUTTON, CUWSDRFrame::onMenuButton)
 	EVT_MENU(MENU_KEYPAD, CUWSDRFrame::onMenuSelection)
 	EVT_MENU(MENU_CW_KEYBOARD, CUWSDRFrame::onMenuSelection)
+	EVT_MENU(MENU_VOICE_KEYBOARD, CUWSDRFrame::onMenuSelection)
 	EVT_MENU(MENU_PREFERENCES, CUWSDRFrame::onMenuSelection)
 	EVT_MENU(MENU_RECORD, CUWSDRFrame::onMenuSelection)
 	EVT_MENU(wxID_HELP, CUWSDRFrame::onMenuSelection)
@@ -129,6 +131,7 @@ m_power(NULL),
 m_afGain(NULL),
 m_squelch(NULL),
 m_spectrum(NULL),
+m_voiceKeyboard(NULL),
 m_cwKeyboard(NULL)
 {
 	SetIcon(wxIcon(UWSDR_xpm));
@@ -198,13 +201,15 @@ m_cwKeyboard(NULL)
 	SetSizer(mainSizer);
 	mainSizer->SetSizeHints(this);
 
-	m_cwKeyboard = new CCWKeyboard(this, -1);
+	m_voiceKeyboard = new CVoiceKeyboard(this, -1);
+	m_cwKeyboard    = new CCWKeyboard(this, -1);
 }
 
 CUWSDRFrame::~CUWSDRFrame()
 {
 	delete[] m_spectrum;
 	delete   m_menu;
+	delete   m_voiceKeyboard;
 	delete   m_cwKeyboard;
 }
 
@@ -321,6 +326,10 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	for (int i = 0; i < CWKEYBOARD_COUNT; i++)
 		m_cwKeyboard->setMessage(i, m_parameters->m_cwMessage[i]);
 
+	m_voiceKeyboard->setDir(m_parameters->m_voiceDir);
+	for (int j = 0; j < VOICEKEYER_COUNT; j++)
+		m_voiceKeyboard->setFile(j, m_parameters->m_voiceFile[j]);
+
 	m_timer.SetOwner(this, DISPLAY_TIMER);
 	m_timer.Start(100);
 
@@ -341,6 +350,7 @@ void CUWSDRFrame::createMenu()
 	m_menu->Append(MENU_KEYPAD,          _("Frequency Keypad..."));
 	m_menu->Append(MENU_PREFERENCES,     _("Preferences..."));
 	m_menu->Append(MENU_CW_KEYBOARD,     _("CW Keyboard..."));
+	m_menu->Append(MENU_VOICE_KEYBOARD,  _("Voice Keyer..."));
 	m_menu->AppendCheckItem(MENU_RECORD, _("Record"));
 	m_menu->AppendSeparator();
 	m_menu->Append(wxID_HELP,            _("Help\tF1"));
@@ -1117,6 +1127,9 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 				}
 			}
 			break;
+		case MENU_VOICE_KEYBOARD:
+			m_voiceKeyboard->Show(true);
+			break;
 		case MENU_CW_KEYBOARD:
 			m_cwKeyboard->Show(true);
 			break;
@@ -1261,6 +1274,11 @@ void CUWSDRFrame::onClose(wxCloseEvent& event)
 		for (int i = 0; i < CWKEYBOARD_COUNT; i++)
 			m_parameters->m_cwMessage[i] = m_cwKeyboard->getMessage(i);
 
+		// Grab the parameters from the voice keyer
+		m_parameters->m_voiceDir = m_voiceKeyboard->getDir();
+		for (int j = 0; j < VOICEKEYER_COUNT; j++)
+			m_parameters->m_voiceFile[j] = m_voiceKeyboard->getFile(j);
+
 		Destroy();
 	} else {
 		event.Veto();
@@ -1292,4 +1310,31 @@ void CUWSDRFrame::sendCW(unsigned int speed, const wxString& text)
 		return;
 
 	m_dsp->sendCW(speed, text);
+}
+
+void CUWSDRFrame::sendAudio(const wxString& fileName, int state)
+{
+	// If we're in CW mode; show an error
+	if (m_parameters->m_mode == MODE_CWW || m_parameters->m_mode == MODE_CWN) {
+		::wxMessageBox(_("Not in a voice mode!"), _("uWave SDR Error"), wxICON_ERROR);
+		return;
+	}
+
+	if (state == VOICE_STOPPED) {
+		if (!m_txOn)
+			return;
+	} else {
+		if (m_txOn) {
+			::wxMessageBox(_("Cannot send as already transmitting"), _("uWave SDR Error"), wxICON_ERROR);
+			return;
+		}
+	}
+
+	bool ret = setTransmit();
+
+	// Going to TX (or RX) has failed
+	if (!ret)
+		return;
+
+	m_dsp->sendAudio(fileName, state);
 }

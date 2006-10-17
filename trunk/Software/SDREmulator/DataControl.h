@@ -22,8 +22,15 @@
 #include <wx/wx.h>
 
 #include "RingBuffer.h"
-#include "DataReader.h"
-#include "DataWriter.h"
+#include "SignalReader.h"
+#include "SoundFileReader.h"
+#include "SoundCardReader.h"
+#include "SDRDataReader.h"
+#include "NullWriter.h"
+#include "NullReader.h"
+#include "SoundCardWriter.h"
+#include "SDRDataWriter.h"
+
 
 enum {
 	SOURCE_INTERNAL,
@@ -54,14 +61,14 @@ class CDataControl : public wxThread, public IDataCallback {
 	long           m_inDev;
 	long           m_outDev;
 
-	IDataReader*   m_internalReader;
-	IDataReader*   m_soundCardReader;
-	IDataReader*   m_soundFileReader;
-	IDataWriter*   m_rxWriter;
+	CSignalReader*    m_internalReader;
+	CSoundCardReader* m_soundCardReader;
+	CSoundFileReader* m_soundFileReader;
+	CSDRDataWriter*   m_rxWriter;
 
-	IDataWriter*   m_nullWriter;
-	IDataWriter*   m_soundCardWriter;
-	IDataReader*   m_txReader;
+	CNullWriter*      m_nullWriter;
+	CSoundCardWriter* m_soundCardWriter;
+	CSDRDataReader*   m_txReader;
 
 	wxSemaphore    m_waiting;
 

@@ -24,9 +24,11 @@
 #include "SoundFileWriter.h"
 #include "DTTSPControl.h"
 #include "CWKeyer.h"
+#include "VoiceKeyer.h"
 #include "DataReader.h"
 #include "DataWriter.h"
 #include "RingBuffer.h"
+
 
 class CDSPControl : public wxThread, public IDataCallback {
     public:
@@ -76,10 +78,13 @@ class CDSPControl : public wxThread, public IDataCallback {
 	virtual void  getSpectrum(float* spectrum, int pos);
 
 	virtual void sendCW(unsigned int speed, const wxString& text);
+	virtual void sendAudio(const wxString& fileName, int state);
 
     private:
 	CDTTSPControl* m_dttsp;
 	CCWKeyer*      m_cwKeyer;
+	CVoiceKeyer*   m_voiceKeyer;
+
 	float          m_sampleRate;
 	float          m_centreFreq;
 

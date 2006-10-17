@@ -95,7 +95,9 @@ m_cwRemote(),
 m_cwLocator(),
 m_cwReport(),
 m_cwSerial(),
-m_cwMessage()
+m_cwMessage(),
+m_voiceDir(),
+m_voiceFile()
 {
 }
 

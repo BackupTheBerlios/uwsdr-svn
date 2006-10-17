@@ -161,3 +161,4 @@ The "-s" has been removed from the UWSDR GUI so it must be used with real hardwa
 
 Changed to using wxWidgets 2.7.x
 
+Added the voice keyer.

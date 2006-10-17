@@ -67,7 +67,6 @@ Section "UWSDR Program Files" SecProgram
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Changes.txt"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Install.txt"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Jobs.txt"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Usage.txt"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\meta\UWSDR.ico"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\meta\GUISetup.ico"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\meta\SDRSetup.ico"
@@ -83,7 +82,6 @@ Section "UWSDR Program Files" SecProgram
   CreateShortCut "$SMPROGRAMS\UWSDR\Changes.lnk"   "$INSTDIR\Changes.txt"
   CreateShortCut "$SMPROGRAMS\UWSDR\Install.lnk"   "$INSTDIR\Install.txt"
   CreateShortCut "$SMPROGRAMS\UWSDR\TODO.lnk"      "$INSTDIR\Jobs.txt"
-  CreateShortCut "$SMPROGRAMS\UWSDR\Usage.lnk"     "$INSTDIR\Usage.txt"
   CreateShortCut "$SMPROGRAMS\UWSDR\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
 
   ;Store install folder

@@ -96,6 +96,9 @@ const wxString KEY_CW_LOCATOR      = wxT("/CWLocator");
 const wxString KEY_CW_REPORT       = wxT("/CWReport");
 const wxString KEY_CW_SERIAL       = wxT("/CWSerialNumber");
 const wxString KEY_CW_MESSAGE      = wxT("/CWMessage");
+const wxString KEY_VOICE_DIR       = wxT("/VoiceDir");
+const wxString KEY_VOICE_FILE      = wxT("/VoiceFile");
+
 
 IMPLEMENT_APP(CUWSDRApp)
 
@@ -304,6 +307,7 @@ bool CUWSDRApp::readConfig()
 	wxString keyCwLocator     = wxT("/") + m_parameters->m_name + KEY_CW_LOCATOR;
 	wxString keyCwReport      = wxT("/") + m_parameters->m_name + KEY_CW_REPORT;
 	wxString keyCwSerial      = wxT("/") + m_parameters->m_name + KEY_CW_SERIAL;
+	wxString keyVoiceDir      = wxT("/") + m_parameters->m_name + KEY_VOICE_DIR;
 
 	wxString keyCwMessage[CWKEYBOARD_COUNT];
 	for (int i = 0; i < CWKEYBOARD_COUNT; i++) {
@@ -312,6 +316,15 @@ bool CUWSDRApp::readConfig()
 
 		keyCwMessage[i] = wxT("/") + m_parameters->m_name + KEY_CW_MESSAGE;
 		keyCwMessage[i].Append(number);
+	}
+
+	wxString keyVoiceFile[VOICEKEYER_COUNT];
+	for (int j = 0; j < VOICEKEYER_COUNT; j++) {
+		wxString number;
+		number.Printf(wxT("%d"), j);
+
+		keyVoiceFile[j] = wxT("/") + m_parameters->m_name + KEY_VOICE_FILE;
+		keyVoiceFile[j].Append(number);
 	}
 
 	wxConfig* profile = new wxConfig(APPNAME);
@@ -449,6 +462,11 @@ bool CUWSDRApp::readConfig()
 	for (int n = 0; n < CWKEYBOARD_COUNT; n++)
 		profile->Read(keyCwMessage[n], &m_parameters->m_cwMessage[n], KEYER_MESSAGE[n]);
 
+	profile->Read(keyVoiceDir,         &m_parameters->m_voiceDir,  wxEmptyString);
+
+	for (int m = 0; m < VOICEKEYER_COUNT; m++)
+		profile->Read(keyVoiceFile[m], &m_parameters->m_voiceFile[m], wxEmptyString);
+
 	profile->Flush();
 
 	delete profile;
@@ -519,6 +537,7 @@ void CUWSDRApp::writeConfig()
 	wxString keyCwLocator     = wxT("/") + m_parameters->m_name + KEY_CW_LOCATOR;
 	wxString keyCwReport      = wxT("/") + m_parameters->m_name + KEY_CW_REPORT;
 	wxString keyCwSerial      = wxT("/") + m_parameters->m_name + KEY_CW_SERIAL;
+	wxString keyVoiceDir      = wxT("/") + m_parameters->m_name + KEY_VOICE_DIR;
 
 	wxString keyCwMessage[CWKEYBOARD_COUNT];
 	for (int i = 0; i < CWKEYBOARD_COUNT; i++) {
@@ -527,6 +546,15 @@ void CUWSDRApp::writeConfig()
 
 		keyCwMessage[i] = wxT("/") + m_parameters->m_name + KEY_CW_MESSAGE;
 		keyCwMessage[i].Append(number);
+	}
+
+	wxString keyVoiceFile[VOICEKEYER_COUNT];
+	for (int j = 0; j < VOICEKEYER_COUNT; j++) {
+		wxString number;
+		number.Printf(wxT("%d"), j);
+
+		keyVoiceFile[j] = wxT("/") + m_parameters->m_name + KEY_VOICE_FILE;
+		keyVoiceFile[j].Append(number);
 	}
 
 	wxConfig* profile = new wxConfig(APPNAME);
@@ -597,6 +625,11 @@ void CUWSDRApp::writeConfig()
 	for (int n = 0; n < CWKEYBOARD_COUNT; n++)
 		profile->Write(keyCwMessage[n], m_parameters->m_cwMessage[n]);
 
+	profile->Write(keyVoiceDir,         m_parameters->m_voiceDir);
+
+	for (int m = 0; m < CWKEYBOARD_COUNT; m++)
+		profile->Write(keyVoiceFile[m], m_parameters->m_voiceFile[m]);
+
 	profile->Flush();
 
 	delete profile;
@@ -610,6 +643,11 @@ void CUWSDRApp::showHelp(int id)
 void CUWSDRApp::sendCW(unsigned int speed, const wxString& text)
 {
 	m_frame->sendCW(speed, text);
+}
+
+void CUWSDRApp::sendAudio(const wxString& fileName, int state)
+{
+	m_frame->sendAudio(fileName, state);
 }
 
 wxString CUWSDRApp::getHelpDir()

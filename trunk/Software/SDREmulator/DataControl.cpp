@@ -18,15 +18,6 @@
 
 #include "DataControl.h"
 
-#include "SignalReader.h"
-#include "SoundFileReader.h"
-#include "SoundCardReader.h"
-#include "SDRDataReader.h"
-#include "NullWriter.h"
-#include "NullReader.h"
-#include "SoundCardWriter.h"
-#include "SDRDataWriter.h"
-
 
 const int INTERNAL_READER  = 77;
 const int SOUNDCARD_READER = 78;
@@ -36,6 +27,7 @@ const int SDRDATA_READER   = 88;
 
 const unsigned int RINGBUFFER_SIZE = 100001;
 const unsigned int BLOCK_SIZE      = 2048;		// XXXX
+
 
 CDataControl::CDataControl(float sampleRate, const wxString& address, int port, int api, long inDev, long outDev) :
 wxThread(),
@@ -186,46 +178,18 @@ bool CDataControl::openIO()
 
 void CDataControl::closeIO()
 {
-	if (m_internalReader != NULL) {
-		m_internalReader->close();
-		delete m_internalReader;
-	}
-
-	if (m_soundCardReader != NULL) {
-		m_soundCardReader->close();
-		delete m_soundCardReader;
-	}
-
-	if (m_rxWriter != NULL) {
-		m_rxWriter->close();
-		delete m_rxWriter;
-	}
-
-	if (m_soundFileReader != NULL) {
-		m_soundFileReader->close();
-		delete m_soundFileReader;
-	}
-
-	if (m_nullWriter != NULL) {
-		m_nullWriter->close();
-		delete m_nullWriter;
-	}
-
-	if (m_soundCardWriter != NULL) {
-		m_soundCardWriter->close();
-		delete m_soundCardWriter;
-	}
-
-	if (m_txReader != NULL) {
-		m_txReader->close();
-		delete m_txReader;
-	}
+	m_internalReader->close();
+	m_soundCardReader->close();
+	m_rxWriter->close();
+	m_soundFileReader->close();
+	m_nullWriter->close();
+	m_soundCardWriter->close();
+	m_txReader->close();
 }
 
 void CDataControl::callback(float* inBuffer, unsigned int nSamples, int id)
 {
 	wxASSERT(inBuffer != NULL);
-	wxASSERT(nSamples > 0);
 
 	if (!m_running)
 		return;
@@ -264,6 +228,11 @@ void CDataControl::callback(float* inBuffer, unsigned int nSamples, int id)
 				if (m_transmit || m_source != SOURCE_SOUNDFILE || m_mute)
 					return;
 
+				if (nSamples == 0) {
+					m_soundFileReader->rewind();
+					return;
+				}
+
 				unsigned int n = m_rxRingBuffer.addData(inBuffer, nSamples);
 
 				if (n > 0)
@@ -300,6 +269,11 @@ void CDataControl::setTX(bool transmit)
 
 		m_txRingBuffer.clear();
 		m_rxRingBuffer.clear();
+
+		m_internalReader->purge();
+		m_soundCardReader->purge();
+		m_soundFileReader->purge();
+		m_txReader->purge();
 	}
 
 	m_transmit = transmit;
@@ -317,6 +291,11 @@ void CDataControl::setMute(bool mute)
 		}
 
 		m_rxRingBuffer.clear();
+
+		m_internalReader->purge();
+		m_soundCardReader->purge();
+		m_soundFileReader->purge();
+		m_txReader->purge();
 	}
 
 	m_mute = mute;

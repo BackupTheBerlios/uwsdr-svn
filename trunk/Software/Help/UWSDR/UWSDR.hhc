@@ -139,6 +139,11 @@
                   <param name="Local" value="Record.htm">
               </object>
          <li> <object type="text/sitemap">
+                  <param name="Name" value="Voice Keyer">
+                  <param name="ID" value=103>
+                  <param name="Local" value="VoiceKeyer.htm">
+              </object>
+         <li> <object type="text/sitemap">
                   <param name="Name" value="Help">
                   <param name="ID" value=104>
                   <param name="Local" value="Help.htm">

@@ -38,6 +38,8 @@ class CCWKeyer : public IDataReader {
 	virtual bool hasClock();
 	virtual void clock();
 
+	virtual bool isActive() const;
+
 	virtual void setCallback(IDataCallback* callback, int id);
 
 	virtual void send(unsigned int speed, const wxString& text);

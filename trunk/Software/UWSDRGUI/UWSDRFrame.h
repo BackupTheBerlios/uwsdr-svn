@@ -35,7 +35,7 @@
 #include "Frequency.h"
 #include "InfoBox.h"
 #include "SMeter.h"
-
+#include "VoiceKeyboard.h"
 #include "CWKeyboard.h"
 
 class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterface {
@@ -65,6 +65,7 @@ class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterf
 	void sdrConnectionLost(int id);
 
 	void sendCW(unsigned int speed, const wxString& text);
+	void sendAudio(const wxString& fileName, int state);
 
     private:
 	wxTimer           m_timer;
@@ -95,6 +96,7 @@ class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterf
 
 	float*            m_spectrum;
 
+	CVoiceKeyboard*   m_voiceKeyboard;
 	CCWKeyboard*      m_cwKeyboard;
 
 	void      createMenu();

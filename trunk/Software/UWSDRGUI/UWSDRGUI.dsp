@@ -158,6 +158,14 @@ SOURCE=.\UWSDRPreferences.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\VoiceKeyboard.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\VoiceKeyer.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\VolumeDial.cpp
 # End Source File
 # End Group
@@ -251,6 +259,14 @@ SOURCE=.\UWSDRPreferences.h
 # Begin Source File
 
 SOURCE=.\UWSDRXpm.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\VoiceKeyboard.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\VoiceKeyer.h
 # End Source File
 # Begin Source File
 

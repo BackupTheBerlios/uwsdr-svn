@@ -13,7 +13,6 @@ Finish DttSP++
 Finish SDRSetup
 Upgrade GUISetup for Linux icons
 Finish "make install" for Linux with .desktop files
-Write Help
 Get transmit working
 Set of screenshots for all platforms
 Convert to Weaver method
@@ -23,5 +22,4 @@ Future
 ------
 
 I+Q storage for different frequencies
-Voice keyer?
 Frequency database with display on the spectrum.
