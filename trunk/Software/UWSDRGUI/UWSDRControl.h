@@ -47,7 +47,7 @@ class CUWSDRControl : public wxEvtHandler, public ISDRControl {
 	wxString           m_address;
 	int                m_port;
 	int                m_id;
-	wxSocketClient     m_socket;
+	wxSocketClient*    m_socket;
 	IControlInterface* m_callback;
 	unsigned int       m_version;
 	CFrequency         m_txFreq;

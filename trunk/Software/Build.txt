@@ -20,7 +20,7 @@ Linux/Unix
 
 Before building the software you need to ensure that you have the pre-requisites installed, either as packages or built from source.
 
-wxWidgets 2.6.0 or later should be installed. This can be found at http://www.wxwidgets.org and will take some time to build. If you install it as a package then ensure that the devel section is installed as well.
+wxWidgets 2.6.0 or later should be installed, it has been tested with the 2.7.x series and all is fine. This can be found at http://www.wxwidgets.org and will take some time to build. If you install it as a package then ensure that the devel section is installed as well.
 
 FFTW 3 should be either installed ot built. This can be found at http://www.fftw.org and if building it yourself, you *may* have to configure it as:
 

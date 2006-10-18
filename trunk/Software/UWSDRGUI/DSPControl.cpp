@@ -122,10 +122,6 @@ void* CDSPControl::Entry()
 
 		closeIO();
 
-		m_dttsp->close();
-		m_cwKeyer->close();
-		m_voiceKeyer->close();
-
 		// We have a problem so wait for death
 		while (!TestDestroy())
 			Sleep(500UL);
@@ -154,16 +150,22 @@ void* CDSPControl::Entry()
 			}
 
 			unsigned int nSamples = m_rxRingBuffer.getData(m_rxBuffer, BLOCK_SIZE);
+
+			// Create silence on transmit
+			if (nSamples == 0 && m_transmit) {
+				::memset(m_rxBuffer, 0x00, BLOCK_SIZE * 2 * sizeof(float));
+				nSamples = BLOCK_SIZE;
+			}
+
 			if (nSamples != BLOCK_SIZE)
 				::wxLogError(wxT("Underrun in RX ring buffer, wanted %u available %u"), BLOCK_SIZE, nSamples);
 
-			if (nSamples > 0) {
-				scaleBuffer(m_rxBuffer, nSamples, m_afGain);
-				m_rxWriter->write(m_rxBuffer, nSamples);
+			scaleBuffer(m_rxBuffer, nSamples, m_afGain);
+			m_rxWriter->write(m_rxBuffer, nSamples);
 
-				if (m_record != NULL)
-					m_record->write(m_rxBuffer, nSamples);
-			}
+			// Don't record when transmitting
+			if (m_record != NULL && !m_transmit)
+				m_record->write(m_rxBuffer, nSamples);
 		}
 	}
 
@@ -172,10 +174,6 @@ void* CDSPControl::Entry()
 	::wxLogMessage(wxT("DttSP ended"));
 
 	closeIO();
-
-	m_dttsp->close();
-	m_cwKeyer->close();
-	m_voiceKeyer->close();
 
 	return (void*)0;
 }
@@ -224,6 +222,15 @@ void CDSPControl::closeIO()
 	m_rxReader->close();
 	m_txWriter->close();
 	m_rxWriter->close();
+
+	m_dttsp->close();
+	m_cwKeyer->close();
+	m_voiceKeyer->close();
+
+	if (m_record != NULL) {
+		m_record->close();
+		delete m_record;
+	}
 }
 
 void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)

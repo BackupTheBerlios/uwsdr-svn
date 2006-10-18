@@ -69,9 +69,8 @@ void CVoiceKeyer::abort()
 
 void CVoiceKeyer::purge()
 {
-	wxASSERT(m_file != NULL);
-
-	m_file->purge();
+	if (m_file != NULL)
+		m_file->purge();
 }
 
 bool CVoiceKeyer::hasClock()
@@ -81,10 +80,10 @@ bool CVoiceKeyer::hasClock()
 
 void CVoiceKeyer::clock()
 {
-	wxASSERT(m_file != NULL);
 	wxASSERT(m_status != VOICE_STOPPED);
 
-	m_file->clock();
+	if (m_file != NULL)
+		m_file->clock();
 }
 
 void CVoiceKeyer::setCallback(IDataCallback* callback, int id)

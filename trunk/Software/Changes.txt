@@ -148,8 +148,8 @@ Hardware step size is now floating point to allow for sub one Hertz steps.
 CW keyboard included.
 
 
-Version 0.6 - October 2006
-=================================
+Version 0.6 - 19 October 2006
+=============================
 
 Added Help for GUISetup, SDRSetup and UWSDRGUI.
 

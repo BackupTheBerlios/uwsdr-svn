@@ -29,7 +29,7 @@ wxEvtHandler(),
 m_address(address),
 m_port(port),
 m_id(0),
-m_socket(wxSOCKET_NOWAIT),
+m_socket(NULL),
 m_callback(NULL),
 m_version(version),
 m_txFreq(),
@@ -58,13 +58,15 @@ bool CUWSDRControl::open()
 	sockAddress.Hostname(m_address);
 	sockAddress.Service(m_port);
 
-	bool ret = m_socket.Connect(sockAddress);
+	m_socket = new wxSocketClient(wxSOCKET_NOWAIT);
+
+	bool ret = m_socket->Connect(sockAddress);
 	if (!ret)
 		return false;
 
-	m_socket.SetEventHandler(*this, SOCKET_ID);
-	m_socket.SetNotify(wxSOCKET_INPUT_FLAG | wxSOCKET_LOST_FLAG);
-	m_socket.Notify(true);
+	m_socket->SetEventHandler(*this, SOCKET_ID);
+	m_socket->SetNotify(wxSOCKET_INPUT_FLAG | wxSOCKET_LOST_FLAG);
+	m_socket->Notify(true);
 
 	return true;
 }
@@ -158,12 +160,12 @@ void CUWSDRControl::setTXAndFreq(bool transmit, const CFrequency& freq)
 
 void CUWSDRControl::sendCommand(const char* command)
 {
-	m_socket.Write(command, ::strlen(command));
+	m_socket->Write(command, ::strlen(command));
 }
 
 void CUWSDRControl::close()
 {
-	m_socket.Close();
+	m_socket->Destroy();
 }
 
 void CUWSDRControl::onSocket(wxSocketEvent& event)
