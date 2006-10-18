@@ -18,9 +18,16 @@
 
 #include "SDRDataReader.h"
 
+#if !defined(__WXMSW__)
+#include <netdb.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#endif
 
-const unsigned int HEADER_SIZE = 6;
-const unsigned int SAMPLE_SIZE = 6;
+const int HEADER_SIZE = 6;
+const int SAMPLE_SIZE = 6;
 
 
 CSDRDataReader::CSDRDataReader(const wxString& address, int port) :
@@ -203,7 +210,7 @@ bool CSDRDataReader::readSocket()
 		return true;
 
 	struct sockaddr addr;
-	int size = sizeof(struct sockaddr);
+	socklen_t size = sizeof(struct sockaddr);
 
 	ssize_t len = ::recvfrom(m_fd, (char *)m_sockBuffer, m_size, 0, &addr, &size);
 	if (len < 0) {

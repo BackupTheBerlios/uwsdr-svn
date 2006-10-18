@@ -59,9 +59,9 @@ m_rxFreq(),
 m_txEnable(false),
 m_rxEnable(false),
 m_txOn(false),
+m_data(NULL),
 m_server(NULL),
-m_messages(NULL),
-m_data(NULL)
+m_messages(NULL)
 {
 	wxMenu* fileMenu = new wxMenu();
 	fileMenu->Append(wxID_EXIT, wxT("Exit\tAlt-F4"));

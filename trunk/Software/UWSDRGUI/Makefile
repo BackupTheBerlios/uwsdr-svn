@@ -19,7 +19,7 @@ CWKeyer.o:	CWKeyer.cpp CWKeyer.h ../Common/DataReader.h UWSDRApp.h ../Common/Rin
 		$(CC) $(CFLAGS) -c CWKeyer.cpp
 
 DSPControl.o:	DSPControl.cpp DSPControl.h CWKeyer.h ../Common/DataCallback.h ../Common/DataReader.h \
-		../Common/DataWriter.h \ DTTSPControl.h ../Common/RingBuffer.h ../Common/SoundFileWriter.h \
+		../Common/DataWriter.h DTTSPControl.h ../Common/RingBuffer.h ../Common/SoundFileWriter.h \
 		UWSDRDefs.h VoiceKeyer.h
 		$(CC) $(CFLAGS) -c DSPControl.cpp
 

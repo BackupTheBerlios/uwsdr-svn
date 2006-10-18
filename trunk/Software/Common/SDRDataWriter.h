@@ -16,13 +16,21 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	UWSDRDataWriter_H
-#define	UWSDRDataWriter_H
+#ifndef	SDRDataWriter_H
+#define	SDRDataWriter_H
 
 #include <wx/wx.h>
 
 #include "RingBuffer.h"
 #include "DataWriter.h"
+
+#if !defined(__WXMSW__)
+#include <netdb.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#endif
 
 class CSDRDataWriter : public IDataWriter {
 

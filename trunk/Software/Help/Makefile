@@ -1,6 +1,6 @@
 ZIP = /usr/bin/zip
 
-all:	GUISetup/GUISetup.zip SDRSetup.zip UWSDR/UWSDR.zip
+all:	GUISetup/GUISetup.zip SDRSetup/SDRSetup.zip UWSDR/UWSDR.zip
 
 GUISetup/GUISetup.zip:
 	$(ZIP) -9 GUISetup/GUISetup.zip GUISetup/*.htm GUISetup/*.png GUISetup/*.hh[ckp]

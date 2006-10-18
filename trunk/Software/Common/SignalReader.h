@@ -26,7 +26,7 @@
 class CSignalReader : public IDataReader {
 
     public:
-    CSignalReader(unsigned int frequency, float noiseAmplitude, float signalAmplitude);
+    CSignalReader(float frequency, float noiseAmplitude, float signalAmplitude);
 	virtual ~CSignalReader();
 
 	virtual void setCallback(IDataCallback* callback, int id);
@@ -41,7 +41,7 @@ class CSignalReader : public IDataReader {
 	virtual void clock();
 
     private:
-	unsigned int   m_frequency;
+	float          m_frequency;
 	float          m_noiseAmplitude;
 	float          m_signalAmplitude;
 	unsigned int   m_blockSize;

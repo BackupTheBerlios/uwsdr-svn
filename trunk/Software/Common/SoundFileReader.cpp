@@ -29,6 +29,15 @@ void CSoundFileReader::setCallback(IDataCallback* callback, int id)
 	m_id       = id;
 }
 
+void CSoundFileReader::purge()
+{
+}
+
+bool CSoundFileReader::hasClock()
+{
+	return false;
+}
+
 #if defined(__WINDOWS__)
 
 const int WAVE_FORMAT_IEEE_FLOAT = 3;
@@ -157,15 +166,6 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 	m_buffer = new float[m_blockSize * 2];
 
 	return true;
-}
-
-void CSoundFileReader::purge()
-{
-}
-
-bool CSoundFileReader::hasClock()
-{
-	return false;
 }
 
 void CSoundFileReader::clock()

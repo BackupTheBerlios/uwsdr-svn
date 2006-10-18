@@ -16,8 +16,8 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	UWSDRDataReader_H
-#define	UWSDRDataReader_H
+#ifndef	SDRDataReader_H
+#define	SDRDataReader_H
 
 #include <wx/wx.h>
 

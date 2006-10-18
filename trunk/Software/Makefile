@@ -9,18 +9,13 @@ export LIBS := $(shell wx-config --libs)
 
 export CFLAGS := -O2 -Wall -march=pentium -DDATA_DIR=$(DATADIR) -DBIN_DIR=$(BINDIR) $(shell wx-config --cxxflags)
 
-all:		GUISetup/GUISetup SDREmulator/SDREmulator SDRHelp/SDRHelp SDRSetup/SDRSetup UWSDRGUI/UWSDR
-		make -C Help
+all:		GUISetup/GUISetup SDREmulator/SDREmulator SDRSetup/SDRSetup UWSDRGUI/UWSDR
 
-GUISetup/GUISetup:
+GUISetup/GUISetup:	Common/Common.a
 		make -C GUISetup
 
 SDREmulator/SDREmulator: Common/Common.a
 		make -C SDREmulator
-
-SDRHelp/SDRHelp:
-		make -C SDRHelp
-
 
 SDRSetup/SDRSetup:
 		make -C SDRSetup

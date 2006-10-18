@@ -6,7 +6,7 @@ LIBS   :=	-lportaudio $(LIBS)
 OBJS :=		GUISetupApp.o GUISetupFrame.o
 
 GUISetup:	$(OBJS)
-		$(CC) $(LDFLAGS) -o GUISetup $(OBJS) $(LIBS)
+		$(CC) $(LDFLAGS) -o GUISetup $(OBJS) ../Common/Common.a $(LIBS)
 
 GUISetupApp.o:	GUISetupApp.cpp GUISetupApp.h GUISetupFrame.h GUISetupXpm.h
 		$(CC) $(CFLAGS) -c GUISetupApp.cpp

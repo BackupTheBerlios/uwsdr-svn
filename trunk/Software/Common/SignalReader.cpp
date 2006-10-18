@@ -22,7 +22,7 @@
 #include <wx/log.h>
 
 
-CSignalReader::CSignalReader(unsigned int frequency, float noiseAmplitude, float signalAmplitude) :
+CSignalReader::CSignalReader(float frequency, float noiseAmplitude, float signalAmplitude) :
 m_frequency(frequency),
 m_noiseAmplitude(noiseAmplitude),
 m_signalAmplitude(signalAmplitude),
@@ -41,7 +41,7 @@ m_awgnN(0)
 	wxASSERT(m_noiseAmplitude >= 0.0 && m_noiseAmplitude < 1.0);
 	wxASSERT(m_signalAmplitude >= 0.0 && m_signalAmplitude < 1.0);
 	wxASSERT((m_signalAmplitude + m_noiseAmplitude) < 1.0);
-	wxASSERT(m_frequency > 0);
+	wxASSERT(m_frequency > 0.0F);
 }
 
 CSignalReader::~CSignalReader()
@@ -56,7 +56,7 @@ void CSignalReader::setCallback(IDataCallback* callback, int id)
 
 bool CSignalReader::open(float sampleRate, unsigned int blockSize)
 {
-	wxASSERT(m_frequency < (unsigned int)(sampleRate + 0.5F) / 2);
+	wxASSERT(m_frequency < (sampleRate + 0.5F) / 2.0F);
 
 	m_blockSize = blockSize;
 
@@ -68,7 +68,7 @@ bool CSignalReader::open(float sampleRate, unsigned int blockSize)
 	m_cosVal = 1.0F;
 	m_sinVal = 0.0F;
 
-	float delta = float(m_frequency) / sampleRate * 2.0 * M_PI;
+	float delta = m_frequency / sampleRate * 2.0 * M_PI;
 	m_cosDelta = ::cos(delta);
 	m_sinDelta = ::sin(delta);
 
