@@ -94,8 +94,8 @@ void CSDRDataWriter::write(const float* buffer, unsigned int nSamples)
 
 	unsigned int len = HEADER_SIZE;
 	for (unsigned int i = 0; i < nSamples; i++) {
-		unsigned int qData = (unsigned int)((buffer[i * 2 + 0] + 1.0F) * 8388607.0F + 0.5F);
-		unsigned int iData = (unsigned int)((buffer[i * 2 + 1] + 1.0F) * 8388607.0F + 0.5F);
+		unsigned int iData = (unsigned int)((buffer[i * 2 + 0] + 1.0F) * 8388607.0F + 0.5F);
+		unsigned int qData = (unsigned int)((buffer[i * 2 + 1] + 1.0F) * 8388607.0F + 0.5F);
 
 		m_sockBuffer[len++] = (iData >> 16) & 0xFF;
 		m_sockBuffer[len++] = (iData >> 8)  & 0xFF;

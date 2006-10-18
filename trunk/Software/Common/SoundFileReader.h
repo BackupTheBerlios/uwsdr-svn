@@ -27,6 +27,14 @@
 
 typedef unsigned char uint8;
 typedef signed short  sint16;
+typedef float         float32;
+typedef double        float64;
+
+enum {
+	FORMAT_8BIT,
+	FORMAT_16BIT,
+	FORMAT_32BIT
+};
 #else
 #include <sndfile.h>
 #endif
@@ -60,13 +68,14 @@ class CSoundFileReader : public IDataReader {
 	int            m_id;
 	float*         m_buffer;
 #if defined(__WINDOWS__)
-	unsigned int   m_sampleWidth;
 	HMMIO          m_handle;
 	MMCKINFO       m_parent;
 	MMCKINFO       m_child;
 	LONG           m_offset;
+	unsigned int   m_format;
 	uint8*         m_buffer8;
 	sint16*        m_buffer16;
+	float32*       m_buffer32;
 #else
 	SNDFILE*       m_file;
 #endif

@@ -99,7 +99,7 @@ void* CDataControl::Entry()
 				}
 			} else {
 				unsigned int nSamples = m_rxRingBuffer.getData(m_rxBuffer, BLOCK_SIZE);
-	
+
 				if (nSamples > 0)
 					m_rxWriter->write(m_rxBuffer, nSamples);
 			}
@@ -130,6 +130,8 @@ bool CDataControl::setSoundFileReader(const wxString& fileName)
 		m_soundFileReader = NULL;
 		return false;
 	}
+
+	m_source = SOURCE_SOUNDFILE;
 
 	return true;
 }
@@ -181,10 +183,12 @@ void CDataControl::closeIO()
 	m_internalReader->close();
 	m_soundCardReader->close();
 	m_rxWriter->close();
-	m_soundFileReader->close();
 	m_nullWriter->close();
 	m_soundCardWriter->close();
 	m_txReader->close();
+
+	if (m_soundFileReader != NULL)
+		m_soundFileReader->close();
 }
 
 void CDataControl::callback(float* inBuffer, unsigned int nSamples, int id)
@@ -196,7 +200,7 @@ void CDataControl::callback(float* inBuffer, unsigned int nSamples, int id)
 
 	switch (id) {
 		case INTERNAL_READER: {
-				if (m_transmit || m_source != SOURCE_INTERNAL || m_mute)
+				if (m_source != SOURCE_INTERNAL)
 					return;
 
 				unsigned int n = m_rxRingBuffer.addData(inBuffer, nSamples);
@@ -207,15 +211,25 @@ void CDataControl::callback(float* inBuffer, unsigned int nSamples, int id)
 			break;
 
 		case SOUNDCARD_READER: {
-				m_internalReader->clock();
-
-				if (m_soundFileReader != NULL)
-					m_soundFileReader->clock();
-
-				m_txReader->clock();
-
-				if (m_transmit || m_source != SOURCE_SOUNDCARD || m_mute)
+				if (m_transmit) {
+					m_txReader->clock();
 					return;
+				}
+
+				if (m_mute)
+					return;
+
+				if (m_source == SOURCE_INTERNAL) {
+					m_internalReader->clock();
+					return;
+				}
+
+				if (m_source == SOURCE_SOUNDFILE) {
+					if (m_soundFileReader != NULL)
+						m_soundFileReader->clock();
+
+					return;
+				}
 
 				unsigned int n = m_rxRingBuffer.addData(inBuffer, nSamples);
 
@@ -225,7 +239,7 @@ void CDataControl::callback(float* inBuffer, unsigned int nSamples, int id)
 			break;
 
 		case SOUNDFILE_READER: {
-				if (m_transmit || m_source != SOURCE_SOUNDFILE || m_mute)
+				if (m_source != SOURCE_SOUNDFILE)
 					return;
 
 				if (nSamples == 0) {
@@ -272,8 +286,10 @@ void CDataControl::setTX(bool transmit)
 
 		m_internalReader->purge();
 		m_soundCardReader->purge();
-		m_soundFileReader->purge();
 		m_txReader->purge();
+
+		if (m_soundFileReader != NULL)
+			m_soundFileReader->purge();
 	}
 
 	m_transmit = transmit;
@@ -294,8 +310,11 @@ void CDataControl::setMute(bool mute)
 
 		m_internalReader->purge();
 		m_soundCardReader->purge();
-		m_soundFileReader->purge();
 		m_txReader->purge();
+
+		if (m_soundFileReader != NULL)
+			m_soundFileReader->purge();
+
 	}
 
 	m_mute = mute;
@@ -311,3 +330,33 @@ void CDataControl::setSource(int source)
 
 	m_source = source;
 }
+
+#if defined(__WXDEBUG__)
+void CDataControl::dumpBuffer(const wxString& title, float* buffer, unsigned int nSamples) const
+{
+	wxASSERT(buffer != NULL);
+	wxASSERT(nSamples > 0);
+
+	::wxLogMessage(title);
+	::wxLogMessage(wxT("Length: %05X"), nSamples);
+
+	::wxLogMessage(wxT(":"));
+
+	unsigned int n = 0;
+	for (unsigned int i = 0; i < nSamples; i += 16) {
+		wxString text;
+		text.Printf(wxT("%05X:  "), i);
+
+		for (unsigned int j = 0; j < 16; j++, n += 2) {
+			wxString buf;
+			buf.Printf(wxT("%f:%f "), buffer[n + 0], buffer[n + 1]);
+			text.Append(buf);
+
+			if ((i + j) >= nSamples)
+				break;
+		}
+
+		::wxLogMessage(text);
+	}
+}
+#endif

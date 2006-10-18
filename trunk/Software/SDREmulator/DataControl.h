@@ -82,9 +82,12 @@ class CDataControl : public wxThread, public IDataCallback {
 	bool           m_mute;
 	bool           m_running;
 
-
 	bool openIO();
 	void closeIO();
+
+#if defined(__WXDEBUG__)
+	void dumpBuffer(const wxString& title, float* buffer, unsigned int nSamples) const;
+#endif
 };
 
 #endif
