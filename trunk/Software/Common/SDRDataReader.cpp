@@ -210,7 +210,11 @@ bool CSDRDataReader::readSocket()
 		return true;
 
 	struct sockaddr addr;
+#if defined(__WXMSW__)
+	int size = sizeof(struct sockaddr);
+#else
 	socklen_t size = sizeof(struct sockaddr);
+#endif
 
 	ssize_t len = ::recvfrom(m_fd, (char *)m_sockBuffer, m_size, 0, &addr, &size);
 	if (len < 0) {

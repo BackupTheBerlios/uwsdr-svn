@@ -91,10 +91,6 @@ SOURCE=.\Frequency.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\Hilbert.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\Log.cpp
 # End Source File
 # Begin Source File
@@ -160,10 +156,6 @@ SOURCE=.\DataWriter.h
 # Begin Source File
 
 SOURCE=.\Frequency.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\Hilbert.h
 # End Source File
 # Begin Source File
 

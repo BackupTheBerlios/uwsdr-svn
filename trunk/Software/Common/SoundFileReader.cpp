@@ -215,13 +215,13 @@ void CSoundFileReader::clock()
 
 			n /= sizeof(float32);
 
-			for (i = 0; i < n; i++) {
-				float data = m_buffer32[i];
+			// Swap I and Q for SDR-1000 data
+			for (i = 0; i < n / 2; i++) {
+				float qData = m_buffer32[i * 2 + 0];
+				float iData = m_buffer32[i * 2 + 1];
 
-				if (data < -1.0F) data = -1.0F;
-				if (data >  1.0F) data =  1.0F;
-
-				m_buffer[i] = data;
+				m_buffer[i * 2 + 0] = iData;
+				m_buffer[i * 2 + 1] = qData;
 			}
 			break;
 	}

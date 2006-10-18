@@ -1,6 +1,6 @@
 all:		Common.a
 
-OBJS := 	Frequency.o Hilbert.o Log.o NullReader.o NullWriter.o RingBuffer.o SDRDataReader.o SDRDataWriter.o \
+OBJS := 	Frequency.o Log.o NullReader.o NullWriter.o RingBuffer.o SDRDataReader.o SDRDataWriter.o \
 		SignalReader.o SoundCardInfo.o SoundCardReader.o SoundCardWriter.o SoundFileReader.o \
 		SoundFileWriter.o
 
@@ -12,9 +12,6 @@ Frequency.o:	Frequency.cpp Frequency.h
 
 Log.o:		Log.cpp Log.h
 		$(CC) $(CFLAGS) -c Log.cpp
-
-Hilbert.o:	Hilbert.cpp Hilbert.h
-		$(CC) $(CFLAGS) -c Hilbert.cpp
 
 NullReader.o:	NullReader.cpp NullReader.h DataReader.h
 		$(CC) $(CFLAGS) -c NullReader.cpp
