@@ -545,9 +545,9 @@ void CDSPControl::dumpBuffer(const wxString& title, float* buffer, unsigned int 
 		wxString text;
 		text.Printf(wxT("%05X:  "), i);
 
-		for (unsigned int j = 0; j < 16; j++) {
+		for (unsigned int j = 0; j < 16; j++, n += 2) {
 			wxString buf;
-			buf.Printf(wxT("%f:%f "), buffer[n++], buffer[n++]);
+			buf.Printf(wxT("%f:%f "), buffer[n + 0], buffer[n + 1]);
 			text.Append(buf);
 
 			if ((i + j) >= nSamples)
