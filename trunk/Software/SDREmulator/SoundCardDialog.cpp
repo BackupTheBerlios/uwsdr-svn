@@ -107,7 +107,12 @@ void CSoundCardDialog::onOK(wxCommandEvent& event)
 	m_inDev  = m_info.getDevs().at(devChoice)->getInDev();
 	m_outDev = m_info.getDevs().at(devChoice)->getOutDev();
 
-	wxDialog::OnOK(event);
+	if (IsModal()) {
+		EndModal(wxID_OK);
+	} else {
+		SetReturnCode(wxID_OK);
+		Show(false);
+	}
 }
 
 void CSoundCardDialog::enumerateAPI()

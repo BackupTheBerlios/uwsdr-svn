@@ -162,3 +162,13 @@ The "-s" has been removed from the UWSDR GUI so it must be used with real hardwa
 Changed to using wxWidgets 2.7.x
 
 Added the voice keyer.
+
+
+Version 0.6.1 - 
+=======================
+
+Updated to wxWidgets 2.7.1 which was more painful than you would expect!
+
+Fixed minor 2.7.x bugs in the code.
+
+Converted to the latest version of PortAudio v19.

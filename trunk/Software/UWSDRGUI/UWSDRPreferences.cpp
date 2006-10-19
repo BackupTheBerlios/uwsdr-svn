@@ -377,7 +377,12 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 	m_parameters->m_txIQphase = m_txIQPhase->GetValue();
 	m_parameters->m_txIQgain  = m_txIQGain->GetValue();
 
-	wxDialog::OnOK(event);
+	if (IsModal()) {
+		EndModal(wxID_OK);
+	} else {
+		SetReturnCode(wxID_OK);
+		Show(false);
+	}
 }
 
 void CUWSDRPreferences::onHelp(wxCommandEvent& event)

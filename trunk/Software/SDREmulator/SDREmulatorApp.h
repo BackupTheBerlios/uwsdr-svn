@@ -35,7 +35,7 @@ class CSDREmulatorApp : public wxApp {
 	virtual bool OnCmdLineParsed(wxCmdLineParser& parser);
 
 #if defined(__WXDEBUG__)
-	virtual void OnAssert(const wxChar* file, int line, const wxChar* cond, const wxChar* msg);
+	virtual void OnAssertFailure(const wxChar* file, int line, const wxChar* func, const wxChar* cond, const wxChar* msg);
 #endif
 
     private:

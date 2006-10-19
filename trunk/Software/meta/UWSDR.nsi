@@ -13,8 +13,8 @@
 ;Configuration
 
   ;General
-  Name "UWSDR 0.6"
-  OutFile "UWSDR-0.6.exe"
+  Name "UWSDR 0.6.1"
+  OutFile "UWSDR-0.6.1.exe"
 
   ;Folder selection page
   InstallDir "$PROGRAMFILES\UWSDR"
@@ -55,11 +55,12 @@ Section "UWSDR Program Files" SecProgram
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\SDRSetup.exe"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\SDREmulator.exe"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\libfftw3f-3.dll"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\PA19.dll"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxbase270_vc_custom.dll"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxbase270_net_vc_custom.dll"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxmsw270_core_vc_custom.dll"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxmsw270_html_vc_custom.dll"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\portaudio_x86.dll"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxbase271_vc_custom.dll"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxbase271_net_vc_custom.dll"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxmsw271_core_vc_custom.dll"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxmsw271_html_vc_custom.dll"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxmsw271_adv_vc_custom.dll"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Help\GUISetup\GUISetup.zip"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Help\SDRSetup\SDRSetup.zip"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Help\UWSDR\UWSDR.zip"

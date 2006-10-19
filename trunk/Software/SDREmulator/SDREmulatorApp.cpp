@@ -103,8 +103,8 @@ int CSDREmulatorApp::OnExit()
 }
 
 #if defined(__WXDEBUG__)
-void CSDREmulatorApp::OnAssert(const wxChar* file, int line, const wxChar* cond, const wxChar* msg)
+void CSDREmulatorApp::OnAssertFailure(const wxChar* file, int line, const wxChar* func, const wxChar* cond, const wxChar* msg)
 {
-	::wxLogFatalError(wxT("Assertion failed on line %d in file %s: %s %s"), line, file, cond, msg);
+	::wxLogFatalError(wxT("Assertion failed on line %d of %s in file %s: %s %s"), line, func, file, cond, msg);
 }
 #endif

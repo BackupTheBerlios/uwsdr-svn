@@ -192,5 +192,10 @@ void CFreqKeypad::onOK(wxCommandEvent& event)
 		return;
 	}
 
-	wxDialog::OnOK(event);
+	if (IsModal()) {
+		EndModal(wxID_OK);
+	} else {
+		SetReturnCode(wxID_OK);
+		Show(false);
+	}
 }
