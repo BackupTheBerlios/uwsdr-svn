@@ -39,10 +39,26 @@ CSDRDataWriter::~CSDRDataWriter()
 
 bool CSDRDataWriter::open(float sampleRate, unsigned int blockSize)
 {
-	struct hostent* host = ::gethostbyname(m_address.c_str());
+	struct hostent* host = NULL;
+#if defined(__WXMSW__)
+	unsigned long addr = ::inet_addr(m_address.c_str());
+#else
+	in_addr_t addr = ::inet_addr(m_address.c_str());
+#endif
+
+	if (addr == INADDR_NONE)
+		host = ::gethostbyname(m_address.c_str());
+	else
+		host = ::gethostbyaddr((char*)&addr, sizeof(addr), PF_INET);		
 
 	if (host == NULL) {
-		::wxLogError(wxT("Cannot resolve host name: %s"), m_address.c_str());
+		::wxLogError(wxT("Error %d when resolving host: %s"),
+#if defined(__WXMSW__)
+			::WSAGetLastError(),
+#else
+			errno,
+#endif
+			m_address.c_str());
 		return false;
 	}
 

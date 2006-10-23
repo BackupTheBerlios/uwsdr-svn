@@ -158,11 +158,11 @@ m_messages(NULL)
 	long inDev  = soundCard.getInDev();
 	long outDev = soundCard.getOutDev();
 
-	// Start the data reading and writing thread
-	createDataThread(address, dataPort, api, inDev, outDev, muted);
-
 	// Start the listening port for the emulator
 	createListener(controlPort);
+
+	// Start the data reading and writing thread
+	createDataThread(address, dataPort, api, inDev, outDev, muted);
 }
 
 CSDREmulatorFrame::~CSDREmulatorFrame()
