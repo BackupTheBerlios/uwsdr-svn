@@ -192,13 +192,6 @@ bool CDSPControl::openIO()
 	if (!ret)
 		return false;
 
-	ret = m_rxWriter->open(m_sampleRate, BLOCK_SIZE);
-	if (!ret)
-		return false;
-
-	if (m_rxReader->hasClock())
-		m_clockId = RX_READER;
-
 	ret = m_txReader->open(m_sampleRate, BLOCK_SIZE);
 	if (!ret)
 		return false;
@@ -206,9 +199,16 @@ bool CDSPControl::openIO()
 	if (m_txReader->hasClock())
 		m_clockId = TX_READER;
 
+	ret = m_rxWriter->open(m_sampleRate, BLOCK_SIZE);
+	if (!ret)
+		return false;
+
 	ret = m_rxReader->open(m_sampleRate, BLOCK_SIZE);
 	if (!ret)
 		return false;
+
+	if (m_rxReader->hasClock())
+		m_clockId = RX_READER;
 
 	if (m_clockId == -1) {
 		::wxLogError(wxT("No reader can provide a suitable clock"));

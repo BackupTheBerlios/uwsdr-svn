@@ -1,6 +1,6 @@
 all:		Common.a
 
-OBJS := 	Frequency.o Log.o NullControler.o NullReader.o NullWriter.o RingBuffer.o SDRDataReader.o \
+OBJS := 	Frequency.o Log.o NullController.o NullReader.o NullWriter.o RingBuffer.o SDRDataReader.o \
 		SDRDataWriter.o SignalReader.o SoundCardInfo.o SoundCardReader.o SoundCardWriter.o \
 		SoundFileReader.o SoundFileWriter.o UWSDRController.o
 

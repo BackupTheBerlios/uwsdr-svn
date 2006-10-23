@@ -1,4 +1,4 @@
-DATADIR = \"/usr/local/share/uwsdr\"
+DATADIR = "/usr/local/share/uwsdr"
 
 ZIP = /usr/bin/zip
 

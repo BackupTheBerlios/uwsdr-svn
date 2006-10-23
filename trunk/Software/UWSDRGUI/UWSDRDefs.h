@@ -124,10 +124,10 @@ const int SMETER_WIDTH     = 210;
 const int SMETER_HEIGHT    = 70;
 
 const int CWTEXT_WIDTH     = 700;
-const int CWKEYB_WIDTH     = 800;
+const int CWKEYB_WIDTH     = 810;
 
 const int VOICETEXT_WIDTH  = 225;
-const int VOICEKEYB_WIDTH  = 325;
+const int VOICEKEYB_WIDTH  = 350;
 
 #else
 #error "Unknown platform"

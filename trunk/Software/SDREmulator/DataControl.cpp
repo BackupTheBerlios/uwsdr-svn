@@ -157,8 +157,8 @@ bool CDataControl::openIO()
 	m_txReader         = new CSDRDataReader(m_address, m_port);
 
 	// This should be done before opening
-	m_internal1Reader->setCallback(this,  INTERNAL_READER_1);
-	m_internal2Reader->setCallback(this,  INTERNAL_READER_2);
+	m_internal1Reader->setCallback(this, INTERNAL_READER_1);
+	m_internal2Reader->setCallback(this, INTERNAL_READER_2);
 	m_soundCardReader->setCallback(this, SOUNDCARD_READER);
 	m_txReader->setCallback(this,        SDRDATA_READER);
 
