@@ -172,3 +172,5 @@ Updated to wxWidgets 2.7.1 which was more painful than you would expect!
 Fixed minor 2.7.x bugs in the code.
 
 Converted to the latest version of PortAudio v19.
+
+Initialisation of I/O is now done in a way that allows a message to be displayed.

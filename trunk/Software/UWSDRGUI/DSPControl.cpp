@@ -114,21 +114,20 @@ void CDSPControl::setRXWriter(IDataWriter* writer)
 	m_rxWriter = writer;
 }
 
-void* CDSPControl::Entry()
+bool CDSPControl::open()
 {
 	bool ret = openIO();
-	if (!ret) {
-		::wxLogError(wxT("Cannot open the input/output ports, waiting to end"));
+	if (!ret)
+		return false;
 
-		closeIO();
+	Create();
+	Run();
 
-		// We have a problem so wait for death
-		while (!TestDestroy())
-			Sleep(500UL);
+	return true;
+}
 
-		return (void*)1;
-	}
-
+void* CDSPControl::Entry()
+{
 	// Open for business
 	m_running = true;
 
@@ -176,6 +175,11 @@ void* CDSPControl::Entry()
 	closeIO();
 
 	return (void*)0;
+}
+
+void CDSPControl::close()
+{
+	Delete();
 }
 
 bool CDSPControl::openIO()

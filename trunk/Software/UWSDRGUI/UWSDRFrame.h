@@ -59,10 +59,10 @@ class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterf
 	void            setParameters(CSDRParameters* parameters);
 	CSDRParameters* getParameters();
 
-	void dialMoved(int id, int value);
+	virtual void dialMoved(int id, int value);
 
-	void sdrCommandNAK(int id);
-	void sdrConnectionLost(int id);
+	virtual void sdrCommandNAK(const wxString& message, int id);
+	virtual void sdrConnectionLost(int id);
 
 	void sendCW(unsigned int speed, const wxString& text);
 	void sendAudio(const wxString& fileName, int state);

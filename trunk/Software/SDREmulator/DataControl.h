@@ -45,7 +45,9 @@ class CDataControl : public wxThread, public IDataCallback {
 
 	virtual bool  setSoundFileReader(const wxString& fileName);
 
+	virtual bool  open();
 	virtual void* Entry();
+	virtual void  close();
 
 	virtual void  callback(float* buffer, unsigned int nSamples, int id);
 

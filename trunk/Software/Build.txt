@@ -4,15 +4,19 @@ Building UWSDR
 Windows
 -------
 
-Everything required to build the software is to be found in the SVN repository, but you will also need Visual C++ 6.0 and wxWidgets 2.6.0 or later. The standard installation of wxWidgets puts it into a folder in the root directory, this folder name is hard coded in the Visual C++ project files. This is easily changed to match your installation.
+Everything required to build the software is to be found in the SVN repository, but you will also need Visual C++ 6.0 and wxWidgets 2.7.1 or later. The standard installation of wxWidgets puts it into a folder in the root directory, this folder name is hard coded in the Visual C++ project files. This is easily changed to match your installation.
 
 WxWidgets can be found at http://www.wxwidgets.org
 
-The versions of FFTW 3 and PortAudio V19 are included pre-built in SVN and should be used.
+PortAudio V19 is now buildable by default from the PortAudio web page http://www.portaudio.com which also requires a copy of the ASIO SDK to build. The default build is fine apart from including the unneeded "Skeleton" which should be commented out. I install the portaudio.h file in a sub-directory of the UWSDR Software root directory named PA19, the Debug and Release .lib files are in the sub-directories PA19/Debug and PA19/Release respectively.
+
+The version of FFTW3 was obtained from the Power SDR distribution and cannot be built using Visual C++. I put the FFTW3 .lib and .h files into a sub-directory named FFTW3 from the UWSDR Software root directory.
 
 Once built, if you want to build a proper installable version of the software, you should install the Nullsoft installation software, to be found at http://nsis.sourceforge.net/Main_Page
 
-The configuration file for NSIS is to be found in the meta directory. You will probably have to edit the UWSDR.nsi file to refelect the paths of your executables. Run NSIS against the UWSDR.nsi file and all being well you'll have a proper Windows install executable.
+The configuration file for NSIS is to be found in the meta directory. You will probably have to edit the UWSDR.nsi file to refelect the paths of your executables. Run NSIS against the UWSDR.nsi file and all being well you'll have a proper Windows install executable. For the proper creation of the installable exe, I have all of the required binary files, that is .exe and .dll in a sub-directory of the Software root directory named Release. This directory will be created automatically by the Visual C++ build process.
+
+The Help files are not built by default, these have to be done manually. Go to the Help sub-directory and then go into each of the GUISetup, SDRSetip and UWSDR sub-directories and simply zip up all of the files in those directories, but do not include any path information. On Windows XP and later you can do this by selecting the required files and then clicking the right hand mouse button and selecting "Send To" and then "Compressed (zipped) Folder", you'll probably have to rename the resulting zip files, the same name as the diretory plus .zip.
 
 
 Linux/Unix
@@ -20,15 +24,15 @@ Linux/Unix
 
 Before building the software you need to ensure that you have the pre-requisites installed, either as packages or built from source.
 
-wxWidgets 2.6.0 or later should be installed, it has been tested with the 2.7.x series and all is fine. This can be found at http://www.wxwidgets.org and will take some time to build. If you install it as a package then ensure that the devel section is installed as well.
+wxWidgets 2.7.1 or later should be built and installed. This can be found at http://www.wxwidgets.org and will take some time to build. If you install it as a package then ensure that the devel part is installed as well.
 
-FFTW 3 should be either installed ot built. This can be found at http://www.fftw.org and if building it yourself, you *may* have to configure it as:
+FFTW 3 should be either installed or built. This can be found at http://www.fftw.org and if building it yourself, you *may* have to configure it as:
 
 $ ./configure --enable-float
 
 I would like feedback on this issue. Is it needed, or is it default?
 
-You will need libsndfile which can be found at http://www.mega-nerd.com/libsndfile/ if it doesn't come with your installation.
+You will need libsndfile which can be found at http://www.mega-nerd.com/libsndfile if it doesn't come with your installation.
 
 Finally you will need PortAudio V19. This is still in beta, and has been for years, and can be found at http://www.portaudio.com/usingsvn.html and download the pa_snapshot_v19.tar.gz file. Build this and install it as per its instrucions.
 
@@ -38,9 +42,20 @@ $ make
 
 Which should build all of the programs without errors.
 
-Then, logged on as root, type:
+The Help files need to be built seperately. Go into the Help sub-directory and type:
+
+$ make
+
+This should build three zip files. They will be installed with the main installation step below.
+
+Then logged on as root, type:
 
 $ make install
 
 Which will put the executables in /usr/local/bin and the icons and other files into /usr/local/share/uwsdr. These locations can be changed from the top level Makefile.
 
+
+Mac OS X
+--------
+
+To be written.

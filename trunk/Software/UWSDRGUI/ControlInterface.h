@@ -19,9 +19,12 @@
 #ifndef	ControlInterface_H
 #define	ControlInterface_H
 
+#include <wx/wx.h>
+
+
 class IControlInterface {
     public:
-	virtual void sdrCommandNAK(int id) = 0;
+	virtual void sdrCommandNAK(const wxString& message, int id) = 0;
 	virtual void sdrConnectionLost(int id) = 0;
 };
 

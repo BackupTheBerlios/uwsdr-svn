@@ -64,19 +64,20 @@ CDataControl::~CDataControl()
 	delete[] m_rxBuffer;
 }
 
-void* CDataControl::Entry()
+bool CDataControl::open()
 {
 	bool ret = openIO();
-	if (!ret) {
-		closeIO();
+	if (!ret)
+		return false;
 
-		// We have a problem so wait for death
-		while (!TestDestroy())
-			Sleep(500UL);
+	Create();
+	Run();
 
-		return (void*)1;
-	}
+	return true;
+}
 
+void* CDataControl::Entry()
+{
 	m_running = true;
 
 	while (!TestDestroy()) {
@@ -111,6 +112,11 @@ void* CDataControl::Entry()
 	closeIO();
 
 	return (void*)0;
+}
+
+void CDataControl::close()
+{
+	Delete();
 }
 
 bool CDataControl::setSoundFileReader(const wxString& fileName)

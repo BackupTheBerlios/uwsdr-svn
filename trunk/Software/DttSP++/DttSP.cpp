@@ -93,8 +93,8 @@ m_frames(audioSize)
 	m_fade = m_frames / 5;
 	m_tail = m_frames - m_fade;
 
-	m_rx = new CRX(m_frames, FFTW_ESTIMATE, DEFCOMP, sampleRate, m_meter, m_spectrum);
-	m_tx = new CTX(m_frames, FFTW_ESTIMATE, DEFCOMP, sampleRate, m_meter, m_spectrum);
+	m_rx = new CRX(m_frames, FFTW_ESTIMATE, sampleRate, m_meter, m_spectrum);
+	m_tx = new CTX(m_frames, FFTW_ESTIMATE, sampleRate, m_meter, m_spectrum);
 
 	m_rx->setMode(DEFMODE);
 	m_tx->setMode(DEFMODE);

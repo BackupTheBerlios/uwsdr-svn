@@ -9,12 +9,17 @@ BUGS
 TODO
 ----
 
-Finish DttSP++
 Finish SDRSetup
-Upgrade GUISetup for Linux icons
+
+Upgrade GUISetup for Linux icons and menu entries
+Upgrade GUISetup for Mac OS X icons and menu entries
+
 Finish "make install" for Linux with .desktop files
+Create Linux RPMs, DEBs, etc
+
 Get transmit working
 Set of screenshots for all platforms
+
 Convert to Weaver method
 
 
@@ -22,4 +27,5 @@ Future
 ------
 
 I+Q storage for different frequencies
+
 Frequency database with display on the spectrum.

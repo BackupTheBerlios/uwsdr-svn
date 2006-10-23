@@ -173,7 +173,7 @@ void CSoundFileReader::clock()
 	wxASSERT(m_callback != NULL);
 	wxASSERT(m_handle != NULL);
 
-	LONG n;
+	LONG n = 0L;
 	LONG i;
 
 	switch (m_format) {

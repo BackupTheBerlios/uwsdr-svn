@@ -39,8 +39,8 @@ const int DATA_WIDTH      = 100;
 const int MESSAGES_WIDTH  = 400;
 const int MESSAGES_HEIGHT = 200;
 
-const CFrequency maxFreq = CFrequency(2450, 0);
-const CFrequency minFreq = CFrequency(2300, 0);
+const CFrequency maxFreq = CFrequency(2451, 0.0);
+const CFrequency minFreq = CFrequency(2299, 0.0);
 
 BEGIN_EVENT_TABLE(CSDREmulatorFrame, wxFrame)
 	EVT_SOCKET(SOCKET_PARENT, CSDREmulatorFrame::onParentSocket)
@@ -144,7 +144,11 @@ m_messages(NULL)
 	SetMenuBar(m_menuBar);
 
 	CSoundCardDialog soundCard(this);
-	soundCard.ShowModal();
+	int ret = soundCard.ShowModal();
+	if (ret != wxID_OK) {
+		Close(true);
+		return;
+	}
 
 	int api     = soundCard.getAPI();
 	long inDev  = soundCard.getInDev();
@@ -166,7 +170,7 @@ CSDREmulatorFrame::~CSDREmulatorFrame()
 bool CSDREmulatorFrame::createListener(unsigned int port)
 {
 	wxIPV4address address;
-	address.Service(port);
+	address.Service((unsigned short)port);
 
 	m_server = new wxSocketServer(address);
 	if (!m_server->Ok()) {
@@ -185,8 +189,12 @@ void CSDREmulatorFrame::createDataThread(const wxString& address, unsigned int p
 {
 	m_data = new CDataControl(48000.0F, address, port, api, inDev, outDev);
 
-	m_data->Create();
-	m_data->Run();
+	bool ret = m_data->open();
+	if (!ret) {
+		::wxMessageBox(wxT("Problems opening the input/output ports."));
+		Close(true);
+		return;
+	}
 }
 
 void CSDREmulatorFrame::onParentSocket(wxSocketEvent& event)
@@ -383,7 +391,7 @@ void CSDREmulatorFrame::onClose(wxCloseEvent& event)
 		wxOK | wxCANCEL | wxICON_QUESTION);
 
 	if (reply == wxOK) {
-		m_data->Delete();
+		m_data->close();
 		Destroy();
 	} else {
 		event.Veto();
@@ -400,7 +408,7 @@ void CSDREmulatorFrame::onExit(wxCommandEvent& event)
 		wxOK | wxCANCEL | wxICON_QUESTION);
 
 	if (reply == wxOK) {
-		m_data->Delete();
+		m_data->close();
 		Destroy();
 	}
 }

@@ -55,7 +55,7 @@ Bridgewater, NJ 08807
 
 class CRX {
     public:
-	CRX(unsigned int bufLen, unsigned int bits, unsigned int cpdLen, float sampleRate, CMeter* meter, CSpectrum* spectrum);
+	CRX(unsigned int bufLen, unsigned int bits, float sampleRate, CMeter* meter, CSpectrum* spectrum);
 	virtual ~CRX();
 
 	virtual void process();

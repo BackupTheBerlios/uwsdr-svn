@@ -41,7 +41,9 @@ class CDSPControl : public wxThread, public IDataCallback {
 	virtual void  setRXReader(IDataReader* reader);
 	virtual void  setRXWriter(IDataWriter* writer);
 
+	virtual bool  open();
 	virtual void* Entry();
+	virtual void  close();
 
 	virtual bool  openIO();
 	virtual void  closeIO();

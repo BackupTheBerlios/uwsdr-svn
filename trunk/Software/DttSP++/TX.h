@@ -53,7 +53,7 @@ Bridgewater, NJ 08807
 
 class CTX {
     public:
-	CTX(unsigned int bufLen, unsigned int bits, unsigned int cpdLen, float sampleRate, CMeter* meter, CSpectrum* spectrum);
+	CTX(unsigned int bufLen, unsigned int bits, float sampleRate, CMeter* meter, CSpectrum* spectrum);
 	virtual ~CTX();
 
 	virtual void process();

@@ -70,7 +70,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GR /GX /ZI /Od /I "C:\wxMSW-2.7.1\lib\vc_dll\mswd" /I "..\Common" /I "C:\wxMSW-2.7.1\include" /I "..\PA19" /D "WIN32" /D "_DEBUG" /D "__WXMSW__" /D "__WXDEBUG__" /D "WXUSINGDLL" /D "_WINDOWS" /D "NOPCH" /FR /FD /GZ /c
+# ADD CPP /nologo /MTd /W4 /Gm /GR /GX /ZI /Od /I "C:\wxMSW-2.7.1\lib\vc_dll\mswd" /I "..\Common" /I "C:\wxMSW-2.7.1\include" /I "..\PA19" /D "WIN32" /D "_DEBUG" /D "__WXMSW__" /D "__WXDEBUG__" /D "WXUSINGDLL" /D "_WINDOWS" /D "NOPCH" /FR /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -146,10 +146,6 @@ SOURCE=.\UWSDRApp.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\UWSDRControl.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\UWSDRFrame.cpp
 # End Source File
 # Begin Source File
@@ -218,10 +214,6 @@ SOURCE=.\InfoBox.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\SDRControl.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\SDRDescrFile.h
 # End Source File
 # Begin Source File
@@ -239,10 +231,6 @@ SOURCE=.\SpectrumDisplay.h
 # Begin Source File
 
 SOURCE=.\UWSDRApp.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\UWSDRControl.h
 # End Source File
 # Begin Source File
 

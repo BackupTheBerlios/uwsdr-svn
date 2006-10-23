@@ -185,7 +185,7 @@ void CUWSDRControl::onSocket(wxSocketEvent& event)
 				switch (m_version) {
 					case 1:
 						if (::strstr(buffer, "NK") != NULL)
-							m_callback->sdrCommandNAK(m_id);
+							m_callback->sdrCommandNAK(buffer, m_id);
 						break;
 					default:
 						wxASSERT(false);

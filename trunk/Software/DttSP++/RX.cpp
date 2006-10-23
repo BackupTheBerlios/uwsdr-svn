@@ -34,7 +34,7 @@ Bridgewater, NJ 08807
 #include "RX.h"
 
 
-CRX::CRX(unsigned int bufLen, unsigned int bits, unsigned int cpdLen, float sampleRate, CMeter* meter, CSpectrum* spectrum) :
+CRX::CRX(unsigned int bufLen, unsigned int bits, float sampleRate, CMeter* meter, CSpectrum* spectrum) :
 m_meter(meter),
 m_spectrum(spectrum),
 m_type(SPEC_POST_FILT),

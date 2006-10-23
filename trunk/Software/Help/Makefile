@@ -1,3 +1,5 @@
+DATADIR = \"/usr/local/share/uwsdr\"
+
 ZIP = /usr/bin/zip
 
 all:	GUISetup/GUISetup.zip SDRSetup/SDRSetup.zip UWSDR/UWSDR.zip
@@ -12,9 +14,9 @@ UWSDR/UWSDR.zip:
 	$(ZIP) -9 UWSDR/UWSDR.zip UWSDR/*.htm UWSDR/*.png UWSDR/*.hh[ckp]
 
 install: GUISetup/GUISetup.zip SDRSetup/SDRSetup.zip UWSDR/UWSDR.zip
-	install -g bin -o root -m 0775 GUISetup/GUISetup.zip $(BINDIR)
-	install -g bin -o root -m 0775 SDRSetup/SDRSetup.zip $(BINDIR)
-	install -g bin -o root -m 0775 UWSDR/UWSDR.zip       $(BINDIR)
+	install -g bin -o root -m 0775 GUISetup/GUISetup.zip $(DATADIR)
+	install -g bin -o root -m 0775 SDRSetup/SDRSetup.zip $(DATADIR)
+	install -g bin -o root -m 0775 UWSDR/UWSDR.zip       $(DATADIR)
 
 clean:
 	rm -f GUISetup/GUISetup.zip

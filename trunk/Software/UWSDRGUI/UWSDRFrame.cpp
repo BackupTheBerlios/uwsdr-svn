@@ -276,9 +276,6 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_dsp->setRXReader(new CSDRDataReader(m_parameters->m_ipAddress, m_parameters->m_dataPort));
 	m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
 
-	m_dsp->Create();
-	m_dsp->Run();
-
 	m_infoBox->setVFO(m_parameters->m_vfoChoice);
 	m_infoBox->setSplitShift(m_parameters->m_vfoSplitShift);
 	m_infoBox->setRIT(m_parameters->m_ritOn);
@@ -339,6 +336,14 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	normaliseMode();
 
 	normaliseFreq();
+
+	ret = m_dsp->open();
+	if (!ret) {
+		::wxLogError(wxT("Problems opening the I/O ports"));
+		::wxMessageBox(_("Problems opening the input/output ports."), _("uWave SDR Error"), wxICON_ERROR);
+		Close(true);
+		return;
+	}
 }
 
 CSDRParameters* CUWSDRFrame::getParameters()
@@ -1198,10 +1203,10 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 	}
 }
 
-void CUWSDRFrame::sdrCommandNAK(int id)
+void CUWSDRFrame::sdrCommandNAK(const wxString& message, int id)
 {
-	::wxLogError(wxT("Received a NAK from the SDR"));
-	::wxMessageBox(_("Received a NAK from the SDR"), _("uWave SDR Error"), wxICON_ERROR);
+	::wxLogError(wxT("Received a NAK from the SDR: ") + message);
+	::wxMessageBox(_("Received a NAK from the SDR\n") + message, _("uWave SDR Error"), wxICON_ERROR);
 }
 
 void CUWSDRFrame::sdrConnectionLost(int id)
@@ -1272,7 +1277,7 @@ void CUWSDRFrame::onClose(wxCloseEvent& event)
 			m_sdr->enableTX(false);
 		m_sdr->enableRX(false);
 		m_sdr->close();
-		m_dsp->Delete();
+		m_dsp->close();
 
 		// Grab the parameters from the CW keyboard
 		m_parameters->m_cwSpeed   = m_cwKeyboard->getSpeed();

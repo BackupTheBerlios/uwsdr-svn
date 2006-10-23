@@ -187,7 +187,11 @@ bool CSDRDataReader::readSocket()
 	// Check that the readfrom() won't block
 	fd_set readFds;
 	FD_ZERO(&readFds);
+#if defined(__WXMSW__)
+	FD_SET((unsigned int)m_fd, &readFds);
+#else
 	FD_SET(m_fd, &readFds);
+#endif
 
 	// 1/2 sec timeout
 	struct timeval tv;
