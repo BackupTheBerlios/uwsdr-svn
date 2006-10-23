@@ -65,6 +65,16 @@ bool CSDRDataReader::open(float sampleRate, unsigned int blockSize)
 {
 	m_blockSize = blockSize;
 
+#if defined(__WXMSW__)
+	WSAData data;
+
+	int wsaRet =  ::WSAStartup(0x101, &data);
+	if (wsaRet != 0) {
+		::wxLogError(wxT("Error %d when initialising Winsock."), wsaRet);
+		return false;
+	}
+#endif
+
 	struct hostent* host = NULL;
 #if defined(__WXMSW__)
 	unsigned long addr = ::inet_addr(m_address.c_str());
@@ -153,6 +163,7 @@ void* CSDRDataReader::Entry()
 
 #if defined(__WXMSW__)
 	::closesocket(m_fd);
+	::WSACleanup();
 #else
 	::close(m_fd);
 #endif

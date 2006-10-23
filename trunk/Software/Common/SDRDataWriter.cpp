@@ -39,6 +39,16 @@ CSDRDataWriter::~CSDRDataWriter()
 
 bool CSDRDataWriter::open(float sampleRate, unsigned int blockSize)
 {
+#if defined(__WXMSW__)
+	WSAData data;
+
+	int ret =  ::WSAStartup(0x101, &data);
+	if (ret != 0) {
+		::wxLogError(wxT("Error %d when initialising Winsock."), ret);
+		return false;
+	}
+#endif
+
 	struct hostent* host = NULL;
 #if defined(__WXMSW__)
 	unsigned long addr = ::inet_addr(m_address.c_str());
@@ -143,6 +153,7 @@ void CSDRDataWriter::close()
 {
 #if defined(__WXMSW__)
 	::closesocket(m_fd);
+	::WSACleanup();
 #else
 	::close(m_fd);
 #endif
