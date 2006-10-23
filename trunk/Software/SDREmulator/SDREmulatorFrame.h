@@ -28,12 +28,13 @@
 class CSDREmulatorFrame : public wxFrame {
 
     public:
-	CSDREmulatorFrame(const wxString& address, unsigned int controlPort, unsigned int dataPort);
+	CSDREmulatorFrame(const wxString& address, unsigned int controlPort, unsigned int dataPort, bool muted);
 	virtual ~CSDREmulatorFrame();
 
 	void onClose(wxCloseEvent& event);
 	void onExit(wxCommandEvent& event);
-	void onInternal(wxCommandEvent& event);
+	void onInternal1(wxCommandEvent& event);
+	void onInternal2(wxCommandEvent& event);
 	void onSoundFile(wxCommandEvent& event);
 	void onSoundCard(wxCommandEvent& event);
 
@@ -62,7 +63,7 @@ class CSDREmulatorFrame : public wxFrame {
 	DECLARE_EVENT_TABLE()
 
 	bool createListener(unsigned int port);
-	void createDataThread(const wxString& address, unsigned int port, int api, long inDev, long outDev);
+	void createDataThread(const wxString& address, unsigned int port, int api, long inDev, long outDev, bool muted);
 
 	void processCommand(wxSocketBase& socket, wxChar* buffer);
 };

@@ -27,11 +27,12 @@
 #include "SDRDataReader.h"
 #include "SDRDataWriter.h"
 
-const int SOCKET_PARENT = 17549;
-const int SOCKET_CHILD  = 17550;
-const int MENU_INTERNAL = 17551;
-const int MENU_FILE     = 17552;
-const int MENU_CARD     = 17553;
+const int SOCKET_PARENT   = 17549;
+const int SOCKET_CHILD    = 17550;
+const int MENU_INTERNAL_1 = 17551;
+const int MENU_INTERNAL_2 = 17552;
+const int MENU_FILE       = 17553;
+const int MENU_CARD       = 17554;
 
 const int BORDER_SIZE     = 5;
 const int DATA_WIDTH      = 100;
@@ -46,13 +47,14 @@ BEGIN_EVENT_TABLE(CSDREmulatorFrame, wxFrame)
 	EVT_SOCKET(SOCKET_PARENT, CSDREmulatorFrame::onParentSocket)
 	EVT_SOCKET(SOCKET_CHILD,  CSDREmulatorFrame::onChildSocket)
 	EVT_MENU(wxID_EXIT,       CSDREmulatorFrame::onExit)
-	EVT_MENU(MENU_INTERNAL,   CSDREmulatorFrame::onInternal)
+	EVT_MENU(MENU_INTERNAL_1, CSDREmulatorFrame::onInternal1)
+	EVT_MENU(MENU_INTERNAL_2, CSDREmulatorFrame::onInternal2)
 	EVT_MENU(MENU_FILE,       CSDREmulatorFrame::onSoundFile)
 	EVT_MENU(MENU_CARD,       CSDREmulatorFrame::onSoundCard)
 	EVT_CLOSE(CSDREmulatorFrame::onClose)
 END_EVENT_TABLE()
 
-CSDREmulatorFrame::CSDREmulatorFrame(const wxString& address, unsigned int controlPort, unsigned int dataPort) :
+CSDREmulatorFrame::CSDREmulatorFrame(const wxString& address, unsigned int controlPort, unsigned int dataPort, bool muted) :
 wxFrame(NULL, -1, wxString(wxT("uWave SDR Emulator")), wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX  | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN),
 m_txFreq(),
 m_rxFreq(),
@@ -67,12 +69,14 @@ m_messages(NULL)
 	fileMenu->Append(wxID_EXIT, wxT("Exit\tAlt-F4"));
 
 	wxMenu* sourceMenu = new wxMenu();
-	sourceMenu->AppendCheckItem(MENU_INTERNAL, wxT("Internal"));
-	sourceMenu->Check(MENU_INTERNAL,  true);
-	sourceMenu->AppendCheckItem(MENU_CARD,     wxT("Sound Card"));
-	sourceMenu->Check(MENU_CARD,      false);
-	sourceMenu->AppendCheckItem(MENU_FILE,     wxT("Sound File..."));
-	sourceMenu->Check(MENU_FILE,      false);
+	sourceMenu->AppendCheckItem(MENU_INTERNAL_1, wxT("Noisy Carrier"));
+	sourceMenu->Check(MENU_INTERNAL_1,  true);
+	sourceMenu->AppendCheckItem(MENU_INTERNAL_2, wxT("Clean Carrier"));
+	sourceMenu->Check(MENU_INTERNAL_2,  false);
+	sourceMenu->AppendCheckItem(MENU_CARD,       wxT("Sound Card"));
+	sourceMenu->Check(MENU_CARD,        false);
+	sourceMenu->AppendCheckItem(MENU_FILE,       wxT("Sound File..."));
+	sourceMenu->Check(MENU_FILE,        false);
 
 	m_menuBar = new wxMenuBar();
 	m_menuBar->Append(fileMenu,   wxT("File"));
@@ -89,7 +93,7 @@ m_messages(NULL)
 	wxStaticText* label0 = new wxStaticText(panel, -1, wxT("Source:"));
 	panelSizer->Add(label0, 0, wxALL, BORDER_SIZE);
 
-	m_sourceLabel = new wxStaticText(panel, -1, wxT("Internal"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	m_sourceLabel = new wxStaticText(panel, -1, wxT("Noisy Carrier"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
 	panelSizer->Add(m_sourceLabel, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label1 = new wxStaticText(panel, -1, wxT("Status:"));
@@ -155,7 +159,7 @@ m_messages(NULL)
 	long outDev = soundCard.getOutDev();
 
 	// Start the data reading and writing thread
-	createDataThread(address, dataPort, api, inDev, outDev);
+	createDataThread(address, dataPort, api, inDev, outDev, muted);
 
 	// Start the listening port for the emulator
 	createListener(controlPort);
@@ -185,7 +189,7 @@ bool CSDREmulatorFrame::createListener(unsigned int port)
 	return true;
 }
 
-void CSDREmulatorFrame::createDataThread(const wxString& address, unsigned int port, int api, long inDev, long outDev)
+void CSDREmulatorFrame::createDataThread(const wxString& address, unsigned int port, int api, long inDev, long outDev, bool muted)
 {
 	m_data = new CDataControl(48000.0F, address, port, api, inDev, outDev);
 
@@ -195,6 +199,8 @@ void CSDREmulatorFrame::createDataThread(const wxString& address, unsigned int p
 		Close(true);
 		return;
 	}
+
+	m_data->setMute(muted);
 }
 
 void CSDREmulatorFrame::onParentSocket(wxSocketEvent& event)
@@ -413,15 +419,28 @@ void CSDREmulatorFrame::onExit(wxCommandEvent& event)
 	}
 }
 
-void CSDREmulatorFrame::onInternal(wxCommandEvent& event)
+void CSDREmulatorFrame::onInternal1(wxCommandEvent& event)
 {
-	m_menuBar->Check(MENU_INTERNAL, true);
-	m_menuBar->Check(MENU_FILE,     false);
-	m_menuBar->Check(MENU_CARD,     false);
+	m_menuBar->Check(MENU_INTERNAL_1, true);
+	m_menuBar->Check(MENU_INTERNAL_2, false);
+	m_menuBar->Check(MENU_FILE,       false);
+	m_menuBar->Check(MENU_CARD,       false);
 
-	m_sourceLabel->SetLabel(wxT("Internal"));
+	m_sourceLabel->SetLabel(wxT("Noisy Carrier"));
 
-	m_data->setSource(SOURCE_INTERNAL);
+	m_data->setSource(SOURCE_INTERNAL_1);
+}
+
+void CSDREmulatorFrame::onInternal2(wxCommandEvent& event)
+{
+	m_menuBar->Check(MENU_INTERNAL_1, false);
+	m_menuBar->Check(MENU_INTERNAL_2, true);
+	m_menuBar->Check(MENU_FILE,       false);
+	m_menuBar->Check(MENU_CARD,       false);
+
+	m_sourceLabel->SetLabel(wxT("Clean carrier"));
+
+	m_data->setSource(SOURCE_INTERNAL_2);
 }
 
 void CSDREmulatorFrame::onSoundFile(wxCommandEvent& event)
@@ -440,21 +459,22 @@ void CSDREmulatorFrame::onSoundFile(wxCommandEvent& event)
 		return;
 	}
 
-	m_menuBar->Check(MENU_INTERNAL, false);
-	m_menuBar->Check(MENU_FILE,     true);
-	m_menuBar->Check(MENU_CARD,     false);
+	m_menuBar->Check(MENU_INTERNAL_1, false);
+	m_menuBar->Check(MENU_INTERNAL_2, false);
+	m_menuBar->Check(MENU_FILE,       true);
+	m_menuBar->Check(MENU_CARD,       false);
 
 	m_sourceLabel->SetLabel(wxT("Sound File"));
 }
 
 void CSDREmulatorFrame::onSoundCard(wxCommandEvent& event)
 {
-	m_menuBar->Check(MENU_INTERNAL, false);
-	m_menuBar->Check(MENU_FILE,     false);
-	m_menuBar->Check(MENU_CARD,     true);
+	m_menuBar->Check(MENU_INTERNAL_1, false);
+	m_menuBar->Check(MENU_INTERNAL_2, false);
+	m_menuBar->Check(MENU_FILE,       false);
+	m_menuBar->Check(MENU_CARD,       true);
 
 	m_sourceLabel->SetLabel(wxT("Sound Card"));
 
 	m_data->setSource(SOURCE_SOUNDCARD);
 }
-

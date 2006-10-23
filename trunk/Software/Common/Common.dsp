@@ -95,6 +95,10 @@ SOURCE=.\Log.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\NullController.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\NullReader.cpp
 # End Source File
 # Begin Source File
@@ -137,10 +141,18 @@ SOURCE=.\SoundFileReader.cpp
 
 SOURCE=.\SoundFileWriter.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=.\UWSDRController.cpp
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=.\ControlInterface.h
+# End Source File
 # Begin Source File
 
 SOURCE=.\DataCallback.h
@@ -163,6 +175,10 @@ SOURCE=.\Log.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\NullController.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\NullReader.h
 # End Source File
 # Begin Source File
@@ -172,6 +188,10 @@ SOURCE=.\NullWriter.h
 # Begin Source File
 
 SOURCE=.\RingBuffer.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SDRController.h
 # End Source File
 # Begin Source File
 
@@ -204,6 +224,10 @@ SOURCE=.\SoundFileReader.h
 # Begin Source File
 
 SOURCE=.\SoundFileWriter.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\UWSDRController.h
 # End Source File
 # Begin Source File
 

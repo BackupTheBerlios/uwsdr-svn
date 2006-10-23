@@ -16,21 +16,20 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	UWSDRControl_H
-#define	UWSDRControl_H
+#ifndef	NullController_H
+#define	NullController_H
 
 #include <wx/wx.h>
-#include <wx/socket.h>
 
-#include "SDRControl.h"
+#include "SDRController.h"
 #include "Frequency.h"
 #include "ControlInterface.h"
 
-class CUWSDRControl : public wxEvtHandler, public ISDRControl {
+class CNullController : public ISDRController {
 
     public:
-	CUWSDRControl(const wxString& address, int port, unsigned int version);
-	virtual ~CUWSDRControl();
+	CNullController();
+	virtual ~CNullController();
 
 	virtual void setCallback(IControlInterface* callback, int id);
 
@@ -41,22 +40,7 @@ class CUWSDRControl : public wxEvtHandler, public ISDRControl {
 	virtual void sendCommand(const char* command);
 	virtual void close();
 
-	void onSocket(wxSocketEvent& event);
-
     private:
-	wxString           m_address;
-	int                m_port;
-	int                m_id;
-	wxSocketClient*    m_socket;
-	IControlInterface* m_callback;
-	unsigned int       m_version;
-	CFrequency         m_txFreq;
-	CFrequency         m_rxFreq;
-	bool               m_enableTX;
-	bool               m_enableRX;
-	bool               m_tx;
-
-	DECLARE_EVENT_TABLE()
 };
 
 #endif

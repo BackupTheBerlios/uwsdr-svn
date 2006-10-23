@@ -20,7 +20,8 @@
 #include "UWSDRFrame.h"
 #include "UWSDRApp.h"
 #include "UWSDRDefs.h"
-#include "UWSDRControl.h"
+#include "NullController.h"
+#include "UWSDRController.h"
 #include "FreqKeypad.h"
 #include "Version.h"
 #include "NullReader.h"
@@ -222,7 +223,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_parameters = parameters;
 
-	m_sdr = new CUWSDRControl(m_parameters->m_ipAddress, m_parameters->m_controlPort, m_parameters->m_hardwareProtocolVersion);
+	m_sdr = new CUWSDRController(m_parameters->m_ipAddress, m_parameters->m_controlPort, m_parameters->m_hardwareProtocolVersion);
 	m_sdr->setCallback(this, -1);
 
 	bool ret = m_sdr->open();

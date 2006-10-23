@@ -39,6 +39,8 @@ CSDREmulatorApp::~CSDREmulatorApp()
 
 void CSDREmulatorApp::OnInitCmdLine(wxCmdLineParser& parser)
 {
+	parser.AddSwitch(wxT("s"), wxEmptyString, wxT("Disable_Receiver_Mute"), wxCMD_LINE_PARAM_OPTIONAL);
+
 	parser.AddParam(wxT("IP_Address"),          wxCMD_LINE_VAL_STRING, wxCMD_LINE_OPTION_MANDATORY);
 	parser.AddParam(wxT("Control_Port_Number"), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_OPTION_MANDATORY);
 	parser.AddParam(wxT("Data_Port_Number"),    wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_OPTION_MANDATORY);
@@ -50,6 +52,8 @@ bool CSDREmulatorApp::OnCmdLineParsed(wxCmdLineParser& parser)
 {
 	if (!wxApp::OnCmdLineParsed(parser))
 		return false;
+
+	m_muted = !parser.Found(wxT("s"));
 
 	m_address = parser.GetParam(0);
 
@@ -87,7 +91,7 @@ bool CSDREmulatorApp::OnInit()
 	::wxLogMessage(wxT("Starting the SDREmulator"));
 	::wxLogMessage(wxT("GUI is at address: %s, control port: %u, data port: %u"), m_address.c_str(), m_controlPort, m_dataPort);
 
-	m_frame = new CSDREmulatorFrame(m_address, m_controlPort, m_dataPort);
+	m_frame = new CSDREmulatorFrame(m_address, m_controlPort, m_dataPort, m_muted);
 	m_frame->Show();
 
 	SetTopWindow(m_frame);

@@ -4,10 +4,9 @@ CFLAGS		:= -I../Common $(CFLAGS)
 
 LIBS		:= -lportaudio -lfftw3f -lfftw3 -lsndfile $(LIBS)
 
-OBJS :=		CWKeyboard.o CWKeyer.o DSPControl.o DTTSPControl.o FreqDial.o FreqDisplay.o \
-		FreqKeypad.o InfoBox.o SDRDescrFile.o SDRParameters.o SMeter.o SpectrumDisplay.o \
-		UWSDRApp.o UWSDRControl.o UWSDRFrame.o UWSDRPreferences.o VoiceKeyboard.o \
-		VoiceKeyer.o VolumeDial.o
+OBJS :=		CWKeyboard.o CWKeyer.o DSPControl.o DTTSPControl.o FreqDial.o FreqDisplay.o FreqKeypad.o InfoBox.o \
+		SDRDescrFile.o SDRParameters.o SMeter.o SpectrumDisplay.o UWSDRApp.o UWSDRFrame.o UWSDRPreferences.o \
+		VoiceKeyboard.o VoiceKeyer.o VolumeDial.o
 
 UWSDR:		$(OBJS)
 		$(CC) $(LDFLAGS) -o UWSDR $(OBJS) ../Common/Common.a ../DttSP++/DttSP.a $(LIBS)
@@ -53,13 +52,10 @@ SpectrumDisplay.o: SpectrumDisplay.cpp SpectrumDisplay.h UWSDRDefs.h
 UWSDRApp.o:	UWSDRApp.cpp UWSDRApp.h ../Common/Log.h SDRDescrFile.h SDRParameters.h UWSDRDefs.h UWSDRFrame.h ../Common/Version.h
 		$(CC) $(CFLAGS) -c UWSDRApp.cpp
 
-UWSDRControl.o:	UWSDRControl.cpp UWSDRControl.h ControlInterface.h ../Common/Frequency.h SDRControl.h
-		$(CC) $(CFLAGS) -c UWSDRControl.cpp
-
-UWSDRFrame.o:	UWSDRFrame.cpp UWSDRFrame.h ControlInterface.h CWKeyboard.h DialInterface.h DSPControl.h FreqDial.h FreqDisplay.h \
-		FreqKeypad.h ../Common/Frequency.h InfoBox.h SDRControl.h ../Common/SDRDataReader.h ../Common/SDRDataWriter.h \
+UWSDRFrame.o:	UWSDRFrame.cpp UWSDRFrame.h ../Common/ControlInterface.h CWKeyboard.h DialInterface.h DSPControl.h FreqDial.h \
+		FreqDisplay.h FreqKeypad.h ../Common/Frequency.h InfoBox.h SDRControl.h ../Common/SDRDataReader.h ../Common/SDRDataWriter.h \
 		SDRParameters.h SMeter.h ../Common/SoundCardReader.h ../Common/SoundCardWriter.h ../Common/SoundFileWriter.h \
-		SpectrumDisplay.h UWSDRApp.h UWSDRControl.h UWSDRDefs.h UWSDRPreferences.h UWSDRXpm.h ../Common/Version.h \
+		SpectrumDisplay.h UWSDRApp.h ../Common/UWSDRControl.h UWSDRDefs.h UWSDRPreferences.h UWSDRXpm.h ../Common/Version.h \
 		VoiceKeyboard.h
 		$(CC) $(CFLAGS) -c UWSDRFrame.cpp
 

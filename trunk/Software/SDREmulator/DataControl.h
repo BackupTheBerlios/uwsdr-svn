@@ -33,7 +33,8 @@
 
 
 enum {
-	SOURCE_INTERNAL,
+	SOURCE_INTERNAL_1,
+	SOURCE_INTERNAL_2,
 	SOURCE_SOUNDFILE,
 	SOURCE_SOUNDCARD
 };
@@ -63,7 +64,8 @@ class CDataControl : public wxThread, public IDataCallback {
 	long           m_inDev;
 	long           m_outDev;
 
-	CSignalReader*    m_internalReader;
+	CSignalReader*    m_internal1Reader;
+	CSignalReader*    m_internal2Reader;
 	CSoundCardReader* m_soundCardReader;
 	CSoundFileReader* m_soundFileReader;
 	CSDRDataWriter*   m_rxWriter;

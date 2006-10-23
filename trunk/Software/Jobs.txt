@@ -20,11 +20,13 @@ Create Linux RPMs, DEBs, etc
 Get transmit working
 Set of screenshots for all platforms
 
-Convert to Weaver method
+Convert to Weaver method for transmit.
 
 
 Future
 ------
+
+Look into auto calibration of I + Q.
 
 I+Q storage for different frequencies
 

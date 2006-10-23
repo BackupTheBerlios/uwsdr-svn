@@ -252,7 +252,7 @@ bool CSDRDataReader::readSocket()
 		return true;
 	}
 
-	int seqNo = (m_sockBuffer[2] << 8) + m_sockBuffer[3];
+	int seqNo = (m_sockBuffer[3] << 8) + m_sockBuffer[2];
 
 	if (m_sequence != -1 && seqNo != m_sequence) {
 		m_missed++;
@@ -273,17 +273,17 @@ bool CSDRDataReader::readSocket()
 			m_sequence = 0;
 	}
 
-	unsigned int nSamples = (m_sockBuffer[4] << 8) + m_sockBuffer[5];
+	unsigned int nSamples = (m_sockBuffer[5] << 8) + m_sockBuffer[4];
 
 	int n = HEADER_SIZE;	
 	for (unsigned int i = 0; i < nSamples && n < len; n += SAMPLE_SIZE, i++) {
-		unsigned int iData = (m_sockBuffer[n + 0] << 16) & 0xFF0000;
+		unsigned int iData = (m_sockBuffer[n + 2] << 16) & 0xFF0000;
 		iData += (m_sockBuffer[n + 1] << 8) & 0xFF00;
-		iData += (m_sockBuffer[n + 2] << 0) & 0xFF;
+		iData += (m_sockBuffer[n + 0] << 0) & 0xFF;
 
-		unsigned int qData = (m_sockBuffer[n + 3] << 16) & 0xFF0000;
+		unsigned int qData = (m_sockBuffer[n + 5] << 16) & 0xFF0000;
 		qData += (m_sockBuffer[n + 4] << 8) & 0xFF00;
-		qData += (m_sockBuffer[n + 5] << 0) & 0xFF;
+		qData += (m_sockBuffer[n + 3] << 0) & 0xFF;
 
 		float buffer[2];
 		buffer[0] = float(iData) / 8388607.0F - 1.0F;

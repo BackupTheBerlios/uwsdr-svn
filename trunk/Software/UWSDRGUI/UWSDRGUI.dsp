@@ -170,10 +170,6 @@ SOURCE=.\VolumeDial.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=.\ControlInterface.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\CWKeyboard.h
 # End Source File
 # Begin Source File

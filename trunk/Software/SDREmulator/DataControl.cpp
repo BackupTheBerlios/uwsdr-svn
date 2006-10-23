@@ -19,9 +19,10 @@
 #include "DataControl.h"
 
 
-const int INTERNAL_READER  = 77;
-const int SOUNDCARD_READER = 78;
-const int SOUNDFILE_READER = 79;
+const int INTERNAL_READER_1 = 77;
+const int INTERNAL_READER_2 = 78;
+const int SOUNDCARD_READER  = 79;
+const int SOUNDFILE_READER  = 80;
 
 const int SDRDATA_READER   = 88;
 
@@ -37,7 +38,8 @@ m_port(port),
 m_api(api),
 m_inDev(inDev),
 m_outDev(outDev),
-m_internalReader(NULL),
+m_internal1Reader(NULL),
+m_internal2Reader(NULL),
 m_soundCardReader(NULL),
 m_soundFileReader(NULL),
 m_rxWriter(NULL),
@@ -49,7 +51,7 @@ m_txRingBuffer(RINGBUFFER_SIZE, 2),
 m_rxRingBuffer(RINGBUFFER_SIZE, 2),
 m_txBuffer(NULL),
 m_rxBuffer(NULL),
-m_source(SOURCE_INTERNAL),
+m_source(SOURCE_INTERNAL_1),
 m_transmit(false),
 m_mute(true),
 m_running(false)
@@ -89,7 +91,8 @@ void* CDataControl::Entry()
 
 				if (nSamples > 0) {
 					switch (m_source) {
-						case SOURCE_INTERNAL:
+						case SOURCE_INTERNAL_1:
+						case SOURCE_INTERNAL_2:
 						case SOURCE_SOUNDFILE:
 							m_nullWriter->write(m_txBuffer, nSamples);
 							break;
@@ -144,20 +147,26 @@ bool CDataControl::setSoundFileReader(const wxString& fileName)
 
 bool CDataControl::openIO()
 {
-	m_internalReader  = new CSignalReader(m_sampleRate / 4.0F + 1000.5F, 0.0008F, 0.001F);
-	m_soundCardReader = new CSoundCardReader(m_api, m_inDev);
-	m_rxWriter        = new CSDRDataWriter(m_address, m_port);
+	m_internal1Reader  = new CSignalReader(m_sampleRate / 4.0F + 1000.5F, 0.0008F, 0.001F);
+	m_internal2Reader  = new CSignalReader(m_sampleRate / 4.0F, 0.0F, 0.001F);
+	m_soundCardReader  = new CSoundCardReader(m_api, m_inDev);
+	m_rxWriter         = new CSDRDataWriter(m_address, m_port);
 
-	m_nullWriter      = new CNullWriter();
-	m_soundCardWriter = new CSoundCardWriter(m_api, m_outDev);
-	m_txReader        = new CSDRDataReader(m_address, m_port);
+	m_nullWriter       = new CNullWriter();
+	m_soundCardWriter  = new CSoundCardWriter(m_api, m_outDev);
+	m_txReader         = new CSDRDataReader(m_address, m_port);
 
 	// This should be done before opening
-	m_internalReader->setCallback(this,  INTERNAL_READER);
+	m_internal1Reader->setCallback(this,  INTERNAL_READER_1);
+	m_internal2Reader->setCallback(this,  INTERNAL_READER_2);
 	m_soundCardReader->setCallback(this, SOUNDCARD_READER);
 	m_txReader->setCallback(this,        SDRDATA_READER);
 
-	bool ret = m_internalReader->open(m_sampleRate, BLOCK_SIZE);
+	bool ret = m_internal1Reader->open(m_sampleRate, BLOCK_SIZE);
+	if (!ret)
+		return false;
+
+	ret = m_internal2Reader->open(m_sampleRate, BLOCK_SIZE);
 	if (!ret)
 		return false;
 
@@ -186,7 +195,8 @@ bool CDataControl::openIO()
 
 void CDataControl::closeIO()
 {
-	m_internalReader->close();
+	m_internal1Reader->close();
+	m_internal2Reader->close();
 	m_soundCardReader->close();
 	m_rxWriter->close();
 	m_nullWriter->close();
@@ -205,8 +215,19 @@ void CDataControl::callback(float* inBuffer, unsigned int nSamples, int id)
 		return;
 
 	switch (id) {
-		case INTERNAL_READER: {
-				if (m_source != SOURCE_INTERNAL)
+		case INTERNAL_READER_1: {
+				if (m_source != SOURCE_INTERNAL_1)
+					return;
+
+				unsigned int n = m_rxRingBuffer.addData(inBuffer, nSamples);
+
+				if (n > 0)
+					m_waiting.Post();
+			}
+			break;
+
+		case INTERNAL_READER_2: {
+				if (m_source != SOURCE_INTERNAL_2)
 					return;
 
 				unsigned int n = m_rxRingBuffer.addData(inBuffer, nSamples);
@@ -225,8 +246,13 @@ void CDataControl::callback(float* inBuffer, unsigned int nSamples, int id)
 				if (m_mute)
 					return;
 
-				if (m_source == SOURCE_INTERNAL) {
-					m_internalReader->clock();
+				if (m_source == SOURCE_INTERNAL_1) {
+					m_internal1Reader->clock();
+					return;
+				}
+
+				if (m_source == SOURCE_INTERNAL_2) {
+					m_internal2Reader->clock();
 					return;
 				}
 
@@ -290,7 +316,8 @@ void CDataControl::setTX(bool transmit)
 		m_txRingBuffer.clear();
 		m_rxRingBuffer.clear();
 
-		m_internalReader->purge();
+		m_internal1Reader->purge();
+		m_internal2Reader->purge();
 		m_soundCardReader->purge();
 		m_txReader->purge();
 
@@ -314,7 +341,8 @@ void CDataControl::setMute(bool mute)
 
 		m_rxRingBuffer.clear();
 
-		m_internalReader->purge();
+		m_internal1Reader->purge();
+		m_internal2Reader->purge();
 		m_soundCardReader->purge();
 		m_txReader->purge();
 

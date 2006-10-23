@@ -25,7 +25,7 @@
 
 #include "SpectrumDisplay.h"
 #include "SDRParameters.h"
-#include "SDRControl.h"
+#include "SDRController.h"
 #include "DialInterface.h"
 #include "ControlInterface.h"
 #include "DSPControl.h"
@@ -71,7 +71,7 @@ class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterf
 	wxTimer           m_timer;
 	CSDRParameters*   m_parameters;
 	CDSPControl*      m_dsp;
-	ISDRControl*      m_sdr;
+	ISDRController*   m_sdr;
 	bool              m_rxOn;
 	bool              m_txOn;
 	double            m_stepSize;

@@ -15,37 +15,42 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+#include "NullController.h"
 
-#ifndef	SDREmulatorApp_H
-#define	SDREmulatorApp_H
 
-#include <wx/wx.h>
+CNullController::CNullController()
+{
+}
 
-#include "SDREmulatorFrame.h"
+CNullController::~CNullController()
+{
+}
 
-class CSDREmulatorApp : public wxApp {
+void CNullController::setCallback(IControlInterface* callback, int id)
+{
+}
 
-    public:
-	CSDREmulatorApp();
-	virtual ~CSDREmulatorApp();
+bool CNullController::open()
+{
+	return true;
+}
 
-	virtual bool OnInit();
-	virtual int  OnExit();
-	virtual void OnInitCmdLine(wxCmdLineParser& parser);
-	virtual bool OnCmdLineParsed(wxCmdLineParser& parser);
+void CNullController::enableTX(bool on)
+{
+}
 
-#if defined(__WXDEBUG__)
-	virtual void OnAssertFailure(const wxChar* file, int line, const wxChar* func, const wxChar* cond, const wxChar* msg);
-#endif
+void CNullController::enableRX(bool on)
+{
+}
 
-    private:
-	CSDREmulatorFrame* m_frame;
-	bool               m_muted;
-	wxString           m_address;
-	unsigned int       m_controlPort;
-	unsigned int       m_dataPort;
-};
+void CNullController::setTXAndFreq(bool transmit, const CFrequency& freq)
+{
+}
 
-DECLARE_APP(CSDREmulatorApp)
+void CNullController::sendCommand(const char* command)
+{
+}
 
-#endif
+void CNullController::close()
+{
+}

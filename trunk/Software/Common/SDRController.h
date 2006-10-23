@@ -16,13 +16,13 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	SDRControl_H
-#define	SDRControl_H
+#ifndef	SDRController_H
+#define	SDRController_H
 
 #include "Frequency.h"
 #include "ControlInterface.h"
 
-class ISDRControl {
+class ISDRController {
 
     public:
 	virtual void setCallback(IControlInterface* callback, int id) = 0;

@@ -164,8 +164,8 @@ Changed to using wxWidgets 2.7.x
 Added the voice keyer.
 
 
-Version 0.6.1 - 
-=======================
+Version 0.6.1 - 24 October 2006
+===============================
 
 Updated to wxWidgets 2.7.1 which was more painful than you would expect!
 
@@ -174,3 +174,9 @@ Fixed minor 2.7.x bugs in the code.
 Converted to the latest version of PortAudio v19.
 
 Initialisation of I/O is now done in a way that allows a message to be displayed.
+
+Added switch to the SDR Emulator to enable receive data without GUI connection.
+
+Converted byte order of data to little-endian.
+
+New internal data source of a pure carrier for the SDR Emulator plus better naming.
