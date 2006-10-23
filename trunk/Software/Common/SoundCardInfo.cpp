@@ -76,8 +76,6 @@ bool CSoundCardInfo::enumerateDevs(const CSoundCardAPI& api)
 		return false;
 	}
 
-	printf("No of devices %d\n", n);
-
 	for (PaDeviceIndex i = 0; i < n; i++) {
 		const PaDeviceInfo* device = ::Pa_GetDeviceInfo(i);
 
@@ -91,13 +89,10 @@ bool CSoundCardInfo::enumerateDevs(const CSoundCardAPI& api)
 			name = wxT("Microsoft Sound Mapper");
 #endif
 
-		printf("N: %d Name: %s API: %d Input: %d Output: %d\n", i, device->name, device->hostApi, device->maxInputChannels, device->maxOutputChannels);
-
 		if (device->maxInputChannels > 0 && device->hostApi == api.getAPI()) {
 			CSoundCardDev* dev = findDev(name);
 
 			if (dev == NULL) {
-				printf("New input device\n");
 				dev = new CSoundCardDev(name);
 				m_devs.push_back(dev);
 			}
@@ -109,7 +104,6 @@ bool CSoundCardInfo::enumerateDevs(const CSoundCardAPI& api)
 			CSoundCardDev* dev = findDev(name);
 
 			if (dev == NULL) {
-				printf("New output device\n");
 				dev = new CSoundCardDev(name);
 				m_devs.push_back(dev);
 			}
