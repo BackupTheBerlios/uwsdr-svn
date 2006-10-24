@@ -128,7 +128,7 @@ class CDttSP {
 	float        m_sampleRate;
 	bool         m_running;
 	bool         m_suspend;
-#if defined(__WXMSW__) || defined(__WXGTK__)
+#if defined(__WXMSW__) || defined(__WXGTK__) || defined(__WXMAC__)
 	wxSemaphore* m_update;
 	wxSemaphore* m_buffer;
 #elif defined(WIN32)

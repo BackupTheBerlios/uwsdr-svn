@@ -123,7 +123,7 @@ m_messages(NULL)
 	wxStaticText* label5 = new wxStaticText(panel, -1, wxT("RX Enabled:"));
 	panelSizer->Add(label5, 0, wxALL, BORDER_SIZE);
 
-	m_rxEnabledLabel = new wxStaticText(panel, -1, wxT("No"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	m_rxEnabledLabel = new wxStaticText(panel, -1, muted ? wxT("No") : wxT("Yes"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
 	panelSizer->Add(m_rxEnabledLabel, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label6 = new wxStaticText(panel, -1, wxT("Transmitting:"));

@@ -18,7 +18,7 @@
 
 #include "SDRDataReader.h"
 
-#if !defined(__WXMSW__)
+#if !defined(__WINDOWS__)
 #include <netdb.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -67,7 +67,7 @@ bool CSDRDataReader::open(float sampleRate, unsigned int blockSize)
 {
 	m_blockSize = blockSize;
 
-#if defined(__WXMSW__)
+#if defined(__WINDOWS__)
 	WSAData data;
 
 	int wsaRet =  ::WSAStartup(0x101, &data);
@@ -78,7 +78,7 @@ bool CSDRDataReader::open(float sampleRate, unsigned int blockSize)
 #endif
 
 	struct hostent* host = NULL;
-#if defined(__WXMSW__)
+#if defined(__WINDOWS__)
 	unsigned long addr = ::inet_addr(m_address.c_str());
 #else
 	in_addr_t addr = ::inet_addr(m_address.c_str());
@@ -91,7 +91,7 @@ bool CSDRDataReader::open(float sampleRate, unsigned int blockSize)
 
 	if (host == NULL) {
 		::wxLogError(wxT("Error %d when resolving host: %s"),
-#if defined(__WXMSW__)
+#if defined(__WINDOWS__)
 			::WSAGetLastError(),
 #else
 			errno,
@@ -107,7 +107,7 @@ bool CSDRDataReader::open(float sampleRate, unsigned int blockSize)
 	m_fd = ::socket(PF_INET, SOCK_DGRAM, 0);
 	if (m_fd < 0) {
 		::wxLogError(wxT("Error %d when creating the reading datagram socket"),
-#if defined(__WXMSW__)
+#if defined(__WINDOWS__)
 			::WSAGetLastError());
 #else
 			errno);
@@ -124,7 +124,7 @@ bool CSDRDataReader::open(float sampleRate, unsigned int blockSize)
 	int ret = ::bind(m_fd, (struct sockaddr *)&sockaddr, sizeof(struct sockaddr_in));
 	if (ret < 0) {
 		::wxLogError(wxT("Error %d when binding the reading datagram socket"),
-#if defined(__WXMSW__)
+#if defined(__WINDOWS__)
 			::WSAGetLastError());
 #else
 			errno);
@@ -163,7 +163,7 @@ void* CSDRDataReader::Entry()
 			Sleep(500UL);
 	}
 
-#if defined(__WXMSW__)
+#if defined(__WINDOWS__)
 	::closesocket(m_fd);
 	::WSACleanup();
 #else
@@ -216,7 +216,7 @@ bool CSDRDataReader::readSocket()
 	// Check that the readfrom() won't block
 	fd_set readFds;
 	FD_ZERO(&readFds);
-#if defined(__WXMSW__)
+#if defined(__WINDOWS__)
 	FD_SET((unsigned int)m_fd, &readFds);
 #else
 	FD_SET(m_fd, &readFds);
@@ -230,7 +230,7 @@ bool CSDRDataReader::readSocket()
 	int ret = ::select(m_fd + 1, &readFds, NULL, NULL, &tv);
 	if (ret < 0) {
 		::wxLogError(wxT("Error %d while performing a select"),
-#if defined(__WXMSW__)
+#if defined(__WINDOWS__)
 			::WSAGetLastError());
 #else
 			errno);
@@ -243,7 +243,7 @@ bool CSDRDataReader::readSocket()
 		return true;
 
 	struct sockaddr addr;
-#if defined(__WXMSW__)
+#if defined(__WINDOWS__)
 	int size = sizeof(struct sockaddr);
 #else
 	socklen_t size = sizeof(struct sockaddr);
@@ -252,7 +252,7 @@ bool CSDRDataReader::readSocket()
 	ssize_t len = ::recvfrom(m_fd, (char *)m_sockBuffer, m_size, 0, &addr, &size);
 	if (len < 0) {
 		::wxLogError(wxT("Error %d reading from the datagram socket"),
-#if defined(__WXMSW__)
+#if defined(__WINDOWS__)
 			::WSAGetLastError());
 #else
 			errno);
@@ -281,7 +281,7 @@ bool CSDRDataReader::readSocket()
 		return true;
 	}
 
-	int seqNo = (m_sockBuffer[3] << 8) + m_sockBuffer[2];
+	int seqNo = (m_sockBuffer[2] << 8) + m_sockBuffer[3];
 
 	if (m_sequence != -1 && seqNo != m_sequence) {
 		m_missed++;
@@ -302,17 +302,17 @@ bool CSDRDataReader::readSocket()
 			m_sequence = 0;
 	}
 
-	unsigned int nSamples = (m_sockBuffer[5] << 8) + m_sockBuffer[4];
+	unsigned int nSamples = (m_sockBuffer[4] << 8) + m_sockBuffer[5];
 
 	int n = HEADER_SIZE;	
 	for (unsigned int i = 0; i < nSamples && n < len; n += SAMPLE_SIZE, i++) {
-		unsigned int iData = (m_sockBuffer[n + 2] << 16) & 0xFF0000;
+		unsigned int iData = (m_sockBuffer[n + 0] << 16) & 0xFF0000;
 		iData += (m_sockBuffer[n + 1] << 8) & 0xFF00;
-		iData += (m_sockBuffer[n + 0] << 0) & 0xFF;
+		iData += (m_sockBuffer[n + 2] << 0) & 0xFF;
 
-		unsigned int qData = (m_sockBuffer[n + 5] << 16) & 0xFF0000;
+		unsigned int qData = (m_sockBuffer[n + 3] << 16) & 0xFF0000;
 		qData += (m_sockBuffer[n + 4] << 8) & 0xFF00;
-		qData += (m_sockBuffer[n + 3] << 0) & 0xFF;
+		qData += (m_sockBuffer[n + 5] << 0) & 0xFF;
 
 		float buffer[2];
 		buffer[0] = float(iData) / 8388607.0F - 1.0F;

@@ -185,3 +185,4 @@ New internal data source of a pure carrier for the SDR Emulator plus better nami
 Version 0.6.2 - October 2006
 ============================
 
+Switched back to big-endian data format.

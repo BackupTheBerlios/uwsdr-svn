@@ -39,7 +39,7 @@ CSDRDataWriter::~CSDRDataWriter()
 
 bool CSDRDataWriter::open(float sampleRate, unsigned int blockSize)
 {
-#if defined(__WXMSW__)
+#if defined(__WINDOWS__)
 	WSAData data;
 
 	int ret =  ::WSAStartup(0x101, &data);
@@ -50,7 +50,7 @@ bool CSDRDataWriter::open(float sampleRate, unsigned int blockSize)
 #endif
 
 	struct hostent* host = NULL;
-#if defined(__WXMSW__)
+#if defined(__WINDOWS__)
 	unsigned long addr = ::inet_addr(m_address.c_str());
 #else
 	in_addr_t addr = ::inet_addr(m_address.c_str());
@@ -63,7 +63,7 @@ bool CSDRDataWriter::open(float sampleRate, unsigned int blockSize)
 
 	if (host == NULL) {
 		::wxLogError(wxT("Error %d when resolving host: %s"),
-#if defined(__WXMSW__)
+#if defined(__WINDOWS__)
 			::WSAGetLastError(),
 #else
 			errno,
@@ -80,7 +80,7 @@ bool CSDRDataWriter::open(float sampleRate, unsigned int blockSize)
 	m_fd = ::socket(PF_INET, SOCK_DGRAM, 0);
 	if (m_fd < 0) {
 		::wxLogError(wxT("Error %d when creating the writing datagram socket"),
-#if defined(__WXMSW__)
+#if defined(__WINDOWS__)
 			::WSAGetLastError());
 #else
 			errno);
@@ -104,8 +104,8 @@ void CSDRDataWriter::write(const float* buffer, unsigned int nSamples)
 	m_sockBuffer[0] = 'D';
 	m_sockBuffer[1] = 'A';
 
-	m_sockBuffer[2] = (m_sequence >> 0) & 0xFF;
-	m_sockBuffer[3] = (m_sequence >> 8) & 0xFF;
+	m_sockBuffer[2] = (m_sequence >> 8) & 0xFF;
+	m_sockBuffer[3] = (m_sequence >> 0) & 0xFF;
 
 	m_sequence += 2;
 	if (m_sequence > 0xFFFF) {
@@ -115,27 +115,27 @@ void CSDRDataWriter::write(const float* buffer, unsigned int nSamples)
 			m_sequence = 0;
 	}
 
-	m_sockBuffer[4] = (nSamples >> 0) & 0xFF;
-	m_sockBuffer[5] = (nSamples >> 8) & 0xFF;
+	m_sockBuffer[4] = (nSamples >> 8) & 0xFF;
+	m_sockBuffer[5] = (nSamples >> 0) & 0xFF;
 
 	unsigned int len = HEADER_SIZE;
 	for (unsigned int i = 0; i < nSamples; i++) {
 		unsigned int iData = (unsigned int)((buffer[i * 2 + 0] + 1.0F) * 8388607.0F + 0.5F);
 		unsigned int qData = (unsigned int)((buffer[i * 2 + 1] + 1.0F) * 8388607.0F + 0.5F);
 
-		m_sockBuffer[len++] = (iData >> 0)  & 0xFF;
-		m_sockBuffer[len++] = (iData >> 8)  & 0xFF;
 		m_sockBuffer[len++] = (iData >> 16) & 0xFF;
+		m_sockBuffer[len++] = (iData >> 8)  & 0xFF;
+		m_sockBuffer[len++] = (iData >> 0)  & 0xFF;
 
-		m_sockBuffer[len++] = (qData >> 0)  & 0xFF;
-		m_sockBuffer[len++] = (qData >> 8)  & 0xFF;
 		m_sockBuffer[len++] = (qData >> 16) & 0xFF;
+		m_sockBuffer[len++] = (qData >> 8)  & 0xFF;
+		m_sockBuffer[len++] = (qData >> 0)  & 0xFF;
 	}
 
 	ssize_t ret = ::sendto(m_fd, (char *)m_sockBuffer, len, 0, (struct sockaddr *)&m_remAddr, sizeof(struct sockaddr_in));
 	if (ret < 0) {
 		::wxLogError(wxT("Error %d writing to the datagram socket"),
-#if defined(__WXMSW__)
+#if defined(__WINDOWS__)
 			::WSAGetLastError());
 #else
 			errno);
@@ -151,7 +151,7 @@ void CSDRDataWriter::write(const float* buffer, unsigned int nSamples)
 
 void CSDRDataWriter::close()
 {
-#if defined(__WXMSW__)
+#if defined(__WINDOWS__)
 	::closesocket(m_fd);
 	::WSACleanup();
 #else

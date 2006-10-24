@@ -44,7 +44,7 @@ class CGUISetupFrame : public wxFrame {
 	wxTextCtrl*    m_data;
 	wxCheckBox*    m_startMenu;
 	CSoundCardInfo m_info;
-#ifdef __WXMSW__
+#if defined(__WXMSW__)
 	wxCheckBox* m_deskTop;
 #endif
 
@@ -55,7 +55,7 @@ class CGUISetupFrame : public wxFrame {
 	void enumerateAPI();
 	void enumerateAudio(const CSoundCardAPI& api);
 	void writeStartMenu(const wxString& name, const wxString& instDir);
-#ifdef __WXMSW__
+#if defined(__WXMSW__)
 	void writeDeskTop(const wxString& name, const wxString& instDir);
 #endif
 };

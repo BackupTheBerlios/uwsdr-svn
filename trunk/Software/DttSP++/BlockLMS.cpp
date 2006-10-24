@@ -158,7 +158,7 @@ void CBlockLMS::process()
 				::memcpy(&CXBdata(m_signal, sigidx), &m_y[128],     128 * sizeof(COMPLEX));	// if noise filter, output y
 				break;
 			default:
-#if defined(__WXMSW__) || defined(__WXGTK__)
+#if defined(__WXMSW__) || defined(__WXGTK__) || defined(__WXMAC__)
 				wxLogError(wxT("Unknown filter type in Block LMS = %d"), m_filterType);
 #elif defined(WIN32)
 				// No WIN32 logging yet

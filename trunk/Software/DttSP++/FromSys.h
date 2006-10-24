@@ -41,7 +41,7 @@ Bridgewater, NJ 08807
 #include <cmath>
 
 // For semaphores and logging
-#if defined(__WXMSW__) || defined(__WXGTK__)
+#if defined(__WXMSW__) || defined(__WXGTK__) || defined(__WXMAC__)
 #include <wx/wx.h>
 
 #define	ASSERT(x)	wxASSERT(x)

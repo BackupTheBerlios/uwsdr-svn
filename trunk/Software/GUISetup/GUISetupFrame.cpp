@@ -23,7 +23,7 @@
 
 #include "GUISetupXpm.h"
 
-#ifdef __WXMSW__
+#if defined(__WINDOWS__)
 #include <windows.h>
 #include <shellapi.h>
 #include <shlobj.h>

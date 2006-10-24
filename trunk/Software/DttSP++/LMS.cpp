@@ -97,7 +97,7 @@ void CLMS::process()
 			break;
 
 		default:
-#if defined(__WXMSW__) || defined(__WXGTK__)
+#if defined(__WXMSW__) || defined(__WXGTK__) || defined(__WXMAC__)
 			wxLogError(wxT("Unknown filter type in LMS = %d"), m_filterType);
 #elif defined(WIN32)
 			// No WIN32 logging yet
