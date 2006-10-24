@@ -58,6 +58,11 @@ bool CSoundCardWriter::open(float sampleRate, unsigned int blockSize)
 	}
 
 	PaDeviceIndex dev = ::Pa_HostApiDeviceIndexToDeviceIndex(m_api, m_dev);
+	if (dev < 0) {
+		::Pa_Terminate();
+		::wxLogError(wxT("Received %d:%s from Pa_HostApiDeviceIndexToDeviceIndex() in SoundCardWriter for API:%d Dev:%d"), error, ::Pa_GetErrorText(dev), m_api, m_dev);
+		return false;
+	}
 
 	PaStreamParameters params;
 	params.device                    = dev;
@@ -76,6 +81,8 @@ bool CSoundCardWriter::open(float sampleRate, unsigned int blockSize)
 	error = ::Pa_StartStream(m_stream);
 	if (error != paNoError) {
 		::Pa_CloseStream(m_stream);
+		m_stream = NULL;
+
 		::Pa_Terminate();
 		::wxLogError(wxT("Received %d:%s from Pa_StartStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
 		return false;
@@ -115,17 +122,21 @@ int CSoundCardWriter::callback(void* output, unsigned long nSamples, const PaStr
 
 void CSoundCardWriter::close()
 {
-	PaError error = ::Pa_AbortStream(m_stream);
-	if (error != paNoError)
-		::wxLogError(wxT("Received %d:%s from Pa_AbortStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
+	if (m_stream != NULL) {
+		PaError error = ::Pa_AbortStream(m_stream);
+		if (error != paNoError)
+			::wxLogError(wxT("Received %d:%s from Pa_AbortStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
 
-	error = ::Pa_CloseStream(m_stream);
-	if (error != paNoError)
-		::wxLogError(wxT("Received %d:%s from Pa_CloseStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
+		error = ::Pa_CloseStream(m_stream);
+		if (error != paNoError)
+			::wxLogError(wxT("Received %d:%s from Pa_CloseStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
 
-	error = ::Pa_Terminate();
-	if (error != paNoError)
-		::wxLogError(wxT("Received %d:%s from Pa_Terminate() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
+		error = ::Pa_Terminate();
+		if (error != paNoError)
+			::wxLogError(wxT("Received %d:%s from Pa_Terminate() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
+
+		m_stream = NULL;
+	}
 
 	delete   m_buffer;
 	delete[] m_lastBuffer;

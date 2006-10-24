@@ -180,3 +180,8 @@ Added switch to the SDR Emulator to enable receive data without GUI connection.
 Converted byte order of data to little-endian.
 
 New internal data source of a pure carrier for the SDR Emulator plus better naming.
+
+
+Version 0.6.2 - October 2006
+============================
+

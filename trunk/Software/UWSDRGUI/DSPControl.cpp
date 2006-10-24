@@ -117,8 +117,10 @@ void CDSPControl::setRXWriter(IDataWriter* writer)
 bool CDSPControl::open()
 {
 	bool ret = openIO();
-	if (!ret)
+	if (!ret) {
+		closeIO();
 		return false;
+	}
 
 	Create();
 	Run();
@@ -130,8 +132,6 @@ void* CDSPControl::Entry()
 {
 	// Open for business
 	m_running = true;
-
-	::wxLogMessage(wxT("DttSP started"));
 
 	while (!TestDestroy()) {
 		wxSemaError ret = m_waiting.WaitTimeout(500UL);
@@ -169,8 +169,6 @@ void* CDSPControl::Entry()
 	}
 
 	m_running = false;
-
-	::wxLogMessage(wxT("DttSP ended"));
 
 	closeIO();
 

@@ -69,8 +69,10 @@ CDataControl::~CDataControl()
 bool CDataControl::open()
 {
 	bool ret = openIO();
-	if (!ret)
+	if (!ret) {
+		closeIO();
 		return false;
+	}
 
 	Create();
 	Run();

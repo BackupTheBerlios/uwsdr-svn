@@ -61,6 +61,11 @@ bool CSoundCardReader::open(float sampleRate, unsigned int blockSize)
 	}
 
 	PaDeviceIndex dev = ::Pa_HostApiDeviceIndexToDeviceIndex(m_api, m_dev);
+	if (dev < 0) {
+		::Pa_Terminate();
+		::wxLogError(wxT("Received %d:%s from Pa_HostApiDeviceIndexToDeviceIndex() in SoundCardReader for API:%d Dev:%d"), error, ::Pa_GetErrorText(dev), m_api, m_dev);
+		return false;
+	}
 
 	PaStreamParameters params;
 	params.device                    = dev;
@@ -79,6 +84,8 @@ bool CSoundCardReader::open(float sampleRate, unsigned int blockSize)
 	error = ::Pa_StartStream(m_stream);
 	if (error != paNoError) {
 		::Pa_CloseStream(m_stream);
+		m_stream = NULL;
+
 		::Pa_Terminate();
 		::wxLogError(wxT("Received %d:%s from Pa_StartStream() in SoundCardReader"), error, ::Pa_GetErrorText(error));
 		return false;
@@ -99,17 +106,21 @@ int CSoundCardReader::callback(const void* input, unsigned long nSamples, const 
 
 void CSoundCardReader::close()
 {
-	PaError error = ::Pa_AbortStream(m_stream);
-	if (error != paNoError)
-		::wxLogError(wxT("Received %d:%s from Pa_AbortStream() in SoundCardReader"), error, ::Pa_GetErrorText(error));
+	if (m_stream != NULL) {
+		PaError error = ::Pa_AbortStream(m_stream);
+		if (error != paNoError)
+			::wxLogError(wxT("Received %d:%s from Pa_AbortStream() in SoundCardReader"), error, ::Pa_GetErrorText(error));
 
-	error = ::Pa_CloseStream(m_stream);
-	if (error != paNoError)
-		::wxLogError(wxT("Received %d:%s from Pa_CloseStream() in SoundCardReader"), error, ::Pa_GetErrorText(error));
+		error = ::Pa_CloseStream(m_stream);
+		if (error != paNoError)
+			::wxLogError(wxT("Received %d:%s from Pa_CloseStream() in SoundCardReader"), error, ::Pa_GetErrorText(error));
 
-	error = ::Pa_Terminate();
-	if (error != paNoError)
-		::wxLogError(wxT("Received %d:%s from Pa_Terminate() in SoundCardReader"), error, ::Pa_GetErrorText(error));
+		error = ::Pa_Terminate();
+		if (error != paNoError)
+			::wxLogError(wxT("Received %d:%s from Pa_Terminate() in SoundCardReader"), error, ::Pa_GetErrorText(error));
+
+		m_stream = NULL;
+	}
 }
 
 void CSoundCardReader::purge()

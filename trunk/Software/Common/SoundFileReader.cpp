@@ -238,10 +238,10 @@ void CSoundFileReader::rewind()
 
 void CSoundFileReader::close()
 {
-	wxASSERT(m_handle != NULL);
-
-	::mmioClose(m_handle, 0);
-	m_handle = NULL;
+	if (m_handle != NULL) {
+		::mmioClose(m_handle, 0);
+		m_handle = NULL;
+	}
 
 	delete[] m_buffer;
 	delete[] m_buffer8;
@@ -319,10 +319,10 @@ void CSoundFileReader::rewind()
 
 void CSoundFileReader::close()
 {
-	wxASSERT(m_file != NULL);
-
-	::sf_close(m_file);
-	m_file = NULL;
+	if (m_file != NULL) {
+		::sf_close(m_file);
+		m_file = NULL;
+	}
 
 	delete[] m_buffer;
 }

@@ -104,6 +104,7 @@ bool CSoundFileWriter::open(float sampleRate, unsigned int blockSize)
 
 void CSoundFileWriter::write(const float* buffer, unsigned int length)
 {
+	wxASSERT(m_handle != NULL);
 	wxASSERT(buffer != NULL);
 	wxASSERT(length > 0 && length <= m_blockSize);
 
@@ -130,10 +131,13 @@ void CSoundFileWriter::write(const float* buffer, unsigned int length)
 
 void CSoundFileWriter::close()
 {
-	::mmioAscend(m_handle, &m_child, 0);
-	::mmioAscend(m_handle, &m_parent, 0);
+	if (m_handle != NULL) {
+		::mmioAscend(m_handle, &m_child, 0);
+		::mmioAscend(m_handle, &m_parent, 0);
 
-	::mmioClose(m_handle, 0);
+		::mmioClose(m_handle, 0);
+		m_handle = NULL;
+	}
 
 	delete[] m_buffer8;
 	delete[] m_buffer16;
@@ -186,6 +190,7 @@ bool CSoundFileWriter::open(float sampleRate, unsigned int blockSize)
 
 void CSoundFileWriter::write(const float* buffer, unsigned int length)
 {
+	wxASSERT(m_file != NULL);
 	wxASSERT(buffer != NULL);
 
 	::sf_write_float(m_file, buffer, length);
@@ -193,7 +198,10 @@ void CSoundFileWriter::write(const float* buffer, unsigned int length)
 
 void CSoundFileWriter::close()
 {
-	::sf_close(m_file);
+	if (m_file != NULL) {
+		::sf_close(m_file);
+		m_file = NULL;
+	}
 }
 
 #endif
