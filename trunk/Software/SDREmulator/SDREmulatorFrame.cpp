@@ -234,7 +234,6 @@ void CSDREmulatorFrame::onChildSocket(wxSocketEvent& event)
 				char buffer[201];
 				socket->Read(buffer, 200);
 				if (socket->Error()) {
-					::wxMessageBox(wxT("Error when reading data"));
 					socket->Close();
 					return;
 				}
@@ -275,7 +274,7 @@ void CSDREmulatorFrame::processCommand(wxSocketBase& socket, wxChar* buffer)
 
 			wxString text;
 
-			text.Printf(wxT("==> %s"), message.c_str());
+			text.Printf(wxT("==> %s;"), message.c_str());
 			m_messages->Append(text);
 
 			text.Printf(wxT("<== %s"), buffer);
@@ -342,6 +341,10 @@ void CSDREmulatorFrame::processCommand(wxSocketBase& socket, wxChar* buffer)
 
 				m_data->setTX(m_txOn);
 			}
+		} else if (command.Cmp(wxT("SI")) == 0) {
+			ack = true;
+		} else if (command.Cmp(wxT("SD")) == 0) {
+			ack = true;
 		}
 
 		if (ack) {
@@ -369,7 +372,7 @@ void CSDREmulatorFrame::processCommand(wxSocketBase& socket, wxChar* buffer)
 
 			wxString text;
 
-			text.Printf(wxT("==> %s"), message.c_str());
+			text.Printf(wxT("==> %s;"), message.c_str());
 			m_messages->Append(text);
 
 			text.Printf(wxT("<== %s"), buffer);

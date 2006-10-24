@@ -20,6 +20,8 @@
 #define	SDRSetupFrame_H
 
 #include <wx/wx.h>
+#include <wx/socket.h>
+
 
 class CSDRSetupFrame : public wxFrame {
 
@@ -28,6 +30,11 @@ class CSDRSetupFrame : public wxFrame {
 	virtual ~CSDRSetupFrame();
 
 	void onExecute(wxCommandEvent& event);
+
+	virtual bool setNewSDR(wxSocketClient* socket, const wxIPV4address& control, const wxIPV4address& data) const;
+	virtual bool setNewDSP(wxSocketClient* socket, const wxIPV4address& address) const;
+
+	virtual bool sendCommand(wxSocketClient* socket, const wxString& command) const;
 
     private:
 	wxTextCtrl* m_oldSDRAddress;

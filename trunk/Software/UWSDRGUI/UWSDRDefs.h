@@ -57,7 +57,7 @@ const int CWTEXT_WIDTH     = 650;
 const int CWKEYB_WIDTH     = 750;
 
 const int VOICETEXT_WIDTH  = 200;
-const int VOICEKEYB_WIDTH  = 365;
+const int VOICEKEYB_WIDTH  = 350;
 
 #elif defined(__WXMAC__)
 const int BUTTON_HEIGHT    = -1;
@@ -127,7 +127,7 @@ const int CWTEXT_WIDTH     = 700;
 const int CWKEYB_WIDTH     = 810;
 
 const int VOICETEXT_WIDTH  = 225;
-const int VOICEKEYB_WIDTH  = 350;
+const int VOICEKEYB_WIDTH  = 390;
 
 #else
 #error "Unknown platform"
