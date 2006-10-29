@@ -233,7 +233,7 @@ bool CSDRSetupFrame::setNewDSP(wxSocketClient* socket, const wxIPV4address& dsp)
 {
 	wxString command;
 
-	command.Printf(wxT("SD%s,%u;"), dsp.IPAddress().c_str(), dsp.Service());
+	command.Printf(wxT("SD%s;"), dsp.IPAddress().c_str());
 
 	return sendCommand(socket, command);
 }

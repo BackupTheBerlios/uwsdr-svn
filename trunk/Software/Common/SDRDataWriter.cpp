@@ -44,42 +44,44 @@ bool CSDRDataWriter::open(float sampleRate, unsigned int blockSize)
 
 	int ret =  ::WSAStartup(0x101, &data);
 	if (ret != 0) {
-		::wxLogError(wxT("Error %d when initialising Winsock."), ret);
+		::wxLogError(wxT("SDRDataWriter: Error %d when initialising Winsock."), ret);
 		return false;
 	}
 #endif
 
-	struct hostent* host = NULL;
 #if defined(__WINDOWS__)
 	unsigned long addr = ::inet_addr(m_address.c_str());
 #else
 	in_addr_t addr = ::inet_addr(m_address.c_str());
 #endif
+	unsigned int length = 4;
 
-	if (addr == INADDR_NONE)
-		host = ::gethostbyname(m_address.c_str());
-	else
-		host = ::gethostbyaddr((char*)&addr, sizeof(addr), PF_INET);		
+	if (addr == INADDR_NONE) {
+		struct hostent* host = ::gethostbyname(m_address.c_str());
 
-	if (host == NULL) {
-		::wxLogError(wxT("Error %d when resolving host: %s"),
+		if (host == NULL) {
+			::wxLogError(wxT("SDRDataWriter: Error %d when resolving host: %s"),
 #if defined(__WINDOWS__)
-			::WSAGetLastError(),
+				::WSAGetLastError(),
 #else
-			errno,
+				h_errno,
 #endif
-			m_address.c_str());
-		return false;
+				m_address.c_str());
+			return false;
+		}
+
+		::memcpy(&addr, &host->h_addr, host->h_length);
+		length = host->h_length;
 	}
 
 	::memset(&m_remAddr, 0x00, sizeof(struct sockaddr_in));
 	m_remAddr.sin_family = AF_INET;
 	m_remAddr.sin_port   = htons(m_port);
-	::memcpy(&m_remAddr.sin_addr.s_addr, host->h_addr, host->h_length);
+	::memcpy(&m_remAddr.sin_addr.s_addr, &addr, length);
 
 	m_fd = ::socket(PF_INET, SOCK_DGRAM, 0);
 	if (m_fd < 0) {
-		::wxLogError(wxT("Error %d when creating the writing datagram socket"),
+		::wxLogError(wxT("SDRDataWriter: Error %d when creating the writing datagram socket"),
 #if defined(__WINDOWS__)
 			::WSAGetLastError());
 #else
@@ -134,7 +136,7 @@ void CSDRDataWriter::write(const float* buffer, unsigned int nSamples)
 
 	ssize_t ret = ::sendto(m_fd, (char *)m_sockBuffer, len, 0, (struct sockaddr *)&m_remAddr, sizeof(struct sockaddr_in));
 	if (ret < 0) {
-		::wxLogError(wxT("Error %d writing to the datagram socket"),
+		::wxLogError(wxT("SDRDataWriter: Error %d writing to the datagram socket"),
 #if defined(__WINDOWS__)
 			::WSAGetLastError());
 #else
@@ -144,7 +146,7 @@ void CSDRDataWriter::write(const float* buffer, unsigned int nSamples)
 	}
 
 	if (ret != int(len)) {
-		::wxLogError(wxT("Error only wrote %d of %u bytes to the datagram socket"), ret, len);
+		::wxLogError(wxT("SDRDataWriter: Error only wrote %d of %u bytes to the datagram socket"), ret, len);
 		return;
 	}
 }

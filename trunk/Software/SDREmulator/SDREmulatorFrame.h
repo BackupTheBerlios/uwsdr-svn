@@ -48,6 +48,7 @@ class CSDREmulatorFrame : public wxFrame {
 	bool          m_rxEnable;
 	bool          m_txOn;
 	CDataControl* m_data;
+	bool          m_started;
 
 	wxSocketServer* m_server;
 	wxMenuBar*      m_menuBar;
@@ -63,7 +64,7 @@ class CSDREmulatorFrame : public wxFrame {
 	DECLARE_EVENT_TABLE()
 
 	bool createListener(unsigned int port);
-	void createDataThread(const wxString& address, unsigned int port, int api, long inDev, long outDev, bool muted);
+	bool createDataThread(const wxString& address, unsigned int port, int api, long inDev, long outDev, bool muted);
 
 	void processCommand(wxSocketBase& socket, wxChar* buffer);
 };

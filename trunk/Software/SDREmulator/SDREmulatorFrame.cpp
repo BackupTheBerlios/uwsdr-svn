@@ -62,6 +62,7 @@ m_txEnable(false),
 m_rxEnable(false),
 m_txOn(false),
 m_data(NULL),
+m_started(false),
 m_server(NULL),
 m_messages(NULL)
 {
@@ -148,8 +149,8 @@ m_messages(NULL)
 	SetMenuBar(m_menuBar);
 
 	CSoundCardDialog soundCard(this);
-	int ret = soundCard.ShowModal();
-	if (ret != wxID_OK) {
+	int ret1 = soundCard.ShowModal();
+	if (ret1 != wxID_OK) {
 		Close(true);
 		return;
 	}
@@ -159,10 +160,19 @@ m_messages(NULL)
 	long outDev = soundCard.getOutDev();
 
 	// Start the listening port for the emulator
-	createListener(controlPort);
+	bool ret2 = createListener(controlPort);
+	if (!ret2) {
+		::wxMessageBox(wxT("Cannot open the I/O ports.\nSee Emulator.log for details"));
+		Close(true);
+		return;
+	}
 
 	// Start the data reading and writing thread
-	createDataThread(address, dataPort, api, inDev, outDev, muted);
+	ret2 = createDataThread(address, dataPort, api, inDev, outDev, muted);
+	if (!ret2) {
+		::wxMessageBox(wxT("Cannot open the control port.\nSee Emulator.log for details"));
+		Close(true);
+	}
 }
 
 CSDREmulatorFrame::~CSDREmulatorFrame()
@@ -189,18 +199,19 @@ bool CSDREmulatorFrame::createListener(unsigned int port)
 	return true;
 }
 
-void CSDREmulatorFrame::createDataThread(const wxString& address, unsigned int port, int api, long inDev, long outDev, bool muted)
+bool CSDREmulatorFrame::createDataThread(const wxString& address, unsigned int port, int api, long inDev, long outDev, bool muted)
 {
 	m_data = new CDataControl(48000.0F, address, port, api, inDev, outDev);
 
 	bool ret = m_data->open();
-	if (!ret) {
-		::wxMessageBox(wxT("Problems opening the input/output ports."));
-		Close(true);
-		return;
-	}
+	if (!ret)
+		return false;
 
 	m_data->setMute(muted);
+
+	m_started = true;
+
+	return true;
 }
 
 void CSDREmulatorFrame::onParentSocket(wxSocketEvent& event)
@@ -285,7 +296,8 @@ void CSDREmulatorFrame::processCommand(wxSocketBase& socket, wxChar* buffer)
 			continue;
 		}
 
-		bool ack = false;
+		bool ack  = false;
+		bool echo = true;
 		wxString command = message.Left(2);
 
 		if (command.Cmp(wxT("FA")) == 0) {
@@ -297,6 +309,8 @@ void CSDREmulatorFrame::processCommand(wxSocketBase& socket, wxChar* buffer)
 				m_rxFreq = freq;
 				ack = true;
 			}
+
+			echo = false;
 		} else if (command.Cmp(wxT("FR")) == 0) {
 			wxString freqText = message.Mid(2);
 			CFrequency freq = CFrequency(freqText);
@@ -305,6 +319,8 @@ void CSDREmulatorFrame::processCommand(wxSocketBase& socket, wxChar* buffer)
 				m_rxFreq = freq;
 				ack = true;
 			}
+
+			echo = false;
 		} else if (command.Cmp(wxT("FT")) == 0) {
 			wxString freqText = message.Mid(2);
 			CFrequency freq = CFrequency(freqText);
@@ -313,6 +329,8 @@ void CSDREmulatorFrame::processCommand(wxSocketBase& socket, wxChar* buffer)
 				m_txFreq = freq;
 				ack = true;
 			}	
+
+			echo = false;
 		} else if (command.Cmp(wxT("ET")) == 0) {
 			long n;
 			message.Mid(2).ToLong(&n);
@@ -352,6 +370,14 @@ void CSDREmulatorFrame::processCommand(wxSocketBase& socket, wxChar* buffer)
 			socket.Write(buffer, ::strlen(buffer));
 
 			wxString text;
+
+			if (echo) {
+				text.Printf(wxT("==> %s;"), message.c_str());
+				m_messages->Append(text);
+
+				text.Printf(wxT("<== %s"), buffer);
+				m_messages->Append(text);
+			}
 
 			text.Printf(wxT("%s MHz"), m_txFreq.getString().c_str());
 			m_txFreqLabel->SetLabel(text);
@@ -400,7 +426,8 @@ void CSDREmulatorFrame::onClose(wxCloseEvent& event)
 		wxOK | wxCANCEL | wxICON_QUESTION);
 
 	if (reply == wxOK) {
-		m_data->close();
+		if (m_started)
+			m_data->close();
 		Destroy();
 	} else {
 		event.Veto();
@@ -417,7 +444,8 @@ void CSDREmulatorFrame::onExit(wxCommandEvent& event)
 		wxOK | wxCANCEL | wxICON_QUESTION);
 
 	if (reply == wxOK) {
-		m_data->close();
+		if (m_started)
+			m_data->close();
 		Destroy();
 	}
 }

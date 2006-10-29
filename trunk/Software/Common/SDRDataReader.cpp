@@ -72,41 +72,43 @@ bool CSDRDataReader::open(float sampleRate, unsigned int blockSize)
 
 	int wsaRet =  ::WSAStartup(0x101, &data);
 	if (wsaRet != 0) {
-		::wxLogError(wxT("Error %d when initialising Winsock."), wsaRet);
+		::wxLogError(wxT("SDRDataReader: Error %d when initialising Winsock."), wsaRet);
 		return false;
 	}
 #endif
 
-	struct hostent* host = NULL;
 #if defined(__WINDOWS__)
 	unsigned long addr = ::inet_addr(m_address.c_str());
 #else
 	in_addr_t addr = ::inet_addr(m_address.c_str());
 #endif
+	unsigned int length = 4;
 
-	if (addr == INADDR_NONE)
-		host = ::gethostbyname(m_address.c_str());
-	else
-		host = ::gethostbyaddr((char*)&addr, sizeof(addr), PF_INET);		
+	if (addr == INADDR_NONE) {
+		struct hostent* host = ::gethostbyname(m_address.c_str());
 
-	if (host == NULL) {
-		::wxLogError(wxT("Error %d when resolving host: %s"),
+		if (host == NULL) {
+			::wxLogError(wxT("SDRDataReader: Error %d when resolving host: %s"),
 #if defined(__WINDOWS__)
-			::WSAGetLastError(),
+				::WSAGetLastError(),
 #else
-			errno,
+				h_errno,
 #endif
-			m_address.c_str());
-		return false;
+				m_address.c_str());
+			return false;
+		}
+
+		::memcpy(&addr, &host->h_addr, host->h_length);
+		length = host->h_length;
 	}
 
-	m_remAddrLen = host->h_length;
+	m_remAddrLen = length;
 	m_remAddr = new char[m_remAddrLen];
-	::memcpy(m_remAddr, host->h_addr, m_remAddrLen);
+	::memcpy(m_remAddr, &addr, m_remAddrLen);
 
 	m_fd = ::socket(PF_INET, SOCK_DGRAM, 0);
 	if (m_fd < 0) {
-		::wxLogError(wxT("Error %d when creating the reading datagram socket"),
+		::wxLogError(wxT("SDRDataReader: Error %d when creating the reading datagram socket"),
 #if defined(__WINDOWS__)
 			::WSAGetLastError());
 #else
@@ -123,7 +125,7 @@ bool CSDRDataReader::open(float sampleRate, unsigned int blockSize)
 
 	int ret = ::bind(m_fd, (struct sockaddr *)&sockaddr, sizeof(struct sockaddr_in));
 	if (ret < 0) {
-		::wxLogError(wxT("Error %d when binding the reading datagram socket"),
+		::wxLogError(wxT("SDRDataReader: Error %d when binding the reading datagram socket"),
 #if defined(__WINDOWS__)
 			::WSAGetLastError());
 #else
@@ -229,7 +231,7 @@ bool CSDRDataReader::readSocket()
 
 	int ret = ::select(m_fd + 1, &readFds, NULL, NULL, &tv);
 	if (ret < 0) {
-		::wxLogError(wxT("Error %d while performing a select"),
+		::wxLogError(wxT("SDRDataReader: Error %d while performing a select"),
 #if defined(__WINDOWS__)
 			::WSAGetLastError());
 #else
@@ -251,7 +253,7 @@ bool CSDRDataReader::readSocket()
 
 	ssize_t len = ::recvfrom(m_fd, (char *)m_sockBuffer, m_size, 0, &addr, &size);
 	if (len < 0) {
-		::wxLogError(wxT("Error %d reading from the datagram socket"),
+		::wxLogError(wxT("SDRDataReader: Error %d reading from the datagram socket"),
 #if defined(__WINDOWS__)
 			::WSAGetLastError());
 #else
@@ -261,7 +263,7 @@ bool CSDRDataReader::readSocket()
 	}
 
 	if (addr.sa_family != AF_INET) {
-		::wxLogError(wxT("Received datagram from a non IP address!"));
+		::wxLogError(wxT("SDRDataReader: Received datagram from a non IP address!"));
 		return true;
 	}
 
@@ -271,13 +273,13 @@ bool CSDRDataReader::readSocket()
 	if (::memcmp(m_remAddr, &inaddr->sin_addr.s_addr, m_remAddrLen) != 0) {
 		unsigned char* p = (unsigned char *)&inaddr->sin_addr.s_addr;
 		unsigned char* q = (unsigned char *)m_remAddr;
-		::wxLogWarning(wxT("SDR Data received from an invalid IP address: %u.%u.%u.%u, wanted: %u.%u.%u.%u"),
+		::wxLogWarning(wxT("SDRDataReader: SDR Data received from an invalid IP address: %u.%u.%u.%u, wanted: %u.%u.%u.%u"),
 			p[0], p[1], p[2], p[3], q[0], q[1], q[2], q[3]);
 		return true;
 	}
 
 	if (len < HEADER_SIZE || m_sockBuffer[0] != 'D' || m_sockBuffer[1] != 'A') {
-		::wxLogWarning(wxT("Received a badly formatted data packet"));
+		::wxLogWarning(wxT("SDRDataReader: Received a badly formatted data packet"));
 		return true;
 	}
 
@@ -287,10 +289,10 @@ bool CSDRDataReader::readSocket()
 		m_missed++;
 
 		if (seqNo < m_sequence && (seqNo % 2) == (m_sequence % 2)) {
-			::wxLogWarning(wxT("Packet dropped at sequence no: %d, expected: %d"), seqNo, m_sequence);
+			::wxLogWarning(wxT("SDRDataReader: Packet dropped at sequence no: %d, expected: %d"), seqNo, m_sequence);
 			return true;
 		} else {
-			::wxLogWarning(wxT("Packet missed at sequence no: %d, expected: %d"), seqNo, m_sequence);
+			::wxLogWarning(wxT("SDRDataReader: Packet missed at sequence no: %d, expected: %d"), seqNo, m_sequence);
 		}
 	}
 
@@ -304,7 +306,7 @@ bool CSDRDataReader::readSocket()
 
 	unsigned int nSamples = (m_sockBuffer[4] << 8) + m_sockBuffer[5];
 
-	int n = HEADER_SIZE;	
+	int n = HEADER_SIZE;
 	for (unsigned int i = 0; i < nSamples && n < len; n += SAMPLE_SIZE, i++) {
 		unsigned int iData = (m_sockBuffer[n + 0] << 16) & 0xFF0000;
 		iData += (m_sockBuffer[n + 1] << 8) & 0xFF00;
