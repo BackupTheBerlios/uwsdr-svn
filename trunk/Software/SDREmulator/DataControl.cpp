@@ -30,7 +30,7 @@ const unsigned int RINGBUFFER_SIZE = 100001;
 const unsigned int BLOCK_SIZE      = 2048;		// XXXX
 
 
-CDataControl::CDataControl(float sampleRate, const wxString& address, int port, int api, long inDev, long outDev) :
+CDataControl::CDataControl(float sampleRate, const wxString& address, int port, int api, long inDev, long outDev, unsigned int maxSamples) :
 wxThread(),
 m_sampleRate(sampleRate),
 m_address(address),
@@ -54,7 +54,8 @@ m_rxBuffer(NULL),
 m_source(SOURCE_INTERNAL_1),
 m_transmit(false),
 m_mute(true),
-m_running(false)
+m_running(false),
+m_maxSamples(maxSamples)
 {
 	m_txBuffer = new float[BLOCK_SIZE * 2];
 	m_rxBuffer = new float[BLOCK_SIZE * 2];
@@ -152,7 +153,7 @@ bool CDataControl::openIO()
 	m_internal1Reader  = new CSignalReader(m_sampleRate / 4.0F + 1000.5F, 0.0008F, 0.001F);
 	m_internal2Reader  = new CSignalReader(m_sampleRate / 4.0F, 0.0F, 0.001F);
 	m_soundCardReader  = new CSoundCardReader(m_api, m_inDev);
-	m_rxWriter         = new CSDRDataWriter(m_address, m_port);
+	m_rxWriter         = new CSDRDataWriter(m_address, m_port, m_maxSamples);
 
 	m_nullWriter       = new CNullWriter();
 	m_soundCardWriter  = new CSoundCardWriter(m_api, m_outDev);
@@ -223,6 +224,9 @@ void CDataControl::callback(float* inBuffer, unsigned int nSamples, int id)
 
 				unsigned int n = m_rxRingBuffer.addData(inBuffer, nSamples);
 
+				if (n != nSamples)
+					::wxLogMessage(wxT("Overflow in the RX ring buffer, wanted: %u have: %u"), nSamples, n);
+
 				if (n > 0)
 					m_waiting.Post();
 			}
@@ -233,6 +237,9 @@ void CDataControl::callback(float* inBuffer, unsigned int nSamples, int id)
 					return;
 
 				unsigned int n = m_rxRingBuffer.addData(inBuffer, nSamples);
+
+				if (n != nSamples)
+					::wxLogMessage(wxT("Overflow in the RX ring buffer, wanted: %u have: %u"), nSamples, n);
 
 				if (n > 0)
 					m_waiting.Post();
@@ -267,6 +274,9 @@ void CDataControl::callback(float* inBuffer, unsigned int nSamples, int id)
 
 				unsigned int n = m_rxRingBuffer.addData(inBuffer, nSamples);
 
+				if (n != nSamples)
+					::wxLogMessage(wxT("Overflow in the RX ring buffer, wanted: %u have: %u"), nSamples, n);
+
 				if (n > 0)
 					m_waiting.Post();
 			}
@@ -283,6 +293,9 @@ void CDataControl::callback(float* inBuffer, unsigned int nSamples, int id)
 
 				unsigned int n = m_rxRingBuffer.addData(inBuffer, nSamples);
 
+				if (n != nSamples)
+					::wxLogMessage(wxT("Overflow in the RX ring buffer, wanted: %u have: %u"), nSamples, n);
+
 				if (n > 0)
 					m_waiting.Post();
 			}
@@ -293,6 +306,9 @@ void CDataControl::callback(float* inBuffer, unsigned int nSamples, int id)
 					return;
 
 				unsigned int n = m_txRingBuffer.addData(inBuffer, nSamples);
+
+				if (n != nSamples)
+					::wxLogMessage(wxT("Overflow in the TX ring buffer, wanted: %u have: %u"), nSamples, n);
 
 				if (n > 0)
 					m_waiting.Post();
@@ -346,6 +362,11 @@ void CDataControl::setMute(bool mute)
 		m_internal1Reader->purge();
 		m_internal2Reader->purge();
 		m_soundCardReader->purge();
+
+		m_nullWriter->purge();
+		m_soundCardWriter->purge();
+
+		m_rxWriter->purge();
 		m_txReader->purge();
 
 		if (m_soundFileReader != NULL)

@@ -143,3 +143,8 @@ void CSoundCardWriter::close()
 
 	::wxLogMessage(wxT("SoundCardWriter: %u underruns from %u requests"), m_underruns, m_requests);
 }
+
+void CSoundCardWriter::purge()
+{
+	m_buffer->clear();
+}

@@ -21,6 +21,11 @@
 #include <wx/debug.h>
 #include <wx/log.h>
 
+
+void CSoundFileWriter::purge()
+{
+}
+
 #if defined(__WINDOWS__)
 
 CSoundFileWriter::CSoundFileWriter(const wxString& fileName, unsigned int sampleWidth) :

@@ -40,3 +40,7 @@ void CNullWriter::write(const float* buffer, unsigned int nSamples)
 void CNullWriter::close()
 {
 }
+
+void CNullWriter::purge()
+{
+}

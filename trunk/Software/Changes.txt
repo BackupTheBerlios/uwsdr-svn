@@ -188,3 +188,5 @@ Version 0.6.2 - October 2006
 Switched back to big-endian data format.
 
 Finished SDRSetup.
+
+Updated to wxWidgets 2.8.0.

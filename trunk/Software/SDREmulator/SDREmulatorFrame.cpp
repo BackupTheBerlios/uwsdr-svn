@@ -54,7 +54,7 @@ BEGIN_EVENT_TABLE(CSDREmulatorFrame, wxFrame)
 	EVT_CLOSE(CSDREmulatorFrame::onClose)
 END_EVENT_TABLE()
 
-CSDREmulatorFrame::CSDREmulatorFrame(const wxString& address, unsigned int controlPort, unsigned int dataPort, bool muted) :
+CSDREmulatorFrame::CSDREmulatorFrame(const wxString& address, unsigned int controlPort, unsigned int dataPort, bool muted, unsigned int maxSamples) :
 wxFrame(NULL, -1, wxString(wxT("uWave SDR Emulator")), wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX  | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN),
 m_txFreq(),
 m_rxFreq(),
@@ -168,7 +168,7 @@ m_messages(NULL)
 	}
 
 	// Start the data reading and writing thread
-	ret2 = createDataThread(address, dataPort, api, inDev, outDev, muted);
+	ret2 = createDataThread(address, dataPort, api, inDev, outDev, muted, maxSamples);
 	if (!ret2) {
 		::wxMessageBox(wxT("Cannot open the control port.\nSee Emulator.log for details"));
 		Close(true);
@@ -199,9 +199,9 @@ bool CSDREmulatorFrame::createListener(unsigned int port)
 	return true;
 }
 
-bool CSDREmulatorFrame::createDataThread(const wxString& address, unsigned int port, int api, long inDev, long outDev, bool muted)
+bool CSDREmulatorFrame::createDataThread(const wxString& address, unsigned int port, int api, long inDev, long outDev, bool muted, unsigned int maxSamples)
 {
-	m_data = new CDataControl(48000.0F, address, port, api, inDev, outDev);
+	m_data = new CDataControl(48000.0F, address, port, api, inDev, outDev, maxSamples);
 
 	bool ret = m_data->open();
 	if (!ret)

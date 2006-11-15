@@ -45,6 +45,8 @@ class CSoundFileWriter : public IDataWriter {
 
 	virtual void close();
 
+	virtual void purge();
+
     private:
 	wxString     m_fileName;
 	float        m_sampleWidth;

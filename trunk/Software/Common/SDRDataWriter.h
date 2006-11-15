@@ -34,17 +34,21 @@
 #include <arpa/inet.h>
 #endif
 
-class CSDRDataWriter : public IDataWriter {
+class CSDRDataWriter : public wxThread, public IDataWriter {
 
     public:
-	CSDRDataWriter(const wxString& address, int port);
+	CSDRDataWriter(const wxString& address, int port, unsigned int maxSamples = 2048);
 	virtual ~CSDRDataWriter();
 
 	virtual bool open(float sampleRate, unsigned int blockSize);
 
 	virtual void write(const float* buffer, unsigned int nSamples);
 
+	virtual void* Entry();
+
 	virtual void close();
+
+	virtual void purge();
 
     private:
 	wxString           m_address;
@@ -53,6 +57,17 @@ class CSDRDataWriter : public IDataWriter {
 	struct sockaddr_in m_remAddr;
 	int                m_sequence;
 	unsigned char*     m_sockBuffer;
+	float*             m_dataBuffer;
+	CRingBuffer*       m_buffer;
+	unsigned long      m_delay;
+	wxSemaphore        m_waiting;
+	unsigned int       m_requests;
+	unsigned int       m_overruns;
+	unsigned int       m_packets;
+	unsigned int       MAX_SAMPLES;
+	unsigned int       m_packetRequests;
+
+	void writePacket();
 };
 
 #endif

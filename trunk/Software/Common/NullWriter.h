@@ -32,6 +32,8 @@ class CNullWriter : public IDataWriter {
 	virtual void write(const float* buffer, unsigned int nSamples);
 	virtual void close();
 
+	virtual void purge();
+
     private:
 };
 

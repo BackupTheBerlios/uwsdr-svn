@@ -24,6 +24,8 @@ class IDataWriter {
 	virtual bool open(float sampleRate, unsigned int blockSize) = 0;
 	virtual void write(const float* buffer, unsigned int nSamples) = 0;
 	virtual void close() = 0;
+
+	virtual void purge() = 0;
 };
 
 #endif

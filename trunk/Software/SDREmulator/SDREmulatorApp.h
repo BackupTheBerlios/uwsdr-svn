@@ -44,6 +44,7 @@ class CSDREmulatorApp : public wxApp {
 	wxString           m_address;
 	unsigned int       m_controlPort;
 	unsigned int       m_dataPort;
+	unsigned int       m_maxSamples;
 };
 
 DECLARE_APP(CSDREmulatorApp)

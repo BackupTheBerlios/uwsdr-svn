@@ -188,7 +188,6 @@ void* CSDRDataReader::Entry()
 void CSDRDataReader::clock()
 {
 	wxASSERT(m_callback != NULL);
-	wxASSERT(m_buffer != NULL);
 
 	m_requests++;
 
@@ -203,8 +202,6 @@ void CSDRDataReader::clock()
 
 void CSDRDataReader::purge()
 {
-	wxASSERT(m_buffer != NULL);
-
 	m_buffer->clear();
 }
 

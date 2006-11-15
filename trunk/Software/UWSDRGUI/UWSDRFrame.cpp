@@ -223,6 +223,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_parameters = parameters;
 
+	// m_sdr = new CNullController();
 	m_sdr = new CUWSDRController(m_parameters->m_ipAddress, m_parameters->m_controlPort, m_parameters->m_hardwareProtocolVersion);
 	m_sdr->setCallback(this, -1);
 

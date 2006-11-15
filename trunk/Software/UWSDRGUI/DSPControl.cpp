@@ -386,7 +386,11 @@ void CDSPControl::setTXAndFreq(bool transmit, float freq)
 		m_rxRingBuffer.clear();
 
 		m_txReader->purge();
+		m_txWriter->purge();
+
 		m_rxReader->purge();
+		m_rxWriter->purge();
+
 		m_cwKeyer->purge();
 		m_voiceKeyer->purge();
 	}

@@ -41,6 +41,8 @@ class CSoundCardWriter : public IDataWriter {
 	virtual void write(const float* buffer, unsigned int nSamples);
 	virtual void close();
 
+	virtual void purge();
+
 	virtual int  callback(void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags);
 
     private:
