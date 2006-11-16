@@ -25,7 +25,7 @@ const unsigned int SAMPLE_SIZE = 6;
 // const unsigned int MAX_SAMPLES = 210;
 
 
-CSDRDataWriter::CSDRDataWriter(const wxString& address, int port, unsigned int maxSamples) :
+CSDRDataWriter::CSDRDataWriter(const wxString& address, int port, unsigned int maxSamples, bool delay) :
 wxThread(),
 m_address(address),
 m_port(port),
@@ -41,6 +41,7 @@ m_requests(0),
 m_overruns(0),
 m_packets(0),
 MAX_SAMPLES(maxSamples),
+DELAY(delay),
 m_packetRequests(0)
 {
 }
@@ -106,11 +107,12 @@ bool CSDRDataWriter::open(float sampleRate, unsigned int blockSize)
 	m_dataBuffer = new float[MAX_SAMPLES * 2];
 
 	m_buffer = new CRingBuffer(blockSize * 10, 2);
-/*
-	m_delay = (500UL * MAX_SAMPLES) / (unsigned long)sampleRate;
 
-	::wxLogMessage(wxT("Delay is %lums"), m_delay);
-*/
+	if (DELAY) {
+		m_delay = (500UL * MAX_SAMPLES) / (unsigned long)sampleRate;
+		::wxLogMessage(wxT("Delay is %lums"), m_delay);
+	}
+
 	Create();
 	Run();
 
@@ -221,7 +223,8 @@ void CSDRDataWriter::writePacket()
 			return;
 		}
 
-		// ::wxMilliSleep(m_delay);
+		if (DELAY)
+			::wxMilliSleep(m_delay);
 
 		nSamples = m_buffer->getData(m_dataBuffer, MAX_SAMPLES);
 	}

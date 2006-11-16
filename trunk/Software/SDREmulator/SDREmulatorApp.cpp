@@ -30,7 +30,8 @@ m_frame(NULL),
 m_address(),
 m_controlPort(0),
 m_dataPort(0),
-m_maxSamples(2048)
+m_maxSamples(2048),
+m_delay(false)
 {
 }
 
@@ -41,6 +42,8 @@ CSDREmulatorApp::~CSDREmulatorApp()
 void CSDREmulatorApp::OnInitCmdLine(wxCmdLineParser& parser)
 {
 	parser.AddSwitch(wxT("s"), wxEmptyString, wxT("Disable_Receiver_Mute"), wxCMD_LINE_PARAM_OPTIONAL);
+
+	parser.AddSwitch(wxT("d"), wxEmptyString, wxT("Insert_Delay"), wxCMD_LINE_PARAM_OPTIONAL);
 
 	parser.AddParam(wxT("IP_Address"),   wxCMD_LINE_VAL_STRING, wxCMD_LINE_OPTION_MANDATORY);
 	parser.AddParam(wxT("Control_Port"), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_OPTION_MANDATORY);
@@ -57,6 +60,8 @@ bool CSDREmulatorApp::OnCmdLineParsed(wxCmdLineParser& parser)
 		return false;
 
 	m_muted = !parser.Found(wxT("s"));
+
+	m_delay = parser.Found(wxT("d"));
 
 	m_address = parser.GetParam(0);
 
@@ -107,7 +112,7 @@ bool CSDREmulatorApp::OnInit()
 	::wxLogMessage(wxT("Starting the SDREmulator"));
 	::wxLogMessage(wxT("GUI is at address: %s, control port: %u, data port: %u, max samples: %u"), m_address.c_str(), m_controlPort, m_dataPort, m_maxSamples);
 
-	m_frame = new CSDREmulatorFrame(m_address, m_controlPort, m_dataPort, m_muted, m_maxSamples);
+	m_frame = new CSDREmulatorFrame(m_address, m_controlPort, m_dataPort, m_muted, m_maxSamples, m_delay);
 	m_frame->Show();
 
 	SetTopWindow(m_frame);

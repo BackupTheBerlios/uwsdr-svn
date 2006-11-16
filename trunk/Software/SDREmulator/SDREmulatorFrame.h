@@ -28,7 +28,7 @@
 class CSDREmulatorFrame : public wxFrame {
 
     public:
-	CSDREmulatorFrame(const wxString& address, unsigned int controlPort, unsigned int dataPort, bool muted, unsigned int maxSamples);
+	CSDREmulatorFrame(const wxString& address, unsigned int controlPort, unsigned int dataPort, bool muted, unsigned int maxSamples, bool delay);
 	virtual ~CSDREmulatorFrame();
 
 	void onClose(wxCloseEvent& event);
@@ -64,7 +64,7 @@ class CSDREmulatorFrame : public wxFrame {
 	DECLARE_EVENT_TABLE()
 
 	bool createListener(unsigned int port);
-	bool createDataThread(const wxString& address, unsigned int port, int api, long inDev, long outDev, bool muted, unsigned int maxSamples);
+	bool createDataThread(const wxString& address, unsigned int port, int api, long inDev, long outDev, bool muted, unsigned int maxSamples, bool delay);
 
 	void processCommand(wxSocketBase& socket, wxChar* buffer);
 };

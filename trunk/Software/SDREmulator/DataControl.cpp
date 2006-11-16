@@ -30,7 +30,7 @@ const unsigned int RINGBUFFER_SIZE = 100001;
 const unsigned int BLOCK_SIZE      = 2048;		// XXXX
 
 
-CDataControl::CDataControl(float sampleRate, const wxString& address, int port, int api, long inDev, long outDev, unsigned int maxSamples) :
+CDataControl::CDataControl(float sampleRate, const wxString& address, int port, int api, long inDev, long outDev, unsigned int maxSamples, bool delay) :
 wxThread(),
 m_sampleRate(sampleRate),
 m_address(address),
@@ -55,7 +55,8 @@ m_source(SOURCE_INTERNAL_1),
 m_transmit(false),
 m_mute(true),
 m_running(false),
-m_maxSamples(maxSamples)
+m_maxSamples(maxSamples),
+m_delay(delay)
 {
 	m_txBuffer = new float[BLOCK_SIZE * 2];
 	m_rxBuffer = new float[BLOCK_SIZE * 2];
@@ -153,7 +154,7 @@ bool CDataControl::openIO()
 	m_internal1Reader  = new CSignalReader(m_sampleRate / 4.0F + 1000.5F, 0.0008F, 0.001F);
 	m_internal2Reader  = new CSignalReader(m_sampleRate / 4.0F, 0.0F, 0.001F);
 	m_soundCardReader  = new CSoundCardReader(m_api, m_inDev);
-	m_rxWriter         = new CSDRDataWriter(m_address, m_port, m_maxSamples);
+	m_rxWriter         = new CSDRDataWriter(m_address, m_port, m_maxSamples, m_delay);
 
 	m_nullWriter       = new CNullWriter();
 	m_soundCardWriter  = new CSoundCardWriter(m_api, m_outDev);
