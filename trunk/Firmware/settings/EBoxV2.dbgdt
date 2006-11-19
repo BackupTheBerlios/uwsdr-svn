@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<Project>
+  <Desktop>
+    <Static>
+      <Debug-Log><PreferedWindows><Position>3</Position><ScreenPosX>0</ScreenPosX><ScreenPosY>0</ScreenPosY><Windows><Window><Factory>Watch</Factory></Window></Windows></PreferedWindows></Debug-Log>
+      <Workspace>
+        <ColumnWidths>
+          
+          
+          
+          
+        <Column0>192</Column0><Column1>18</Column1><Column2>15</Column2><Column3>1242340</Column3></ColumnWidths>
+      </Workspace>
+      <Disassembly>
+        
+        
+        
+      <PreferedWindows><Position>1</Position><ScreenPosX>0</ScreenPosX><ScreenPosY>0</ScreenPosY><Windows/></PreferedWindows><MixedMode>1</MixedMode><CodeCovEnabled>0</CodeCovEnabled><CodeCovShow>0</CodeCovShow></Disassembly>
+      <Build>
+        
+        
+        
+        
+      <ColumnWidth0>20</ColumnWidth0><ColumnWidth1>915</ColumnWidth1><ColumnWidth2>244</ColumnWidth2><ColumnWidth3>61</ColumnWidth3><PreferedWindows><Position>3</Position><ScreenPosX>0</ScreenPosX><ScreenPosY>0</ScreenPosY><Windows><Window><Factory>Find-in-Files</Factory></Window><Window><Factory>Breakpoints</Factory></Window><Window><Factory>Debug-Log</Factory></Window><Window><Factory>Watch</Factory></Window><Window><Factory>QuickWatch</Factory></Window></Windows></PreferedWindows></Build>
+    <Find-in-Files><ColumnWidth0>440</ColumnWidth0><ColumnWidth1>62</ColumnWidth1><ColumnWidth2>754</ColumnWidth2><PreferedWindows><Position>3</Position><ScreenPosX>0</ScreenPosX><ScreenPosY>0</ScreenPosY><Windows><Window><Factory>Build</Factory></Window><Window><Factory>Breakpoints</Factory></Window><Window><Factory>Debug-Log</Factory></Window><Window><Factory>Watch</Factory></Window><Window><Factory>QuickWatch</Factory></Window></Windows></PreferedWindows></Find-in-Files><Watch><Format><struct_types/><watch_formats><Fmt><Key>{W}Watch-0:crc32</Key><Value>4</Value></Fmt><Fmt><Key>{W}Watch-0:isr</Key><Value>1</Value></Fmt><Fmt><Key>{W}Watch-0:key[0]</Key><Value>3</Value></Fmt><Fmt><Key>{W}Watch-0:result</Key><Value>4</Value></Fmt><Fmt><Key>{W}Watch-0:u16_aufsumm_Pruefsumme</Key><Value>4</Value></Fmt><Fmt><Key>{W}Watch-0:u16_checksum</Key><Value>4</Value></Fmt><Fmt><Key>{W}Watch-0:u8_BytesToReceive</Key><Value>3</Value></Fmt></watch_formats></Format><PreferedWindows><Position>3</Position><ScreenPosX>0</ScreenPosX><ScreenPosY>0</ScreenPosY><Windows><Window><Factory>Debug-Log</Factory></Window></Windows></PreferedWindows><Column0>156</Column0><Column1>327</Column1><Column2>159</Column2><Column3>251</Column3></Watch><Memory><PreferedWindows><Position>3</Position><ScreenPosX>0</ScreenPosX><ScreenPosY>0</ScreenPosY><Windows/></PreferedWindows><FindDirection>1</FindDirection><FindAsHex>0</FindAsHex></Memory><Breakpoints><PreferedWindows><Position>3</Position><ScreenPosX>0</ScreenPosX><ScreenPosY>0</ScreenPosY><Windows><Window><Factory>Build</Factory></Window><Window><Factory>Find-in-Files</Factory></Window><Window><Factory>Debug-Log</Factory></Window><Window><Factory>Watch</Factory></Window><Window><Factory>QuickWatch</Factory></Window></Windows></PreferedWindows></Breakpoints><Register/><QuickWatch><PreferedWindows><Position>3</Position><ScreenPosX>0</ScreenPosX><ScreenPosY>0</ScreenPosY><Windows><Window><Factory>Build</Factory></Window><Window><Factory>Find-in-Files</Factory></Window><Window><Factory>Breakpoints</Factory></Window><Window><Factory>Debug-Log</Factory></Window><Window><Factory>Watch</Factory></Window></Windows></PreferedWindows><Column0>100</Column0><Column1>100</Column1><Column2>100</Column2><Column3>100</Column3></QuickWatch></Static>
+    <Windows>
+      
+      
+      
+    <Wnd0>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-4758-1380</Identity>
+            <TabName>Workspace</TabName>
+            <Factory>Workspace</Factory>
+            <Session>
+              
+            <NodeDict><ExpandedNode>EBoxV2</ExpandedNode><ExpandedNode>EBoxV2/Output</ExpandedNode><ExpandedNode>EBoxV2/Startup</ExpandedNode><ExpandedNode>EBoxV2/System</ExpandedNode><ExpandedNode>EBoxV2/USB</ExpandedNode></NodeDict></Session>
+          </Tab>
+        </Tabs>
+        
+      <SelectedTab>0</SelectedTab></Wnd0><Wnd1><Tabs><Tab><Identity>TabID-1861-25997</Identity><TabName>Register</TabName><Factory>Register</Factory><Session><REG1>0</REG1><REG2>0</REG2><Group>0</Group><States>5</States><State0>AIC_DCR</State0><State1>MC_FMR</State1><State2>MC_RCR</State2><State3>UDP_NUM</State3><State4>VREG_MR</State4></Session></Tab><Tab><Identity>TabID-20900-14159</Identity><TabName>Register</TabName><Factory>Register</Factory><Session><REG1>0</REG1><REG2>0</REG2><Group>5</Group><States>11</States><State0>UDP_CSR</State0><State1>UDP_FADDR</State1><State2>UDP_GLBSTATE</State2><State3>UDP_ICR</State3><State4>UDP_IDR</State4><State5>UDP_IER</State5><State6>UDP_IMR</State6><State7>UDP_ISR</State7><State8>UDP_NUM</State8><State9>UDP_RSTEP</State9><State10>UDP_TXVC</State10></Session></Tab></Tabs><SelectedTab>1</SelectedTab></Wnd1><Wnd4><Tabs><Tab><Identity>TabID-24228-13712</Identity><TabName>Debug Log</TabName><Factory>Debug-Log</Factory><Session/></Tab><Tab><Identity>TabID-16518-29286</Identity><TabName>Breakpoints</TabName><Factory>Breakpoints</Factory><Session/></Tab><Tab><Identity>TabID-21241-31780</Identity><TabName>Watch</TabName><Factory>Watch</Factory><Session><Expressions><Expression><Expression>pUdp</Expression></Expression><Expression><Expression>length</Expression></Expression><Expression><Expression>isr</Expression></Expression></Expressions><TabId>0</TabId><Column0>156</Column0><Column1>327</Column1><Column2>159</Column2><Column3>251</Column3></Session></Tab></Tabs><SelectedTab>0</SelectedTab></Wnd4></Windows>
+    <Editor>
+      
+      
+      
+      
+    <Pane><Tab><Factory>TextEditor</Factory><Filename>C:\Data\Dev\EBoxV2\main.c</Filename><XPos>0</XPos><YPos>61</YPos><SelStart>1998</SelStart><SelEnd>1998</SelEnd></Tab><ActiveTab>0</ActiveTab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
+    <Positions>
+      
+      
+      
+      
+      
+    <Top><Row0><Sizes><Toolbar-008fe358><key>iaridepm1</key></Toolbar-008fe358><Toolbar-01f75be0><key>debuggergui1</key></Toolbar-01f75be0></Sizes></Row0></Top><Left><Row0><Sizes><Wnd0><Rect><Top>-2</Top><Left>-2</Left><Bottom>870</Bottom><Right>245</Right><x>-2</x><y>-2</y><xscreen>0</xscreen><yscreen>0</yscreen><sizeHorzCX>0</sizeHorzCX><sizeHorzCY>0</sizeHorzCY><sizeVertCX>192969</sizeVertCX><sizeVertCY>923729</sizeVertCY></Rect></Wnd0></Sizes></Row0></Left><Right><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>870</Bottom><Right>31</Right><x>-2</x><y>-2</y><xscreen>0</xscreen><yscreen>0</yscreen><sizeHorzCX>0</sizeHorzCX><sizeHorzCY>0</sizeHorzCY><sizeVertCX>0</sizeVertCX><sizeVertCY>923729</sizeVertCY></Rect></Wnd1></Sizes></Row0></Right><Bottom><Row0><Sizes><Wnd4><Rect><Top>-2</Top><Left>-2</Left><Bottom>30</Bottom><Right>1282</Right><x>-2</x><y>-2</y><xscreen>1284</xscreen><yscreen>0</yscreen><sizeHorzCX>1003125</sizeHorzCX><sizeHorzCY>0</sizeHorzCY><sizeVertCX>0</sizeVertCX><sizeVertCY>0</sizeVertCY></Rect></Wnd4></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
+  </Desktop>
+</Project>
+
+
