@@ -86,6 +86,7 @@ const wxString KEY_RX_IQ_GAIN      = wxT("/ReceiveIQGain");
 const wxString KEY_TX_IQ_PHASE     = wxT("/TransmitIQPhase");
 const wxString KEY_TX_IQ_GAIN      = wxT("/TransmitIQGain");
 const wxString KEY_AF_GAIN         = wxT("/AFGain");
+const wxString KEY_RF_GAIN         = wxT("/RFGain");
 const wxString KEY_SQUELCH         = wxT("/Squelch");
 const wxString KEY_MIC_GAIN        = wxT("/MicGain");
 const wxString KEY_POWER           = wxT("/Power");
@@ -298,6 +299,7 @@ bool CUWSDRApp::readConfig()
 	wxString keyTxIqPhase     = wxT("/") + m_parameters->m_name + KEY_TX_IQ_PHASE;
 	wxString keyTxIqGain      = wxT("/") + m_parameters->m_name + KEY_TX_IQ_GAIN;
 	wxString keyAfGain        = wxT("/") + m_parameters->m_name + KEY_AF_GAIN;
+	wxString keyRfGain        = wxT("/") + m_parameters->m_name + KEY_RF_GAIN;
 	wxString keySquelch       = wxT("/") + m_parameters->m_name + KEY_SQUELCH;
 	wxString keyMicGain       = wxT("/") + m_parameters->m_name + KEY_MIC_GAIN;
 	wxString keyPower         = wxT("/") + m_parameters->m_name + KEY_POWER;
@@ -441,6 +443,9 @@ bool CUWSDRApp::readConfig()
 	profile->Read(keyAfGain,           &num, 0);
 	m_parameters->m_afGain = num;
 
+	profile->Read(keyRfGain,           &num, 1000);
+	m_parameters->m_rfGain = num;
+
 	profile->Read(keySquelch,          &num, 0);
 	m_parameters->m_squelch = num;
 
@@ -528,6 +533,7 @@ void CUWSDRApp::writeConfig()
 	wxString keyTxIqPhase     = wxT("/") + m_parameters->m_name + KEY_TX_IQ_PHASE;
 	wxString keyTxIqGain      = wxT("/") + m_parameters->m_name + KEY_TX_IQ_GAIN;
 	wxString keyAfGain        = wxT("/") + m_parameters->m_name + KEY_AF_GAIN;
+	wxString keyRfGain        = wxT("/") + m_parameters->m_name + KEY_RF_GAIN;
 	wxString keySquelch       = wxT("/") + m_parameters->m_name + KEY_SQUELCH;
 	wxString keyMicGain       = wxT("/") + m_parameters->m_name + KEY_MIC_GAIN;
 	wxString keyPower         = wxT("/") + m_parameters->m_name + KEY_POWER;
@@ -612,6 +618,7 @@ void CUWSDRApp::writeConfig()
 	profile->Write(keyTxIqPhase,        m_parameters->m_txIQphase);
 	profile->Write(keyTxIqGain,         m_parameters->m_txIQgain);
 	profile->Write(keyAfGain,           int(m_parameters->m_afGain));
+	profile->Write(keyRfGain,           int(m_parameters->m_rfGain));
 	profile->Write(keySquelch,          int(m_parameters->m_squelch));
 	profile->Write(keyMicGain,          int(m_parameters->m_micGain));
 	profile->Write(keyPower,            int(m_parameters->m_power));

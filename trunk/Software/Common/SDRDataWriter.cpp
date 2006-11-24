@@ -179,8 +179,8 @@ void CSDRDataWriter::writePacket()
 		m_sockBuffer[0] = 'D';
 		m_sockBuffer[1] = 'A';
 
-		m_sockBuffer[2] = (m_sequence >> 8) & 0xFF;
-		m_sockBuffer[3] = (m_sequence >> 0) & 0xFF;
+		m_sockBuffer[2] = (m_sequence >> 0) & 0xFF;
+		m_sockBuffer[3] = (m_sequence >> 8) & 0xFF;
 
 		m_sequence += 2;
 		if (m_sequence > 0xFFFF) {
@@ -190,8 +190,8 @@ void CSDRDataWriter::writePacket()
 				m_sequence = 0;
 		}
 
-		m_sockBuffer[4] = (nSamples >> 8) & 0xFF;
-		m_sockBuffer[5] = (nSamples >> 0) & 0xFF;
+		m_sockBuffer[4] = (nSamples >> 0) & 0xFF;
+		m_sockBuffer[5] = (nSamples >> 8) & 0xFF;
 
 		unsigned int len = HEADER_SIZE;
 		for (unsigned int i = 0; i < nSamples; i++) {

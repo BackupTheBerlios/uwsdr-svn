@@ -301,6 +301,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_afGain->setValue(m_parameters->m_afGain);
 	m_dsp->setAFGain(m_parameters->m_afGain);
+	m_dsp->setRFGain(m_parameters->m_rfGain);
 
 	m_squelch->setValue(m_parameters->m_squelch);
 	m_dsp->setSquelch(m_parameters->m_squelch);
@@ -1102,6 +1103,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 				// so reset them to the saved values
 				m_dsp->setRXIAndQ(m_parameters->m_rxIQphase, m_parameters->m_rxIQgain);
 				m_dsp->setTXIAndQ(m_parameters->m_txIQphase, m_parameters->m_txIQgain);
+				m_dsp->setRFGain(m_parameters->m_rfGain);
 			}
 			break;
 		case MENU_KEYPAD: {

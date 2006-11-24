@@ -27,16 +27,18 @@ enum {
 	RXIQ_PHASE = 8763,
 	RXIQ_GAIN,
 	TXIQ_PHASE,
-	TXIQ_GAIN
+	TXIQ_GAIN,
+	RXRF_GAIN
 };
 
 BEGIN_EVENT_TABLE(CUWSDRPreferences, wxDialog)
-	EVT_SPINCTRL(RXIQ_PHASE, CUWSDRPreferences::onIQChanged)
-	EVT_SPINCTRL(RXIQ_GAIN,  CUWSDRPreferences::onIQChanged)
-	EVT_SPINCTRL(TXIQ_PHASE, CUWSDRPreferences::onIQChanged)
-	EVT_SPINCTRL(TXIQ_GAIN,  CUWSDRPreferences::onIQChanged)
-	EVT_BUTTON(wxID_OK,      CUWSDRPreferences::onOK)
-	EVT_BUTTON(wxID_HELP,    CUWSDRPreferences::onHelp)
+	EVT_SPINCTRL(RXIQ_PHASE,      CUWSDRPreferences::onIQChanged)
+	EVT_SPINCTRL(RXIQ_GAIN,       CUWSDRPreferences::onIQChanged)
+	EVT_SPINCTRL(TXIQ_PHASE,      CUWSDRPreferences::onIQChanged)
+	EVT_SPINCTRL(TXIQ_GAIN,       CUWSDRPreferences::onIQChanged)
+	EVT_COMMAND_SCROLL(RXRF_GAIN, CUWSDRPreferences::onRFGainChanged)
+	EVT_BUTTON(wxID_OK,           CUWSDRPreferences::onOK)
+	EVT_BUTTON(wxID_HELP,         CUWSDRPreferences::onHelp)
 END_EVENT_TABLE()
 
 CUWSDRPreferences::CUWSDRPreferences(wxWindow* parent, int id, CSDRParameters* parameters, CDSPControl* dsp) :
@@ -76,6 +78,7 @@ m_nb2Button(NULL),
 m_nb2Value(NULL),
 m_spButton(NULL),
 m_spValue(NULL),
+m_rfValue(NULL),
 m_rxIQPhase(NULL),
 m_rxIQGain(NULL),
 m_txIQPhase(NULL),
@@ -93,9 +96,9 @@ m_txIQGain(NULL)
 
 	m_noteBook->AddPage(createStepTab(m_noteBook), _("Step Size"), false);
 
-	m_noteBook->AddPage(createRXDSPTab(m_noteBook), _("RX DSP"), false);
+	m_noteBook->AddPage(createReceiveTab(m_noteBook), _("Receive"), false);
 
-	m_noteBook->AddPage(createTXDSPTab(m_noteBook), _("TX DSP"), false);
+	m_noteBook->AddPage(createTransmitTab(m_noteBook), _("Transmit"), false);
 
 	m_noteBook->AddPage(createIQTab(m_noteBook), _("I + Q"), false);
 
@@ -158,6 +161,7 @@ m_txIQGain(NULL)
 
 	m_spButton->SetValue(m_parameters->m_spOn);
 	m_spValue->SetValue(m_parameters->m_spValue);
+	m_rfValue->SetValue(m_parameters->m_rfGain);
 
 	m_rxIQPhase->SetValue(m_parameters->m_rxIQphase);
 	m_rxIQGain->SetValue(m_parameters->m_rxIQgain);
@@ -371,6 +375,7 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 
 	m_parameters->m_spOn      = m_spButton->IsChecked();
 	m_parameters->m_spValue   = m_spValue->GetValue();
+	m_parameters->m_rfGain    = m_rfValue->GetValue();
 
 	m_parameters->m_rxIQphase = m_rxIQPhase->GetValue();
 	m_parameters->m_rxIQgain  = m_rxIQGain->GetValue();
@@ -719,7 +724,7 @@ wxPanel* CUWSDRPreferences::createStepTab(wxNotebook* noteBook)
 	return panel;
 }
 
-wxPanel* CUWSDRPreferences::createRXDSPTab(wxNotebook* noteBook)
+wxPanel* CUWSDRPreferences::createReceiveTab(wxNotebook* noteBook)
 {
 	wxPanel* panel = new wxPanel(noteBook, -1);
 
@@ -750,6 +755,15 @@ wxPanel* CUWSDRPreferences::createRXDSPTab(wxNotebook* noteBook)
 	m_nb2Value = new wxSlider(panel, -1, 1, 1, 1000, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1));
 	sizer->Add(m_nb2Value, 0, wxALL, BORDER_SIZE);
 
+	wxStaticText* rfLabel = new wxStaticText(panel, -1, _("RF Gain"));
+	sizer->Add(rfLabel, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* dummy1 = new wxStaticText(panel, -1, wxEmptyString);
+	sizer->Add(dummy1, 0, wxALL, BORDER_SIZE);
+
+	m_rfValue = new wxSlider(panel, RXRF_GAIN, 1000, 0, 1000, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1));
+	sizer->Add(m_rfValue, 0, wxALL, BORDER_SIZE);
+
 	mainSizer->Add(sizer, 0, wxALL, BORDER_SIZE);
 
 	panel->SetAutoLayout(true);
@@ -762,7 +776,7 @@ wxPanel* CUWSDRPreferences::createRXDSPTab(wxNotebook* noteBook)
 	return panel;
 }
 
-wxPanel* CUWSDRPreferences::createTXDSPTab(wxNotebook* noteBook)
+wxPanel* CUWSDRPreferences::createTransmitTab(wxNotebook* noteBook)
 {
 	wxPanel* panel = new wxPanel(noteBook, -1);
 
@@ -868,4 +882,11 @@ void CUWSDRPreferences::onIQChanged(wxSpinEvent& event)
 			break;
 		}
 	}
+}
+
+void CUWSDRPreferences::onRFGainChanged(wxScrollEvent& event)
+{
+	unsigned int gain = m_rfValue->GetValue();
+
+	m_dsp->setRFGain(gain);
 }

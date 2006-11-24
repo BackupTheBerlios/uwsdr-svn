@@ -51,9 +51,10 @@ m_outBuffer(NULL),
 m_record(NULL),
 m_transmit(false),
 m_running(false),
-m_afGain(0.0),
-m_micGain(0.0),
-m_power(0.0),
+m_afGain(0.0F),
+m_rfGain(0.0F),
+m_micGain(0.0F),
+m_power(0.0F),
 m_mode(MODE_USB),
 m_clockId(-1)
 {
@@ -264,6 +265,8 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 				if (m_transmit)
 					return;
 
+				scaleBuffer(inBuffer, nSamples, m_rfGain);
+
 				m_dttsp->dataIO(inBuffer, m_outBuffer, nSamples);
 
 				unsigned int n = m_rxRingBuffer.addData(m_outBuffer, nSamples);
@@ -461,6 +464,11 @@ void CDSPControl::getSpectrum(float* spectrum, int pos)
 void CDSPControl::setAFGain(unsigned int value)
 {
 	m_afGain = float(value) / 1000.0F;
+}
+
+void CDSPControl::setRFGain(unsigned int value)
+{
+	m_rfGain = float(value) / 1000.0F;
 }
 
 void CDSPControl::setMicGain(unsigned int value)

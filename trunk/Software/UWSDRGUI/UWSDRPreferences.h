@@ -34,6 +34,8 @@ class CUWSDRPreferences : public wxDialog {
 	~CUWSDRPreferences();
 
 	void onIQChanged(wxSpinEvent& event);
+	void onRFGainChanged(wxScrollEvent& event);
+
 	void onOK(wxCommandEvent& event);
 	void onHelp(wxCommandEvent& event);
 
@@ -73,6 +75,7 @@ class CUWSDRPreferences : public wxDialog {
 	wxSlider*       m_nb2Value;
 	wxCheckBox*     m_spButton;
 	wxSlider*       m_spValue;
+	wxSlider*       m_rfValue;
 	wxSpinCtrl*     m_rxIQPhase;
 	wxSpinCtrl*     m_rxIQGain;
 	wxSpinCtrl*     m_txIQPhase;
@@ -84,8 +87,8 @@ class CUWSDRPreferences : public wxDialog {
 	wxPanel* createShiftTab(wxNotebook* noteBook);
 	wxPanel* createModeTab(wxNotebook* noteBook);
 	wxPanel* createStepTab(wxNotebook* noteBook);
-	wxPanel* createRXDSPTab(wxNotebook* noteBook);
-	wxPanel* createTXDSPTab(wxNotebook* noteBook);
+	wxPanel* createReceiveTab(wxNotebook* noteBook);
+	wxPanel* createTransmitTab(wxNotebook* noteBook);
 	wxPanel* createIQTab(wxNotebook* noteBook);
 
 	wxChoice* createDeviationChoice(wxPanel* panel);

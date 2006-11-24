@@ -72,6 +72,7 @@ class CDSPControl : public wxThread, public IDataCallback {
 	virtual bool setRecord(bool record);
 
 	virtual void setAFGain(unsigned int value);
+	virtual void setRFGain(unsigned int value);
 	virtual void setMicGain(unsigned int value);
 	virtual void setPower(unsigned int value);
 	virtual void setSquelch(unsigned int value);
@@ -107,6 +108,7 @@ class CDSPControl : public wxThread, public IDataCallback {
 	bool           m_transmit;
 	bool           m_running;
 	float          m_afGain;
+	float          m_rfGain;
 	float          m_micGain;
 	float          m_power;
 	int            m_mode;

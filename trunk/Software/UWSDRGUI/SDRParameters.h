@@ -113,6 +113,7 @@ class CSDRParameters {
 	int          m_txIQgain;
 
 	unsigned int m_afGain;
+	unsigned int m_rfGain;
 	unsigned int m_squelch;
 	unsigned int m_micGain;
 	unsigned int m_power;
