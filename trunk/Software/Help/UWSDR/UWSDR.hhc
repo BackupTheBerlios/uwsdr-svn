@@ -173,17 +173,17 @@
        </object>
        <ul>
          <li> <object type="text/sitemap">
-                  <param name="Name" value="Frequency Limits">
+                  <param name="Name" value="Frequencies">
                   <param name="ID" value=401>
                   <param name="Local" value="FreqPref.htm">
               </object>
          <li> <object type="text/sitemap">
-                  <param name="Name" value="Shift Size">
+                  <param name="Name" value="Shift">
                   <param name="ID" value=402>
                   <param name="Local" value="ShiftPref.htm">
               </object>
          <li> <object type="text/sitemap">
-                  <param name="Name" value="Mode Settings">
+                  <param name="Name" value="Modes">
                   <param name="ID" value=403>
                   <param name="Local" value="ModePref.htm">
               </object>
@@ -193,17 +193,17 @@
                   <param name="Local" value="StepPref.htm">
               </object>
          <li> <object type="text/sitemap">
-                  <param name="Name" value="Receive DSP">
+                  <param name="Name" value="Receive">
                   <param name="ID" value=405>
-                  <param name="Local" value="RXDSPPref.htm">
+                  <param name="Local" value="ReceivePref.htm">
               </object>
          <li> <object type="text/sitemap">
-                  <param name="Name" value="Transmit DSP">
+                  <param name="Name" value="Transmit">
                   <param name="ID" value=406>
-                  <param name="Local" value="TXDSPPref.htm">
+                  <param name="Local" value="TransmitPref.htm">
               </object>
          <li> <object type="text/sitemap">
-                  <param name="Name" value="I/Q Balance">
+                  <param name="Name" value="I + Q">
                   <param name="ID" value=9>
                   <param name="Local" value="IQPref.htm">
               </object>

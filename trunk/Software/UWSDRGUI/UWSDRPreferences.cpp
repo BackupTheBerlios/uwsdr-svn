@@ -732,7 +732,8 @@ wxPanel* CUWSDRPreferences::createReceiveTab(wxNotebook* noteBook)
 
 	wxStaticText* label = new wxStaticText(panel, -1,
 		_("The DSP includes two advanced notch blankers, they can be enabled here, and\n"
-		  "their detection threshold values set."));
+		  "their detection threshold values set. The amount of attenuation before the IF\n"
+		  "strip may also be changed here."));
 	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(3);

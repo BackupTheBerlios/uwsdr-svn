@@ -322,27 +322,27 @@ float CDTTSPControl::getMeter(int type)
 		case METER_I_INPUT:
 			val = ::Calculate_Meters(ADC_REAL);
 			if (val != -200.0F)
-				val += 50.0F;
+				val += 55.0F;
 			break;
 		case METER_Q_INPUT:
 			val = ::Calculate_Meters(ADC_IMAG);
 			if (val != -200.0F)
-				val += 50.0F;
+				val += 55.0F;
 			break;
 		case METER_SIGNAL:
 			val = ::Calculate_Meters(SIGNAL_STRENGTH);
 			if (val != -200.0F)
-				val += 40.0F;
+				val += 45.0F;
 			break;
 		case METER_AVG_SIGNAL:
 			val = ::Calculate_Meters(AVG_SIGNAL_STRENGTH);
 			if (val != -200.0F)
-				val += 40.0F;
+				val += 45.0F;
 			break;
 		case METER_AGC:
 			val = ::Calculate_Meters(AGC_GAIN);
 			if (val != -200.0F)
-				val -= 57.0F;
+				val -= 62.0F;
 			break;
 		case METER_MICROPHONE:
 			val = ::Calculate_Meters(MIC);

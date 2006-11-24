@@ -45,7 +45,7 @@
        </object>
 
   <li> <object type="text/sitemap">
-           <param name="Name" value="Frequency Limits (Preferences)">
+           <param name="Name" value="Frequencies (Preferences)">
            <param name="Local" value="FreqPref.htm">
        </object>
 
@@ -60,7 +60,7 @@
        </object>
 
   <li> <object type="text/sitemap">
-           <param name="Name" value="I/Q Balance (Preferences)">
+           <param name="Name" value="I + Q (Preferences)">
            <param name="Local" value="IQPref.htm">
        </object>
 
@@ -110,7 +110,7 @@
        </object>
 
   <li> <object type="text/sitemap">
-           <param name="Name" value="Mode Settings (Preferences)">
+           <param name="Name" value="Modes (Preferences)">
            <param name="Local" value="ModePref.htm">
        </object>
 
@@ -145,8 +145,8 @@
        </object>
 
   <li> <object type="text/sitemap">
-           <param name="Name" value="Receive DSP (Preferences)">
-           <param name="Local" value="RXDSPPref.htm">
+           <param name="Name" value="Receive (Preferences)">
+           <param name="Local" value="ReceivePref.htm">
        </object>
 
   <li> <object type="text/sitemap">
@@ -184,7 +184,7 @@
            <param name="Local" value="TuningButtons.htm">
        </object>
   <li> <object type="text/sitemap">
-           <param name="Name" value="Shift Size (Preferences)">
+           <param name="Name" value="Shift (Preferences)">
            <param name="Local" value="ShiftPref.htm">
        </object>
 
@@ -229,8 +229,8 @@
        </object>
 
   <li> <object type="text/sitemap">
-           <param name="Name" value="Transmit DSP (Preferences)">
-           <param name="Local" value="TXDSPPref.htm">
+           <param name="Name" value="Transmit (Preferences)">
+           <param name="Local" value="TransmitPref.htm">
        </object>
 
   <li> <object type="text/sitemap">

@@ -1250,7 +1250,7 @@ void CUWSDRFrame::onTimer(wxTimerEvent& event)
 			m_sMeter->setLevel(val);
 
 			m_dsp->getSpectrum(m_spectrum, m_parameters->m_spectrumPos);
-			m_spectrumDisplay->showSpectrum(m_spectrum, -30.0F);
+			m_spectrumDisplay->showSpectrum(m_spectrum, -35.0F);
 
 			float offset = m_spectrumDisplay->getFreqPick();
 			if (offset != 0.0F)
