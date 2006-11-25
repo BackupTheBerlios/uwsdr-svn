@@ -100,6 +100,10 @@ class CSDRParameters {
 	bool         m_spOn;
 	unsigned int m_spValue;
 
+	unsigned int m_alcAttack;
+	unsigned int m_alcDecay;
+	unsigned int m_alcHang;
+
 	int          m_rxMeter;
 	int          m_txMeter;
 

@@ -39,6 +39,9 @@ m_nb2(false),
 m_nb2Value(0),
 m_sp(false),
 m_spValue(0),
+m_attack(0),
+m_decay(0),
+m_hang(0),
 m_rxPhase(0),
 m_rxGain(0),
 m_txPhase(0),
@@ -62,6 +65,10 @@ void CDTTSPControl::open(float sampleRate, unsigned int blockSize)
 	::Release_Update();
 
 	::SetDCBlock(true);
+
+	::SetTXSquelchSt(false);
+
+	::SetTXLevelerSt(false);
 
 	::SetSquelchState(true);
 
@@ -276,6 +283,20 @@ void CDTTSPControl::setSPValue(unsigned int value)
 	m_spValue = value;
 }
 
+void CDTTSPControl::setALCValue(unsigned int attack, unsigned int decay, unsigned int hang)
+{
+	if (attack == m_attack && decay == m_decay && hang == m_hang)
+		return;
+
+	::SetTXALCAttack(float(attack));
+	::SetTXALCDecay(float(decay));
+	::SetTXALCHang(float(hang));
+
+	m_attack = attack;
+	m_decay  = decay;
+	m_hang   = hang;
+}
+
 void CDTTSPControl::setRXIAndQ(int phase, int gain)
 {
 	if (phase == m_rxPhase && gain == m_rxGain)
@@ -410,60 +431,60 @@ void CDTTSPControl::normaliseFilter()
 	if (m_filter == -1)
 		return;
 
-	int width = 0;
+	double width = 0.0;
 	switch (m_filter) {
 		case FILTER_20000:
-			width = 20000;
+			width = 20000.0;
 			break;
 		case FILTER_15000:
-			width = 15000;
+			width = 15000.0;
 			break;
 		case FILTER_10000:
-			width = 10000;
+			width = 10000.0;
 			break;
 		case FILTER_6000:
-			width = 6000;
+			width = 6000.0;
 			break;
 		case FILTER_4000:
-			width = 4000;
+			width = 4000.0;
 			break;
 		case FILTER_2600:
-			width = 2600;
+			width = 2600.0;
 			break;
 		case FILTER_2100:
-			width = 2100;
+			width = 2100.0;
 			break;
 		case FILTER_1000:
-			width = 1000;
+			width = 1000.0;
 			break;
 		case FILTER_500:
-			width = 500;
+			width = 500.0;
 			break;
 		case FILTER_250:
-			width = 250;
+			width = 250.0;
 			break;
 		case FILTER_100:
-			width = 100;
+			width = 100.0;
 			break;
 		case FILTER_50:
-			width = 50;
+			width = 50.0;
 			break;
 		case FILTER_25:
-			width = 25;
+			width = 25.0;
 			break;
 		default:
 			::wxLogError(wxT("Unknown filter value = %d"), m_filter);
 			return;
 	}
 
-	int low  = 0;
-	int high = 0;
+	double rxLow = 0.0, rxHigh = 0.0;
+	double txLow = 0.0, txHigh = 0.0;
 	switch (m_mode) {
 		case MODE_FMW:
 		case MODE_FMN:
 		case MODE_AM:
-			high = width / 2;
-			low  = -width / 2;
+			txHigh = rxHigh =  width / 2.0;
+			txLow  = rxLow  = -width / 2.0;
 			break;
 		case MODE_USB:
 			switch (m_filter) {
@@ -472,34 +493,34 @@ void CDTTSPControl::normaliseFilter()
 				case FILTER_10000:
 				case FILTER_6000:
 				case FILTER_4000:
-					high = width + 100;
-					low  = 100;
+					txHigh = rxHigh = width + 100.0;
+					txLow  = rxLow  = 100.0;
 					break;
 				case FILTER_2600:
 				case FILTER_2100:
 				case FILTER_1000:
-					high = width + 200;
-					low  = 200;
+					txHigh = rxHigh = width + 200.0;
+					txLow  = rxLow  = 200.0;
 					break;
 				case FILTER_500:
-					high = 850;
-					low  = 350;
+					txHigh = rxHigh = 850.0;
+					txLow  = rxLow  = 350.0;
 					break;
 				case FILTER_250:
-					high = 725;
-					low  = 475;
+					txHigh = rxHigh = 725.0;
+					txLow  = rxLow  = 475.0;
 					break;
 				case FILTER_100:
-					high = 650;
-					low  = 550;
+					txHigh = rxHigh = 650.0;
+					txLow  = rxLow  = 550.0;
 					break;
 				case FILTER_50:
-					high = 625;
-					low  = 575;
+					txHigh = rxHigh = 625.0;
+					txLow  = rxLow  = 575.0;
 					break;
 				case FILTER_25:
-					high = 613;
-					low  = 587;
+					txHigh = rxHigh = 613.0;
+					txLow  = rxLow  = 587.0;
 					break;
 			}
 			break;
@@ -510,34 +531,34 @@ void CDTTSPControl::normaliseFilter()
 				case FILTER_10000:
 				case FILTER_6000:
 				case FILTER_4000:
-					high = -100;
-					low  = -width - 100;
+					txHigh = rxHigh = -100.0;
+					txLow  = rxLow  = -width - 100.0;
 					break;
 				case FILTER_2600:
 				case FILTER_2100:
 				case FILTER_1000:
-					high = -200;
-					low  = -width - 200;
+					txHigh = rxHigh = -200.0;
+					txLow  = rxLow  = -width - 200.0;
 					break;
 				case FILTER_500:
-					high = -350;
-					low  = -850;
+					txHigh = rxHigh = -350.0;
+					txLow  = rxLow  = -850.0;
 					break;
 				case FILTER_250:
-					high = -475;
-					low  = -725;
+					txHigh = rxHigh = -475.0;
+					txLow  = rxLow  = -725.0;
 					break;
 				case FILTER_100:
-					high = -550;
-					low  = -650;
+					txHigh = rxHigh = -550.0;
+					txLow  = rxLow  = -650.0;
 					break;
 				case FILTER_50:
-					high = -575;
-					low  = -625;
+					txHigh = rxHigh = -575.0;
+					txLow  = rxLow  = -625.0;
 					break;
 				case FILTER_25:
-					high = -587;
-					low  = -613;
+					txHigh = rxHigh = -587.0;
+					txLow  = rxLow  = -613.0;
 					break;
 			}
 			break;
@@ -551,37 +572,54 @@ void CDTTSPControl::normaliseFilter()
 				case FILTER_4000:
 				case FILTER_2600:
 				case FILTER_2100:
-					high = width + 100;
-					low  = 100;
+					rxHigh = width + 100.0;
+					rxLow  = 100.0;
+					txHigh = CW_OFFSET + 200.0;
+					txLow  = CW_OFFSET - 200.0;
 					break;
 				case FILTER_1000:
-					high = CW_OFFSET + 500;
-					low  = CW_OFFSET - 500;
+					rxHigh = CW_OFFSET + 500.0;
+					rxLow  = CW_OFFSET - 500.0;
+					txHigh = CW_OFFSET + 200.0;
+					txLow  = CW_OFFSET - 200.0;
 					break;
 				case FILTER_500:
-					high = CW_OFFSET + 250;
-					low  = CW_OFFSET - 250;
+					rxHigh = CW_OFFSET + 250.0;
+					rxLow  = CW_OFFSET - 250.0;
+					txHigh = CW_OFFSET + 200.0;
+					txLow  = CW_OFFSET - 200.0;
 					break;
 				case FILTER_250:
-					high = CW_OFFSET + 125;
-					low  = CW_OFFSET - 125;
+					rxHigh = CW_OFFSET + 125.0;
+					rxLow  = CW_OFFSET - 125.0;
+					txHigh = CW_OFFSET + 200.0;
+					txLow  = CW_OFFSET - 200.0;
 					break;
 				case FILTER_100:
-					high = CW_OFFSET + 50;
-					low  = CW_OFFSET - 50;
+					rxHigh = CW_OFFSET + 50.0;
+					rxLow  = CW_OFFSET - 50.0;
+					txHigh = CW_OFFSET + 200.0;
+					txLow  = CW_OFFSET - 200.0;
 					break;
 				case FILTER_50:
-					high = CW_OFFSET + 25;
-					low  = CW_OFFSET - 25;
+					rxHigh = CW_OFFSET + 25.0;
+					rxLow  = CW_OFFSET - 25.0;
+					txHigh = CW_OFFSET + 200.0;
+					txLow  = CW_OFFSET - 200.0;
 					break;
 				case FILTER_25:
-					high = CW_OFFSET + 13;
-					low  = CW_OFFSET - 12;
+					rxHigh = CW_OFFSET + 13.0;
+					rxLow  = CW_OFFSET - 12.0;
+					txHigh = CW_OFFSET + 200.0;
+					txLow  = CW_OFFSET - 200.0;
 					break;
 			}
 			break;
+		default:
+			::wxLogError(wxT("Unknown mode value = %d"), m_mode);
+			return;
 	}
 
-	::SetFilter(double(low), double(high), m_blockSize, RX);
-	::SetFilter(double(low), double(high), m_blockSize, TX);	// FIXME
+	::SetFilter(rxLow, rxHigh, m_blockSize, RX);
+	::SetFilter(txLow, txHigh, m_blockSize, TX);
 }

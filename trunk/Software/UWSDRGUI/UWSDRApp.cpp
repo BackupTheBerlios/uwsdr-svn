@@ -76,6 +76,9 @@ const wxString KEY_NB2_CTRL        = wxT("/NoiseBlanker2Ctrl");
 const wxString KEY_NB2_VALUE       = wxT("/NoiseBlanker2Value");
 const wxString KEY_SP_CTRL         = wxT("/SpeechProcCtrl");
 const wxString KEY_SP_VALUE        = wxT("/SpeechprocValue");
+const wxString KEY_ALC_ATTACK      = wxT("/ALCAttackValue");
+const wxString KEY_ALC_DECAY       = wxT("/ALCDecayValue");
+const wxString KEY_ALC_HANG        = wxT("/ALCHangValue");
 const wxString KEY_RX_METER        = wxT("/ReceiveMeter");
 const wxString KEY_TX_METER        = wxT("/TransmitMeter");
 const wxString KEY_SPECTRUM_POS    = wxT("/SpectrumPos");
@@ -289,6 +292,9 @@ bool CUWSDRApp::readConfig()
 	wxString keyNb2Value      = wxT("/") + m_parameters->m_name + KEY_NB2_VALUE;
 	wxString keySpCtrl        = wxT("/") + m_parameters->m_name + KEY_SP_CTRL;
 	wxString keySpValue       = wxT("/") + m_parameters->m_name + KEY_SP_VALUE;
+	wxString keyAlcAttack     = wxT("/") + m_parameters->m_name + KEY_ALC_ATTACK;
+	wxString keyAlcDecay      = wxT("/") + m_parameters->m_name + KEY_ALC_DECAY;
+	wxString keyAlcHang       = wxT("/") + m_parameters->m_name + KEY_ALC_HANG;
 	wxString keyRxMeter       = wxT("/") + m_parameters->m_name + KEY_RX_METER;
 	wxString keyTxMeter       = wxT("/") + m_parameters->m_name + KEY_TX_METER;
 	wxString keySpectrumPos   = wxT("/") + m_parameters->m_name + KEY_SPECTRUM_POS;
@@ -428,6 +434,15 @@ bool CUWSDRApp::readConfig()
 	profile->Read(keySpValue,          &num, 3);
 	m_parameters->m_spValue = num;
 
+	profile->Read(keyAlcAttack,        &num, 2);
+	m_parameters->m_alcAttack = num;
+
+	profile->Read(keyAlcDecay,         &num, 10);
+	m_parameters->m_alcDecay = num;
+
+	profile->Read(keyAlcHang,          &num, 500);
+	m_parameters->m_alcHang = num;
+
 	profile->Read(keyRxMeter,          &m_parameters->m_rxMeter, METER_SIGNAL);
 	profile->Read(keyTxMeter,          &m_parameters->m_txMeter, METER_POWER);
 
@@ -523,6 +538,9 @@ void CUWSDRApp::writeConfig()
 	wxString keyNb2Value      = wxT("/") + m_parameters->m_name + KEY_NB2_VALUE;
 	wxString keySpCtrl        = wxT("/") + m_parameters->m_name + KEY_SP_CTRL;
 	wxString keySpValue       = wxT("/") + m_parameters->m_name + KEY_SP_VALUE;
+	wxString keyAlcAttack     = wxT("/") + m_parameters->m_name + KEY_ALC_ATTACK;
+	wxString keyAlcDecay      = wxT("/") + m_parameters->m_name + KEY_ALC_DECAY;
+	wxString keyAlcHang       = wxT("/") + m_parameters->m_name + KEY_ALC_HANG;
 	wxString keyRxMeter       = wxT("/") + m_parameters->m_name + KEY_RX_METER;
 	wxString keyTxMeter       = wxT("/") + m_parameters->m_name + KEY_TX_METER;
 	wxString keySpectrumPos   = wxT("/") + m_parameters->m_name + KEY_SPECTRUM_POS;
@@ -608,6 +626,9 @@ void CUWSDRApp::writeConfig()
 	profile->Write(keyNb2Value,         int(m_parameters->m_nb2Value));
 	profile->Write(keySpCtrl,           m_parameters->m_spOn);
 	profile->Write(keySpValue,          int(m_parameters->m_spValue));
+	profile->Write(keyAlcAttack,        int(m_parameters->m_alcAttack));
+	profile->Write(keyAlcDecay,         int(m_parameters->m_alcDecay));
+	profile->Write(keyAlcHang,          int(m_parameters->m_alcHang));
 	profile->Write(keyRxMeter,          m_parameters->m_rxMeter);
 	profile->Write(keyTxMeter,          m_parameters->m_txMeter);
 	profile->Write(keySpectrumPos,      m_parameters->m_spectrumPos);

@@ -441,6 +441,11 @@ void CDSPControl::setSPValue(unsigned int value)
 	m_dttsp->setSPValue(value);
 }
 
+void CDSPControl::setALCValue(unsigned int attack, unsigned int decay, unsigned int hang)
+{
+	m_dttsp->setALCValue(attack, decay, hang);
+}
+
 void CDSPControl::setRXIAndQ(int phase, int gain)
 {
 	m_dttsp->setRXIAndQ(phase, gain);

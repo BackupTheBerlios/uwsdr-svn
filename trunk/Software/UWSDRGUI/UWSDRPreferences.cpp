@@ -78,6 +78,9 @@ m_nb2Button(NULL),
 m_nb2Value(NULL),
 m_spButton(NULL),
 m_spValue(NULL),
+m_alcAttack(NULL),
+m_alcDecay(NULL),
+m_alcHang(NULL),
 m_rfValue(NULL),
 m_rxIQPhase(NULL),
 m_rxIQGain(NULL),
@@ -159,9 +162,15 @@ m_txIQGain(NULL)
 	m_nb2Button->SetValue(m_parameters->m_nb2On);
 	m_nb2Value->SetValue(m_parameters->m_nb2Value);
 
+	// Map 1 -> 1000 to -30 -> 0
+	unsigned int val = (unsigned int)(10.0 * ::log10(double(m_parameters->m_rfGain) / 1000.0) + 0.5);
+	m_rfValue->SetValue(val);
+
 	m_spButton->SetValue(m_parameters->m_spOn);
 	m_spValue->SetValue(m_parameters->m_spValue);
-	m_rfValue->SetValue(m_parameters->m_rfGain);
+	m_alcAttack->SetValue(m_parameters->m_alcAttack);
+	m_alcDecay->SetValue(m_parameters->m_alcDecay);
+	m_alcHang->SetValue(m_parameters->m_alcHang);
 
 	m_rxIQPhase->SetValue(m_parameters->m_rxIQphase);
 	m_rxIQGain->SetValue(m_parameters->m_rxIQgain);
@@ -373,9 +382,15 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 	m_parameters->m_nb2On    = m_nb2Button->IsChecked();
 	m_parameters->m_nb2Value = m_nb2Value->GetValue();
 
+	// Map -30 -> 0 to 1 -> 1000
+	double gainDb = double(m_rfValue->GetValue());
+	m_parameters->m_rfGain    = (unsigned int)(1000.0 * ::pow(10.0, gainDb / 10.0) + 0.5);
+
 	m_parameters->m_spOn      = m_spButton->IsChecked();
 	m_parameters->m_spValue   = m_spValue->GetValue();
-	m_parameters->m_rfGain    = m_rfValue->GetValue();
+	m_parameters->m_alcAttack = m_alcAttack->GetValue();
+	m_parameters->m_alcDecay  = m_alcDecay->GetValue();
+	m_parameters->m_alcHang   = m_alcHang->GetValue();
 
 	m_parameters->m_rxIQphase = m_rxIQPhase->GetValue();
 	m_parameters->m_rxIQgain  = m_rxIQGain->GetValue();
@@ -744,7 +759,7 @@ wxPanel* CUWSDRPreferences::createReceiveTab(wxNotebook* noteBook)
 	m_nbButton = new wxCheckBox(panel, -1, wxEmptyString);
 	sizer->Add(m_nbButton, 0, wxALL, BORDER_SIZE);
 
-	m_nbValue = new wxSlider(panel, -1, 1, 1, 200, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1));
+	m_nbValue = new wxSlider(panel, -1, 1, 1, 200, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
 	sizer->Add(m_nbValue, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* nb2Label = new wxStaticText(panel, -1, _("Mean noise blanker"));
@@ -753,16 +768,16 @@ wxPanel* CUWSDRPreferences::createReceiveTab(wxNotebook* noteBook)
 	m_nb2Button = new wxCheckBox(panel, -1, wxEmptyString);
 	sizer->Add(m_nb2Button, 0, wxALL, BORDER_SIZE);
 
-	m_nb2Value = new wxSlider(panel, -1, 1, 1, 1000, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1));
+	m_nb2Value = new wxSlider(panel, -1, 1, 1, 1000, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
 	sizer->Add(m_nb2Value, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* rfLabel = new wxStaticText(panel, -1, _("RF Gain"));
+	wxStaticText* rfLabel = new wxStaticText(panel, -1, _("RF Attenuator (dB)"));
 	sizer->Add(rfLabel, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* dummy1 = new wxStaticText(panel, -1, wxEmptyString);
 	sizer->Add(dummy1, 0, wxALL, BORDER_SIZE);
 
-	m_rfValue = new wxSlider(panel, RXRF_GAIN, 1000, 0, 1000, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1));
+	m_rfValue = new wxSlider(panel, RXRF_GAIN, 0, -30, 0, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
 	sizer->Add(m_rfValue, 0, wxALL, BORDER_SIZE);
 
 	mainSizer->Add(sizer, 0, wxALL, BORDER_SIZE);
@@ -784,8 +799,9 @@ wxPanel* CUWSDRPreferences::createTransmitTab(wxNotebook* noteBook)
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
 	wxStaticText* label = new wxStaticText(panel, -1,
-		_("The DSP is capable of processing the transmitted signal to increase its\n"
-		  "average power."));
+		_("The DSP is capable of processing the transmitted signal to increase its average\n"
+		  "power. The output level has to be controlled by the ALC to ensure that the\n"
+		  "hardware is not overdriven."));
 	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(3);
@@ -796,8 +812,35 @@ wxPanel* CUWSDRPreferences::createTransmitTab(wxNotebook* noteBook)
 	m_spButton = new wxCheckBox(panel, -1, wxEmptyString);
 	sizer->Add(m_spButton, 0, wxALL, BORDER_SIZE);
 
-	m_spValue = new wxSlider(panel, -1, 0, 0, 20, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1));
+	m_spValue = new wxSlider(panel, -1, 3, 0, 20, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
 	sizer->Add(m_spValue, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* alcAttackLabel = new wxStaticText(panel, -1, _("ALC Attack (ms)"));
+	sizer->Add(alcAttackLabel, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* dummy1 = new wxStaticText(panel, -1, wxEmptyString);
+	sizer->Add(dummy1, 0, wxALL, BORDER_SIZE);
+
+	m_alcAttack = new wxSlider(panel, -1, 2, 1, 10, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
+	sizer->Add(m_alcAttack, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* alcDecayLabel = new wxStaticText(panel, -1, _("ALC Decay (ms)"));
+	sizer->Add(alcDecayLabel, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* dummy2 = new wxStaticText(panel, -1, wxEmptyString);
+	sizer->Add(dummy2, 0, wxALL, BORDER_SIZE);
+
+	m_alcDecay = new wxSlider(panel, -1, 10, 1, 50, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
+	sizer->Add(m_alcDecay, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* alcHangLabel = new wxStaticText(panel, -1, _("ALC Hang (ms)"));
+	sizer->Add(alcHangLabel, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* dummy3 = new wxStaticText(panel, -1, wxEmptyString);
+	sizer->Add(dummy3, 0, wxALL, BORDER_SIZE);
+
+	m_alcHang = new wxSlider(panel, -1, 500, 10, 5000, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
+	sizer->Add(m_alcHang, 0, wxALL, BORDER_SIZE);
 
 	mainSizer->Add(sizer, 0, wxALL, BORDER_SIZE);
 
@@ -887,7 +930,10 @@ void CUWSDRPreferences::onIQChanged(wxSpinEvent& event)
 
 void CUWSDRPreferences::onRFGainChanged(wxScrollEvent& event)
 {
-	unsigned int gain = m_rfValue->GetValue();
+	double gainDb = double(m_rfValue->GetValue());
+
+	// Map -30 -> 0 to 1 -> 1000
+	unsigned int gain = (unsigned int)(1000.0 * ::pow(10.0, gainDb / 10.0) + 0.5);
 
 	m_dsp->setRFGain(gain);
 }

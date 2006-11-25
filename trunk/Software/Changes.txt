@@ -182,13 +182,19 @@ Converted byte order of data to little-endian.
 New internal data source of a pure carrier for the SDR Emulator plus better naming.
 
 
-Version 0.6.2 - November 2006
-=============================
+Version 0.6.2 - 25 November 2006
+================================
 
-Switched back to big-endian data format for the data only.
+Switched back to big-endian data format for the I/Q data only.
 
 Finished SDRSetup.
 
 Updated to wxWidgets 2.7.2.
 
-Added RF Gain to the Receive preferences.
+Added RF Attenuation to the Receive preferences.
+
+Added ALC parameters to the Transmit preferences.
+
+Finished the SDR Help pages.
+
+SDR Emulator has settable data size and delay for testing the hardware/firmware.

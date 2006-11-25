@@ -314,6 +314,8 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_dsp->setSP(m_parameters->m_spOn);
 	m_dsp->setSPValue(m_parameters->m_spValue);
 
+	m_dsp->setALCValue(m_parameters->m_alcAttack, m_parameters->m_alcDecay, m_parameters->m_alcHang);
+
 	m_dsp->setRXIAndQ(m_parameters->m_rxIQphase, m_parameters->m_rxIQgain);
 	m_dsp->setTXIAndQ(m_parameters->m_txIQphase, m_parameters->m_txIQgain);
 
@@ -1097,6 +1099,8 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 
 					m_dsp->setSP(m_parameters->m_spOn);
 					m_dsp->setSPValue(m_parameters->m_spValue);
+
+					m_dsp->setALCValue(m_parameters->m_alcAttack, m_parameters->m_alcDecay, m_parameters->m_alcHang);
 				}
 
 				// These may have been set in the preferences and then cancel pressed

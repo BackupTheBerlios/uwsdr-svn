@@ -1826,10 +1826,10 @@ SetRXAGCHangThreshold (int hangthreshold)
 }
 
 void
-SetTXALCAttack (int attack)
+SetTXALCAttack (float attack)
 {
   char buffer[64];
-  sprintf (buffer, "!setTXALCAttack %d\n", attack);
+  sprintf (buffer, "!setTXALCAttack %f\n", attack);
   sendcommand (buffer);
 }
 
@@ -1842,15 +1842,15 @@ SetTXCarrierLevel (double setit)
 }
 
 void
-SetTXALCDecay (int decay)
+SetTXALCDecay (float decay)
 {
   char buffer[64];
-  sprintf (buffer, "!setTXALCDecay %d\n", decay);
+  sprintf (buffer, "!setTXALCDecay %f\n", decay);
   sendcommand (buffer);
 }
 
 void
-SetTXALCBot (double max_agc)
+SetTXALCBot (float max_agc)
 {
   char buffer[64];
   sprintf (buffer, "!setTXALCBot %f\n", dB2lin ((REAL) max_agc));
@@ -1858,10 +1858,10 @@ SetTXALCBot (double max_agc)
 }
 
 void
-SetTXALCHang (int decay)
+SetTXALCHang (float decay)
 {
   char buffer[64];
-  sprintf (buffer, "!setTXALCHang %d\n", decay);
+  sprintf (buffer, "!setTXALCHang %f\n", decay);
   sendcommand (buffer);
 }
 
