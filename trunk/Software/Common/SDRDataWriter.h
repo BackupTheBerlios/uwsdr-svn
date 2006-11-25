@@ -52,7 +52,7 @@ class CSDRDataWriter : public wxThread, public IDataWriter {
 
     private:
 	wxString           m_address;
-	int                m_port;
+	unsigned short     m_port;
 	int                m_fd;
 	struct sockaddr_in m_remAddr;
 	int                m_sequence;

@@ -1,0 +1,4 @@
+#include "SDRHelpResource.h"
+
+ID_ICON ICON "SDRHelp.ico"
+

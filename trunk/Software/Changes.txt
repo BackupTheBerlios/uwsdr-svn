@@ -198,3 +198,9 @@ Added ALC parameters to the Transmit preferences.
 Finished the SDR Help pages.
 
 SDR Emulator has settable data size and delay for testing the hardware/firmware.
+
+
+Version 0.6.3 - November 2006
+=============================
+
+On Windows the EXE files now have an icon embedded.

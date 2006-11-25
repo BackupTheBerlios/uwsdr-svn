@@ -475,7 +475,6 @@ void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 
 	wxString linkName = name + wxT(".lnk");
 	wxString linkPath = wxString(folder) + wxT("\\UWSDR\\") + linkName;
-	wxString iconPath = dir + wxT("\\UWSDR.ico");
 	wxString exePath  = dir + wxT("\\UWSDR.exe");
 	wxString args     = name;
 
@@ -499,15 +498,7 @@ void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 
 	pShellLink->SetPath(exePath.c_str());
 	pShellLink->SetArguments(args.c_str());
-/*
-	if (strlen(pszDescription) > 0)
-		pShellLink->SetDescription(pszDescription);
-
-	if (iShowmode > 0)
-		pShellLink->SetShowCmd(iShowmode);
-*/
 	pShellLink->SetWorkingDirectory(dir.c_str());
-	pShellLink->SetIconLocation(iconPath.c_str(), 0);
 
     WORD wszLinkfile[MAX_PATH];
 	::MultiByteToWideChar(CP_ACP, 0, linkPath.c_str(), -1, wszLinkfile, MAX_PATH);
@@ -544,7 +535,6 @@ void CGUISetupFrame::writeDeskTop(const wxString& name, const wxString& dir)
 
 	wxString linkName = name + wxT(".lnk");
 	wxString linkPath = wxString(folder) + wxT("\\") + linkName;
-	wxString iconPath = dir + wxT("\\UWSDR.ico");
 	wxString exePath  = dir + wxT("\\UWSDR.exe");
 	wxString args     = name;
 
@@ -568,15 +558,7 @@ void CGUISetupFrame::writeDeskTop(const wxString& name, const wxString& dir)
 
 	pShellLink->SetPath(exePath.c_str());
 	pShellLink->SetArguments(args.c_str());
-/*
-	if (strlen(pszDescription) > 0)
-		pShellLink->SetDescription(pszDescription);
-
-	if (iShowmode > 0)
-		pShellLink->SetShowCmd(iShowmode);
-*/
 	pShellLink->SetWorkingDirectory(dir.c_str());
-	pShellLink->SetIconLocation(iconPath.c_str(), 0);
 
     WORD wszLinkfile[MAX_PATH];
 	::MultiByteToWideChar(CP_ACP, 0, linkPath.c_str(), -1, wszLinkfile, MAX_PATH);

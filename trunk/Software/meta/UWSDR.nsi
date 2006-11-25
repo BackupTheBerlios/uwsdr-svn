@@ -13,8 +13,8 @@
 ;Configuration
 
   ;General
-  Name "UWSDR 0.6.2"
-  OutFile "UWSDR-0.6.2.exe"
+  Name "UWSDR 0.6.3"
+  OutFile "UWSDR-0.6.3.exe"
 
   ;Folder selection page
   InstallDir "$PROGRAMFILES\UWSDR"
@@ -68,17 +68,13 @@ Section "UWSDR Program Files" SecProgram
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Changes.txt"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Install.txt"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Jobs.txt"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\meta\UWSDR.ico"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\meta\GUISetup.ico"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\meta\SDRSetup.ico"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\meta\SDRHelp.ico"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\13cms.sdr"
 
   ;Create start menu entry
   CreateDirectory "$SMPROGRAMS\UWSDR"
-  CreateShortCut "$SMPROGRAMS\UWSDR\GUISetup.lnk"  "$INSTDIR\GUISetup.exe"   "" "$INSTDIR\GUISetup.ico"
-  CreateShortCut "$SMPROGRAMS\UWSDR\SDRHelp.lnk"   "$INSTDIR\SDRHelp.exe"    "" "$INSTDIR\SDRHelp.ico"
-  CreateShortCut "$SMPROGRAMS\UWSDR\SDRSetup.lnk"  "$INSTDIR\SDRSetup.exe"   "" "$INSTDIR\SDRSetup.ico"
+  CreateShortCut "$SMPROGRAMS\UWSDR\GUISetup.lnk"  "$INSTDIR\GUISetup.exe"
+  CreateShortCut "$SMPROGRAMS\UWSDR\SDRHelp.lnk"   "$INSTDIR\SDRHelp.exe"
+  CreateShortCut "$SMPROGRAMS\UWSDR\SDRSetup.lnk"  "$INSTDIR\SDRSetup.exe"
   CreateShortCut "$SMPROGRAMS\UWSDR\Licence.lnk"   "$INSTDIR\Copying.txt"
   CreateShortCut "$SMPROGRAMS\UWSDR\Changes.lnk"   "$INSTDIR\Changes.txt"
   CreateShortCut "$SMPROGRAMS\UWSDR\Install.lnk"   "$INSTDIR\Install.txt"

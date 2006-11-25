@@ -1,0 +1,4 @@
+#include "GUISetupResource.h"
+
+ID_ICON ICON "GUISetup.ico"
+
