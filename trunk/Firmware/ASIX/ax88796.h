@@ -502,5 +502,8 @@ void ax88796_process_irq(void);
 
 void LAN_ISR(void);
 
+#define LAN_DIS_IRQ() AT91F_AIC_DisableIt( AT91C_BASE_AIC, AT91C_ID_IRQ1)
+#define LAN_ENA_IRQ() AT91F_AIC_EnableIt( AT91C_BASE_AIC, AT91C_ID_IRQ1)
+
 #endif //__AX88796_H__
 
