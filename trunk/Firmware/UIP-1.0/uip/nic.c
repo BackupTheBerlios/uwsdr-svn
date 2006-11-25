@@ -17,8 +17,6 @@
 #include "nic.h"
 
 
-#define IP_TCP_HEADER_LENGTH 40
-#define TOTAL_HEADER_LENGTH (IP_TCP_HEADER_LENGTH+ETHERNET_HEADER_LENGTH)
 
 
 void nic_init(void)

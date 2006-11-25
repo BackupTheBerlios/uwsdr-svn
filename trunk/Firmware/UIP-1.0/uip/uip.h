@@ -1217,6 +1217,8 @@ struct uip_udp_conn {
   uip_udp_appstate_t appstate;
 };
 
+void uip_send_udp (struct uip_udp_conn *pSocket, void *data, int len);
+
 /**
  * The current UDP connection.
  */
