@@ -114,12 +114,20 @@ SOURCE=.\GUISetupFrame.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\GUISetupResource.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\GUISetupXpm.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
 
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+# Begin Source File
+
+SOURCE=.\GUISetup.rc
+# End Source File
 # End Group
 # End Target
 # End Project

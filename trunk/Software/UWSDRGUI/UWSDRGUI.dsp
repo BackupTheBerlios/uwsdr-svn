@@ -242,6 +242,10 @@ SOURCE=.\UWSDRPreferences.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\UWSDRResource.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\UWSDRXpm.h
 # End Source File
 # Begin Source File
@@ -260,6 +264,10 @@ SOURCE=.\VolumeDial.h
 # Begin Group "Resource Files"
 
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+# Begin Source File
+
+SOURCE=.\UWSDR.rc
+# End Source File
 # End Group
 # End Target
 # End Project

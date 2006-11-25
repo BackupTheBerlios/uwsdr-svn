@@ -114,12 +114,20 @@ SOURCE=.\SDRSetupFrame.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\SDRSetupResource.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SDRSetupXpm.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
 
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+# Begin Source File
+
+SOURCE=.\SDRSetup.rc
+# End Source File
 # End Group
 # End Target
 # End Project
