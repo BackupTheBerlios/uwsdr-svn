@@ -1,11 +1,14 @@
 
 #include "codec.h"
 #include "uip.h"
+#include "string.h"
 
 u8    codec_buf[2*CODEC_BUFFERSIZE + 2*CODEC_HEADER_SIZE]; // ~6kb = 2000 24bit stereo samples
-u16   codec_send_counter0;
-u16   codec_send_counter1;
+//u16   codec_send_counter0;
+//u16   codec_send_counter1;
 u32   codec_status_flag;
+
+u8 *  codec_inactivebuf;
 
 //********************************************************
 //
@@ -71,6 +74,16 @@ void CODEC_init(void)
 void CODEC_start(void)
 {
   codec_status_flag = 0;
+  t_codec_hdr*  pHdr;
+  
+  pHdr = (t_codec_hdr*)&codec_buf;
+  pHdr->type_char0 = 'D';
+  pHdr->type_char1 = 'A';
+  pHdr->seqNr = 1;
+  pHdr->seqLen = CODEC_BUFFERSIZE;
+  
+  memcpy(codec_buf + (CODEC_BUFFERSIZE + CODEC_HEADER_SIZE), codec_buf, sizeof(t_codec_hdr));
+  
   CODEC_SET_MODE(CODEC_MODE_RX);
   
   //* Enable receiver / transmitter
@@ -86,8 +99,25 @@ void CODEC_start(void)
                               AT91C_SSC_START_EDGE_RF;
   
   //CODEC_SSC_ISR(); //start rx/tx streaming
+  
+  //****** setup DMA regsisters ******
+  AT91C_BASE_SSC->SSC_RPR = (u32)codec_buf + CODEC_HEADER_SIZE;
+  AT91C_BASE_SSC->SSC_RCR = CODEC_BUFFERSIZE;
+  
+  AT91C_BASE_SSC->SSC_TPR = (u32)codec_buf + CODEC_HEADER_SIZE;
+  AT91C_BASE_SSC->SSC_TCR = CODEC_BUFFERSIZE;
+  
   //while(CODEC_GET_ACTIVE_BUFFER() != 1) {}; //wait for first buffer full
   
+  if(CODEC_IS_MODE(CODEC_MODE_RX)) {
+    AT91C_BASE_SSC->SSC_PTCR = (1 << 0); // RXTEN
+  }
+  
+  if(CODEC_IS_MODE(CODEC_MODE_TX)) {
+    AT91C_BASE_SSC->SSC_PTCR = (1 << 8); // TXTEN
+  }    
+  
+    
 }
 
 
@@ -101,22 +131,26 @@ void CODEC_SSC_ISR() //__irq
 
   if(CODEC_GET_ACTIVE_BUFFER() == 1) {
     // now use Buffer 0
-    pCurrent = codec_buf + CODEC_HEADER_SIZE;
-    pNext = codec_buf + CODEC_BUFFERSIZE;
+    //pCurrent = codec_buf + CODEC_HEADER_SIZE;
+    pNext = codec_buf + (CODEC_BUFFERSIZE + 2*CODEC_HEADER_SIZE);
+    //codec_inactivebuf = codec_buf + CODEC_BUFFERSIZE + CODEC_HEADER_SIZE;
+    codec_inactivebuf = codec_buf + (CODEC_BUFFERSIZE + CODEC_HEADER_SIZE);;
     CODEC_SET_ACTIVE_BUFFER(0);
-    codec_send_counter1 = 0;
+    //codec_send_counter1 = 0;
   }
   else {
-    pCurrent = codec_buf + (CODEC_BUFFERSIZE + 2*CODEC_HEADER_SIZE);
-    pNext = codec_buf;
+    //pCurrent = codec_buf + CODEC_BUFFERSIZE + 2*CODEC_HEADER_SIZE;
+    pNext = codec_buf + CODEC_HEADER_SIZE;
+//    codec_inactivebuf = codec_buf;
+    codec_inactivebuf = codec_buf;
     CODEC_SET_ACTIVE_BUFFER(1);
-    codec_send_counter1 = 0;
+    //codec_send_counter1 = 0;
   }
 
   // register conf for RX
   if(CODEC_IS_MODE(CODEC_MODE_RX)) {
-    AT91C_BASE_SSC->SSC_RPR = (u32)pCurrent;
-    AT91C_BASE_SSC->SSC_RCR = CODEC_BUFFERSIZE;
+    //AT91C_BASE_SSC->SSC_RPR = (u32)pCurrent;
+    //AT91C_BASE_SSC->SSC_RCR = CODEC_BUFFERSIZE;
     AT91C_BASE_SSC->SSC_RNPR = (u32)pNext;
     AT91C_BASE_SSC->SSC_RNCR = CODEC_BUFFERSIZE;
     AT91C_BASE_SSC->SSC_PTCR = (1 << 0); // RXTEN
@@ -124,8 +158,8 @@ void CODEC_SSC_ISR() //__irq
   
   // register conf for TX
   if(CODEC_IS_MODE(CODEC_MODE_TX)) {
-    AT91C_BASE_SSC->SSC_TPR = (u32)pCurrent;
-    AT91C_BASE_SSC->SSC_TCR = CODEC_BUFFERSIZE;
+    //AT91C_BASE_SSC->SSC_TPR = (u32)pCurrent;
+    //AT91C_BASE_SSC->SSC_TCR = CODEC_BUFFERSIZE;
     AT91C_BASE_SSC->SSC_TNPR = (u32)pNext;
     AT91C_BASE_SSC->SSC_TNCR = CODEC_BUFFERSIZE;
     AT91C_BASE_SSC->SSC_PTCR = (1 << 8); // TXTEN
@@ -134,13 +168,13 @@ void CODEC_SSC_ISR() //__irq
   //AT91C_BASE_SSC->SSC_CR = AT91C_SSC_RXEN|AT91C_SSC_TXEN;
 }
 
-void UDP_process(void) {
-  
+void UDP_process(void)
+{
   if(CODEC_GET_ACTIVE_BUFFER() == 1) {
-    if(codec_send_counter0 == CODEC_BUFFERSIZE/2) // the buffer is sent
-      return;
-    uip_appdata = codec_buf + codec_send_counter0;
-    codec_send_counter0 += CODEC_UDP_FRAMESIZE;
+    //if(codec_send_counter0 == CODEC_BUFFERSIZE/2) // the buffer is sent
+      //return;
+    //uip_appdata = codec_buf + codec_send_counter0;
+    //codec_send_counter0 += CODEC_UDP_FRAMESIZE;
     //uip_slen = 
   }
 }

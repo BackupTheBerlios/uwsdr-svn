@@ -40,7 +40,7 @@ typedef struct s_codec_hdr {
 } t_codec_hdr;
 
 #define CODEC_HEADER_SIZE     sizeof(t_codec_hdr)
-#define CODEC_BUFFERSIZE      1280 * 3 
+#define CODEC_BUFFERSIZE      400 * 3 
 
 #define CODEC_SET_CS() SET_PIN(CODEC_SPICS_PIN)
 #define CODEC_CLR_CS() CLR_PIN(CODEC_SPICS_PIN)
@@ -49,18 +49,19 @@ typedef struct s_codec_hdr {
 #define CODEC_MODE_TX             (1<<3)
 #define CODEC_BUFFER_FLAG         (1<<4)
 
-#define CODEC_UDP_FRAMESIZE       1000
+//#define CODEC_UDP_FRAMESIZE       1000
 
 
 extern u32 codec_status_flag;
 extern u8 codec_buf[2*CODEC_BUFFERSIZE + 2*CODEC_HEADER_SIZE];
+extern u8 *codec_inactivebuf;
 
 #define CODEC_SET_BUFFER_FULL(x)    (codec_status_flag |= (1 << x))
 #define CODEC_SET_BUFFER_EMPTY(x)   (codec_status_flag &= ~(1 << x))
 #define CODEC_IS_FULL(x)            (codec_status_flag & (1 << x))
 
 #define CODEC_GET_ACTIVE_BUFFER()   (codec_status_flag & CODEC_BUFFER_FLAG)
-#define CODEC_SET_ACTIVE_BUFFER(x)  (codec_status_flag &= (x*CODEC_BUFFER_FLAG))
+#define CODEC_SET_ACTIVE_BUFFER(x)  (codec_status_flag &= ~(x*CODEC_BUFFER_FLAG))
 
 #define CODEC_SET_MODE(x)           (codec_status_flag |= x)
 #define CODEC_CLEAR_MODE(x)         (codec_status_flag &= ~x)
