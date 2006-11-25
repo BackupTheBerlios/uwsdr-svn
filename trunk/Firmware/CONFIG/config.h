@@ -38,7 +38,7 @@
 #define _SW_VERSION_            100
 
 #define _DELAY_COEFF            5
-#define _DELAY_CORRECTION       (50/60)
+#define _DELAY_CORRECTION       50/60
 #define NOP() __asm("nop");
 
 #define RTTC_INTERRUPT_LEVEL	1
