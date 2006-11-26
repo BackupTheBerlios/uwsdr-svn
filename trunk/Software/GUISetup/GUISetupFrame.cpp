@@ -601,6 +601,7 @@ void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 	file.Write(wxT("Version=1.0\n"));
 	file.Write(wxT("Encoding=UTF-8\n"));
 	file.Write(wxT("Name=") + name + wxT("\n"));
+	file.Write(wxT("Categories=Network;HamRadio\n"));
 	file.Write(wxT("Comment=\n"));
 	file.Write(wxT("Icon=UWSDR.png\n"));
 	file.Write(wxT("Exec=") + wxString(BIN_DIR) + wxT("/UWSDR ") + name + wxT("\n"));

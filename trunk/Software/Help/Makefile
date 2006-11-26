@@ -1,5 +1,3 @@
-DATADIR = "/usr/local/share/uwsdr"
-
 ZIP = /usr/bin/zip
 
 install:

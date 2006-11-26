@@ -2,9 +2,10 @@
 Type=Application
 Version=1.0
 Encoding=UTF-8
-Name=UWSDR Help
+Name=SDR Help
+Categories=Network;HamRadio
 Comment=The UWSDR Help program
-Icon=Help.png
-Exec=/usr/local/bin/UWSDRHelp
+Icon=SDRHelp.png
+Exec=/usr/bin/SDRHelp
 Path=.
 Terminal=false

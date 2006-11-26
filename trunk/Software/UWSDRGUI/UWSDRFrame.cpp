@@ -271,12 +271,11 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	// FIXME
 	m_dsp = new CDSPControl(m_parameters->m_hardwareSampleRate, float(m_parameters->m_hardwareSampleRate) / 4.0F);
 
-	m_dsp->setTXReader(new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev));
-	m_dsp->setTXWriter(new CSDRDataWriter(m_parameters->m_ipAddress, m_parameters->m_dataPort));
+	m_dsp->setTXReader(new CNullReader());
+	m_dsp->setTXWriter(new CNullWriter());
 
-	// m_dsp->setRXReader(new CSignalReader(int(m_parameters->m_hardwareSampleRate / 4.0F + 1000.5F), 0.0008F, 0.001F));
-	m_dsp->setRXReader(new CSDRDataReader(m_parameters->m_ipAddress, m_parameters->m_dataPort));
-	m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
+	m_dsp->setRXReader(new CNullReader());
+	m_dsp->setRXWriter(new CNullWriter());
 
 	m_infoBox->setVFO(m_parameters->m_vfoChoice);
 	m_infoBox->setSplitShift(m_parameters->m_vfoSplitShift);
