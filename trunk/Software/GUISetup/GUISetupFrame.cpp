@@ -587,10 +587,16 @@ void CGUISetupFrame::writeDeskTop(const wxString& name, const wxString& dir)
 #if defined(__WXGTK__)
 void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 {
-	wxString fileName = "";
+	wxString homeDir;
+	bool ret = wxGetEnv(wxT("HOME"), &homeDir);
+	if (!ret)
+		return;
+
+	wxString fileName;
+	fileName.Printf(wxT("%s/.local/applications/%s.desktop"), homeDir.c_str(), name.c_str());
 
 	wxFile file;
-	bool ret = file.Open(fileName, wxFile::write);
+	ret = file.Open(fileName, wxFile::write);
 	if (!ret) {
 		::wxMessageBox(_("Cannot open file %s for writing"), fileName);
 		return;

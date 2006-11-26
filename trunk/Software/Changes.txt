@@ -204,3 +204,5 @@ Version 0.6.3 - November 2006
 =============================
 
 On Windows the EXE files now have an icon embedded.
+
+On Linux GUISetup creates a correct .desktop file and "make install" is better.

@@ -222,7 +222,6 @@ bool CDSPControl::openIO()
 	if (m_rxReader->hasClock())
 		m_clockId = RX_READER;
 
-/*
 	if (m_clockId == -1) {
 		m_dttsp->close();
 		m_cwKeyer->close();
@@ -231,7 +230,6 @@ bool CDSPControl::openIO()
 		::wxLogError(wxT("No reader can provide a suitable clock"));
 		return false;
 	}
-*/
 
 	return true;
 }
