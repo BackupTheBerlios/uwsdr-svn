@@ -71,21 +71,11 @@ class CTX {
 
 	virtual void setFrequency(double freq);
 
-	virtual void setSquelchFlag(bool flag);
-	virtual void setSquelchThreshold(float threshold);
-
 	virtual void setAMCarrierLevel(float level);
 
 	virtual void setFMDeviation(float deviation);
 
 	virtual void setIQ(float phase, float gain);
-
-	virtual void setLevelerFlag(bool flag);
-	virtual void setLevelerAttack(float attack);
-	virtual void setLevelerDecay(float decay);
-	virtual void setLevelerGainBottom(float bottom);
-	virtual void setLevelerGainTop(float top);
-	virtual void setLevelerHangTime(float hang);
 
 	virtual void setALCAttack(float attack);
 	virtual void setALCDecay(float decay);
@@ -105,9 +95,9 @@ class CTX {
 	CXB*          m_oBuf;
 
 	CCorrectIQ*   m_iq;
-	bool          m_dcBlockFlag;
 
 	CDCBlock*     m_dcBlock;
+	bool          m_dcBlockFlag;
 
 	COscillator*  m_oscillator;
 
@@ -118,13 +108,7 @@ class CTX {
 	CFMMod*       m_fmModulator;
 	CSSBMod*      m_ssbModulator;
 
-	CSquelch*     m_squelch;
-
-	CAGC*         m_leveler;
-	bool          m_levelerFlag;
-
 	CAGC*         m_alc;
-	bool          m_alcFlag;
 
 	CSpeechProc*  m_speechProc;
 	bool          m_speechProcFlag;

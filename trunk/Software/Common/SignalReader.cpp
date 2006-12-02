@@ -22,10 +22,11 @@
 #include <wx/log.h>
 
 
-CSignalReader::CSignalReader(float frequency, float noiseAmplitude, float signalAmplitude) :
+CSignalReader::CSignalReader(float frequency, float noiseAmplitude, float signalAmplitude, IDataReader* reader) :
 m_frequency(frequency),
 m_noiseAmplitude(noiseAmplitude),
 m_signalAmplitude(signalAmplitude),
+m_reader(reader),
 m_blockSize(0),
 m_callback(NULL),
 m_id(0),
@@ -46,6 +47,7 @@ m_awgnN(0)
 
 CSignalReader::~CSignalReader()
 {
+	delete m_reader;
 }
 
 void CSignalReader::setCallback(IDataCallback* callback, int id)
@@ -57,6 +59,14 @@ void CSignalReader::setCallback(IDataCallback* callback, int id)
 bool CSignalReader::open(float sampleRate, unsigned int blockSize)
 {
 	wxASSERT(m_frequency < (sampleRate + 0.5F) / 2.0F);
+
+	if (m_reader != NULL) {
+		m_reader->setCallback(this, 0);
+
+		bool ret = m_reader->open(sampleRate, blockSize);
+		if (!ret)
+			return false;
+	}
 
 	m_blockSize = blockSize;
 
@@ -94,6 +104,9 @@ bool CSignalReader::open(float sampleRate, unsigned int blockSize)
 
 void CSignalReader::close()
 {
+	if (m_reader != NULL)
+		m_reader->close();
+
 	delete[] m_buffer;
 	delete[] m_awgn;
 }
@@ -104,7 +117,7 @@ void CSignalReader::purge()
 
 bool CSignalReader::hasClock()
 {
-	return false;
+	return m_reader != NULL;
 }
 
 void CSignalReader::clock()
@@ -124,4 +137,11 @@ void CSignalReader::clock()
 	}
 
 	m_callback->callback(m_buffer, m_blockSize, m_id);
+}
+
+void CSignalReader::callback(float* buffer, unsigned int nSamples, int id)
+{
+	::memset(buffer, 0x00, nSamples * 2 * sizeof(float));
+
+	clock();
 }

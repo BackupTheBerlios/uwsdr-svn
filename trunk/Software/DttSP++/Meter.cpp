@@ -114,7 +114,7 @@ void CMeter::setRXMeter(RXMETERTAP tap, CXB* buf, float agcGain)
 	}
 }
 
-void CMeter::setTXMeter(TXMETERTYPE type, CXB* buf, float alcGain, float levelerGain)
+void CMeter::setTXMeter(TXMETERTYPE type, CXB* buf, float alcGain)
 {
 	ASSERT(buf != NULL);
 
@@ -129,7 +129,7 @@ void CMeter::setTXMeter(TXMETERTYPE type, CXB* buf, float alcGain, float leveler
 		case TX_MIC:
 			for (i = 0; i < len; i++)
 				m_micSave = float(0.9995 * m_micSave + 0.0005 * Csqrmag(vec[i]));
-			m_txval[TX_MIC] = float(-10.0 * ::log10(m_micSave + 1e-16));
+			m_txval[TX_MIC] = float(10.0 * ::log10(m_micSave + 1e-16));
 			break;
 
 		case TX_PWR:
@@ -142,27 +142,14 @@ void CMeter::setTXMeter(TXMETERTYPE type, CXB* buf, float alcGain, float leveler
 		case TX_ALC:
 			for (i = 0; i < len; i++)
 				m_alcSave = float(0.9995 * m_alcSave + 0.0005 * Csqrmag(vec[i]));
-			m_txval[TX_ALC]   = float(-10.0 * ::log10(m_alcSave + 1e-16));
+			m_txval[TX_ALC]   = float(10.0 * ::log10(m_alcSave + 1e-16));
 			m_txval[TX_ALC_G] = float(20.0 * ::log10(alcGain + 1e-16));
-			break;
-
-		case TX_EQtap:
-			for (i = 0; i < len; i++)
-				m_eqTapSave =	float(0.9995 * m_eqTapSave + 0.0005 * Csqrmag(vec[i]));
-			m_txval[TX_EQtap] = float(-10.0 * ::log10(m_eqTapSave + 1e-16));
-			break;
-
-		case TX_LEVELER:
-			for (i = 0; i < len; i++)
-				m_levelerSave = float(0.9995 * m_levelerSave + 0.0005 * Csqrmag(vec[i]));
-			m_txval[TX_LEVELER] = float(-10.0 * ::log10(m_levelerSave + 1e-16));
-			m_txval[TX_LVL_G]   = float(20.0 * ::log10(levelerGain + 1e-16));
 			break;
 
 		case TX_COMP:
 			for (i = 0; i < len; i++)
-				m_compSave = float(0.9995 * m_compSave +	0.0005 * Csqrmag(vec[i]));
-			m_txval[TX_COMP] = float(-10.0 * ::log10(m_compSave + 1e-16));
+				m_compSave = float(0.9995 * m_compSave + 0.0005 * Csqrmag(vec[i]));
+			m_txval[TX_COMP] = float(10.0 * ::log10(m_compSave + 1e-16));
 			break;
 
 		case TX_ALC_G:

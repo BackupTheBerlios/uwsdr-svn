@@ -69,8 +69,6 @@ class CDttSP {
 	virtual void  setANRValues(unsigned int taps, unsigned int delay, float gain, float leak);
 	virtual void  setRXSquelchFlag(bool flag);
 	virtual void  setRXSquelchThreshold(float threshold);
-	virtual void  setTXSquelchFlag(bool flag);
-	virtual void  setTXSquelchThreshold(float threshold);
 	virtual void  setANFFlag(bool flag);
 	virtual void  setBANFFlag(bool flag);
 	virtual void  setANFValues(unsigned int taps, unsigned int delay, float gain, float leak);
@@ -85,11 +83,6 @@ class CDttSP {
 	virtual void  setALCDecay(float decay);
 	virtual void  setALCGainBottom(float gain);
 	virtual void  setALCHangTime(float hang);
-	virtual void  setLevelerFlag(bool state);
-	virtual void  setLevelerAttack(float attack);
-	virtual void  setLevelerDecay(float decay);
-	virtual void  setLevelerGainTop(float gain);
-	virtual void  setLevelerHangTime(float hang);
 	virtual void  setRXCorrectIQ(float phase, float gain);
 	virtual void  setTXCorrectIQ(float phase, float gain);
 	virtual void  setSpectrumType(SPECTRUMtype type);

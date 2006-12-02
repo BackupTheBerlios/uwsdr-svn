@@ -206,16 +206,6 @@ void CDttSP::setANRValues(unsigned int taps, unsigned int delay, float gain, flo
 	m_rx->setANRValues(taps, delay, gain, leak);
 }
 
-void CDttSP::setTXSquelchFlag(bool flag)
-{
-	m_tx->setSquelchFlag(flag);
-}
-
-void CDttSP::setTXSquelchThreshold(float threshold)
-{
-	m_tx->setSquelchThreshold(threshold);
-}
-
 void CDttSP::setRXSquelchFlag(bool flag)
 {
 	m_rx->setSquelchFlag(flag);
@@ -294,31 +284,6 @@ void CDttSP::setALCGainBottom(float gain)
 void CDttSP::setALCHangTime(float hang)
 {
 	m_tx->setALCHangTime(hang);
-}
-
-void CDttSP::setLevelerFlag(bool state)
-{
-	m_tx->setLevelerFlag(state);
-}
-
-void CDttSP::setLevelerAttack(float attack)
-{
-	m_tx->setLevelerAttack(attack);
-}
-
-void CDttSP::setLevelerDecay(float decay)
-{
-	m_tx->setLevelerDecay(decay);
-}
-
-void CDttSP::setLevelerGainTop(float gain)
-{
-	m_tx->setLevelerGainTop(gain);
-}
-
-void CDttSP::setLevelerHangTime(float hang)
-{
-	m_tx->setLevelerHangTime(hang);
 }
 
 void CDttSP::setRXCorrectIQ(float phase, float gain)

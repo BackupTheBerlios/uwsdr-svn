@@ -40,19 +40,15 @@ m_spectrum(spectrum),
 m_iBuf(NULL),
 m_oBuf(NULL),
 m_iq(NULL),
-m_dcBlockFlag(true),
 m_dcBlock(NULL),
+m_dcBlockFlag(true),
 m_oscillator(NULL),
 m_filter(NULL),
 m_modulator(NULL),
 m_amModulator(NULL),
 m_fmModulator(NULL),
 m_ssbModulator(NULL),
-m_squelch(NULL),
-m_leveler(NULL),
-m_levelerFlag(true),
 m_alc(NULL),
-m_alcFlag(true),
 m_speechProc(NULL),
 m_speechProcFlag(false),
 m_mode(USB),
@@ -77,20 +73,6 @@ m_tick(0UL)
 	m_ssbModulator = new CSSBMod(m_iBuf);
 	m_modulator    = m_ssbModulator;
 
-	m_squelch = new CSquelch(m_iBuf, -40.0F, -30.0F, bufLen - 48);
-
-	m_leveler = new CAGC(agcLONG,	// mode kept around for control reasons
-				m_iBuf,	// input buffer
-				1.1F,	// Target output
-				2,	// Attack time constant in ms
-				500,	// Decay time constant in ms
-				1,	// Slope
-				500,	//Hangtime in ms
-				sampleRate,	// Sample rate
-				5.62F,	// Maximum gain as a multipler, linear not dB
-				1.0,	// Minimum gain as a multipler, linear not dB
-				1.0);		// Set the current gain
-
 	m_alc = new CAGC(agcLONG,	// mode kept around for control reasons alone
 			    m_iBuf,	// input buffer
 			    1.2F,	// Target output 
@@ -110,8 +92,6 @@ CTX::~CTX()
 {
 	delete m_speechProc;
 	delete m_alc;
-	delete m_leveler;
-	delete m_squelch;
 	delete m_ssbModulator;
 	delete m_fmModulator;
 	delete m_amModulator;
@@ -136,27 +116,12 @@ void CTX::process()
 
 	meter(m_iBuf, TX_MIC);
 
-	if (m_squelch->isSquelch()) {
-		m_squelch->doSquelch();
-	} else {
-		if (!m_squelch->isSet())
-			m_squelch->noSquelch();
+	if (m_speechProcFlag)
+		m_speechProc->process();
 
-		meter(m_iBuf, TX_EQtap);
+	meter(m_iBuf, TX_COMP);
 
-		if (m_levelerFlag)
-			m_leveler->process();
-
-		meter(m_iBuf, TX_LEVELER);
-
-		if (m_speechProcFlag)
-			m_speechProc->process();
-
-		meter(m_iBuf, TX_COMP);
-	}
-
-	if (m_alcFlag)
-		m_alc->process();
+	m_alc->process();
 
 	meter(m_iBuf, TX_ALC);
 
@@ -181,15 +146,7 @@ void CTX::process()
 
 void CTX::meter(CXB* buf, TXMETERTYPE type)
 {
-	float alcGain = 0.0F;
-	if (m_alcFlag)
-		alcGain = m_alc->getGain();
-
-	float levelerGain = 0.0F;
-	if (m_levelerFlag)
-		levelerGain = m_leveler->getGain();
-
-	m_meter->setTXMeter(type, buf, alcGain, levelerGain);
+	m_meter->setTXMeter(type, buf, m_alc->getGain());
 }
 
 CXB* CTX::getIBuf()
@@ -245,16 +202,6 @@ void CTX::setFrequency(double freq)
 	m_oscillator->setFrequency(freq);
 }
 
-void CTX::setSquelchFlag(bool flag)
-{
-	m_squelch->setFlag(flag);
-}
-
-void CTX::setSquelchThreshold(float threshold)
-{
-	m_squelch->setThreshold(threshold);
-}
-
 void CTX::setAMCarrierLevel(float level)
 {
 	m_amModulator->setCarrierLevel(level);
@@ -269,36 +216,6 @@ void CTX::setIQ(float phase, float gain)
 {
 	m_iq->setPhase(phase);
 	m_iq->setGain(gain);
-}
-
-void CTX::setLevelerFlag(bool flag)
-{
-	m_levelerFlag = flag;
-}
-
-void CTX::setLevelerAttack(float attack)
-{
-	m_leveler->setAttack(attack);
-}
-
-void CTX::setLevelerDecay(float decay)
-{
-	m_leveler->setDecay(decay);
-}
-
-void CTX::setLevelerGainTop(float top)
-{
-	m_leveler->setGainTop(top);
-}
-
-void CTX::setLevelerGainBottom(float bottom)
-{
-	m_leveler->setGainBottom(bottom);
-}
-
-void CTX::setLevelerHangTime(float time)
-{
-	m_leveler->setHangTime(time);
 }
 
 void CTX::setALCAttack(float attack)

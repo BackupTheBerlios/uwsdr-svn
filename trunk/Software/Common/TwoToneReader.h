@@ -16,8 +16,8 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	SignalReader_H
-#define	SignalReader_H
+#ifndef	TwoToneReader_H
+#define	TwoToneReader_H
 
 #include <wx/wx.h>
 
@@ -25,11 +25,11 @@
 #include "DataCallback.h"
 
 
-class CSignalReader : public IDataReader, public IDataCallback {
+class CTwoToneReader : public IDataReader, public IDataCallback {
 
     public:
-    CSignalReader(float frequency, float noiseAmplitude, float signalAmplitude, IDataReader* reader);
-	virtual ~CSignalReader();
+    CTwoToneReader(float frequency1, float amplitude1, float frequency2, float amplitude2, IDataReader* reader);
+	virtual ~CTwoToneReader();
 
 	virtual void setCallback(IDataCallback* callback, int id);
 
@@ -45,21 +45,23 @@ class CSignalReader : public IDataReader, public IDataCallback {
 	virtual void callback(float* buffer, unsigned int nSamples, int id);
 
     private:
-	float          m_frequency;
-	float          m_noiseAmplitude;
-	float          m_signalAmplitude;
+	float          m_frequency1;
+	float          m_amplitude1;
+	float          m_frequency2;
+	float          m_amplitude2;
 	IDataReader*   m_reader;
 	unsigned int   m_blockSize;
 	IDataCallback* m_callback;
 	int            m_id;
 	float*         m_buffer;
-	float*         m_awgn;
-	unsigned int   m_noiseSize;
-	float          m_cosVal;
-	float          m_sinVal;
-	float          m_cosDelta;
-	float          m_sinDelta;
-	unsigned int   m_awgnN;
+	float          m_cosVal1;
+	float          m_sinVal1;
+	float          m_cosDelta1;
+	float          m_sinDelta1;
+	float          m_cosVal2;
+	float          m_sinVal2;
+	float          m_cosDelta2;
+	float          m_sinDelta2;
 };
 
 #endif

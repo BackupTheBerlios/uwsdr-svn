@@ -143,6 +143,10 @@ SOURCE=.\SoundFileWriter.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\TwoToneReader.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\UWSDRController.cpp
 # End Source File
 # End Group
@@ -224,6 +228,10 @@ SOURCE=.\SoundFileReader.h
 # Begin Source File
 
 SOURCE=.\SoundFileWriter.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TwoToneReader.h
 # End Source File
 # Begin Source File
 

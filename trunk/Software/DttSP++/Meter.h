@@ -88,7 +88,7 @@ class CMeter {
 	virtual ~CMeter();
 
 	virtual void setRXMeter(RXMETERTAP tap, CXB* buf, float agcGain);
-	virtual void setTXMeter(TXMETERTYPE type, CXB* buf, float alcGain, float levelerGain);
+	virtual void setTXMeter(TXMETERTYPE type, CXB* buf, float alcGain);
 
 	virtual float getRXMeter(RXMETERTYPE type) const;
 	virtual float getTXMeter(TXMETERTYPE type) const;

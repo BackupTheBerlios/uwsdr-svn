@@ -66,10 +66,6 @@ void CDTTSPControl::open(float sampleRate, unsigned int blockSize)
 
 	::SetDCBlock(true);
 
-	::SetTXSquelchSt(false);
-
-	::SetTXLevelerSt(false);
-
 	::SetSquelchState(true);
 
 	::SetWindow(HANN_WINDOW);
@@ -367,18 +363,22 @@ float CDTTSPControl::getMeter(int type)
 			break;
 		case METER_MICROPHONE:
 			val = ::Calculate_Meters(MIC);
-			if (val != -200.0F)
-				val -= 10.0F;
+			if (val != -200.0F) {
+				val += 160.0F;
+				val /= 2.0F;
+			}
 			break;
 		case METER_POWER:
 			val = ::Calculate_Meters(PWR);
 			if (val != -200.0F)
-				val *= 94.0F;
+				val *= 200.0F;
 			break;
 		case METER_ALC:
 			val = ::Calculate_Meters(ALC);
-			if (val != -200.0F)
-				val -= 10.0F;
+			if (val != -200.0F) {
+				val += 160.0F;
+				val /= 2.0F;
+			}
 			break;
 		default:
 			::wxLogError(wxT("Unknown meter type = %d"), type);

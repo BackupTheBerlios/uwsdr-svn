@@ -279,7 +279,7 @@ void CSMeter::onMenu(wxCommandEvent& event)
 			setTXMeter(METER_POWER);
 			break;
 		case MENU_ALC:
-			setTXMeter(METER_AGC);
+			setTXMeter(METER_ALC);
 			break;
 		default:
 			::wxLogError(wxT("Unknown meter type = %d"), event.GetId());

@@ -265,7 +265,8 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 	// Use whatever clock is available to run everything
 	if (id == m_clockId) {
 		if (m_transmit) {
-			m_txReader->clock();
+			if (id != TX_READER)
+				m_txReader->clock();
 
 			if (m_cwKeyer->isActive() && (m_mode == MODE_CWN || m_mode == MODE_CWW))
 				m_cwKeyer->clock();
@@ -273,7 +274,8 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 			if (m_voiceKeyer->isActive() && m_mode != MODE_CWN && m_mode != MODE_CWW)
 				m_voiceKeyer->clock();
 		} else {
-			m_rxReader->clock();
+			if (id != RX_READER)
+				m_rxReader->clock();
 		}
 	}
 
@@ -300,7 +302,9 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 					return;
 
 				// If the voice or CW keyer are active, exit
-				if (m_voiceKeyer->isActive() || m_cwKeyer->isActive())
+				if (m_voiceKeyer->isActive() && m_mode != MODE_CWN && m_mode != MODE_CWW)
+					return;
+				if (m_cwKeyer->isActive() && (m_mode == MODE_CWN || m_mode == MODE_CWW))
 					return;
 
 				scaleBuffer(inBuffer, nSamples, m_micGain);
@@ -542,7 +546,6 @@ bool CDSPControl::setRecord(bool record)
 void CDSPControl::scaleBuffer(float* buffer, unsigned int nSamples, float scale)
 {
 	wxASSERT(buffer != NULL);
-	wxASSERT(nSamples > 0);
 	wxASSERT(scale >= 0.0 && scale <= 1.0);
 
 	for (unsigned int i = 0; i < nSamples * 2; i++)

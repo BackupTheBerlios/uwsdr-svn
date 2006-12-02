@@ -151,8 +151,8 @@ bool CDataControl::setSoundFileReader(const wxString& fileName)
 
 bool CDataControl::openIO()
 {
-	m_internal1Reader  = new CSignalReader(m_sampleRate / 4.0F + 1000.5F, 0.0003F, 0.0004F);
-	m_internal2Reader  = new CSignalReader(m_sampleRate / 4.0F, 0.0F, 0.001F);
+	m_internal1Reader  = new CSignalReader(m_sampleRate / 4.0F + 1000.5F, 0.0003F, 0.0004F, NULL);
+	m_internal2Reader  = new CSignalReader(m_sampleRate / 4.0F, 0.0F, 0.001F, NULL);
 	m_soundCardReader  = new CSoundCardReader(m_api, m_inDev);
 	m_rxWriter         = new CSDRDataWriter(m_address, m_port, m_maxSamples, m_delay);
 

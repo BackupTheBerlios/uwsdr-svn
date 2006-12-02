@@ -106,16 +106,6 @@ void SetNRvals(unsigned int taps, unsigned int delay, double gain, double leak)
 	dttsp->setANRValues(taps, delay, float(gain), float(leak));
 }
 
-void SetTXSquelchSt(bool setit)
-{
-	dttsp->setTXSquelchFlag(setit);
-}
-
-void SetTXSquelchVal(float setit)
-{
-	dttsp->setTXSquelchThreshold(setit);
-}
-
 void SetANF(bool setit)
 {
 	dttsp->setANFFlag(setit);
@@ -184,31 +174,6 @@ void SetTXALCBot(float bot)
 void SetTXALCHang(float hang)
 {
 	dttsp->setALCHangTime(hang);
-}
-
-void SetTXLevelerSt(bool state)
-{
-	dttsp->setLevelerFlag(state);
-}
-
-void SetTXLevelerAttack(float attack)
-{
-	dttsp->setLevelerAttack(attack);
-}
-
-void SetTXLevelerDecay(float decay)
-{
-	dttsp->setLevelerDecay(decay);
-}
-
-void SetTXLevelerTop(float top)
-{
-	dttsp->setLevelerGainTop(top);
-}
-
-void SetTXLevelerHang(float hang)
-{
-	dttsp->setLevelerHangTime(hang);
 }
 
 void SetCorrectIQ(double phase, double gain)
