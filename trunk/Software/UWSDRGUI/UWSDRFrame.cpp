@@ -168,7 +168,6 @@ m_cwKeyboard(NULL)
 
 	freqSizer->Add(createSpectrumDisplay(panel), 0, wxBOTTOM | wxRIGHT, BORDER_SIZE);
 
-//	wxBoxSizer* belowFreqSizer = new wxBoxSizer(wxHORIZONTAL);
 	wxFlexGridSizer* belowFreqSizer = new wxFlexGridSizer(3);
 
 	wxGridSizer* bandModeSizer = new wxGridSizer(2, 0, 8);
@@ -224,8 +223,12 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_parameters = parameters;
 
-	// m_sdr = new CNullController();
+	// In all configurations bar the standard one, TCP control data is disabled
+#if defined(TOBIAS) || defined(GRANT_RX) || defined(GRANT_TX) || defined(DEMO)
+	m_sdr = new CNullController();
+#else
 	m_sdr = new CUWSDRController(m_parameters->m_ipAddress, m_parameters->m_controlPort, m_parameters->m_hardwareProtocolVersion);
+#endif
 	m_sdr->setCallback(this, -1);
 
 	bool ret = m_sdr->open();
@@ -272,14 +275,42 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	// FIXME
 	m_dsp = new CDSPControl(m_parameters->m_hardwareSampleRate, float(m_parameters->m_hardwareSampleRate) / 4.0F);
 
-	// m_dsp->setTXReader(new CTwoToneReader(1000, 0.4F, 1300, 0.4F, new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev)));
-	m_dsp->setTXReader(new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev));
-	// m_dsp->setTXWriter(new CNullWriter());
+#if defined(GRANT_TX)
+	// RX is disabled, TX is from audio card for signal output fed by a two-tone signal
+	m_dsp->setTXReader(new CTwoToneReader(1000, 0.4F, 1300, 0.4F, new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev)));
+	m_dsp->setTXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
+
+	m_dsp->setRXReader(new CNullReader());
+	m_dsp->setRXWriter(new CNullWriter());
+#elif defined(GRANT_RX)
+	// TX is disabled, RX is from audio card for signal input and audio output
+	m_dsp->setTXReader(new CNullReader());
+	m_dsp->setTXWriter(new CNullWriter());
+
+	m_dsp->setRXReader(new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev));
+	m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
+#elif defined(DEMO)
+	// A self contained variant for demo's and testing
+	m_dsp->setTXReader(new CTwoToneReader(1000, 0.4F, 1300, 0.4F, new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev)));
+	m_dsp->setTXWriter(new CNullWriter());
+
+	m_dsp->setRXReader(new CSignalReader(int(m_parameters->m_hardwareSampleRate / 4.0F + 1000.5F), 0.0003F, 0.0004F));
+	m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
+#elif defined(TOBIAS)
+	// UDP in/out with audio on loudspeaker and two-tone audio on transmit
+	m_dsp->setTXReader(new CTwoToneReader(1000, 0.4F, 1300, 0.4F, new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev)));
 	m_dsp->setTXWriter(new CSDRDataWriter(m_parameters->m_ipAddress, m_parameters->m_dataPort));
 
-	// m_dsp->setRXReader(new CSignalReader(int(m_parameters->m_hardwareSampleRate / 4.0F + 1000.5F), 0.0003F, 0.0004F, NULL));
 	m_dsp->setRXReader(new CSDRDataReader(m_parameters->m_ipAddress, m_parameters->m_dataPort));
 	m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
+#else
+	// The standard configuration, UDP in/out and sound card for the user
+	m_dsp->setTXReader(new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev));
+	m_dsp->setTXWriter(new CSDRDataWriter(m_parameters->m_ipAddress, m_parameters->m_dataPort));
+
+	m_dsp->setRXReader(new CSDRDataReader(m_parameters->m_ipAddress, m_parameters->m_dataPort));
+	m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
+#endif
 
 	m_infoBox->setVFO(m_parameters->m_vfoChoice);
 	m_infoBox->setSplitShift(m_parameters->m_vfoSplitShift);

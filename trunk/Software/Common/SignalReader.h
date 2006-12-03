@@ -28,7 +28,7 @@
 class CSignalReader : public IDataReader, public IDataCallback {
 
     public:
-    CSignalReader(float frequency, float noiseAmplitude, float signalAmplitude, IDataReader* reader);
+    CSignalReader(float frequency, float noiseAmplitude, float signalAmplitude, IDataReader* reader = NULL);
 	virtual ~CSignalReader();
 
 	virtual void setCallback(IDataCallback* callback, int id);

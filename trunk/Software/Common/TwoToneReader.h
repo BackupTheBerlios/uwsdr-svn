@@ -28,7 +28,7 @@
 class CTwoToneReader : public IDataReader, public IDataCallback {
 
     public:
-    CTwoToneReader(float frequency1, float amplitude1, float frequency2, float amplitude2, IDataReader* reader);
+    CTwoToneReader(float frequency1, float amplitude1, float frequency2, float amplitude2, IDataReader* reader = NULL);
 	virtual ~CTwoToneReader();
 
 	virtual void setCallback(IDataCallback* callback, int id);

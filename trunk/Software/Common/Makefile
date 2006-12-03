@@ -16,7 +16,7 @@ Log.o:		Log.cpp Log.h
 NullController.o:	NullController.cpp NullController.h ControlInterface.h Frequency.h SDRController.h
 		$(CC) $(CFLAGS) -c NullController.cpp
 
-NullReader.o:	NullReader.cpp NullReader.h DataReader.h
+NullReader.o:	NullReader.cpp NullReader.h DataReader.h DataCallback.h
 		$(CC) $(CFLAGS) -c NullReader.cpp
 
 NullWriter.o:	NullWriter.cpp NullWriter.h DataWriter.h

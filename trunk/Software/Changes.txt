@@ -200,9 +200,13 @@ Finished the SDR Help pages.
 SDR Emulator has settable data size and delay for testing the hardware/firmware.
 
 
-Version 0.6.3 - November 2006
+Version 0.6.3 - December 2006
 =============================
 
 On Windows the EXE files now have an icon embedded.
 
 On Linux GUISetup creates a correct .desktop file and "make install" is better.
+
+The transmit side in DttSP++ and DttSP appear to match.
+
+Different compile defines for the GUI described in Build.txt for different purposes.

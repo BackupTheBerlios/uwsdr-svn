@@ -22,11 +22,13 @@
 #include <wx/wx.h>
 
 #include "DataReader.h"
+#include "DataCallback.h"
 
-class CNullReader : public IDataReader {
+
+class CNullReader : public IDataReader, public IDataCallback {
 
     public:
-    CNullReader();
+    CNullReader(IDataReader* reader = NULL);
 	virtual ~CNullReader();
 
 	virtual void setCallback(IDataCallback* callback, int id);
@@ -40,7 +42,10 @@ class CNullReader : public IDataReader {
 	virtual bool hasClock();
 	virtual void clock();
 
+	virtual void callback(float* buffer, unsigned int nSamples, int id);
+
     private:
+	IDataReader*   m_reader;
 	unsigned int   m_blockSize;
 	float*         m_buffer;
 	IDataCallback* m_callback;

@@ -22,7 +22,8 @@
 #include <wx/log.h>
 
 
-CNullReader::CNullReader() :
+CNullReader::CNullReader(IDataReader* reader) :
+m_reader(reader),
 m_blockSize(0),
 m_buffer(NULL),
 m_callback(NULL),
@@ -32,6 +33,7 @@ m_id(0)
 
 CNullReader::~CNullReader()
 {
+	delete m_reader;
 }
 
 void CNullReader::setCallback(IDataCallback* callback, int id)
@@ -42,6 +44,14 @@ void CNullReader::setCallback(IDataCallback* callback, int id)
 
 bool CNullReader::open(float sampleRate, unsigned int blockSize)
 {
+	if (m_reader != NULL) {
+		m_reader->setCallback(this, 0);
+
+		bool ret = m_reader->open(sampleRate, blockSize);
+		if (!ret)
+			return false;
+	}
+
 	m_blockSize = blockSize;
 
 	m_buffer = new float[m_blockSize * 2];
@@ -54,6 +64,9 @@ bool CNullReader::open(float sampleRate, unsigned int blockSize)
 
 void CNullReader::close()
 {
+	if (m_reader != NULL)
+		m_reader->close();
+
 	delete[] m_buffer;
 }
 
@@ -63,7 +76,7 @@ void CNullReader::purge()
 
 bool CNullReader::hasClock()
 {
-	return false;
+	return m_reader != NULL;
 }
 
 void CNullReader::clock()
@@ -72,4 +85,11 @@ void CNullReader::clock()
 	wxASSERT(m_buffer != NULL);
 
 	m_callback->callback(m_buffer, m_blockSize, m_id);
+}
+
+void CNullReader::callback(float* buffer, unsigned int nSamples, int id)
+{
+	::memset(buffer, 0x00, nSamples * 2 * sizeof(float));
+
+	clock();
 }
