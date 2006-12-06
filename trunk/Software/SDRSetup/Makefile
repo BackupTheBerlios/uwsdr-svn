@@ -8,7 +8,7 @@ SDRSetup:	$(OBJS)
 SDRSetupApp.o:	SDRSetupApp.cpp SDRSetupApp.h SDRSetupFrame.h
 		$(CC) $(CFLAGS) -c SDRSetupApp.cpp
 
-SDRSetupFrame.o: SDRSetupFrame.cpp SDRSetupFrame.h SDRSetupXpm.h
+SDRSetupFrame.o: SDRSetupFrame.cpp SDRSetupFrame.h SDRSetup.xpm
 		$(CC) $(CFLAGS) -c SDRSetupFrame.cpp
 
 install:	SDRSetup

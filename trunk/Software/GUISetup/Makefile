@@ -8,7 +8,7 @@ OBJS :=		GUISetupApp.o GUISetupFrame.o
 GUISetup:	$(OBJS)
 		$(CC) $(LDFLAGS) -o GUISetup $(OBJS) ../Common/Common.a $(LIBS)
 
-GUISetupApp.o:	GUISetupApp.cpp GUISetupApp.h GUISetupFrame.h GUISetupXpm.h
+GUISetupApp.o:	GUISetupApp.cpp GUISetupApp.h GUISetupFrame.h GUISetup.xpm
 		$(CC) $(CFLAGS) -c GUISetupApp.cpp
 
 GUISetupFrame.o: GUISetupFrame.cpp GUISetupFrame.h ../Common/SoundCardInfo.h

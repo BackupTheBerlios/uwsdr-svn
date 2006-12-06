@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GR /GX /O2 /Ob0 /I "C:\wxMSW-2.7.2\lib\vc_dll\msw" /I "C:\wxMSW-2.7.2\include" /I "..\Common" /I "..\PA19" /D "WIN32" /D "__WXMSW__" /D "WXUSINGDLL" /D "_WINDOWS" /D "NOPCH" /FD /c
+# ADD CPP /nologo /MT /W3 /GR /GX /O2 /Ob0 /I "C:\wxWidgets\lib\vc_dll\msw" /I "C:\wxWidgets\include" /I "..\Common" /I "..\PA19" /D "WIN32" /D "__WXMSW__" /D "WXUSINGDLL" /D "_WINDOWS" /D "NOPCH" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
@@ -54,7 +54,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 wxbase27.lib wxbase27_net.lib wxmsw27_core.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib winmm.lib wsock32.lib portaudio_x86.lib /nologo /subsystem:windows /machine:I386 /out:"../Release/SDREmulator.exe" /libpath:"C:\wxMSW-2.7.2\lib\vc_dll" /libpath:"..\PA19\Release"
+# ADD LINK32 wxbase28.lib wxbase28_net.lib wxmsw28_core.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib winmm.lib wsock32.lib portaudio_x86.lib /nologo /subsystem:windows /machine:I386 /out:"../Release/SDREmulator.exe" /libpath:"C:\wxWidgets\lib\vc_dll" /libpath:"..\PA19\Release"
 
 !ELSEIF  "$(CFG)" == "SDR Emulator - Win32 Debug"
 
@@ -70,7 +70,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W4 /Gm /GR /GX /ZI /Od /I "C:\wxMSW-2.7.2\lib\vc_dll\mswd" /I "C:\wxMSW-2.7.2\include" /I "..\Common" /I "..\PA19" /D "WIN32" /D "_DEBUG" /D "__WXMSW__" /D "__WXDEBUG__" /D "WXUSINGDLL" /D "_WINDOWS" /D "NOPCH" /FD /GZ /c
+# ADD CPP /nologo /MTd /W4 /Gm /GR /GX /ZI /Od /I "C:\wxWidgets\lib\vc_dll\mswd" /I "C:\wxWidgets\include" /I "..\Common" /I "..\PA19" /D "WIN32" /D "_DEBUG" /D "__WXMSW__" /D "__WXDEBUG__" /D "WXUSINGDLL" /D "_WINDOWS" /D "NOPCH" /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -81,7 +81,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 wxbase27d.lib wxbase27d_net.lib wxmsw27d_core.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib winmm.lib wsock32.lib portaudio_x86.lib /nologo /subsystem:windows /debug /machine:I386 /out:"../Debug/SDREmulator.exe" /pdbtype:sept /libpath:"C:\wxMSW-2.7.2\lib\vc_dll" /libpath:"..\PA19\Debug"
+# ADD LINK32 wxbase28d.lib wxbase28d_net.lib wxmsw28d_core.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib winmm.lib wsock32.lib portaudio_x86.lib /nologo /subsystem:windows /debug /machine:I386 /out:"../Debug/SDREmulator.exe" /pdbtype:sept /libpath:"C:\wxWidgets\lib\vc_dll" /libpath:"..\PA19\Debug"
 
 !ENDIF 
 

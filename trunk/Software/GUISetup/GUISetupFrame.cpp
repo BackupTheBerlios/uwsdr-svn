@@ -21,7 +21,9 @@
 #include <wx/file.h>
 #include <wx/config.h>
 
-#include "GUISetupXpm.h"
+#if defined(__WXGTK__) || defined(__WXMAC__)
+#include "GUISetup.xpm"
+#endif
 
 #if defined(__WINDOWS__)
 #include <windows.h>
@@ -56,7 +58,7 @@ m_data(NULL),
 m_startMenu(NULL),
 m_info()
 {
-	SetIcon(wxIcon(GUISetup_xpm));
+	SetIcon(wxICON(GUISetup));
 
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -187,7 +189,7 @@ void CGUISetupFrame::onAPI(wxCommandEvent& event)
 
 void CGUISetupFrame::onBrowse(wxCommandEvent& event)
 {
-	wxFileDialog files(this, _("Choose an SDR Configuration File"), wxEmptyString, wxEmptyString, _("SDR files (*.sdr)|*.sdr"), wxFILE_MUST_EXIST);
+	wxFileDialog files(this, _("Choose an SDR Configuration File"), wxEmptyString, wxEmptyString, _("SDR files (*.sdr)|*.sdr"), wxFD_FILE_MUST_EXIST);
 	int ret = files.ShowModal();
 
 	if (ret == wxID_OK) {
@@ -200,29 +202,29 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 {
 	wxString name = m_name->GetValue();
 	if (name.IsEmpty()) {
-		::wxMessageBox(_("The Name is not allowed to be empty"));
+		::wxMessageBox(_("The Name is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
 	wxString fileName = m_filename->GetValue();
 	if (fileName.IsEmpty()) {
-		::wxMessageBox(_("The SDR File Name is not allowed to be empty"));
+		::wxMessageBox(_("The SDR File Name is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 	if (!wxFile::Exists(fileName.c_str())) {
-		::wxMessageBox(_("The SDR File does not exist"));
+		::wxMessageBox(_("The SDR File does not exist"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
 	long audioAPI = m_apiChoice->GetSelection();
 	if (audioAPI == wxNOT_FOUND) {
-		::wxMessageBox(_("The Audio API is not allowed to be empty"));
+		::wxMessageBox(_("The Audio API is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
 	int devChoice = m_devChoice->GetSelection();
 	if (devChoice == wxNOT_FOUND) {
-		::wxMessageBox(_("The Audio Device is not allowed to be empty"));
+		::wxMessageBox(_("The Audio Device is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -231,33 +233,33 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 
 	wxString ipAddress = m_address->GetValue();
 	if (ipAddress.IsEmpty()) {
-		::wxMessageBox(_("The SDR IP Address is not allowed to be empty"));
+		::wxMessageBox(_("The SDR IP Address is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
 	wxString control = m_control->GetValue();
 	if (control.IsEmpty()) {
-		::wxMessageBox(_("The SDR Control Port is not allowed to be empty"));
+		::wxMessageBox(_("The SDR Control Port is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
 	long controlPort;
 	control.ToLong(&controlPort);
 	if (controlPort < 1L || controlPort > 65536L) {
-		::wxMessageBox(_("The SDR Control Port must be between 1 and 65536"));
+		::wxMessageBox(_("The SDR Control Port must be between 1 and 65536"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 	
 	wxString data = m_data->GetValue();
 	if (data.IsEmpty()) {
-		::wxMessageBox(_("The SDR Data Port is not allowed to be empty"));
+		::wxMessageBox(_("The SDR Data Port is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
 	long dataPort;
 	data.ToLong(&dataPort);
 	if (dataPort < 1L || dataPort > 65536L) {
-		::wxMessageBox(_("The SDR Data Port must be between 1 and 65536"));
+		::wxMessageBox(_("The SDR Data Port must be between 1 and 65536"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -280,43 +282,43 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 
 	bool ret = config->Write(fileNameKey, fileName);
 	if (!ret) {
-		::wxMessageBox(_("Unable to write configuration data - FileName"));
+		::wxMessageBox(_("Unable to write configuration data - FileName"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
 	ret = config->Write(audioAPIKey, audioAPI);
 	if (!ret) {
-		::wxMessageBox(_("Unable to write configuration data - AudioAPI"));
+		::wxMessageBox(_("Unable to write configuration data - AudioAPI"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
 	ret = config->Write(audioOutDevKey, audioOutDev);
 	if (!ret) {
-		::wxMessageBox(_("Unable to write configuration data - AudioOutDev"));
+		::wxMessageBox(_("Unable to write configuration data - AudioOutDev"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
 	ret = config->Write(audioInDevKey, audioInDev);
 	if (!ret) {
-		::wxMessageBox(_("Unable to write configuration data - AudioInDev"));
+		::wxMessageBox(_("Unable to write configuration data - AudioInDev"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
 	ret = config->Write(ipAddressKey, ipAddress);
 	if (!ret) {
-		::wxMessageBox(_("Unable to write configuration data - IPAddress"));
+		::wxMessageBox(_("Unable to write configuration data - IPAddress"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
 	ret = config->Write(controlPortKey, controlPort);
 	if (!ret) {
-		::wxMessageBox(_("Unable to write configuration data - ControlPort"));
+		::wxMessageBox(_("Unable to write configuration data - ControlPort"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
 	ret = config->Write(dataPortKey, dataPort);
 	if (!ret) {
-		::wxMessageBox(_("Unable to write configuration data - DataPort"));
+		::wxMessageBox(_("Unable to write configuration data - DataPort"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -329,7 +331,7 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 	bool found = config->Read(instDirKey, &dir);
 
 	if (!found) {
-		::wxMessageBox(_("Cannot find the registry key for the\ninstallation directory. Cannot create\nthe start menu entry."));
+		::wxMessageBox(_("Cannot find the registry key for the\ninstallation directory. Cannot create\nthe start menu entry."), _("GUISetup Error"), wxICON_ERROR);
 	} else {
 		bool create = m_startMenu->GetValue();
 		if (create)
@@ -417,7 +419,7 @@ void CGUISetupFrame::enumerateAPI()
 	bool ret = m_info.enumerateAPIs();
 
 	if (!ret) {
-		::wxMessageBox(_("Cannot access the sound access system."));
+		::wxMessageBox(_("Cannot access the sound access system."), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -444,7 +446,7 @@ void CGUISetupFrame::enumerateAudio(const CSoundCardAPI& api)
 	bool ret = m_info.enumerateDevs(api);
 
 	if (!ret) {
-		::wxMessageBox(_("Cannot access the sound access system."));
+		::wxMessageBox(_("Cannot access the sound access system."), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -469,7 +471,7 @@ void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 	BOOL res = ::SHGetSpecialFolderPath(NULL, folder, CSIDL_PROGRAMS, FALSE);
 
 	if (!res) {
-		::wxMessageBox(_("Cannot get the Start Menu folder from Windows"));
+		::wxMessageBox(_("Cannot get the Start Menu folder from Windows"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -480,7 +482,7 @@ void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 
 	HRESULT hRes = ::CoInitialize(NULL);
 	if (!SUCCEEDED(hRes)) {
-		::wxMessageBox(_("Cannot initialise the COM interface"));
+		::wxMessageBox(_("Cannot initialise the COM interface"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -492,7 +494,7 @@ void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 
 	if (!SUCCEEDED(hRes)) {
 		::CoUninitialize();
-		::wxMessageBox(_("Cannot create a COM interface"));
+		::wxMessageBox(_("Cannot create a COM interface"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -501,7 +503,7 @@ void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 	pShellLink->SetWorkingDirectory(dir.c_str());
 
     WORD wszLinkfile[MAX_PATH];
-	::MultiByteToWideChar(CP_ACP, 0, linkPath.c_str(), -1, wszLinkfile, MAX_PATH);
+	::MultiByteToWideChar(CP_ACP, 0, linkPath.c_str(), -1, LPWSTR(wszLinkfile), MAX_PATH);
 
     IPersistFile* pPersistFile;
 	hRes = pShellLink->QueryInterface(IID_IPersistFile, (void**)&pPersistFile);
@@ -509,13 +511,13 @@ void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 	if (!SUCCEEDED(hRes)) {
 		pShellLink->Release();
 		::CoUninitialize();
-		::wxMessageBox(_("Cannot query the COM interface"));
+		::wxMessageBox(_("Cannot query the COM interface"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
-	hRes = pPersistFile->Save(wszLinkfile, TRUE);
+	hRes = pPersistFile->Save(LPCOLESTR(wszLinkfile), TRUE);
 	if (!SUCCEEDED(hRes))
-		::wxMessageBox(_("Cannot save the shortcut file"));
+		::wxMessageBox(_("Cannot save the shortcut file"), _("GUISetup Error"), wxICON_ERROR);
 
 	pPersistFile->Release();
 	pShellLink->Release();
@@ -529,7 +531,7 @@ void CGUISetupFrame::writeDeskTop(const wxString& name, const wxString& dir)
 	BOOL res = ::SHGetSpecialFolderPath(NULL, folder, CSIDL_DESKTOP, FALSE);
 
 	if (!res) {
-		::wxMessageBox(_("Cannot get the Desktop folder from Windows"));
+		::wxMessageBox(_("Cannot get the Desktop folder from Windows"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -540,7 +542,7 @@ void CGUISetupFrame::writeDeskTop(const wxString& name, const wxString& dir)
 
 	HRESULT hRes = ::CoInitialize(NULL);
 	if (!SUCCEEDED(hRes)) {
-		::wxMessageBox(_("Cannot initialise the COM interface"));
+		::wxMessageBox(_("Cannot initialise the COM interface"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -552,7 +554,7 @@ void CGUISetupFrame::writeDeskTop(const wxString& name, const wxString& dir)
 
 	if (!SUCCEEDED(hRes)) {
 		::CoUninitialize();
-		::wxMessageBox(_("Cannot create a COM interface"));
+		::wxMessageBox(_("Cannot create a COM interface"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -561,7 +563,7 @@ void CGUISetupFrame::writeDeskTop(const wxString& name, const wxString& dir)
 	pShellLink->SetWorkingDirectory(dir.c_str());
 
     WORD wszLinkfile[MAX_PATH];
-	::MultiByteToWideChar(CP_ACP, 0, linkPath.c_str(), -1, wszLinkfile, MAX_PATH);
+	::MultiByteToWideChar(CP_ACP, 0, linkPath.c_str(), -1, LPWSTR(wszLinkfile), MAX_PATH);
 
     IPersistFile* pPersistFile;
 	hRes = pShellLink->QueryInterface(IID_IPersistFile, (void**)&pPersistFile);
@@ -569,13 +571,13 @@ void CGUISetupFrame::writeDeskTop(const wxString& name, const wxString& dir)
 	if (!SUCCEEDED(hRes)) {
 		pShellLink->Release();
 		::CoUninitialize();
-		::wxMessageBox(_("Cannot query the COM interface"));
+		::wxMessageBox(_("Cannot query the COM interface"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
-	hRes = pPersistFile->Save(wszLinkfile, TRUE);
+	hRes = pPersistFile->Save(LPCOLESTR(wszLinkfile), TRUE);
 	if (!SUCCEEDED(hRes))
-		::wxMessageBox(_("Cannot save the shortcut file"));
+		::wxMessageBox(_("Cannot save the shortcut file"), _("GUISetup Error"), wxICON_ERROR);
 
 	pPersistFile->Release();
 	pShellLink->Release();
@@ -598,7 +600,7 @@ void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 	wxFile file;
 	ret = file.Open(fileName, wxFile::write);
 	if (!ret) {
-		::wxMessageBox(_("Cannot open file %s for writing"), fileName);
+		::wxMessageBox(_("Cannot open file: ") + fileName, _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 

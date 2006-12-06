@@ -17,7 +17,9 @@ The Tobias configuration is for testing the back-end hardware for UDP only. Gran
 Windows
 -------
 
-Everything required to build the software is to be found in the SVN repository, but you will also need Visual C++ 6.0 and wxWidgets 2.7.1 or later. The standard installation of wxWidgets puts it into a folder in the root directory, this folder name is hard coded in the Visual C++ project files. This is easily changed to match your installation.
+Everything required to build the software is to be found in the SVN repository, but you will also need Visual C++ 6.0 or Visual C++ Express and wxWidgets 2.8.0 or later. The standard installation of wxWidgets puts it into a folder in the root directory, this folder name is hard coded in the Visual C++ project files. This is easily changed to match your installation.
+
+For building using Visual C++ 6.0 you should use the UWSDR.dsw file and for Visual C++ Express you should use the UWSDR.sln file.
 
 WxWidgets can be found at http://www.wxwidgets.org
 
@@ -37,7 +39,7 @@ Linux/Unix
 
 Before building the software you need to ensure that you have the pre-requisites installed, either as packages or built from source.
 
-wxWidgets 2.7.1 or later should be built and installed. This can be found at http://www.wxwidgets.org and will take some time to build. If you install it as a package then ensure that the devel part is installed as well.
+wxWidgets 2.8.0 or later should be built and installed. This can be found at http://www.wxwidgets.org and will take some time to build. If you install it as a package then ensure that the devel part is installed as well.
 
 FFTW 3 should be either installed or built. This can be found at http://www.fftw.org and if building it yourself, you *may* have to configure it as:
 

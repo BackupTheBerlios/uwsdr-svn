@@ -476,7 +476,7 @@ void CSDREmulatorFrame::onInternal2(wxCommandEvent& event)
 
 void CSDREmulatorFrame::onSoundFile(wxCommandEvent& event)
 {
-	wxFileDialog fileDialog(this, wxT("Select a Wave File"), wxEmptyString, wxEmptyString, wxT("WAV files (*.wav)|*.WAV;*.wav"), wxOPEN);
+	wxFileDialog fileDialog(this, wxT("Select a Wave File"), wxEmptyString, wxEmptyString, wxT("WAV files (*.wav)|*.WAV;*.wav"), wxFD_OPEN);
 	int ret1 = fileDialog.ShowModal();
 
 	if (ret1 == wxID_CANCEL)

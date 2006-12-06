@@ -1,4 +1,1 @@
-#include "SDRSetupResource.h"
-
-ID_ICON ICON "SDRSetup.ico"
-
+SDRSetup ICON "SDRSetup.ico"

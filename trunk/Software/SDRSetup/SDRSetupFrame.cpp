@@ -20,7 +20,9 @@
 
 #include <wx/file.h>
 
-#include "SDRSetupXpm.h"
+#if defined(__WXGTK__) || defined(__WXMAC__)
+#include "SDRSetup.xpm"
+#endif
 
 const int EXECUTE_BUTTON  = 4549;
 
@@ -40,7 +42,7 @@ m_sdrControlPort(NULL),
 m_sdrDataPort(NULL),
 m_dspAddress(NULL)
 {
-	SetIcon(wxIcon(SDRSetup_xpm));
+	SetIcon(wxICON(SDRSetup));
 
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -109,26 +111,26 @@ void CSDRSetupFrame::onExecute(wxCommandEvent& event)
 
 	wxString addressString = m_oldSDRAddress->GetValue();
 	if (addressString.IsEmpty()) {
-		::wxMessageBox(_("The old SDR IP address is not allowed to be empty"));
+		::wxMessageBox(_("The old SDR IP address is not allowed to be empty"), _("SDRSetup Error"), wxICON_ERROR);
 		return;
 	}
 
 	bool valid = oldControl.Hostname(addressString);
 	if (!valid) {
-		::wxMessageBox(_("The old SDR IP address is not valid"));
+		::wxMessageBox(_("The old SDR IP address is not valid"), _("SDRSetup Error"), wxICON_ERROR);
 		return;
 	}
 
 	wxString portString = m_oldSDRControlPort->GetValue();
 	if (portString.IsEmpty()) {
-		::wxMessageBox(_("The old SDR control port is not allowed to be empty"));
+		::wxMessageBox(_("The old SDR control port is not allowed to be empty"), _("SDRSetup Error"), wxICON_ERROR);
 		return;
 	}
 
 	long port;
 	valid = portString.ToLong(&port);
 	if (!valid || port < 1L || port > 65535L) {
-		::wxMessageBox(_("The old SDR control port is not valid (1-65535)"));
+		::wxMessageBox(_("The old SDR control port is not valid (1-65535)"), _("SDRSetup Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -136,13 +138,13 @@ void CSDRSetupFrame::onExecute(wxCommandEvent& event)
 
 	addressString = m_sdrAddress->GetValue();
 	if (addressString.IsEmpty()) {
-		::wxMessageBox(_("The new SDR IP address is not allowed to be empty"));
+		::wxMessageBox(_("The new SDR IP address is not allowed to be empty"), _("SDRSetup Error"), wxICON_ERROR);
 		return;
 	}
 
 	valid = newControl.Hostname(addressString);
 	if (!valid) {
-		::wxMessageBox(_("The new SDR IP address is not valid"));
+		::wxMessageBox(_("The new SDR IP address is not valid"), _("SDRSetup Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -150,13 +152,13 @@ void CSDRSetupFrame::onExecute(wxCommandEvent& event)
 
 	portString = m_sdrControlPort->GetValue();
 	if (portString.IsEmpty()) {
-		::wxMessageBox(_("The new SDR control port is not allowed to be empty"));
+		::wxMessageBox(_("The new SDR control port is not allowed to be empty"), _("SDRSetup Error"), wxICON_ERROR);
 		return;
 	}
 
 	valid = portString.ToLong(&port);
 	if (!valid || port < 1L || port > 65535L) {
-		::wxMessageBox(_("The new SDR control port is not valid (1-65535)"));
+		::wxMessageBox(_("The new SDR control port is not valid (1-65535)"), _("SDRSetup Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -164,13 +166,13 @@ void CSDRSetupFrame::onExecute(wxCommandEvent& event)
 
 	portString = m_sdrDataPort->GetValue();
 	if (portString.IsEmpty()) {
-		::wxMessageBox(_("The new SDR data port is not allowed to be empty"));
+		::wxMessageBox(_("The new SDR data port is not allowed to be empty"), _("SDRSetup Error"), wxICON_ERROR);
 		return;
 	}
 
 	valid = portString.ToLong(&port);
 	if (!valid || port < 1L || port > 65535L) {
-		::wxMessageBox(_("The new SDR data port is not valid (1-65535)"));
+		::wxMessageBox(_("The new SDR data port is not valid (1-65535)"), _("SDRSetup Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -179,13 +181,13 @@ void CSDRSetupFrame::onExecute(wxCommandEvent& event)
 
 	addressString = m_dspAddress->GetValue();
 	if (addressString.IsEmpty()) {
-		::wxMessageBox(_("The DSP IP address is not allowed to be empty"));
+		::wxMessageBox(_("The DSP IP address is not allowed to be empty"), _("SDRSetup Error"), wxICON_ERROR);
 		return;
 	}
 
 	valid = dsp.Hostname(addressString);
 	if (!valid) {
-		::wxMessageBox(_("The DSP IP address is not valid"));
+		::wxMessageBox(_("The DSP IP address is not valid"), _("SDRSetup Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -194,7 +196,7 @@ void CSDRSetupFrame::onExecute(wxCommandEvent& event)
 
 	bool ret = socket->Connect(oldControl);
 	if (!ret) {
-		::wxMessageBox(_("Cannot connect to the SDR"));
+		::wxMessageBox(_("Cannot connect to the SDR"), _("SDRSetup Error"), wxICON_ERROR);
 		socket->Destroy();
 		return;
 	}
@@ -244,15 +246,13 @@ bool CSDRSetupFrame::sendCommand(wxSocketClient* socket, const wxString& command
 
 	bool ret = socket->Error();
 	if (ret) {
-		wxString message;
-		message.Printf(_("Error writing to the SDR\n%s"), command.c_str());
-		::wxMessageBox(message);
+		::wxMessageBox(_("Error writing to the SDR\n") + command, _("SDRSetup Error"), wxICON_ERROR);
 		return false;
 	}
 
 	ret = socket->WaitForRead();
 	if (!ret) {
-		::wxMessageBox(_("Error when waiting for the SDR"));
+		::wxMessageBox(_("Error when waiting for the SDR"), _("SDRSetup Error"), wxICON_ERROR);
 		return false;
 	}
 
@@ -261,7 +261,7 @@ bool CSDRSetupFrame::sendCommand(wxSocketClient* socket, const wxString& command
 
 	ret = socket->Error();
 	if (ret) {
-		::wxMessageBox(_("Error reading from the SDR"));
+		::wxMessageBox(_("Error reading from the SDR"), _("SDRSetup Error"), wxICON_ERROR);
 		return false;
 	}
 
@@ -269,16 +269,12 @@ bool CSDRSetupFrame::sendCommand(wxSocketClient* socket, const wxString& command
 	buffer[n] = '\0';
 
 	if (::strncmp(buffer, "NK", 2) == 0) {
-		wxString message;
-		message.Printf(_("Received an error from the SDR\n%s"), buffer);
-		::wxMessageBox(message);
+		::wxMessageBox(_("Received an error from the SDR\n") + wxString(buffer), _("SDRSetup Error"), wxICON_ERROR);
 		return false;
 	}
 
 	if (::strncmp(buffer, "AK", 2) != 0) {
-		wxString message;
-		message.Printf(_("Received an unknown reply from the SDR\n%s"), buffer);
-		::wxMessageBox(message);
+		::wxMessageBox(_("Received an unknown reply from the SDR\n") + wxString(buffer), _("SDRSetup Error"), wxICON_ERROR);
 		return false;
 	}
 

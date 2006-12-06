@@ -55,7 +55,7 @@ UWSDRApp.o:	UWSDRApp.cpp UWSDRApp.h ../Common/Log.h SDRDescrFile.h SDRParameters
 UWSDRFrame.o:	UWSDRFrame.cpp UWSDRFrame.h ../Common/ControlInterface.h CWKeyboard.h DialInterface.h DSPControl.h FreqDial.h \
 		FreqDisplay.h FreqKeypad.h ../Common/Frequency.h InfoBox.h ../Common/SDRDataReader.h ../Common/SDRDataWriter.h \
 		SDRParameters.h SMeter.h ../Common/SoundCardReader.h ../Common/SoundCardWriter.h ../Common/SoundFileWriter.h \
-		SpectrumDisplay.h UWSDRApp.h ../Common/UWSDRController.h UWSDRDefs.h UWSDRPreferences.h UWSDRXpm.h ../Common/Version.h \
+		SpectrumDisplay.h UWSDRApp.h ../Common/UWSDRController.h UWSDRDefs.h UWSDRPreferences.h UWSDR.xpm ../Common/Version.h \
 		VoiceKeyboard.h
 		$(CC) $(CFLAGS) -c UWSDRFrame.cpp
 

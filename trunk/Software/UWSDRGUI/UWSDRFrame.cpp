@@ -35,10 +35,11 @@
 #include "SoundFileReader.h"
 #include "SoundFileWriter.h"
 
-#include "UWSDRXpm.h"
+#if defined(__WXGTK__) || defined(__WXMAC__)
+#include "UWSDR.xpm"
+#endif
 
 #include <wx/aboutdlg.h>
-
 
 enum {
 	MENU_KEYPAD = 36427,
@@ -139,7 +140,7 @@ m_spectrum(NULL),
 m_voiceKeyboard(NULL),
 m_cwKeyboard(NULL)
 {
-	SetIcon(wxIcon(UWSDR_xpm));
+	SetIcon(wxICON(UWSDR));
 
 	m_spectrum = new float[SPECTRUM_SIZE];
 
@@ -248,12 +249,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_spectrumDisplay->setType(m_parameters->m_spectrumType);
 	m_spectrumDisplay->setSpeed(m_parameters->m_spectrumSpeed);
 
-	m_spectrumDisplay->setBandwidth(20000.0F);
-
-	m_offset = m_parameters->m_hardwareSampleRate / 4.0F;		// XXX FIXME
-
 	// Set the spectrum width depending on the step size and sample rate,
-/*
 	float lowFreq = float(m_parameters->m_hardwareSampleRate) / 4.0F - m_parameters->m_hardwareStepSize / 2.0F;
 	wxASSERT(lowFreq > 0.0F);
 
@@ -271,7 +267,9 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 		m_spectrumDisplay->setBandwidth(10000.0F);
 	else
 		m_spectrumDisplay->setBandwidth(5000.0F);
-*/
+
+	m_offset = m_parameters->m_hardwareSampleRate / 4.0F;		// XXX FIXME
+
 	// FIXME
 	m_dsp = new CDSPControl(m_parameters->m_hardwareSampleRate, float(m_parameters->m_hardwareSampleRate) / 4.0F);
 

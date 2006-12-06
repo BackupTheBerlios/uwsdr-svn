@@ -132,7 +132,7 @@ wxString CVoiceKeyboard::getFile(unsigned int n) const
 
 void CVoiceKeyboard::onBrowse(wxCommandEvent& event)
 {
-	wxFileDialog files(this, _("Choose a Wave File"), m_dir, wxEmptyString, _("WAV files (*.WAV)|*.wav;*.WAV"), wxFILE_MUST_EXIST);
+	wxFileDialog files(this, _("Choose a Wave File"), m_dir, wxEmptyString, _("WAV files (*.WAV)|*.wav;*.WAV"), wxFD_FILE_MUST_EXIST);
 	int ret = files.ShowModal();
 
 	if (ret != wxID_OK)

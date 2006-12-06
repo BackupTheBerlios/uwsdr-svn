@@ -1,4 +1,1 @@
-#include "UWSDRResource.h"
-
-ID_ICON ICON "UWSDR.ico"
-
+UWSDR ICON "UWSDR.ico"

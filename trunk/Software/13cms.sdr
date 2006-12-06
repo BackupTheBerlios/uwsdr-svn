@@ -17,7 +17,7 @@ highFreq=2450
 #
 # The local oscillator step size in Hertz.
 #
-stepSize=10000.0
+stepSize=100.0
 
 #
 # This is the sample rate of the CODEC, this is somewhat important. The value

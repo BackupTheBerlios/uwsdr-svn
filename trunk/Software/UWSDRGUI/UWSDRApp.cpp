@@ -144,13 +144,13 @@ bool CUWSDRApp::OnInit()
 
 	if (!readConfig()) {
 		::wxLogError(wxT("Cannot open the SDR configuration - ") + m_parameters->m_name);
-		::wxMessageBox(_("Cannot open the SDR configuration - ") + m_parameters->m_name);
+		::wxMessageBox(_("Cannot open the SDR configuration - ") + m_parameters->m_name, _("uWave SDR Error"), wxICON_ERROR);
 		return false;
 	}
 
 	if (!readDescrFile()) {
 		::wxLogError(wxT("Cannot open the SDR description file - ") + m_parameters->m_fileName);
-		::wxMessageBox(_("Cannot open the SDR description file - ") + m_parameters->m_fileName);
+		::wxMessageBox(_("Cannot open the SDR description file - ") + m_parameters->m_fileName, _("uWave SDR Error"), wxICON_ERROR);
 		return false;
 	}
 
