@@ -66,6 +66,8 @@ class CDSPControl : public wxThread, public IDataCallback {
 	virtual void setSP(bool onOff);
 	virtual void setSPValue(unsigned int value);
 
+	virtual void setCarrierLevel(unsigned int value);
+
 	virtual void setALCValue(unsigned int attack, unsigned int decay, unsigned int hang);
 
 	virtual void setRXIAndQ(int phase, int gain);

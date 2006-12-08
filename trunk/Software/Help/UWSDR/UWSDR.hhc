@@ -203,8 +203,13 @@
                   <param name="Local" value="TransmitPref.htm">
               </object>
          <li> <object type="text/sitemap">
+                  <param name="Name" value="ALC">
+                  <param name="ID" value=407>
+                  <param name="Local" value="ALCPref.htm">
+              </object>
+         <li> <object type="text/sitemap">
                   <param name="Name" value="I + Q">
-                  <param name="ID" value=9>
+                  <param name="ID" value=408>
                   <param name="Local" value="IQPref.htm">
               </object>
        </ul>

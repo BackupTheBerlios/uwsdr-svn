@@ -76,7 +76,7 @@ class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterf
 	bool              m_txOn;
 	double            m_stepSize;
 	bool              m_record;
-	float             m_offset;
+	float             m_dspOffset;
 
 	wxMenu*           m_menu;
 	CFreqDisplay*     m_freqDisplay;

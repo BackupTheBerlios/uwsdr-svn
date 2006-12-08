@@ -148,7 +148,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="0"
 				AdditionalIncludeDirectories="C:\wxWidgets\lib\vc_dll\msw,..\Common,C:\wxWidgets\include,..\PA19"
-				PreprocessorDefinitions="WIN32;__WXMSW__;WXUSINGDLL;_WINDOWS;NOPCH"
+				PreprocessorDefinitions="WIN32;__WXMSW__;WXUSINGDLL;_WINDOWS;NOPCH;DEMO"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -689,10 +689,6 @@
 			</File>
 			<File
 				RelativePath="UWSDRPreferences.h"
-				>
-			</File>
-			<File
-				RelativePath="UWSDRResource.h"
 				>
 			</File>
 			<File

@@ -47,6 +47,8 @@ class CDTTSPControl : public wxThread {
 	virtual void setSP(bool onOff);
 	virtual void setSPValue(unsigned int value);
 
+	virtual void setCarrierLevel(unsigned int value);
+
 	virtual void setALCValue(unsigned int attack, unsigned int decay, unsigned int hang);
 
 	virtual void setRXIAndQ(int phase, int gain);
@@ -76,6 +78,7 @@ class CDTTSPControl : public wxThread {
 	unsigned int m_nb2Value;
 	bool         m_sp;
 	unsigned int m_spValue;
+	unsigned int m_carrierLevel;
 	unsigned int m_attack;
 	unsigned int m_decay;
 	unsigned int m_hang;

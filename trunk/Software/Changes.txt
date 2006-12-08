@@ -217,3 +217,7 @@ Changed to using Visual C++ Express on Windows instead of Visual C++ 6.0, but Vi
 supported for some time to come.
 
 Updated to Portaudio stable_v19_061121.
+
+Added user settable frequency offset.
+
+Added carrier level control.

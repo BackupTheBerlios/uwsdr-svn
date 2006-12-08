@@ -47,7 +47,8 @@ class CUWSDRPreferences : public wxDialog {
 	wxTextCtrl*     m_minRXFreq;
 	wxTextCtrl*     m_maxTXFreq;
 	wxTextCtrl*     m_minTXFreq;
-	wxTextCtrl*     m_shift;
+	wxTextCtrl*     m_freqShift;
+	wxTextCtrl*     m_freqOffset;
 	wxChoice*       m_deviationFMW;
 	wxChoice*       m_deviationFMN;
 	wxChoice*       m_agcAM;
@@ -75,6 +76,7 @@ class CUWSDRPreferences : public wxDialog {
 	wxSlider*       m_nb2Value;
 	wxCheckBox*     m_spButton;
 	wxSlider*       m_spValue;
+	wxSlider*       m_carrierLevel;
 	wxSlider*       m_alcAttack;
 	wxSlider*       m_alcDecay;
 	wxSlider*       m_alcHang;
@@ -92,6 +94,7 @@ class CUWSDRPreferences : public wxDialog {
 	wxPanel* createStepTab(wxNotebook* noteBook);
 	wxPanel* createReceiveTab(wxNotebook* noteBook);
 	wxPanel* createTransmitTab(wxNotebook* noteBook);
+	wxPanel* createALCTab(wxNotebook* noteBook);
 	wxPanel* createIQTab(wxNotebook* noteBook);
 
 	wxChoice* createDeviationChoice(wxPanel* panel);

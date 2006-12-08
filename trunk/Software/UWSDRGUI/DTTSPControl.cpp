@@ -39,6 +39,7 @@ m_nb2(false),
 m_nb2Value(0),
 m_sp(false),
 m_spValue(0),
+m_carrierLevel(100),
 m_attack(0),
 m_decay(0),
 m_hang(0),
@@ -277,6 +278,16 @@ void CDTTSPControl::setSPValue(unsigned int value)
 	::SetTXCompressionLevel(float(value));
 
 	m_spValue = value;
+}
+
+void CDTTSPControl::setCarrierLevel(unsigned int value)
+{
+	if (value == m_carrierLevel)
+		return;
+
+	::SetTXCarrierLevel(float(value) / 100.0F);
+
+	m_carrierLevel = value;
 }
 
 void CDTTSPControl::setALCValue(unsigned int attack, unsigned int decay, unsigned int hang)

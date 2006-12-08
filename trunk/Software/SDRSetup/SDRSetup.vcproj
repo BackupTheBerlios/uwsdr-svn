@@ -274,10 +274,6 @@
 				>
 			</File>
 			<File
-				RelativePath="SDRSetupResource.h"
-				>
-			</File>
-			<File
 				RelativePath="SDRSetupXpm.h"
 				>
 			</File>

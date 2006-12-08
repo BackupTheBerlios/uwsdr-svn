@@ -50,7 +50,8 @@ m_maxRXFreq(NULL),
 m_minRXFreq(NULL),
 m_maxTXFreq(NULL),
 m_minTXFreq(NULL),
-m_shift(NULL),
+m_freqShift(NULL),
+m_freqOffset(NULL),
 m_deviationFMW(NULL),
 m_deviationFMN(NULL),
 m_agcAM(NULL),
@@ -78,6 +79,7 @@ m_nb2Button(NULL),
 m_nb2Value(NULL),
 m_spButton(NULL),
 m_spValue(NULL),
+m_carrierLevel(NULL),
 m_alcAttack(NULL),
 m_alcDecay(NULL),
 m_alcHang(NULL),
@@ -103,6 +105,8 @@ m_txIQGain(NULL)
 
 	m_noteBook->AddPage(createTransmitTab(m_noteBook), _("Transmit"), false);
 
+	m_noteBook->AddPage(createALCTab(m_noteBook), _("ALC"), false);
+
 	m_noteBook->AddPage(createIQTab(m_noteBook), _("I + Q"), false);
 
 	mainSizer->Add(m_noteBook, 1, wxALL | wxGROW, BORDER_SIZE);
@@ -118,8 +122,11 @@ m_txIQGain(NULL)
 	SetSizer(mainSizer);
 
 	wxString text;
-	text.Printf(wxT("%u"), m_parameters->m_shift / 1000);
-	m_shift->SetValue(text);
+	text.Printf(wxT("%u"), m_parameters->m_freqShift / 1000);
+	m_freqShift->SetValue(text);
+
+	text.Printf(wxT("%.1lf"), m_parameters->m_freqOffset);
+	m_freqOffset->SetValue(text);
 
 	m_minRXFreq->SetValue(m_parameters->m_minReceiveFreq.getString(3));
 	m_maxRXFreq->SetValue(m_parameters->m_maxReceiveFreq.getString(3));
@@ -168,6 +175,8 @@ m_txIQGain(NULL)
 
 	m_spButton->SetValue(m_parameters->m_spOn);
 	m_spValue->SetValue(m_parameters->m_spValue);
+	m_carrierLevel->SetValue(m_parameters->m_carrierLevel);
+
 	m_alcAttack->SetValue(m_parameters->m_alcAttack);
 	m_alcDecay->SetValue(m_parameters->m_alcDecay);
 	m_alcHang->SetValue(m_parameters->m_alcHang);
@@ -184,7 +193,7 @@ CUWSDRPreferences::~CUWSDRPreferences()
 
 void CUWSDRPreferences::onOK(wxCommandEvent& event)
 {
-	wxString text = m_shift->GetValue();
+	wxString text = m_freqShift->GetValue();
 
 	if (text.IsEmpty()) {
 		::wxMessageBox(_("The shift may not empty."), _("uWave SDR Error"), wxICON_ERROR);
@@ -192,10 +201,30 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 	}
 
 	long shift;
-	text.ToLong(&shift);
+	bool ret = text.ToLong(&shift);
+
+	if (!ret) {
+		::wxMessageBox(_("The shift is not a valid number."), _("uWave SDR Error"), wxICON_ERROR);
+		return;
+	}
 
 	if (shift < 0L) {
 		::wxMessageBox(_("The shift may not be negative."), _("uWave SDR Error"), wxICON_ERROR);
+		return;
+	}
+
+	text = m_freqOffset->GetValue();
+
+	if (text.IsEmpty()) {
+		::wxMessageBox(_("The offset may not empty."), _("uWave SDR Error"), wxICON_ERROR);
+		return;
+	}
+
+	double offset;
+	ret = text.ToDouble(&offset);
+
+	if (!ret) {
+		::wxMessageBox(_("The offset is not a valid number."), _("uWave SDR Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -277,7 +306,12 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 	}
 
 	double stepVeryFast;
-	text.ToDouble(&stepVeryFast);
+	ret = text.ToDouble(&stepVeryFast);
+
+	if (!ret) {
+		::wxMessageBox(_("The Very fast step size is not a valid number."), _("uWave SDR Error"), wxICON_ERROR);
+		return;
+	}
 
 	if (stepVeryFast <= 0.0) {
 		::wxMessageBox(_("The Very fast step size may not be zero or negative."), _("uWave SDR Error"), wxICON_ERROR);
@@ -292,7 +326,12 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 	}
 
 	double stepFast;
-	text.ToDouble(&stepFast);
+	ret = text.ToDouble(&stepFast);
+
+	if (!ret) {
+		::wxMessageBox(_("The Fast step size is not a valid number."), _("uWave SDR Error"), wxICON_ERROR);
+		return;
+	}
 
 	if (stepFast <= 0.0) {
 		::wxMessageBox(_("The Fast step size may not be zero or negative."), _("uWave SDR Error"), wxICON_ERROR);
@@ -307,7 +346,12 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 	}
 
 	double stepMedium;
-	text.ToDouble(&stepMedium);
+	ret = text.ToDouble(&stepMedium);
+
+	if (!ret) {
+		::wxMessageBox(_("The Medium step size is not a valid number."), _("uWave SDR Error"), wxICON_ERROR);
+		return;
+	}
 
 	if (stepMedium <= 0.0) {
 		::wxMessageBox(_("The Medium step size may not be zero or negative."), _("uWave SDR Error"), wxICON_ERROR);
@@ -322,7 +366,12 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 	}
 
 	double stepSlow;
-	text.ToDouble(&stepSlow);
+	ret = text.ToDouble(&stepSlow);
+
+	if (!ret) {
+		::wxMessageBox(_("The Slow step size is not a valid number."), _("uWave SDR Error"), wxICON_ERROR);
+		return;
+	}
 
 	if (stepSlow <= 0.0) {
 		::wxMessageBox(_("The Slow step size may not be zero or negative."), _("uWave SDR Error"), wxICON_ERROR);
@@ -337,14 +386,20 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 	}
 
 	double stepVerySlow;
-	text.ToDouble(&stepVerySlow);
+	ret = text.ToDouble(&stepVerySlow);
+
+	if (!ret) {
+		::wxMessageBox(_("The Very slow step size is not a valid number."), _("uWave SDR Error"), wxICON_ERROR);
+		return;
+	}
 
 	if (stepVerySlow <= 0.0) {
 		::wxMessageBox(_("The Very slow step size may not be zero or negative."), _("uWave SDR Error"), wxICON_ERROR);
 		return;
 	}
 
-	m_parameters->m_shift = shift * 1000;
+	m_parameters->m_freqShift  = shift * 1000;
+	m_parameters->m_freqOffset = offset;
 
 	m_parameters->m_minReceiveFreq  = minRXFreq;
 	m_parameters->m_maxReceiveFreq  = maxRXFreq;
@@ -386,8 +441,10 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 	double gainDb = double(m_rfValue->GetValue());
 	m_parameters->m_rfGain    = (unsigned int)(1000.0 * ::pow(10.0, gainDb / 10.0) + 0.5);
 
-	m_parameters->m_spOn      = m_spButton->IsChecked();
-	m_parameters->m_spValue   = m_spValue->GetValue();
+	m_parameters->m_spOn         = m_spButton->IsChecked();
+	m_parameters->m_spValue      = m_spValue->GetValue();
+	m_parameters->m_carrierLevel = m_carrierLevel->GetValue();
+
 	m_parameters->m_alcAttack = m_alcAttack->GetValue();
 	m_parameters->m_alcDecay  = m_alcDecay->GetValue();
 	m_parameters->m_alcHang   = m_alcHang->GetValue();
@@ -411,29 +468,7 @@ void CUWSDRPreferences::onHelp(wxCommandEvent& event)
 	if (page == -1)
 		return;
 
-	switch (page) {
-		case 0:
-			::wxGetApp().showHelp(401);
-			break;
-		case 1:
-			::wxGetApp().showHelp(402);
-			break;
-		case 2:
-			::wxGetApp().showHelp(403);
-			break;
-		case 3:
-			::wxGetApp().showHelp(404);
-			break;
-		case 4:
-			::wxGetApp().showHelp(405);
-			break;
-		case 5:
-			::wxGetApp().showHelp(406);
-			break;
-		case 6:
-			::wxGetApp().showHelp(407);
-			break;
-	}
+	::wxGetApp().showHelp(401 + page);
 }
 
 wxPanel* CUWSDRPreferences::createFrequencyTab(wxNotebook* noteBook)
@@ -450,25 +485,25 @@ wxPanel* CUWSDRPreferences::createFrequencyTab(wxNotebook* noteBook)
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(2);
 
-	wxStaticText* label1 = new wxStaticText(panel, -1, _("Minimum Receive Frequency (MHz)"));
+	wxStaticText* label1 = new wxStaticText(panel, -1, _("Minimum receive frequency (MHz)"));
 	sizer->Add(label1, 0, wxALL, BORDER_SIZE);
 
 	m_minRXFreq = new wxTextCtrl(panel, -1);
 	sizer->Add(m_minRXFreq, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label2 = new wxStaticText(panel, -1, _("Maximum Receive Frequency (MHz)"));
+	wxStaticText* label2 = new wxStaticText(panel, -1, _("Maximum receive frequency (MHz)"));
 	sizer->Add(label2, 0, wxALL, BORDER_SIZE);
 
 	m_maxRXFreq = new wxTextCtrl(panel, -1);
 	sizer->Add(m_maxRXFreq, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label3 = new wxStaticText(panel, -1, _("Minimum Transmit Frequency (MHz)"));
+	wxStaticText* label3 = new wxStaticText(panel, -1, _("Minimum transmit frequency (MHz)"));
 	sizer->Add(label3, 0, wxALL, BORDER_SIZE);
 
 	m_minTXFreq = new wxTextCtrl(panel, -1);
 	sizer->Add(m_minTXFreq, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label4 = new wxStaticText(panel, -1, _("Maximum Transmit Frequency (MHz)"));
+	wxStaticText* label4 = new wxStaticText(panel, -1, _("Maximum transmit frequency (MHz)"));
 	sizer->Add(label4, 0, wxALL, BORDER_SIZE);
 
 	m_maxTXFreq = new wxTextCtrl(panel, -1);
@@ -493,8 +528,9 @@ wxPanel* CUWSDRPreferences::createShiftTab(wxNotebook* noteBook)
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
 	wxStaticText* label = new wxStaticText(panel, -1,
-		_("This is the frequency shift that is invoked by the Shift + and Shift - buttons on\n"
-		  "the main panel."));
+		_("This frequency shift is invoked by the Shift + and Shift - buttons on the main\n"
+		  "screen, this is used mostly for repeater operation. The frequency offset is used\n"
+		  "to remove any difference in the displayed frequency and the real frequency."));
 	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(2);
@@ -502,8 +538,14 @@ wxPanel* CUWSDRPreferences::createShiftTab(wxNotebook* noteBook)
 	wxStaticText* label1 = new wxStaticText(panel, -1, _("Shift (kHz)"));
 	sizer->Add(label1, 0, wxALL, BORDER_SIZE);
 
-	m_shift = new wxTextCtrl(panel, -1);
-	sizer->Add(m_shift, 0, wxALL, BORDER_SIZE);
+	m_freqShift = new wxTextCtrl(panel, -1);
+	sizer->Add(m_freqShift, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* label2 = new wxStaticText(panel, -1, _("Offset (Hz)"));
+	sizer->Add(label2, 0, wxALL, BORDER_SIZE);
+
+	m_freqOffset = new wxTextCtrl(panel, -1);
+	sizer->Add(m_freqOffset, 0, wxALL, BORDER_SIZE);
 
 	mainSizer->Add(sizer, 0, wxALL, BORDER_SIZE);
 
@@ -771,7 +813,7 @@ wxPanel* CUWSDRPreferences::createReceiveTab(wxNotebook* noteBook)
 	m_nb2Value = new wxSlider(panel, -1, 1, 1, 1000, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
 	sizer->Add(m_nb2Value, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* rfLabel = new wxStaticText(panel, -1, _("RF Attenuator (dB)"));
+	wxStaticText* rfLabel = new wxStaticText(panel, -1, _("RF attenuator (dB)"));
 	sizer->Add(rfLabel, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* dummy1 = new wxStaticText(panel, -1, wxEmptyString);
@@ -799,9 +841,9 @@ wxPanel* CUWSDRPreferences::createTransmitTab(wxNotebook* noteBook)
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
 	wxStaticText* label = new wxStaticText(panel, -1,
-		_("The DSP is capable of processing the transmitted signal to increase its average\n"
-		  "power. The output level has to be controlled by the ALC to ensure that the\n"
-		  "hardware is not overdriven."));
+		_("The DSP includes a speech processor that increases the average power level of\n"
+		  "the transmission. The AM carrier level may be adjusted independently from zero\n"
+		  "up to the full output power"));
 	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(3);
@@ -815,29 +857,55 @@ wxPanel* CUWSDRPreferences::createTransmitTab(wxNotebook* noteBook)
 	m_spValue = new wxSlider(panel, -1, 3, 0, 20, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
 	sizer->Add(m_spValue, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* alcAttackLabel = new wxStaticText(panel, -1, _("ALC Attack (ms)"));
-	sizer->Add(alcAttackLabel, 0, wxALL, BORDER_SIZE);
+	wxStaticText* carrierLabel = new wxStaticText(panel, -1, _("AM carrier level (%)"));
+	sizer->Add(carrierLabel, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* dummy1 = new wxStaticText(panel, -1, wxEmptyString);
 	sizer->Add(dummy1, 0, wxALL, BORDER_SIZE);
 
+	m_carrierLevel = new wxSlider(panel, -1, 100, 0, 100, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
+	sizer->Add(m_carrierLevel, 0, wxALL, BORDER_SIZE);
+
+	mainSizer->Add(sizer, 0, wxALL, BORDER_SIZE);
+
+	panel->SetAutoLayout(true);
+
+	sizer->Fit(panel);
+	sizer->SetSizeHints(panel);
+
+	panel->SetSizer(mainSizer);
+
+	return panel;
+}
+
+wxPanel* CUWSDRPreferences::createALCTab(wxNotebook* noteBook)
+{
+	wxPanel* panel = new wxPanel(noteBook, -1);
+
+	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
+
+	wxStaticText* label = new wxStaticText(panel, -1,
+		_("The DSP is capable of processing the transmitted signal to increase its average\n"
+		  "power. The output level has to be controlled by the ALC to ensure that the\n"
+		  "hardware is not overdriven."));
+	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
+
+	wxFlexGridSizer* sizer = new wxFlexGridSizer(2);
+
+	wxStaticText* alcAttackLabel = new wxStaticText(panel, -1, _("ALC attack (ms)"));
+	sizer->Add(alcAttackLabel, 0, wxALL, BORDER_SIZE);
+
 	m_alcAttack = new wxSlider(panel, -1, 2, 1, 10, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
 	sizer->Add(m_alcAttack, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* alcDecayLabel = new wxStaticText(panel, -1, _("ALC Decay (ms)"));
+	wxStaticText* alcDecayLabel = new wxStaticText(panel, -1, _("ALC decay (ms)"));
 	sizer->Add(alcDecayLabel, 0, wxALL, BORDER_SIZE);
-
-	wxStaticText* dummy2 = new wxStaticText(panel, -1, wxEmptyString);
-	sizer->Add(dummy2, 0, wxALL, BORDER_SIZE);
 
 	m_alcDecay = new wxSlider(panel, -1, 10, 1, 50, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
 	sizer->Add(m_alcDecay, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* alcHangLabel = new wxStaticText(panel, -1, _("ALC Hang (ms)"));
+	wxStaticText* alcHangLabel = new wxStaticText(panel, -1, _("ALC hang (ms)"));
 	sizer->Add(alcHangLabel, 0, wxALL, BORDER_SIZE);
-
-	wxStaticText* dummy3 = new wxStaticText(panel, -1, wxEmptyString);
-	sizer->Add(dummy3, 0, wxALL, BORDER_SIZE);
 
 	m_alcHang = new wxSlider(panel, -1, 500, 10, 5000, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
 	sizer->Add(m_alcHang, 0, wxALL, BORDER_SIZE);

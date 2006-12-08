@@ -120,7 +120,7 @@ m_rxOn(true),
 m_txOn(false),
 m_stepSize(0.0),
 m_record(false),
-m_offset(0.0F),
+m_dspOffset(0.0F),
 m_menu(NULL),
 m_freqDisplay(NULL),
 m_spectrumDisplay(NULL),
@@ -268,7 +268,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	else
 		m_spectrumDisplay->setBandwidth(5000.0F);
 
-	m_offset = m_parameters->m_hardwareSampleRate / 4.0F;		// XXX FIXME
+	m_dspOffset = m_parameters->m_hardwareSampleRate / 4.0F;		// XXX FIXME
 
 	// FIXME
 	m_dsp = new CDSPControl(m_parameters->m_hardwareSampleRate, float(m_parameters->m_hardwareSampleRate) / 4.0F);
@@ -345,6 +345,8 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_dsp->setSP(m_parameters->m_spOn);
 	m_dsp->setSPValue(m_parameters->m_spValue);
+
+	m_dsp->setCarrierLevel(m_parameters->m_carrierLevel);
 
 	m_dsp->setALCValue(m_parameters->m_alcAttack, m_parameters->m_alcDecay, m_parameters->m_alcHang);
 
@@ -898,21 +900,21 @@ bool CUWSDRFrame::setTransmit()
 			freq = m_parameters->m_vfoC;
 
 		else if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SHIFT_1)
-			freq = m_parameters->m_vfoA - m_parameters->m_shift;
+			freq = m_parameters->m_vfoA - m_parameters->m_freqShift;
 		else if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SHIFT_2)
-			freq = m_parameters->m_vfoA + m_parameters->m_shift;
+			freq = m_parameters->m_vfoA + m_parameters->m_freqShift;
 		else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SHIFT_1)
-			freq = m_parameters->m_vfoB - m_parameters->m_shift;
+			freq = m_parameters->m_vfoB - m_parameters->m_freqShift;
 		else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SHIFT_2)
-			freq = m_parameters->m_vfoB + m_parameters->m_shift;
+			freq = m_parameters->m_vfoB + m_parameters->m_freqShift;
 		else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SHIFT_1)
-			freq = m_parameters->m_vfoC - m_parameters->m_shift;
+			freq = m_parameters->m_vfoC - m_parameters->m_freqShift;
 		else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SHIFT_2)
-			freq = m_parameters->m_vfoC + m_parameters->m_shift;
+			freq = m_parameters->m_vfoC + m_parameters->m_freqShift;
 		else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SHIFT_1)
-			freq = m_parameters->m_vfoD - m_parameters->m_shift;
+			freq = m_parameters->m_vfoD - m_parameters->m_freqShift;
 		else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SHIFT_2)
-			freq = m_parameters->m_vfoD + m_parameters->m_shift;
+			freq = m_parameters->m_vfoD + m_parameters->m_freqShift;
 
 		if (freq >= m_parameters->m_maxTransmitFreq || freq < m_parameters->m_minTransmitFreq) {
 			::wxBell();
@@ -994,9 +996,9 @@ void CUWSDRFrame::normaliseFreq()
 		freq = m_parameters->m_vfoC;
 
 	if (m_txOn && m_parameters->m_vfoSplitShift == VFO_SHIFT_1)
-		freq -= m_parameters->m_shift;
+		freq -= m_parameters->m_freqShift;
 	if (m_txOn && m_parameters->m_vfoSplitShift == VFO_SHIFT_2)
-		freq += m_parameters->m_shift;
+		freq += m_parameters->m_freqShift;
 
 	// Set the RIT
 	if (m_parameters->m_ritOn && !m_txOn)
@@ -1013,10 +1015,13 @@ void CUWSDRFrame::normaliseFreq()
 	if (m_parameters->m_mode == MODE_CWW || m_parameters->m_mode == MODE_CWN)
 		dispFreq += CW_OFFSET;
 
+	if (m_parameters->m_freqOffset != 0.0)
+		dispFreq += m_parameters->m_freqOffset;
+
 	m_freqDisplay->setFrequency(dispFreq);
 
 	// Subtract the IF frequency
-	freq -= m_offset;
+	freq -= m_dspOffset;
 
 	// Now take into account the frequency steps of the SDR ...
 	double offset = 0.0;
@@ -1131,8 +1136,11 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 
 					m_dsp->setSP(m_parameters->m_spOn);
 					m_dsp->setSPValue(m_parameters->m_spValue);
+					m_dsp->setCarrierLevel(m_parameters->m_carrierLevel);
 
 					m_dsp->setALCValue(m_parameters->m_alcAttack, m_parameters->m_alcDecay, m_parameters->m_alcHang);
+
+					normaliseFreq();
 				}
 
 				// These may have been set in the preferences and then cancel pressed

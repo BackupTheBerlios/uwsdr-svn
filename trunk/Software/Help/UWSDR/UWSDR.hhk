@@ -10,6 +10,11 @@
        </object>
 
   <li> <object type="text/sitemap">
+           <param name="Name" value="ALC (Preferences)">
+           <param name="Local" value="ALCPref.htm">
+       </object>
+
+  <li> <object type="text/sitemap">
            <param name="Name" value="Buttons (CW Keyboard)">
            <param name="Local" value="CWButtons.htm">
        </object>

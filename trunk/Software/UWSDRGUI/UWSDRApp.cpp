@@ -36,7 +36,8 @@ const wxString KEY_VFO_A           = wxT("/VfoA");
 const wxString KEY_VFO_B           = wxT("/VfoB");
 const wxString KEY_VFO_C           = wxT("/VfoC");
 const wxString KEY_VFO_D           = wxT("/VfoD");
-const wxString KEY_SHIFT           = wxT("/Shift");
+const wxString KEY_FREQ_SHIFT      = wxT("/FreqShift");
+const wxString KEY_FREQ_OFFSET     = wxT("/FreqOffset");
 const wxString KEY_VFO_CHOICE      = wxT("/VfoChoice");
 const wxString KEY_VFO_SPLIT_SHIFT = wxT("/VfoSplitShift");
 const wxString KEY_VFO_SPEED_FM    = wxT("/VfoSpeedFM");
@@ -76,6 +77,7 @@ const wxString KEY_NB2_CTRL        = wxT("/NoiseBlanker2Ctrl");
 const wxString KEY_NB2_VALUE       = wxT("/NoiseBlanker2Value");
 const wxString KEY_SP_CTRL         = wxT("/SpeechProcCtrl");
 const wxString KEY_SP_VALUE        = wxT("/SpeechprocValue");
+const wxString KEY_CARRIER_LEVEL   = wxT("/CarrierLevel");
 const wxString KEY_ALC_ATTACK      = wxT("/ALCAttackValue");
 const wxString KEY_ALC_DECAY       = wxT("/ALCDecayValue");
 const wxString KEY_ALC_HANG        = wxT("/ALCHangValue");
@@ -252,7 +254,8 @@ bool CUWSDRApp::readConfig()
 	wxString keyVfoB          = wxT("/") + m_parameters->m_name + KEY_VFO_B;
 	wxString keyVfoC          = wxT("/") + m_parameters->m_name + KEY_VFO_C;
 	wxString keyVfoD          = wxT("/") + m_parameters->m_name + KEY_VFO_D;
-	wxString keyShift         = wxT("/") + m_parameters->m_name + KEY_SHIFT;
+	wxString keyFreqShift     = wxT("/") + m_parameters->m_name + KEY_FREQ_SHIFT;
+	wxString keyFreqOffset    = wxT("/") + m_parameters->m_name + KEY_FREQ_OFFSET;
 	wxString keyVfoChoice     = wxT("/") + m_parameters->m_name + KEY_VFO_CHOICE;
 	wxString keyVfoSplitShift = wxT("/") + m_parameters->m_name + KEY_VFO_SPLIT_SHIFT;
 	wxString keyVfoSpeedFM    = wxT("/") + m_parameters->m_name + KEY_VFO_SPEED_FM;
@@ -292,6 +295,7 @@ bool CUWSDRApp::readConfig()
 	wxString keyNb2Value      = wxT("/") + m_parameters->m_name + KEY_NB2_VALUE;
 	wxString keySpCtrl        = wxT("/") + m_parameters->m_name + KEY_SP_CTRL;
 	wxString keySpValue       = wxT("/") + m_parameters->m_name + KEY_SP_VALUE;
+	wxString keyCarrierLevel  = wxT("/") + m_parameters->m_name + KEY_CARRIER_LEVEL;
 	wxString keyAlcAttack     = wxT("/") + m_parameters->m_name + KEY_ALC_ATTACK;
 	wxString keyAlcDecay      = wxT("/") + m_parameters->m_name + KEY_ALC_DECAY;
 	wxString keyAlcHang       = wxT("/") + m_parameters->m_name + KEY_ALC_HANG;
@@ -371,8 +375,10 @@ bool CUWSDRApp::readConfig()
 	m_parameters->m_vfoD.setFrequency(freq);
 
 	int num;
-	profile->Read(keyShift,            &num, 0);
-	m_parameters->m_shift = num;
+	profile->Read(keyFreqShift,        &num, 0);
+	m_parameters->m_freqShift = num;
+
+	profile->Read(keyFreqOffset,       &m_parameters->m_freqOffset, 0.0);
 
 	profile->Read(keyVfoChoice,        &m_parameters->m_vfoChoice, VFO_A);
 
@@ -433,6 +439,9 @@ bool CUWSDRApp::readConfig()
 	profile->Read(keySpCtrl,           &m_parameters->m_spOn,    false);
 	profile->Read(keySpValue,          &num, 3);
 	m_parameters->m_spValue = num;
+
+	profile->Read(keyCarrierLevel,     &num, 100);
+	m_parameters->m_carrierLevel = num;
 
 	profile->Read(keyAlcAttack,        &num, 2);
 	m_parameters->m_alcAttack = num;
@@ -504,7 +513,8 @@ void CUWSDRApp::writeConfig()
 	wxString keyVfoB          = wxT("/") + m_parameters->m_name + KEY_VFO_B;
 	wxString keyVfoC          = wxT("/") + m_parameters->m_name + KEY_VFO_C;
 	wxString keyVfoD          = wxT("/") + m_parameters->m_name + KEY_VFO_D;
-	wxString keyShift         = wxT("/") + m_parameters->m_name + KEY_SHIFT;
+	wxString keyFreqShift     = wxT("/") + m_parameters->m_name + KEY_FREQ_SHIFT;
+	wxString keyFreqOffset    = wxT("/") + m_parameters->m_name + KEY_FREQ_OFFSET;
 	wxString keyVfoChoice     = wxT("/") + m_parameters->m_name + KEY_VFO_CHOICE;
 	wxString keyVfoSplitShift = wxT("/") + m_parameters->m_name + KEY_VFO_SPLIT_SHIFT;
 	wxString keyVfoSpeedFM    = wxT("/") + m_parameters->m_name + KEY_VFO_SPEED_FM;
@@ -538,6 +548,7 @@ void CUWSDRApp::writeConfig()
 	wxString keyNb2Value      = wxT("/") + m_parameters->m_name + KEY_NB2_VALUE;
 	wxString keySpCtrl        = wxT("/") + m_parameters->m_name + KEY_SP_CTRL;
 	wxString keySpValue       = wxT("/") + m_parameters->m_name + KEY_SP_VALUE;
+	wxString keyCarrierLevel  = wxT("/") + m_parameters->m_name + KEY_CARRIER_LEVEL;
 	wxString keyAlcAttack     = wxT("/") + m_parameters->m_name + KEY_ALC_ATTACK;
 	wxString keyAlcDecay      = wxT("/") + m_parameters->m_name + KEY_ALC_DECAY;
 	wxString keyAlcHang       = wxT("/") + m_parameters->m_name + KEY_ALC_HANG;
@@ -592,7 +603,8 @@ void CUWSDRApp::writeConfig()
 	profile->Write(keyVfoB,             m_parameters->m_vfoB.getString());
 	profile->Write(keyVfoC,             m_parameters->m_vfoC.getString());
 	profile->Write(keyVfoD,             m_parameters->m_vfoD.getString());
-	profile->Write(keyShift,            int(m_parameters->m_shift));
+	profile->Write(keyFreqShift,        int(m_parameters->m_freqShift));
+	profile->Write(keyFreqOffset,       m_parameters->m_freqOffset);
 	profile->Write(keyVfoChoice,        m_parameters->m_vfoChoice);
 	profile->Write(keyVfoSplitShift,    m_parameters->m_vfoSplitShift);
 	profile->Write(keyVfoSpeedFM,       m_parameters->m_vfoSpeedFM);
@@ -626,6 +638,7 @@ void CUWSDRApp::writeConfig()
 	profile->Write(keyNb2Value,         int(m_parameters->m_nb2Value));
 	profile->Write(keySpCtrl,           m_parameters->m_spOn);
 	profile->Write(keySpValue,          int(m_parameters->m_spValue));
+	profile->Write(keyCarrierLevel,     int(m_parameters->m_carrierLevel));
 	profile->Write(keyAlcAttack,        int(m_parameters->m_alcAttack));
 	profile->Write(keyAlcDecay,         int(m_parameters->m_alcDecay));
 	profile->Write(keyAlcHang,          int(m_parameters->m_alcHang));

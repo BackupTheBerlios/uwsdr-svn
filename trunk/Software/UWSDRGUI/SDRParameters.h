@@ -49,7 +49,8 @@ class CSDRParameters {
 	CFrequency   m_vfoB;
 	CFrequency   m_vfoC;
 	CFrequency   m_vfoD;
-	unsigned int m_shift;
+	unsigned int m_freqShift;
+	double       m_freqOffset;
 	int          m_vfoChoice;
 	int          m_vfoSplitShift;
 
@@ -99,6 +100,7 @@ class CSDRParameters {
 
 	bool         m_spOn;
 	unsigned int m_spValue;
+	unsigned int m_carrierLevel;
 
 	unsigned int m_alcAttack;
 	unsigned int m_alcDecay;

@@ -276,10 +276,6 @@
 				>
 			</File>
 			<File
-				RelativePath="GUISetupResource.h"
-				>
-			</File>
-			<File
 				RelativePath="GUISetupXpm.h"
 				>
 			</File>

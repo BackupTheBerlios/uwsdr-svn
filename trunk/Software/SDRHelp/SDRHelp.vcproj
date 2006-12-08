@@ -248,10 +248,6 @@
 				>
 			</File>
 			<File
-				RelativePath="SDRHelpResource.h"
-				>
-			</File>
-			<File
 				RelativePath="SDRHelpXpm.h"
 				>
 			</File>
