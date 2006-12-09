@@ -89,7 +89,6 @@ class CUWSDRPreferences : public wxDialog {
 	DECLARE_EVENT_TABLE()
 
 	wxPanel* createFrequencyTab(wxNotebook* noteBook);
-	wxPanel* createShiftTab(wxNotebook* noteBook);
 	wxPanel* createModeTab(wxNotebook* noteBook);
 	wxPanel* createStepTab(wxNotebook* noteBook);
 	wxPanel* createReceiveTab(wxNotebook* noteBook);

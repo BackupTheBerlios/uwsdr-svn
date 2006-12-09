@@ -188,10 +188,6 @@
            <param name="Name" value="SHIFT +">
            <param name="Local" value="TuningButtons.htm">
        </object>
-  <li> <object type="text/sitemap">
-           <param name="Name" value="Shift (Preferences)">
-           <param name="Local" value="ShiftPref.htm">
-       </object>
 
   <li> <object type="text/sitemap">
            <param name="Name" value="Spectrum Display">

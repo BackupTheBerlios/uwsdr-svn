@@ -95,8 +95,6 @@ m_txIQGain(NULL)
 
 	m_noteBook->AddPage(createFrequencyTab(m_noteBook), _("Frequencies"), true);
 
-	m_noteBook->AddPage(createShiftTab(m_noteBook), _("Shift"), false);
-
 	m_noteBook->AddPage(createModeTab(m_noteBook), _("Modes"), false);
 
 	m_noteBook->AddPage(createStepTab(m_noteBook), _("Step Size"), false);
@@ -478,71 +476,48 @@ wxPanel* CUWSDRPreferences::createFrequencyTab(wxNotebook* noteBook)
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
 	wxStaticText* label = new wxStaticText(panel, -1,
-		_("These are the highest and lowest transmit and receive frequencies that the SDR\n"
-		  "may use. They may not be outside of the limits set for the hardware. The\n"
-		  "transmit frequency range must be within the receive frequency range."));
+		_("These are the highest and lowest transmit and receive frequencies that the SDR may\n"
+		  "use. They may not be outside of the limits set for the hardware, and the transmit\n"
+		  "frequency range must be within the receive frequency range. The frequency shift is\n"
+		  "used by the Shift + and Shift - buttons on the main screen. The frequency offset is\n"
+		  "used to remove any difference in the displayed frequency and the real frequency."));
+
 	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(2);
 
-	wxStaticText* label1 = new wxStaticText(panel, -1, _("Minimum receive frequency (MHz)"));
+	wxStaticText* label1 = new wxStaticText(panel, -1, _("Min RX frequency (MHz)"));
 	sizer->Add(label1, 0, wxALL, BORDER_SIZE);
 
 	m_minRXFreq = new wxTextCtrl(panel, -1);
 	sizer->Add(m_minRXFreq, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label2 = new wxStaticText(panel, -1, _("Maximum receive frequency (MHz)"));
+	wxStaticText* label2 = new wxStaticText(panel, -1, _("Max RX frequency (MHz)"));
 	sizer->Add(label2, 0, wxALL, BORDER_SIZE);
 
 	m_maxRXFreq = new wxTextCtrl(panel, -1);
 	sizer->Add(m_maxRXFreq, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label3 = new wxStaticText(panel, -1, _("Minimum transmit frequency (MHz)"));
+	wxStaticText* label3 = new wxStaticText(panel, -1, _("Min TX frequency (MHz)"));
 	sizer->Add(label3, 0, wxALL, BORDER_SIZE);
 
 	m_minTXFreq = new wxTextCtrl(panel, -1);
 	sizer->Add(m_minTXFreq, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label4 = new wxStaticText(panel, -1, _("Maximum transmit frequency (MHz)"));
+	wxStaticText* label4 = new wxStaticText(panel, -1, _("Max TX frequency (MHz)"));
 	sizer->Add(label4, 0, wxALL, BORDER_SIZE);
 
 	m_maxTXFreq = new wxTextCtrl(panel, -1);
 	sizer->Add(m_maxTXFreq, 0, wxALL, BORDER_SIZE);
 
-	mainSizer->Add(sizer, 0, wxALL, BORDER_SIZE);
-
-	panel->SetAutoLayout(true);
-
-	sizer->Fit(panel);
-	sizer->SetSizeHints(panel);
-
-	panel->SetSizer(mainSizer);
-
-	return panel;
-}
-
-wxPanel* CUWSDRPreferences::createShiftTab(wxNotebook* noteBook)
-{
-	wxPanel* panel = new wxPanel(noteBook, -1);
-
-	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
-
-	wxStaticText* label = new wxStaticText(panel, -1,
-		_("This frequency shift is invoked by the Shift + and Shift - buttons on the main\n"
-		  "screen, this is used mostly for repeater operation. The frequency offset is used\n"
-		  "to remove any difference in the displayed frequency and the real frequency."));
-	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
-
-	wxFlexGridSizer* sizer = new wxFlexGridSizer(2);
-
-	wxStaticText* label1 = new wxStaticText(panel, -1, _("Shift (kHz)"));
-	sizer->Add(label1, 0, wxALL, BORDER_SIZE);
+	wxStaticText* label5 = new wxStaticText(panel, -1, _("Shift (kHz)"));
+	sizer->Add(label5, 0, wxALL, BORDER_SIZE);
 
 	m_freqShift = new wxTextCtrl(panel, -1);
 	sizer->Add(m_freqShift, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label2 = new wxStaticText(panel, -1, _("Offset (Hz)"));
-	sizer->Add(label2, 0, wxALL, BORDER_SIZE);
+	wxStaticText* label6 = new wxStaticText(panel, -1, _("Offset (Hz)"));
+	sizer->Add(label6, 0, wxALL, BORDER_SIZE);
 
 	m_freqOffset = new wxTextCtrl(panel, -1);
 	sizer->Add(m_freqOffset, 0, wxALL, BORDER_SIZE);
@@ -566,9 +541,10 @@ wxPanel* CUWSDRPreferences::createModeTab(wxNotebook* noteBook)
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
 	wxStaticText* label = new wxStaticText(panel, -1,
-		_("Set the filter bandwidth, tuning rate and AGC speed for each mode. The AGC\n"
-		  "speed for CW Wide also applies to CW Narrow. The tuning speed for FM Wide\n"
-        "also applies to FM Narrow. The maximum FM deviation values may be set."));
+		_("Set the filter bandwidth, tuning rate, deviation and AGC speed for each mode. The\n"
+		  "AGC speed can be set for all modes except for FM, for CW Wide settings also applies\n"
+		  "to CW Narrow. The tuning speed for FM Wide also applies to FM Narrow. The FM\n"
+		  "deviation values for FM Wide and FM Narrow may be set."));
 	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(4);
@@ -732,9 +708,9 @@ wxPanel* CUWSDRPreferences::createStepTab(wxNotebook* noteBook)
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
 	wxStaticText* label = new wxStaticText(panel, -1,
-		_("These are the tuning step sizes for the VFO knob. Using the concentric bands,\n"
-		  "these can be increased by 1x, 4x, and 9x. The actual tuning step size used for\n"
-		  "each mode is set in the Modes tab."));
+		_("These are the tuning step sizes for the VFO knob. Using the concentric bands, these\n"
+		  "can be increased by 1x, 4x, and 9x. The choice of which tuning step size to use for\n"
+		  "each mode is set in the Modes tab. The settings are in Hertz per step."));
 	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(2);
@@ -788,9 +764,10 @@ wxPanel* CUWSDRPreferences::createReceiveTab(wxNotebook* noteBook)
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
 	wxStaticText* label = new wxStaticText(panel, -1,
-		_("The DSP includes two advanced notch blankers, they can be enabled here, and\n"
-		  "their detection threshold values set. The amount of attenuation before the IF\n"
-		  "strip may also be changed here."));
+		_("The DSP includes two advanced notch blankers, they can be enabled here, and their\n"
+		  "detection threshold values set. The Mean Noise Blanker is used for general noise\n"
+		  "suppresion whereas the Impulse Noise Blanker is more useful for removing impulse\n"
+		  "noise. The amount of attenuation before the IF strip may also be changed here."));
 	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(3);
@@ -841,9 +818,9 @@ wxPanel* CUWSDRPreferences::createTransmitTab(wxNotebook* noteBook)
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
 	wxStaticText* label = new wxStaticText(panel, -1,
-		_("The DSP includes a speech processor that increases the average power level of\n"
-		  "the transmission. The AM carrier level may be adjusted independently from zero\n"
-		  "up to the full output power"));
+		_("The DSP includes a speech processor that increases the average power level of the\n"
+		  "transmission. The AM carrier level may be adjusted independently from zero up to\n"
+		  "the full output power"));
 	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(3);
@@ -885,9 +862,9 @@ wxPanel* CUWSDRPreferences::createALCTab(wxNotebook* noteBook)
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
 	wxStaticText* label = new wxStaticText(panel, -1,
-		_("The DSP is capable of processing the transmitted signal to increase its average\n"
-		  "power. The output level has to be controlled by the ALC to ensure that the\n"
-		  "hardware is not overdriven."));
+		_("The DSP is capable of processing the transmitted signal to increase its average power.\n"
+		  "The output level has to be controlled by the ALC to ensure that the hardware is not\n"
+		  "overdriven."));
 	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(2);
@@ -929,8 +906,9 @@ wxPanel* CUWSDRPreferences::createIQTab(wxNotebook* noteBook)
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
 	wxStaticText* label = new wxStaticText(panel, -1,
-		_("For optimum performance the I and Q elements of the receive and transmit\n"
-		  "signal need to be balanced. These controls allow them to be changed."));
+		_("For optimum performance the I and Q elements of the receive and transmit signal\n"
+		  "need to be balanced. These controls allow the relative phase and gain between the\n"
+		  "I and Q chaznnels to be changed."));
 	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(4);

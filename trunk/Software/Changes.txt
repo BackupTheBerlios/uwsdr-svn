@@ -220,4 +220,6 @@ Updated to Portaudio stable_v19_061121.
 
 Added user settable frequency offset.
 
-Added carrier level control.
+Added AM carrier level control.
+
+Changed the images within SDRHelp to the new Windows XP style.
