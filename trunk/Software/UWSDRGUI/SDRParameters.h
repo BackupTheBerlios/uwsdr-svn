@@ -67,6 +67,7 @@ class CSDRParameters {
 	double       m_stepVerySlow;
 
 	int          m_mode;
+	bool         m_weaver;
 
 	int          m_deviationFMW;
 	int          m_deviationFMN;

@@ -23,46 +23,47 @@
 #include <cmath>
 
 enum {
-	STATE_NONE,
-	STATE_LEFT,
-	STATE_RIGHT
+	MENU_1X = 6743,
+	MENU_4X,
+	MENU_9X
 };
-
-const int FREQ_TIMER = 67523;
 
 BEGIN_EVENT_TABLE(CFreqDial, wxPanel)
 	EVT_PAINT(CFreqDial::onPaint)
 	EVT_LEFT_DOWN(CFreqDial::onMouse)
-	EVT_LEFT_UP(CFreqDial::onMouse)
-	EVT_RIGHT_DOWN(CFreqDial::onMouse)
-	EVT_RIGHT_UP(CFreqDial::onMouse)
-	EVT_LEAVE_WINDOW(CFreqDial::onMouse)
-	EVT_TIMER(FREQ_TIMER, CFreqDial::onTimer)
+	EVT_MOTION(CFreqDial::onMouse)
+	EVT_RIGHT_DOWN(CFreqDial::onMouseMenu)
+	EVT_MENU(MENU_1X, CFreqDial::onMenu)
+	EVT_MENU(MENU_4X, CFreqDial::onMenu)
+	EVT_MENU(MENU_9X, CFreqDial::onMenu)
 END_EVENT_TABLE()
 
 CFreqDial::CFreqDial(wxWindow* parent, int id, IDialInterface* callback, const wxPoint& pos, const wxSize& size, long style, const wxString& name) :
 wxPanel(parent, id, pos, size, style, name),
-m_timer(NULL),
+m_menu(NULL),
 m_width(size.GetWidth()),
 m_height(size.GetHeight()),
 m_callback(callback),
 m_bitmap(NULL),
-m_state(STATE_NONE),
-m_angle(0),
-m_mult(0)
+m_angle(0.0),
+m_mult(1)
 {
 	wxASSERT(m_height == m_width);
 	wxASSERT(m_callback != NULL);
 
-	m_timer  = new wxTimer(this, FREQ_TIMER),
 	m_bitmap = new wxBitmap(m_width, m_height);
+
+	m_menu = new wxMenu();
+	m_menu->AppendRadioItem(MENU_1X, _("1x"));
+	m_menu->AppendRadioItem(MENU_4X, _("4x"));
+	m_menu->AppendRadioItem(MENU_9X, _("9x"));
 
 	drawDial();
 }
 
 CFreqDial::~CFreqDial()
 {
-	delete m_timer;
+	delete m_menu;
 	delete m_bitmap;
 }
 
@@ -101,11 +102,6 @@ void CFreqDial::drawDial()
 	dc.SetPen(pen1);
 	dc.DrawCircle(middleX, middleY, (m_width - 2) / 2);
 
-	wxPen pen3(*wxWHITE, 1, wxSOLID);
-	dc.SetPen(pen3);
-	dc.DrawCircle(middleX, middleY, (m_width - 2) / 3);
-	dc.DrawCircle(middleX, middleY, (m_width - 2) / 6);
-
 	int x = m_width / 2 - int(double(m_width / 2 - 25) * ::sin(m_angle * (M_PI / 180.0)) + 0.5);
 	int y = m_height / 2 + int(double(m_height / 2 - 25) * ::cos(m_angle * (M_PI / 180.0)) + 0.5);
 
@@ -132,71 +128,82 @@ void CFreqDial::show(wxDC& dc)
 	dc.DrawBitmap(*m_bitmap, 0, 0, false);
 }
 
+void CFreqDial::onMouseMenu(wxMouseEvent& event)
+{
+	switch (m_mult) {
+		case 1:
+			m_menu->Check(MENU_1X, true);
+			break;
+		case 4:
+			m_menu->Check(MENU_4X, true);
+			break;
+		case 9:
+			m_menu->Check(MENU_9X, true);
+			break;
+		default:
+			::wxLogError(wxT("Unknown freq dial multiplier = %u"), m_mult);
+			break;
+	}
+
+	int x = event.GetX();
+	int y = event.GetY();
+
+	PopupMenu(m_menu, x, y);
+}
+
 void CFreqDial::onMouse(wxMouseEvent& event)
 {
-	int state;
-	if (event.LeftDown())
-		state = STATE_LEFT;
-	else if (event.LeftUp())
-		state = STATE_NONE;
-	else if (event.RightDown())
-		state = STATE_RIGHT;
-	else if (event.RightUp())
-		state = STATE_NONE;
-	else if (event.Leaving())
-		state = STATE_NONE;
-	else
+	if (!event.LeftIsDown())
 		return;
 
-	if (state != m_state) {
-		if (state == STATE_NONE) {
-			m_timer->Stop();
-		} else {
-			long diffX = event.GetX() - m_width / 2;
-			long diffY = event.GetY() - m_height / 2;
-			int   dist = int(::sqrt(double(diffX * diffX + diffY * diffY)) + 0.5);
+	long diffX = event.GetX() - m_width / 2;
+	long diffY = m_height / 2 - event.GetY();
+	int   dist = int(::sqrt(double(diffX * diffX + diffY * diffY)) + 0.5);
 
-			if (dist <= (m_width - 2) / 6)
-				m_mult = 1;
-			else if (dist <= (m_width - 2) / 3)
-				m_mult = 2;
-			else if (dist <= (m_width - 2) / 2)
-				m_mult = 3;
-			else
-				return;
+	if (dist > (m_width - 2) / 2) {
+		if (event.LeftDown())
+			event.Skip();
 
-			moveDial();
-			m_timer->Start(30);
-		}
-
-		m_state = state;
-	}
-}
-
-void CFreqDial::onTimer(wxTimerEvent& event)
-{
-	moveDial();
-}
-
-void CFreqDial::moveDial()
-{
-	switch (m_state) {
-		case STATE_LEFT:
-			m_angle -= 3 * m_mult;
-			m_callback->dialMoved(GetId(), -m_mult);
-			break;
-		case STATE_RIGHT:
-			m_angle += 3 * m_mult;
-			m_callback->dialMoved(GetId(), m_mult);
-			break;
-		case STATE_NONE:
-			return;
+		return;
 	}
 
-	if (m_angle > 360)
-		m_angle -= 360;
-	if (m_angle < -360)
-		m_angle += 360;
+	double angle = 180.0 * ::atan2(double(diffY), double(-diffX)) / M_PI;
 
-	drawDial();
+	if (angle < -90.0)
+		angle += 450.0;
+	else
+		angle += 90.0;
+
+	if (angle != m_angle) {
+		int value = (angle > m_angle) ? 1 : -1;
+
+		m_angle = angle;
+
+		m_callback->dialMoved(GetId(), value * m_mult);
+
+		drawDial();
+	}
+
+	if (event.LeftDown())
+		event.Skip();
+}
+
+void CFreqDial::onMenu(wxCommandEvent& event)
+{
+	int id = event.GetId();
+
+	switch (id) {
+		case MENU_9X:
+			m_mult = 9;
+			break;
+		case MENU_4X:
+			m_mult = 4;
+			break;
+		case MENU_1X:
+			m_mult = 1;
+			break;
+		default:
+			::wxLogError(wxT("Unknown freq diql menu option = %d"), id);
+			break;
+	}
 }

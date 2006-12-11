@@ -33,6 +33,7 @@ class CDTTSPControl : public wxThread {
 
 	virtual void setFilter(int filter);
 	virtual void setMode(int mode);
+	virtual void setWeaver(bool weaver);
 	virtual void setTXAndFreq(bool transmit, float freq);
 	virtual void setRIT(float freq);
 	virtual void setAGC(int agc);
@@ -57,6 +58,8 @@ class CDTTSPControl : public wxThread {
 	virtual float getMeter(int type);
 	virtual void  getSpectrum(float* spectrum, int pos);
 
+	virtual float getDSPOffset();
+
 	virtual void dataIO(const float* input, float* output, unsigned int nSamples);
 
 	virtual void close();
@@ -66,6 +69,7 @@ class CDTTSPControl : public wxThread {
 	unsigned int m_blockSize;
 	int          m_filter;
 	int          m_mode;
+	bool         m_weaver;
 	float        m_rxFreq;
 	float        m_txFreq;
 	float        m_rit;

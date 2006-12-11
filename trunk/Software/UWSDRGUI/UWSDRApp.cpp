@@ -51,6 +51,7 @@ const wxString KEY_STEP_MEDIUM     = wxT("/StepMedium");
 const wxString KEY_STEP_SLOW       = wxT("/StepSlow");
 const wxString KEY_STEP_VERY_SLOW  = wxT("/StepVerySlow");
 const wxString KEY_MODE            = wxT("/Mode");
+const wxString KEY_WEAVER          = wxT("/Weaver");
 const wxString KEY_DEV_FMW         = wxT("/DeviationFMW");
 const wxString KEY_DEV_FMN         = wxT("/DeviationFMN");
 const wxString KEY_AGC_AM          = wxT("/AGCAM");
@@ -155,6 +156,10 @@ bool CUWSDRApp::OnInit()
 		::wxMessageBox(_("Cannot open the SDR description file - ") + m_parameters->m_fileName, _("uWave SDR Error"), wxICON_ERROR);
 		return false;
 	}
+
+	// If the step size is too large, we can't use the Weaver method
+	if (m_parameters->m_hardwareStepSize > 100.0F)
+		m_parameters->m_weaver = false;
 
 	wxString title = VERSION + wxT(" - ") + m_parameters->m_name;
 
@@ -274,6 +279,7 @@ bool CUWSDRApp::readConfig()
 	wxString keyStepSlow      = wxT("/") + m_parameters->m_name + KEY_STEP_SLOW;
 	wxString keyStepVerySlow  = wxT("/") + m_parameters->m_name + KEY_STEP_VERY_SLOW;
 	wxString keyMode          = wxT("/") + m_parameters->m_name + KEY_MODE;
+	wxString keyWeaver        = wxT("/") + m_parameters->m_name + KEY_WEAVER;
 	wxString keyFilter        = wxT("/") + m_parameters->m_name + KEY_FILTER;
 	wxString keyFilterFMW     = wxT("/") + m_parameters->m_name + KEY_FILTER_FMW;
 	wxString keyFilterFMN     = wxT("/") + m_parameters->m_name + KEY_FILTER_FMN;
@@ -404,6 +410,7 @@ bool CUWSDRApp::readConfig()
 	profile->Read(keyStepVerySlow,     &m_parameters->m_stepVerySlow, FREQ_VERY_SLOW_STEP);
 
 	profile->Read(keyMode,             &m_parameters->m_mode, MODE_USB);
+	profile->Read(keyWeaver,           &m_parameters->m_weaver, true);
 
 	profile->Read(keyFilter,           &m_parameters->m_filter,    FILTER_AUTO);
 	profile->Read(keyFilterFMW,        &m_parameters->m_filterFMW, FILTER_20000);
@@ -533,6 +540,7 @@ void CUWSDRApp::writeConfig()
 	wxString keyStepSlow      = wxT("/") + m_parameters->m_name + KEY_STEP_SLOW;
 	wxString keyStepVerySlow  = wxT("/") + m_parameters->m_name + KEY_STEP_VERY_SLOW;
 	wxString keyMode          = wxT("/") + m_parameters->m_name + KEY_MODE;
+	wxString keyWeaver        = wxT("/") + m_parameters->m_name + KEY_WEAVER;
 	wxString keyFilter        = wxT("/") + m_parameters->m_name + KEY_FILTER;
 	wxString keyFilterFMW     = wxT("/") + m_parameters->m_name + KEY_FILTER_FMW;
 	wxString keyFilterFMN     = wxT("/") + m_parameters->m_name + KEY_FILTER_FMN;
@@ -623,6 +631,7 @@ void CUWSDRApp::writeConfig()
 	profile->Write(keyStepSlow,         m_parameters->m_stepSlow);
 	profile->Write(keyStepVerySlow,     m_parameters->m_stepVerySlow);
 	profile->Write(keyMode,             m_parameters->m_mode);
+	profile->Write(keyWeaver,           m_parameters->m_weaver);
 	profile->Write(keyFilter,           m_parameters->m_filter);
 	profile->Write(keyFilterFMW,        m_parameters->m_filterFMW);
 	profile->Write(keyFilterFMN,        m_parameters->m_filterFMN);

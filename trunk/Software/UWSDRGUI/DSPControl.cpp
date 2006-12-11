@@ -31,13 +31,12 @@ const int VOICE_READER = 77;
 const unsigned int RINGBUFFER_SIZE = 100001;
 const unsigned int BLOCK_SIZE      = 2048;		// XXXX
 
-CDSPControl::CDSPControl(float sampleRate, float centreFreq) :
+CDSPControl::CDSPControl(float sampleRate) :
 wxThread(),
 m_dttsp(NULL),
 m_cwKeyer(NULL),
 m_voiceKeyer(NULL),
 m_sampleRate(sampleRate),
-m_centreFreq(centreFreq),
 m_txReader(NULL),
 m_txWriter(NULL),
 m_rxReader(NULL),
@@ -380,6 +379,11 @@ void CDSPControl::setMode(int mode)
 	m_dttsp->setMode(mode);
 }
 
+void CDSPControl::setWeaver(bool weaver)
+{
+	m_dttsp->setWeaver(weaver);
+}
+
 void CDSPControl::setFilter(int filter)
 {
 	m_dttsp->setFilter(filter);
@@ -421,10 +425,12 @@ void CDSPControl::setTXAndFreq(bool transmit, float freq)
 
 	m_transmit = transmit;
 
+	float centreFreq = m_dttsp->getDSPOffset();
+
 	if (transmit)
-		m_dttsp->setTXAndFreq(true, freq + m_centreFreq);
+		m_dttsp->setTXAndFreq(true, freq + centreFreq);
 	else
-		m_dttsp->setTXAndFreq(false, -(freq + m_centreFreq));
+		m_dttsp->setTXAndFreq(false, -(freq + centreFreq));
 }
 
 void CDSPControl::setRIT(float freq)
@@ -571,6 +577,11 @@ void CDSPControl::sendAudio(const wxString& fileName, int state)
 		m_voiceKeyer->abort();
 	else
 		m_voiceKeyer->send(fileName, state);
+}
+
+float CDSPControl::getDSPOffset()
+{
+	return m_dttsp->getDSPOffset();
 }
 
 #if defined(__WXDEBUG__)

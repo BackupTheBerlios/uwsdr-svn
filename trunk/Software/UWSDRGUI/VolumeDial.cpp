@@ -22,53 +22,35 @@
 
 #include <cmath>
 
-const int VOLUME_TIMER = 56754;
-
-enum {
-	STATE_NONE,
-	STATE_LEFT,
-	STATE_RIGHT
-};
 
 BEGIN_EVENT_TABLE(CVolumeDial, wxPanel)
 	EVT_PAINT(CVolumeDial::onPaint)
+	EVT_MOTION(CVolumeDial::onMouse)
 	EVT_LEFT_DOWN(CVolumeDial::onMouse)
-	EVT_LEFT_UP(CVolumeDial::onMouse)
-	EVT_RIGHT_DOWN(CVolumeDial::onMouse)
-	EVT_RIGHT_UP(CVolumeDial::onMouse)
-	EVT_LEAVE_WINDOW(CVolumeDial::onMouse)
-	EVT_TIMER(VOLUME_TIMER, CVolumeDial::onTimer)
 END_EVENT_TABLE()
 
 CVolumeDial::CVolumeDial(wxWindow* parent, int id, int min, int max, int value, IDialInterface* callback, const wxPoint& pos, const wxSize& size, long style, const wxString& name) :
 wxPanel(parent, id, pos, size, style, name),
-m_timer(NULL),
 m_width(size.GetWidth()),
 m_height(size.GetHeight()),
 m_callback(callback),
 m_bitmap(NULL),
 m_min(min),
 m_max(max),
-m_value(value),
-m_increment(0),
-m_state(STATE_NONE)
+m_value(value)
 {
 	wxASSERT(m_max > m_min);
 	wxASSERT(m_value >= m_min && value < m_max);
 	wxASSERT(m_width == m_height);
 	wxASSERT(m_callback != NULL);
 
-	m_timer  = new wxTimer(this, VOLUME_TIMER);
 	m_bitmap = new wxBitmap(m_width, m_height);
-
-	m_increment = (m_max - m_min) / 200;
 
 	drawDial();
 }
 
 CVolumeDial::~CVolumeDial()
 {
-	delete m_timer;
 	delete m_bitmap;
 }
 
@@ -148,64 +130,46 @@ void CVolumeDial::show(wxDC& dc)
 
 void CVolumeDial::onMouse(wxMouseEvent& event)
 {
-	int state;
-	if (event.LeftDown())
-		state = STATE_LEFT;
-	else if (event.LeftUp())
-		state = STATE_NONE;
-	else if (event.RightDown())
-		state = STATE_RIGHT;
-	else if (event.RightUp())
-		state = STATE_NONE;
-	else if (event.Leaving())
-		state = STATE_NONE;
-	else
+	if (!event.LeftIsDown())
 		return;
 
-	if (state != m_state) {
-		if (state == STATE_NONE) {
-			m_timer->Stop();
-		} else {
-			long diffX = event.GetX() - m_width / 2;
-			long diffY = event.GetY() - m_height / 2;
-			int   dist = int(::sqrt(double(diffX * diffX + diffY * diffY)) + 0.5);
+	long diffX = event.GetX() - m_width / 2;
+	long diffY = m_height / 2 - event.GetY();
+	int   dist = int(::sqrt(double(diffX * diffX + diffY * diffY)) + 0.5);
 
-			if (dist > (m_width - 2) / 2)
-				return;
+	if (dist > (m_width - 2) / 2) {
+		if (event.LeftDown())
+			event.Skip();
 
-			moveDial();
-			m_timer->Start(50);
-		}
-
-		m_state = state;
-	}
-}
-
-void CVolumeDial::onTimer(wxTimerEvent& event)
-{
-	moveDial();
-}
-
-void CVolumeDial::moveDial()
-{
-	switch (m_state) {
-		case STATE_LEFT:
-			if (m_value <= m_min)
-				return;
-			else
-				m_value -= m_increment;
-			break;
-		case STATE_RIGHT:
-			if (m_value >= m_max)
-				return;
-			else
-				m_value += m_increment;
-			break;
-		case STATE_NONE:
-			return;
+		return;
 	}
 
-	m_callback->dialMoved(GetId(), m_value);
+	double angle = 180.0 * ::atan2(double(diffY), double(-diffX)) / M_PI;
 
-	drawDial();
+	if (angle < -90.0)
+		angle += 450.0;
+	else
+		angle += 90.0;
+
+	if (angle < 45.0 || angle > 315.0) {
+		if (event.LeftDown())
+			event.Skip();
+
+		return;
+	}
+
+	angle -= 45.0;
+
+	int value = m_min + int((angle / 270.0) * double(m_max - m_min));
+
+	if (value != m_value) {
+		m_value = value;
+
+		m_callback->dialMoved(GetId(), m_value);
+
+		drawDial();
+	}
+
+	if (event.LeftDown())
+		event.Skip();
 }

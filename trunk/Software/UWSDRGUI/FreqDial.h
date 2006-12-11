@@ -31,24 +31,22 @@ class CFreqDial : public wxPanel {
 
 	void onPaint(wxPaintEvent& event);
 	void onMouse(wxMouseEvent& event);
-	void onTimer(wxTimerEvent& event);
+	void onMouseMenu(wxMouseEvent& event);
+	void onMenu(wxCommandEvent& event);
 
     private:
-	wxTimer*        m_timer;
+	wxMenu*         m_menu;
 	int             m_width;
 	int             m_height;
 	IDialInterface* m_callback;
 	wxBitmap*       m_bitmap;
-	int             m_state;
-	int             m_angle;
-	int             m_mult;
+	double          m_angle;
+	unsigned int    m_mult;
 
 	DECLARE_EVENT_TABLE()
 
 	void drawDial();
-
 	void show(wxDC& dc);
-	void moveDial();
 };
 
 #endif

@@ -139,6 +139,12 @@ void CDttSP::setMode(SDRMODE m)
 	SEM_POST(m_update);
 }
 
+void CDttSP::setWeaver(bool flag)
+{
+	m_tx->setWeaver(flag);
+	m_rx->setWeaver(flag);
+}
+
 void CDttSP::setDCBlockFlag(bool flag)
 {
 	m_tx->setDCBlockFlag(flag);
@@ -474,6 +480,12 @@ float CDttSP::getMeter(METERTYPE mt)
 	SEM_POST(m_update);
 
 	return returnval;
+}
+
+float CDttSP::getDSPOffset()
+{
+	// The TX bandwidth is normally wider or the same as the RX, so is safer to use
+	return m_tx->getDSPOffset();
 }
 
 void CDttSP::setDeviation(float value)

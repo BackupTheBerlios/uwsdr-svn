@@ -33,10 +33,8 @@ class CVolumeDial : public wxPanel {
 
 	void onPaint(wxPaintEvent& event);
 	void onMouse(wxMouseEvent& event);
-	void onTimer(wxTimerEvent& event);
 
     private:
-	wxTimer*        m_timer;
 	int             m_width;
 	int             m_height;
 	IDialInterface* m_callback;
@@ -44,15 +42,11 @@ class CVolumeDial : public wxPanel {
 	int             m_min;
 	int             m_max;
 	int             m_value;
-	int             m_increment;
-	int             m_state;
 
 	DECLARE_EVENT_TABLE()
 
 	void drawDial();
-
 	void show(wxDC& dc);
-	void moveDial();
 };
 
 #endif

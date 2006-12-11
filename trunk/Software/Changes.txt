@@ -200,8 +200,8 @@ Finished the SDR Help pages.
 SDR Emulator has settable data size and delay for testing the hardware/firmware.
 
 
-Version 0.6.3 - December 2006
-=============================
+Version 0.7 - December 2006
+===========================
 
 On Windows the EXE files now have an icon embedded.
 
@@ -223,3 +223,11 @@ Added user settable frequency offset.
 Added AM carrier level control.
 
 Changed the images within SDRHelp to the new Windows XP style.
+
+Rearrangement of the Preferences.
+
+Changes to the Frequency Display and Info Box so that unused segments appear dimly illuminated.
+
+The action of the turnable knobs has been changed significantly.
+
+Start made on support for Weaver method, but not operational, but is in preferences.

@@ -34,6 +34,10 @@ m_bitmap(NULL)
 
 	// Flood the graph area with black to start with
 	clearGraph();
+
+	setTX(false);
+	setRIT(false);
+	setSplitShift(VFO_NONE);
 }
 
 CInfoBox::~CInfoBox()
@@ -50,7 +54,7 @@ void CInfoBox::setVFO(int vfoNum)
 	memoryDC.SetPen(*wxBLACK_PEN);
 	memoryDC.DrawRectangle(0, 0, m_width, m_height / 4);
 
-	memoryDC.SetTextForeground(*wxCYAN);
+	memoryDC.SetTextForeground(wxColour(0, 255, 255));
 
 	switch (vfoNum) {
 		case VFO_A:
@@ -85,10 +89,8 @@ void CInfoBox::setRIT(bool onOff)
 	memoryDC.SetPen(*wxBLACK_PEN);
 	memoryDC.DrawRectangle(0, m_height / 4, m_width, m_height / 4);
 
-	memoryDC.SetTextForeground(*wxCYAN);
-
-	if (onOff)
-		memoryDC.DrawText(wxT("RIT"), 5, m_height / 4 + 2);
+	memoryDC.SetTextForeground(onOff ? wxColour(0, 255, 255) : wxColour(0, 64, 64));
+	memoryDC.DrawText(wxT("RIT"), 5, m_height / 4 + 2);
 
 	memoryDC.SelectObject(wxNullBitmap);
 
@@ -105,7 +107,12 @@ void CInfoBox::setSplitShift(int splitShift)
 	memoryDC.SetPen(*wxBLACK_PEN);
 	memoryDC.DrawRectangle(0, m_height / 2, m_width, m_height / 4);
 
-	memoryDC.SetTextForeground(*wxCYAN);
+	memoryDC.SetTextForeground(wxColour(0, 64, 64));
+	memoryDC.DrawText(wxT("SPLIT"), 5, m_height / 2 + 2);
+	memoryDC.DrawText(wxT("SHIFT -"), 5, m_height / 2 + 2);
+	memoryDC.DrawText(wxT("SHIFT +"), 5, m_height / 2 + 2);
+
+	memoryDC.SetTextForeground(wxColour(0, 255, 255));
 
 	switch (splitShift) {
 		case VFO_NONE:
@@ -136,10 +143,8 @@ void CInfoBox::setTX(bool onOff)
 	memoryDC.SetPen(*wxBLACK_PEN);
 	memoryDC.DrawRectangle(0, 3 * m_height / 4, m_width, m_height / 4);
 
-	memoryDC.SetTextForeground(*wxRED);
-
-	if (onOff)
-		memoryDC.DrawText(wxT("TRANSMIT"), 5, 3 * m_height / 4 + 2);
+	memoryDC.SetTextForeground(onOff ? wxColour(255, 0, 0) : wxColour(64, 0, 0));
+	memoryDC.DrawText(wxT("TRANSMIT"), 5, 3 * m_height / 4 + 2);
 
 	memoryDC.SelectObject(wxNullBitmap);
 

@@ -29,7 +29,9 @@ wxPanel(parent, id, pos, size, style, name),
 m_width(size.GetWidth()),
 m_height(size.GetHeight()),
 m_bitmap(NULL),
-m_lastFrequency(0, 0)
+m_lastFrequency(0, 0),
+m_lightColour(wxColour(0, 255, 255)),
+m_darkColour(wxColour(0, 64, 64))
 {
 	m_bitmap = new wxBitmap(m_width, m_height);
 
@@ -55,8 +57,6 @@ void CFreqDisplay::setFrequency(const CFrequency& frequency)
 
 	wxMemoryDC memoryDC;
 	memoryDC.SelectObject(*m_bitmap);
-
-	memoryDC.SetPen(*wxCYAN_PEN);
 
 	int mhzDigits = 1;
 	if (mhz >= 10000)			// 10 GHz
@@ -164,6 +164,21 @@ void CFreqDisplay::drawDigit(wxDC& dc, int width, int height, int thickness, int
 	int barHeight = (height - topSpace - bottomSpace) / 2;
 
 	const int BODGE_FACTOR = 2;
+
+	dc.SetPen(*wxBLACK_PEN);
+	dc.SetBrush(wxBrush(m_darkColour));
+
+	dc.DrawRoundedRectangle(x + 2, y + topSpace + 2 * barHeight, thickness, thickness, radius);
+	dc.DrawRoundedRectangle(x + leftSpace + BODGE_FACTOR, y + topSpace, barWidth, thickness, radius);
+	dc.DrawRoundedRectangle(x + leftSpace, y + topSpace + BODGE_FACTOR, thickness, barHeight, radius);
+	dc.DrawRoundedRectangle(x + leftSpace + barWidth, y + topSpace + BODGE_FACTOR, thickness, barHeight, radius);
+	dc.DrawRoundedRectangle(x + leftSpace + BODGE_FACTOR, y + topSpace + barHeight, barWidth, thickness, radius);
+	dc.DrawRoundedRectangle(x + leftSpace, y + topSpace + barHeight + BODGE_FACTOR, thickness, barHeight, radius);
+	dc.DrawRoundedRectangle(x + leftSpace + barWidth, y + topSpace + barHeight + BODGE_FACTOR, thickness, barHeight, radius);
+	dc.DrawRoundedRectangle(x + leftSpace + BODGE_FACTOR, y + topSpace + 2 * barHeight, barWidth, thickness, radius);
+
+	dc.SetPen(wxPen(m_lightColour));
+	dc.SetBrush(wxBrush(m_lightColour));
 
 	if (dot)
 		dc.DrawRoundedRectangle(x + 2, y + topSpace + 2 * barHeight, thickness, thickness, radius);

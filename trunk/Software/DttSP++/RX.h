@@ -64,6 +64,7 @@ class CRX {
 	virtual CXB* getOBuf();
 
 	virtual void setMode(SDRMODE mode);
+	virtual void setWeaver(bool flag);
 
 	virtual void setFilter(double lowFreq, double highFreq);
 
@@ -149,6 +150,7 @@ class CRX {
 	CSquelch*      m_squelch;
 
 	SDRMODE        m_mode;
+	bool           m_weaver;
 
     bool           m_binFlag;
 

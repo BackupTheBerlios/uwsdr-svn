@@ -35,6 +35,7 @@ Bridgewater, NJ 08807
 
 
 CTX::CTX(unsigned int bufLen, unsigned int bits, float sampleRate, CMeter* meter, CSpectrum* spectrum) :
+m_sampleRate(sampleRate),
 m_meter(meter),
 m_spectrum(spectrum),
 m_iBuf(NULL),
@@ -52,6 +53,7 @@ m_alc(NULL),
 m_speechProc(NULL),
 m_speechProcFlag(false),
 m_mode(USB),
+m_weaver(false),
 m_tick(0UL)
 {
 	ASSERT(meter != NULL);
@@ -187,6 +189,11 @@ void CTX::setMode(SDRMODE mode)
 	}
 }
 
+void CTX::setWeaver(bool flag)
+{
+	m_weaver = flag;
+}
+
 void CTX::setDCBlockFlag(bool flag)
 {
 	m_dcBlockFlag = flag;
@@ -251,4 +258,12 @@ void CTX::setCompressionFlag(bool flag)
 void CTX::setCompressionLevel(float level)
 {
 	m_speechProc->setCompression(level);
+}
+
+float CTX::getDSPOffset()
+{
+	if (m_weaver)
+		return 0.0F;
+	else
+		return m_sampleRate / 4.0F;
 }

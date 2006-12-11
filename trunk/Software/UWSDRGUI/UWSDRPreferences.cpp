@@ -20,7 +20,6 @@
 #include "UWSDRDefs.h"
 #include "UWSDRApp.h"
 
-const int SPIN_WIDTH   = 75;
 const int SLIDER_WIDTH = 225;
 
 enum {
@@ -87,7 +86,9 @@ m_rfValue(NULL),
 m_rxIQPhase(NULL),
 m_rxIQGain(NULL),
 m_txIQPhase(NULL),
-m_txIQGain(NULL)
+m_txIQGain(NULL),
+m_methodLabel(NULL),
+m_method(NULL)
 {
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -183,6 +184,12 @@ m_txIQGain(NULL)
 	m_rxIQGain->SetValue(m_parameters->m_rxIQgain);
 	m_txIQPhase->SetValue(m_parameters->m_txIQphase);
 	m_txIQGain->SetValue(m_parameters->m_txIQgain);
+
+	m_method->SetSelection(m_parameters->m_weaver ? 1 : 0);
+	if (m_parameters->m_hardwareStepSize > 100.0F) {
+		m_methodLabel->Disable();
+		m_method->Disable();
+	}
 }
 
 CUWSDRPreferences::~CUWSDRPreferences()
@@ -191,7 +198,77 @@ CUWSDRPreferences::~CUWSDRPreferences()
 
 void CUWSDRPreferences::onOK(wxCommandEvent& event)
 {
-	wxString text = m_freqShift->GetValue();
+	wxString text = m_minRXFreq->GetValue();
+
+	if (text.IsEmpty()) {
+		::wxMessageBox(_("The Min RX frequency may not empty."), _("uWave SDR Error"), wxICON_ERROR);
+		return;
+	}
+
+	CFrequency minRXFreq(text);
+
+	if (minRXFreq < m_parameters->m_minHardwareFreq ||
+	    minRXFreq > m_parameters->m_maxHardwareFreq) {
+		::wxMessageBox(_("The Min RX frequency may not be outside the\nrange of the hardware."), _("uWave SDR Error"), wxICON_ERROR);
+		return;
+	}
+
+	text = m_maxRXFreq->GetValue();
+
+	if (text.IsEmpty()) {
+		::wxMessageBox(_("The Max RX frequency may not empty."), _("uWave SDR Error"), wxICON_ERROR);
+		return;
+	}
+
+	CFrequency maxRXFreq(text);
+
+	if (maxRXFreq < m_parameters->m_minHardwareFreq ||
+	    maxRXFreq > m_parameters->m_maxHardwareFreq) {
+		::wxMessageBox(_("The Max RX frequency may not be outside the\nrange of the hardware."), _("uWave SDR Error"), wxICON_ERROR);
+		return;
+	}
+
+	if (maxRXFreq <= minRXFreq) {
+		::wxMessageBox(_("The Max RX frequency must be higher than the\nMin RX frequency."), _("uWave SDR Error"), wxICON_ERROR);
+		return;
+	}
+
+	text = m_minTXFreq->GetValue();
+
+	if (text.IsEmpty()) {
+		::wxMessageBox(_("The Min TX frequency may not empty."), _("uWave SDR Error"), wxICON_ERROR);
+		return;
+	}
+
+	CFrequency minTXFreq(text);
+
+	if (minTXFreq < minRXFreq ||
+	    minTXFreq > maxRXFreq) {
+		::wxMessageBox(_("The Min TX frequency may not be outside the\nrange of the receive frequencies."), _("uWave SDR Error"), wxICON_ERROR);
+		return;
+	}
+
+	text = m_maxTXFreq->GetValue();
+
+	if (text.IsEmpty()) {
+		::wxMessageBox(_("The Max TX frequency may not empty."), _("uWave SDR Error"), wxICON_ERROR);
+		return;
+	}
+
+	CFrequency maxTXFreq(text);
+
+	if (maxTXFreq < minRXFreq ||
+	    maxTXFreq > maxRXFreq) {
+		::wxMessageBox(_("The Max TX frequency may not be outside the\nrange of the receive frequencies."), _("uWave SDR Error"), wxICON_ERROR);
+		return;
+	}
+
+	if (maxTXFreq <= minTXFreq) {
+		::wxMessageBox(_("The Max TX frequency must be higher than the\nMin TX frequency."), _("uWave SDR Error"), wxICON_ERROR);
+		return;
+	}
+
+	text = m_freqShift->GetValue();
 
 	if (text.IsEmpty()) {
 		::wxMessageBox(_("The shift may not empty."), _("uWave SDR Error"), wxICON_ERROR);
@@ -207,14 +284,14 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 	}
 
 	if (shift < 0L) {
-		::wxMessageBox(_("The shift may not be negative."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("The Shift may not be negative."), _("uWave SDR Error"), wxICON_ERROR);
 		return;
 	}
 
 	text = m_freqOffset->GetValue();
 
 	if (text.IsEmpty()) {
-		::wxMessageBox(_("The offset may not empty."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("The Offset may not empty."), _("uWave SDR Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -223,76 +300,6 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 
 	if (!ret) {
 		::wxMessageBox(_("The offset is not a valid number."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
-
-	text = m_minRXFreq->GetValue();
-
-	if (text.IsEmpty()) {
-		::wxMessageBox(_("The minimum receive frequency may not empty."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
-
-	CFrequency minRXFreq(text);
-
-	if (minRXFreq < m_parameters->m_minHardwareFreq ||
-	    minRXFreq > m_parameters->m_maxHardwareFreq) {
-		::wxMessageBox(_("The minimum receive frequency may not be outside the\nrange of the hardware."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
-
-	text = m_maxRXFreq->GetValue();
-
-	if (text.IsEmpty()) {
-		::wxMessageBox(_("The maximum receive frequency may not empty."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
-
-	CFrequency maxRXFreq(text);
-
-	if (maxRXFreq < m_parameters->m_minHardwareFreq ||
-	    maxRXFreq > m_parameters->m_maxHardwareFreq) {
-		::wxMessageBox(_("The maximum receive frequency may not be outside the\nrange of the hardware."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
-
-	if (maxRXFreq <= minRXFreq) {
-		::wxMessageBox(_("The maximum receive frequency must be higher than the\nminimum receive frequency."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
-
-	text = m_minTXFreq->GetValue();
-
-	if (text.IsEmpty()) {
-		::wxMessageBox(_("The minimum transmit frequency may not empty."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
-
-	CFrequency minTXFreq(text);
-
-	if (minTXFreq < minRXFreq ||
-	    minTXFreq > maxRXFreq) {
-		::wxMessageBox(_("The minimum transmit frequency may not be outside the\nrange of the receive frequencies."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
-
-	text = m_maxTXFreq->GetValue();
-
-	if (text.IsEmpty()) {
-		::wxMessageBox(_("The maximum transmit frequency may not empty."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
-
-	CFrequency maxTXFreq(text);
-
-	if (maxTXFreq < minRXFreq ||
-	    maxTXFreq > maxRXFreq) {
-		::wxMessageBox(_("The maximum transmit frequency may not be outside the\nrange of the receive frequencies."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
-
-	if (maxTXFreq <= minTXFreq) {
-		::wxMessageBox(_("The maximum transmit frequency must be higher than the\nminimum transmit frequency."), _("uWave SDR Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -451,6 +458,8 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 	m_parameters->m_rxIQgain  = m_rxIQGain->GetValue();
 	m_parameters->m_txIQphase = m_txIQPhase->GetValue();
 	m_parameters->m_txIQgain  = m_txIQGain->GetValue();
+
+	m_parameters->m_weaver = m_method->GetSelection() == 1;
 
 	if (IsModal()) {
 		EndModal(wxID_OK);
@@ -908,7 +917,9 @@ wxPanel* CUWSDRPreferences::createIQTab(wxNotebook* noteBook)
 	wxStaticText* label = new wxStaticText(panel, -1,
 		_("For optimum performance the I and Q elements of the receive and transmit signal\n"
 		  "need to be balanced. These controls allow the relative phase and gain between the\n"
-		  "I and Q chaznnels to be changed."));
+		  "I and Q channels to be changed. The method is a choice between the Hartley or\n"
+		  "Weaver methods, the choice is disabled and set to Hartley if the step size of the\n"
+		  "hardware is greater than 100Hz."));
 	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(4);
@@ -916,30 +927,38 @@ wxPanel* CUWSDRPreferences::createIQTab(wxNotebook* noteBook)
 	wxStaticText* label1 = new wxStaticText(panel, -1, _("Receive phase"));
 	sizer->Add(label1, 0, wxALL, BORDER_SIZE);
 
-	m_rxIQPhase = new wxSpinCtrl(panel, RXIQ_PHASE, wxEmptyString, wxDefaultPosition, wxSize(SPIN_WIDTH, -1));
+	m_rxIQPhase = new wxSpinCtrl(panel, RXIQ_PHASE, wxEmptyString, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
 	m_rxIQPhase->SetRange(-400, 400);
 	sizer->Add(m_rxIQPhase, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label3 = new wxStaticText(panel, -1, _("Transmit phase"));
 	sizer->Add(label3, 0, wxALL, BORDER_SIZE);
 
-	m_txIQPhase = new wxSpinCtrl(panel, TXIQ_PHASE, wxEmptyString, wxDefaultPosition, wxSize(SPIN_WIDTH, -1));
+	m_txIQPhase = new wxSpinCtrl(panel, TXIQ_PHASE, wxEmptyString, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
 	m_txIQPhase->SetRange(-400, 400);
 	sizer->Add(m_txIQPhase, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label2 = new wxStaticText(panel, -1, _("Receive gain"));
 	sizer->Add(label2, 0, wxALL, BORDER_SIZE);
 
-	m_rxIQGain = new wxSpinCtrl(panel, RXIQ_GAIN, wxEmptyString, wxDefaultPosition, wxSize(SPIN_WIDTH, -1));
+	m_rxIQGain = new wxSpinCtrl(panel, RXIQ_GAIN, wxEmptyString, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
 	m_rxIQGain->SetRange(-500, 500);
 	sizer->Add(m_rxIQGain, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label4 = new wxStaticText(panel, -1, _("Transmit gain"));
 	sizer->Add(label4, 0, wxALL, BORDER_SIZE);
 
-	m_txIQGain = new wxSpinCtrl(panel, TXIQ_GAIN, wxEmptyString, wxDefaultPosition, wxSize(SPIN_WIDTH, -1));
+	m_txIQGain = new wxSpinCtrl(panel, TXIQ_GAIN, wxEmptyString, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
 	m_txIQGain->SetRange(-500, 500);
 	sizer->Add(m_txIQGain, 0, wxALL, BORDER_SIZE);
+
+	m_methodLabel = new wxStaticText(panel, -1, _("Method"));
+	sizer->Add(m_methodLabel, 0, wxALL, BORDER_SIZE);
+
+	m_method = new wxChoice(panel, -1, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
+	m_method->Append(_("Hartley"));
+	m_method->Append(_("Weaver"));
+	sizer->Add(m_method, 0, wxALL, BORDER_SIZE);
 
 	mainSizer->Add(sizer, 0, wxALL, BORDER_SIZE);
 

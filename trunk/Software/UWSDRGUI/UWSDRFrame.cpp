@@ -268,10 +268,8 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	else
 		m_spectrumDisplay->setBandwidth(5000.0F);
 
-	m_dspOffset = m_parameters->m_hardwareSampleRate / 4.0F;		// XXX FIXME
-
 	// FIXME
-	m_dsp = new CDSPControl(m_parameters->m_hardwareSampleRate, float(m_parameters->m_hardwareSampleRate) / 4.0F);
+	m_dsp = new CDSPControl(m_parameters->m_hardwareSampleRate);
 
 #if defined(GRANT_TX)
 	// RX is disabled, TX is from audio card for signal output fed by a two-tone signal
@@ -324,6 +322,9 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_rit->setValue(m_parameters->m_ritFreq);
 	if (m_ritCtrl)
 		m_dsp->setRIT(float(m_parameters->m_ritFreq));
+
+	m_dsp->setWeaver(m_parameters->m_weaver);
+	m_dspOffset = m_dsp->getDSPOffset();
 
 	m_micGain->setValue(m_parameters->m_micGain);
 	m_dsp->setMicGain(m_parameters->m_micGain);
@@ -830,6 +831,8 @@ void CUWSDRFrame::onFilterChoice(wxCommandEvent& event)
 	m_parameters->m_filter = int(event.GetSelection());
 
 	normaliseMode();
+
+	normaliseFreq();
 }
 
 void CUWSDRFrame::onRITButton(wxCommandEvent& event)
@@ -1139,6 +1142,9 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 					m_dsp->setCarrierLevel(m_parameters->m_carrierLevel);
 
 					m_dsp->setALCValue(m_parameters->m_alcAttack, m_parameters->m_alcDecay, m_parameters->m_alcHang);
+
+					m_dsp->setWeaver(m_parameters->m_weaver);
+					m_dspOffset = m_dsp->getDSPOffset();
 
 					normaliseFreq();
 				}

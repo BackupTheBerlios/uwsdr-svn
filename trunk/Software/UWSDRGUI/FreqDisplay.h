@@ -38,6 +38,8 @@ class CFreqDisplay : public wxPanel {
 	int           m_height;
 	wxBitmap*     m_bitmap;
 	CFrequency    m_lastFrequency;
+	wxColour      m_lightColour;
+	wxColour      m_darkColour;
 
 	DECLARE_EVENT_TABLE()
 
