@@ -27,7 +27,6 @@ m_sampleRate(0.0F),
 m_blockSize(0),
 m_filter(-1),
 m_mode(-1),
-m_weaver(false),
 m_rxFreq(99999.9F),
 m_txFreq(99999.9F),
 m_rit(99999.9F),
@@ -131,16 +130,6 @@ void CDTTSPControl::setMode(int mode)
 	m_mode = mode;
 
 	normaliseFilter();
-}
-
-void CDTTSPControl::setWeaver(bool weaver)
-{
-	if (weaver == m_weaver)
-		return;
-
-	::SetWeaver(weaver);
-
-	m_weaver = weaver;
 }
 
 void CDTTSPControl::setTXAndFreq(bool transmit, float freq)
@@ -348,11 +337,6 @@ void CDTTSPControl::setSquelch(unsigned int value)
 	::SetSquelchVal(sql);
 
 	m_squelch = value;
-}
-
-float CDTTSPControl::getDSPOffset()
-{
-	return ::GetDSPOffset();
 }
 
 float CDTTSPControl::getMeter(int type)

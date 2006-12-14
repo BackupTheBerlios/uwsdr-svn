@@ -53,11 +53,6 @@ void SetMode(SDRMODE m)
 	dttsp->setMode(m);
 }
 
-void SetWeaver(bool setit)
-{
-	dttsp->setWeaver(setit);
-}
-
 void SetDCBlock(bool setit)
 {
 	dttsp->setDCBlockFlag(setit);
@@ -239,11 +234,6 @@ void SetTXALCLimit(float limit)
 void setSpotTone(bool flag)
 {
 	dttsp->setSpotToneFlag(flag);
-}
-
-float GetDSPOffset()
-{
-	return dttsp->getDSPOffset();
 }
 
 void setSpotToneVals(float gain, float freq, float rise, float fall)

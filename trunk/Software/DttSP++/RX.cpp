@@ -65,7 +65,6 @@ m_spotTone(NULL),
 m_spotToneFlag(false),
 m_squelch(NULL),
 m_mode(USB),
-m_weaver(false),
 m_binFlag(false),
 m_azim(),
 m_tick(0UL)
@@ -307,11 +306,6 @@ void CRX::setMode(SDRMODE mode)
 			m_demodulator = m_fmDemodulator;
 			break;
 	}
-}
-
-void CRX::setWeaver(bool flag)
-{
-	m_weaver = flag;
 }
 
 void CRX::setFilter(double lowFreq, double highFreq)

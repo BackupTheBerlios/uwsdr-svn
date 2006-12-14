@@ -379,11 +379,6 @@ void CDSPControl::setMode(int mode)
 	m_dttsp->setMode(mode);
 }
 
-void CDSPControl::setWeaver(bool weaver)
-{
-	m_dttsp->setWeaver(weaver);
-}
-
 void CDSPControl::setFilter(int filter)
 {
 	m_dttsp->setFilter(filter);
@@ -425,7 +420,7 @@ void CDSPControl::setTXAndFreq(bool transmit, float freq)
 
 	m_transmit = transmit;
 
-	float centreFreq = m_dttsp->getDSPOffset();
+	float centreFreq = m_sampleRate / 4.0F;		// XXX
 
 	if (transmit)
 		m_dttsp->setTXAndFreq(true, freq + centreFreq);
@@ -577,11 +572,6 @@ void CDSPControl::sendAudio(const wxString& fileName, int state)
 		m_voiceKeyer->abort();
 	else
 		m_voiceKeyer->send(fileName, state);
-}
-
-float CDSPControl::getDSPOffset()
-{
-	return m_dttsp->getDSPOffset();
 }
 
 #if defined(__WXDEBUG__)

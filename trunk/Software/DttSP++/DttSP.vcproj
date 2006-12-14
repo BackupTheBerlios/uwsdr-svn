@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\wxWidgets\lib\vc_dll\mswd,..\Common,..\FFTW,C:\wxWidgets\include"
+				AdditionalIncludeDirectories="C:\wxWidgets-2.8.0\lib\vc_dll\mswd,..\Common,..\FFTW,C:\wxWidgets-2.8.0\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;__WXMSW__;__WXDEBUG__;WXUSINGDLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -119,7 +119,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="0"
-				AdditionalIncludeDirectories="C:\wxWidgets\lib\vc_dll\msw,..\Common,..\FFTW,C:\wxWidgets\include"
+				AdditionalIncludeDirectories="C:\wxWidgets-2.8.0\lib\vc_dll\msw,..\Common,..\FFTW,C:\wxWidgets-2.8.0\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;__WXMSW__;WXUSINGDLL"
 				StringPooling="true"
 				RuntimeLibrary="2"

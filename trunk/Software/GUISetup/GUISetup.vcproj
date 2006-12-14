@@ -46,7 +46,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\wxWidgets\lib\vc_dll\mswd,..\Common,..\PA19,C:\wxWidgets\include"
+				AdditionalIncludeDirectories="C:\wxWidgets-2.8.0\lib\vc_dll\mswd,..\Common,..\PA19,C:\wxWidgets-2.8.0\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;WXUSINGDLL;_WINDOWS;NOPCH"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -67,7 +67,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG"
 				Culture="2057"
-				AdditionalIncludeDirectories="C:\wxWidgets\include"
+				AdditionalIncludeDirectories="C:\wxWidgets-2.8.0\include"
 				ResourceOutputFileName="GUISetup.res"
 			/>
 			<Tool
@@ -79,7 +79,7 @@
 				OutputFile="../Debug/GUISetup.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\PA19\Debug,C:\wxWidgets\lib\vc_dll"
+				AdditionalLibraryDirectories="..\PA19\Debug,C:\wxWidgets-2.8.0\lib\vc_dll"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/GUISetup.pdb"
 				SubSystem="2"
@@ -146,7 +146,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="1"
 				InlineFunctionExpansion="0"
-				AdditionalIncludeDirectories="C:\wxWidgets\lib\vc_dll\msw,..\Common,..\PA19,C:\wxWidgets\include"
+				AdditionalIncludeDirectories="C:\wxWidgets-2.8.0\lib\vc_dll\msw,..\Common,..\PA19,C:\wxWidgets-2.8.0\include"
 				PreprocessorDefinitions="WIN32;__WXMSW__;WXUSINGDLL;_WINDOWS;NOPCH"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -166,7 +166,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG"
 				Culture="2057"
-				AdditionalIncludeDirectories="C:\wxWidgets\include"
+				AdditionalIncludeDirectories="C:\wxWidgets-2.8.0\include"
 				ResourceOutputFileName="GUISetup.res"
 			/>
 			<Tool
@@ -178,7 +178,7 @@
 				OutputFile="../Release/GUISetup.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\PA19\Release,C:\wxWidgets\lib\vc_dll"
+				AdditionalLibraryDirectories="..\PA19\Release,C:\wxWidgets-2.8.0\lib\vc_dll"
 				ProgramDatabaseFile=".\Release/GUISetup.pdb"
 				SubSystem="2"
 				TargetMachine="1"

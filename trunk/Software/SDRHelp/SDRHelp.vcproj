@@ -46,7 +46,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\wxWidgets\lib\vc_dll\mswd,C:\wxWidgets\include"
+				AdditionalIncludeDirectories="C:\wxWidgets-2.8.0\lib\vc_dll\mswd,C:\wxWidgets-2.8.0\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;WXUSINGDLL;_WINDOWS;NOPCH"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -67,7 +67,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG"
 				Culture="2057"
-				AdditionalIncludeDirectories="C:\wxWidgets\include"
+				AdditionalIncludeDirectories="C:\wxWidgets-2.8.0\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -78,7 +78,7 @@
 				OutputFile="../Debug/SDRHelp.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="C:\wxWidgets\lib\vc_dll"
+				AdditionalLibraryDirectories="C:\wxWidgets-2.8.0\lib\vc_dll"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/SDRHelp.pdb"
 				SubSystem="2"
@@ -145,7 +145,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="1"
 				InlineFunctionExpansion="0"
-				AdditionalIncludeDirectories="C:\wxWidgets\lib\vc_dll\msw,C:\wxWidgets\include"
+				AdditionalIncludeDirectories="C:\wxWidgets-2.8.0\lib\vc_dll\msw,C:\wxWidgets-2.8.0\include"
 				PreprocessorDefinitions="WIN32;__WXMSW__;WXUSINGDLL;_WINDOWS;NOPCH"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -165,7 +165,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG"
 				Culture="2057"
-				AdditionalIncludeDirectories="C:\wxWidgets\include"
+				AdditionalIncludeDirectories="C:\wxWidgets-2.8.0\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -176,7 +176,7 @@
 				OutputFile="../Release/SDRHelp.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="C:\wxWidgets\lib\vc_dll"
+				AdditionalLibraryDirectories="C:\wxWidgets-2.8.0\lib\vc_dll"
 				ProgramDatabaseFile=".\Release/SDRHelp.pdb"
 				SubSystem="2"
 				TargetMachine="1"

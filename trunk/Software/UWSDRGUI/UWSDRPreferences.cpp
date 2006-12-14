@@ -86,9 +86,9 @@ m_rfValue(NULL),
 m_rxIQPhase(NULL),
 m_rxIQGain(NULL),
 m_txIQPhase(NULL),
-m_txIQGain(NULL),
-m_methodLabel(NULL),
-m_method(NULL)
+m_txIQGain(NULL)
+// m_methodLabel(NULL),
+// m_method(NULL)
 {
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -168,8 +168,8 @@ m_method(NULL)
 	m_nb2Button->SetValue(m_parameters->m_nb2On);
 	m_nb2Value->SetValue(m_parameters->m_nb2Value);
 
-	// Map 1 -> 1000 to -30 -> 0
-	unsigned int val = (unsigned int)(10.0 * ::log10(double(m_parameters->m_rfGain) / 1000.0) + 0.5);
+	// Map 500 -> 1000 to -30 -> 0
+	unsigned int val = (unsigned int)(20.0 * ::log10(double(m_parameters->m_rfGain) / 1000.0) + 0.5);
 	m_rfValue->SetValue(val);
 
 	m_spButton->SetValue(m_parameters->m_spOn);
@@ -184,12 +184,13 @@ m_method(NULL)
 	m_rxIQGain->SetValue(m_parameters->m_rxIQgain);
 	m_txIQPhase->SetValue(m_parameters->m_txIQphase);
 	m_txIQGain->SetValue(m_parameters->m_txIQgain);
-
+/*
 	m_method->SetSelection(m_parameters->m_weaver ? 1 : 0);
 	if (m_parameters->m_hardwareStepSize > 100.0F) {
 		m_methodLabel->Disable();
 		m_method->Disable();
 	}
+*/
 }
 
 CUWSDRPreferences::~CUWSDRPreferences()
@@ -444,7 +445,7 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 
 	// Map -30 -> 0 to 1 -> 1000
 	double gainDb = double(m_rfValue->GetValue());
-	m_parameters->m_rfGain    = (unsigned int)(1000.0 * ::pow(10.0, gainDb / 10.0) + 0.5);
+	m_parameters->m_rfGain    = (unsigned int)(1000.0 * ::pow(10.0, gainDb / 20.0) + 0.5);
 
 	m_parameters->m_spOn         = m_spButton->IsChecked();
 	m_parameters->m_spValue      = m_spValue->GetValue();
@@ -459,7 +460,7 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 	m_parameters->m_txIQphase = m_txIQPhase->GetValue();
 	m_parameters->m_txIQgain  = m_txIQGain->GetValue();
 
-	m_parameters->m_weaver = m_method->GetSelection() == 1;
+	// m_parameters->m_weaver = m_method->GetSelection() == 1;
 
 	if (IsModal()) {
 		EndModal(wxID_OK);
@@ -917,9 +918,12 @@ wxPanel* CUWSDRPreferences::createIQTab(wxNotebook* noteBook)
 	wxStaticText* label = new wxStaticText(panel, -1,
 		_("For optimum performance the I and Q elements of the receive and transmit signal\n"
 		  "need to be balanced. These controls allow the relative phase and gain between the\n"
-		  "I and Q channels to be changed. The method is a choice between the Hartley or\n"
+		  "I and Q channels to be changed.\n"));
+/*
+		   The method is a choice between the Hartley or\n"
 		  "Weaver methods, the choice is disabled and set to Hartley if the step size of the\n"
 		  "hardware is greater than 100Hz."));
+*/
 	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(4);
@@ -951,7 +955,7 @@ wxPanel* CUWSDRPreferences::createIQTab(wxNotebook* noteBook)
 	m_txIQGain = new wxSpinCtrl(panel, TXIQ_GAIN, wxEmptyString, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
 	m_txIQGain->SetRange(-500, 500);
 	sizer->Add(m_txIQGain, 0, wxALL, BORDER_SIZE);
-
+/*
 	m_methodLabel = new wxStaticText(panel, -1, _("Method"));
 	sizer->Add(m_methodLabel, 0, wxALL, BORDER_SIZE);
 
@@ -959,7 +963,7 @@ wxPanel* CUWSDRPreferences::createIQTab(wxNotebook* noteBook)
 	m_method->Append(_("Hartley"));
 	m_method->Append(_("Weaver"));
 	sizer->Add(m_method, 0, wxALL, BORDER_SIZE);
-
+*/
 	mainSizer->Add(sizer, 0, wxALL, BORDER_SIZE);
 
 	panel->SetAutoLayout(true);

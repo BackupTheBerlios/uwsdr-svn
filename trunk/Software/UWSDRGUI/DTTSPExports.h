@@ -131,8 +131,6 @@ extern void    Process_Phase(float* results, unsigned int numpoints);
 extern void    Process_Scope(float* results, unsigned int numpoints);
 extern float   Calculate_Meters(METERTYPE mt);
 extern void    SetDeviation(float value);
-extern void    SetWeaver(bool setit);
-extern float   GetDSPOffset();
 
 extern void    Audio_Callback(float* input_i, float* input_q, float* output_i, float* output_q, unsigned int nframes);
 extern void    Audio_CallbackIL(float* input, float* output, unsigned int nframes);

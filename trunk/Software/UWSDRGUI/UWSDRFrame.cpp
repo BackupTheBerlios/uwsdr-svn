@@ -323,8 +323,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	if (m_ritCtrl)
 		m_dsp->setRIT(float(m_parameters->m_ritFreq));
 
-	m_dsp->setWeaver(m_parameters->m_weaver);
-	m_dspOffset = m_dsp->getDSPOffset();
+	m_dspOffset = m_parameters->m_hardwareSampleRate / 4.0F;
 
 	m_micGain->setValue(m_parameters->m_micGain);
 	m_dsp->setMicGain(m_parameters->m_micGain);
@@ -1142,9 +1141,6 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 					m_dsp->setCarrierLevel(m_parameters->m_carrierLevel);
 
 					m_dsp->setALCValue(m_parameters->m_alcAttack, m_parameters->m_alcDecay, m_parameters->m_alcHang);
-
-					m_dsp->setWeaver(m_parameters->m_weaver);
-					m_dspOffset = m_dsp->getDSPOffset();
 
 					normaliseFreq();
 				}

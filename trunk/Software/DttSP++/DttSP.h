@@ -58,7 +58,6 @@ class CDttSP {
 	virtual void  ringBufferReset();
 
 	virtual void  setMode(SDRMODE m);
-	virtual void  setWeaver(bool flag);
 	virtual void  setDCBlockFlag(bool flag);
 	virtual void  setRXFilter(double lowFreq, double highFreq);
 	virtual void  setTXFilter(double lowFreq, double highFreq);
@@ -101,7 +100,6 @@ class CDttSP {
 	virtual float getMeter(METERTYPE mt);
 	virtual void  setDeviation(float value);
 	virtual void  setRXPan(float pos);
-	virtual float getDSPOffset();
 
 	virtual void  audioEntry(float* input_i, float* input_q, float* output_i, float* output_q, unsigned int nframes);
 	virtual void  audioEntry(float* input, float* output, unsigned int nframes);

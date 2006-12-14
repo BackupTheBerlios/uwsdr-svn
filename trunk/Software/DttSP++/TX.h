@@ -64,7 +64,6 @@ class CTX {
 	virtual SDRMODE getMode() const;
 
 	virtual void setMode(SDRMODE mode);
-	virtual void setWeaver(bool flag);
 
 	virtual void setDCBlockFlag(bool flag);
 
@@ -86,8 +85,6 @@ class CTX {
 
 	virtual void setCompressionFlag(bool flag);
 	virtual void setCompressionLevel(float level);
-
-	virtual float getDSPOffset();
 
     private:
 	float         m_sampleRate;
@@ -118,7 +115,6 @@ class CTX {
 	bool          m_speechProcFlag;
 
 	SDRMODE       m_mode;
-	bool          m_weaver;
 
 	unsigned long m_tick;
 
