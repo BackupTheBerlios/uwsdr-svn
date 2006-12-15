@@ -228,3 +228,9 @@ Rearrangement of the Preferences.
 Changes to the Frequency Display and Info Box so that unused segments appear dimly illuminated.
 
 The action of the turnable knobs has been changed significantly.
+
+
+Version 0.7.1 - December 2006
+=============================
+
+Changed to the old About box on Windows.

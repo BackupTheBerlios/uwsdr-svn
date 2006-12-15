@@ -1228,6 +1228,19 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 			}
 			break;
 		case wxID_ABOUT: {
+#if defined(__WXMSW__)
+			::wxMessageBox(VERSION + wxT(" - ") + REL_DATE + _("\n\n"
+				"A Software Define Radio for Microwaves\n\n"
+				"Hardware:\tChris Bartram, GW4DGU\n"
+				"\t\tGrant Hodgson, G8UBN\n"
+				"Firmware:\tTobias Weber, DG3YEV\n"
+				"GUI:\t\tJonathan Naylor, ON/G4KLX\n"
+				"\t\tMichael White, G3WOE\n"
+				"DTTSP:\t\tBob McGwier, N4HY\n"
+				"\t\tFrank Brickle, AB2KT"),
+				_("About uWave SDR"),
+				wxICON_INFORMATION);
+#else
 				wxAboutDialogInfo info;
 
 				info.SetName(wxT("UWSDR"));
@@ -1243,6 +1256,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 				info.AddDeveloper(wxT("Frank Brickle, AB2KT"));
 
 				::wxAboutBox(info);
+#endif
 			}
 			break;
  		case wxID_EXIT:

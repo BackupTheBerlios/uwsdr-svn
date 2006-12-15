@@ -13,8 +13,8 @@
 ;Configuration
 
   ;General
-  Name "UWSDR 0.7"
-  OutFile "UWSDR-0.7.exe"
+  Name "UWSDR 0.7.1"
+  OutFile "UWSDR-0.7.1.exe"
 
   ;Folder selection page
   InstallDir "$PROGRAMFILES\UWSDR"
@@ -60,7 +60,6 @@ Section "UWSDR Program Files" SecProgram
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxbase28_net_vc_custom.dll"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxmsw28_core_vc_custom.dll"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxmsw28_html_vc_custom.dll"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxmsw28_adv_vc_custom.dll"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Help\GUISetup\GUISetup.zip"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Help\SDRSetup\SDRSetup.zip"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Help\UWSDR\UWSDR.zip"
