@@ -47,8 +47,6 @@ $ ./configure --enable-float
 
 I would like feedback on this issue. Is it needed, or is it default?
 
-You will need libsndfile which can be found at http://www.mega-nerd.com/libsndfile if it doesn't come with your installation.
-
 Finally you will need PortAudio V19. This is still in beta, and has been for years, and can be found at http://www.portaudio.com/usingsvn.html and download the pa_snapshot_v19.tar.gz file. Build this and install it as per its instrucions.
 
 Once all of these packages are installed, you can build the UWSDR software. From the command line type:

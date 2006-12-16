@@ -2,7 +2,7 @@ all:		SDREmulator
 
 CFLAGS :=	-I../Common $(CFLAGS)
 
-LIBS :=		-lportaudio -lsndfile $(LIBS)
+LIBS :=		-lportaudio $(LIBS)
 
 OBJS :=		SDREmulatorApp.o SDREmulatorFrame.o DataControl.o SoundCardDialog.o
 

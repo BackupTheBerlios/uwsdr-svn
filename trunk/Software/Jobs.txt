@@ -21,10 +21,6 @@ Convert to Weaver method for transmit.
 Future
 ------
 
-Look into auto calibration of I + Q.
-
 I + Q storage for different frequencies
 
 Frequency database with display on the spectrum.
-
-Replace libsndfile, as we only need WAV support.

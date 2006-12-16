@@ -200,20 +200,32 @@ void CSpectrumDisplay::createPanadapter()
 	dc.DrawLine(left, bottom, right, bottom);
 	dc.DrawLine(left, top, right, top);
 
+	dc.SetTextForeground(*wxCYAN);
+
+	// Draw the frequency lines
 	for (int i = 1; i < 10; i++) {
 		int x = left + int(i * incrX + 0.5);
 		dc.DrawLine(x, top /* lowY */, x, bottom);
 	}
 
-	for (int j = 1; true; j += 10) {
+	// Draw the dB lines, every 5dB
+	unsigned int dB = 0;
+	for (int j = 1; true; j += 10, dB += 5) {
 		int y = bottom - int(double(j) / DB_SCALE + 0.5);
 		if (y < top)
 			break;
 
 		dc.DrawLine(left, y, right, y);
-	}
 
-	dc.SetTextForeground(*wxCYAN);
+		wxString text;
+		text.Printf(wxT("%u"), dB);
+
+		wxCoord width, height;
+		dc.GetTextExtent(text, &width, &height);
+
+		dc.DrawText(text, left + 2, y - height);
+		dc.DrawText(text, right - width - 2, y - height);
+	}
 
 	wxString text;
 	text.Printf(wxT("-%.1f kHz"), m_bandwidth / 2000.0F);

@@ -2,7 +2,7 @@ all:		UWSDR
 
 CFLAGS		:= -I../Common $(CFLAGS)
 
-LIBS		:= -lportaudio -lfftw3f -lfftw3 -lsndfile $(LIBS)
+LIBS		:= -lportaudio -lfftw3f -lfftw3 $(LIBS)
 
 OBJS :=		CWKeyboard.o CWKeyer.o DSPControl.o DTTSPControl.o FreqDial.o FreqDisplay.o FreqKeypad.o InfoBox.o \
 		SDRDescrFile.o SDRParameters.o SMeter.o SpectrumDisplay.o UWSDRApp.o UWSDRFrame.o UWSDRPreferences.o \

@@ -28,8 +28,9 @@ void CSoundFileWriter::purge()
 
 #if defined(__WINDOWS__)
 
-CSoundFileWriter::CSoundFileWriter(const wxString& fileName, unsigned int sampleWidth) :
+CSoundFileWriter::CSoundFileWriter(const wxString& fileName, unsigned int channels, unsigned int sampleWidth) :
 m_fileName(fileName),
+m_channels(channels),
 m_sampleWidth(sampleWidth),
 m_blockSize(0),
 m_handle(NULL),
@@ -38,6 +39,7 @@ m_child(),
 m_buffer8(NULL),
 m_buffer16(NULL)
 {
+	wxASSERT(channels == 1 || channels == 2);
 	wxASSERT(sampleWidth == 8 || sampleWidth == 16);
 }
 
@@ -76,10 +78,10 @@ bool CSoundFileWriter::open(float sampleRate, unsigned int blockSize)
 	WAVEFORMATEX format;
 	format.wBitsPerSample  = m_sampleWidth;
 	format.wFormatTag      = WAVE_FORMAT_PCM;
-	format.nChannels       = 2;
+	format.nChannels       = m_channels;
 	format.nSamplesPerSec  = int(sampleRate + 0.5F);
-	format.nAvgBytesPerSec = int(sampleRate + 0.5F) * 2 * m_sampleWidth / 8;
-	format.nBlockAlign     = 2 * m_sampleWidth / 8;
+	format.nAvgBytesPerSec = int(sampleRate + 0.5F) * m_channels * m_sampleWidth / 8;
+	format.nBlockAlign     = m_channels * m_sampleWidth / 8;
 	format.cbSize          = 0;
 
 	LONG n = ::mmioWrite(m_handle, (CHAR *)&format, sizeof(WAVEFORMATEX));
@@ -100,9 +102,9 @@ bool CSoundFileWriter::open(float sampleRate, unsigned int blockSize)
 	}
 
 	if (m_sampleWidth == 8)
-		m_buffer8  = new uint8[blockSize * 2];
+		m_buffer8  = new uint8[blockSize * m_channels];
 	else
-		m_buffer16 = new sint16[blockSize * 2];
+		m_buffer16 = new sint16[blockSize * m_channels];
 
 	return true;
 }
@@ -114,19 +116,19 @@ void CSoundFileWriter::write(const float* buffer, unsigned int length)
 	wxASSERT(length > 0 && length <= m_blockSize);
 
 	if (m_sampleWidth == 8) {
-		for (unsigned int i = 0; i < length * 2; i++)
+		for (unsigned int i = 0; i < (length * m_channels); i++)
 			m_buffer8[i] = uint8(buffer[i] * 128.0 + 127.0);
 
-		LONG bytes = length * 2 * sizeof(uint8);
+		LONG bytes = length * m_channels * sizeof(uint8);
 
 		LONG n = ::mmioWrite(m_handle, (char *)m_buffer8, bytes);
 		if (n != bytes)
 			::wxLogError(wxT("Error from mmioWrite(), wanted %ld available %ld"), bytes, n);
 	} else {
-		for (unsigned int i = 0; i < length * 2; i++)
+		for (unsigned int i = 0; i < (length * m_channels); i++)
 			m_buffer16[i] = sint16(buffer[i] * 32768.0);
 
-		LONG bytes = length * 2 * sizeof(sint16);
+		LONG bytes = length * m_channels * sizeof(sint16);
 
 		LONG n = ::mmioWrite(m_handle, (char *)m_buffer16, bytes);
 		if (n != bytes)
@@ -153,11 +155,19 @@ void CSoundFileWriter::close()
 
 #else
 
-CSoundFileWriter::CSoundFileWriter(const wxString& fileName, unsigned int sampleWidth) :
+CSoundFileWriter::CSoundFileWriter(const wxString& fileName, unsigned int channels, unsigned int sampleWidth) :
 m_fileName(fileName),
+m_channels(channels),
 m_sampleWidth(sampleWidth),
-m_file(NULL)
+m_blockSize(0),
+m_buffer8(NULL),
+m_buffer16(NULL),
+m_file(NULL),
+m_offset1(0),
+m_offset2(0),
+m_length(0)
 {
+	wxASSERT(channels == 1 || channels == 2);
 	wxASSERT(sampleWidth == 8 || sampleWidth == 16);
 }
 
@@ -167,28 +177,64 @@ CSoundFileWriter::~CSoundFileWriter()
 
 bool CSoundFileWriter::open(float sampleRate, unsigned int blockSize)
 {
-	SF_INFO info;
-	info.samplerate = int(sampleRate + 0.5F);
-	info.channels   = 2;
-	info.format     = SF_FORMAT_WAV;
+	m_blockSize = blockSize;
+	m_length    = 0;
 
-	if (m_sampleWidth == 8)
-		info.format |= SF_FORMAT_PCM_U8;
-	else
-		info.format |= SF_FORMAT_PCM_16;
+	m_file = new wxFFile(m_fileName, "wb");
 
-	int ret = ::sf_format_check(&info);
-
-	if (!ret)
-		return false;
-
-	m_file = ::sf_open(m_fileName.mb_str(), SFM_WRITE, &info);
-	if (m_file == NULL) {
+	bool ret = m_file->IsOpened();
+	if (!ret) {
 		::wxLogError(wxT("Could not open the file %s in SoundFileWriter"), m_fileName.c_str());
+
+		delete m_file;
+		m_file = NULL;
+
 		return false;
 	}
 
-	::wxLogMessage(wxT("Opened the sound file in SoundFileWriter"));
+	m_file->Write("RIFF", 4);					// 4 bytes, file signature
+
+	m_offset1 = m_file->Tell();
+
+	wxUint32 uint32 = 0;
+	m_file->Write(&uint32, sizeof(wxUint32));	// 4 bytes, length of file, filled in later
+
+	m_file->Write("WAVE", 4);					// 4 bytes, RIFF file type
+
+	m_file->Write("fmt ", 4);					// 4 bytes, chunk signature
+
+	uint32 = wxUINT32_SWAP_ON_BE(wxUint32(16));
+	m_file->Write(&uint32, sizeof(wxUint32));	// 4 bytes, length of "fmt " chunk
+
+	wxUint16 uint16 = wxUINT16_SWAP_ON_BE(wxUint16(1));
+	m_file->Write(&uint16, sizeof(uint16));		// 2 bytes, PCM/uncompressed
+
+	uint16 = wxUINT16_SWAP_ON_BE(wxUint16(m_channels));
+	m_file->Write(&uint16, sizeof(uint16));		// 2 bytes, no of channels
+	
+	uint32 = wxUINT32_SWAP_ON_BE(wxUint32(sampleRate + 0.5F));
+	m_file->Write(&uint32, sizeof(wxUint32));	// 4 bytes, sample rate
+
+	uint32 = wxUINT32_SWAP_ON_BE(wxUint32(int(sampleRate + 0.5F) * m_channels * m_sampleWidth / 8));
+	m_file->Write(&uint32, sizeof(wxUint32));	// 4 bytes, average bytes per second
+
+	uint16 = wxUINT16_SWAP_ON_BE(wxUint16(m_channels * m_sampleWidth / 8));
+	m_file->Write(&uint16, sizeof(uint16));		// 2 bytes, block alignment
+
+	uint16 = wxUINT16_SWAP_ON_BE(wxUint16(m_sampleWidth));
+	m_file->Write(&uint16, sizeof(uint16));		// 2 bytes, significant bits per sample
+
+	m_file->Write("data", 4);					// 4 bytes, chunk signature
+
+	m_offset2 = m_file->Tell();
+
+	uint32 = 0;
+	m_file->Write(&uint32, sizeof(wxUint32));	// 4 bytes, length of "data" chunk, filled in later
+
+	if (m_sampleWidth == 8)
+		m_buffer8  = new uint8[blockSize * m_channels];
+	else
+		m_buffer16 = new sint16[blockSize * m_channels];
 
 	return true;
 }
@@ -197,16 +243,61 @@ void CSoundFileWriter::write(const float* buffer, unsigned int length)
 {
 	wxASSERT(m_file != NULL);
 	wxASSERT(buffer != NULL);
+	wxASSERT(length > 0 && length <= m_blockSize);
 
-	::sf_write_float(m_file, buffer, length);
+	if (m_sampleWidth == 8) {
+		for (unsigned int i = 0; i < (length * m_channels); i++)
+			m_buffer8[i] = uint8(buffer[i] * 128.0 + 127.0);
+
+		unsigned int bytes = length * m_channels * sizeof(uint8);
+
+		unsigned int n = m_file->Write(m_buffer8, bytes);
+		if (n != bytes)
+			::wxLogError(wxT("Error from wxFFile::Write(), wanted %u available %u"), bytes, n);
+
+		m_length += n;
+	} else {
+		for (unsigned int i = 0; i < (length * m_channels); i++)
+			m_buffer16[i] = sint16(buffer[i] * 32768.0);
+
+		unsigned int bytes = length * m_channels * sizeof(sint16);
+
+		unsigned int n = m_file->Write(m_buffer16, bytes);
+		if (n != bytes)
+			::wxLogError(wxT("Error from wxFFile::Write(), wanted %u available %u"), bytes, n);
+
+		m_length += n;
+	}
 }
 
 void CSoundFileWriter::close()
 {
 	if (m_file != NULL) {
-		::sf_close(m_file);
+		if ((m_length % 2) != 0) {
+			unsigned char c = 0;
+			m_file->Write(&c, 1);
+		}
+
+		wxUint32 length = wxUINT32_SWAP_ON_BE(m_length);
+
+		m_file->Seek(m_offset2);
+		m_file->Write(&length, sizeof(wxUint32));
+
+		length = wxUINT32_SWAP_ON_BE(m_length + 36);
+
+		m_file->Seek(m_offset1);
+		m_file->Write(&length, sizeof(wxUint32));
+
+		m_file->Close();
+		delete m_file;
 		m_file = NULL;
 	}
+
+	delete[] m_buffer8;
+	delete[] m_buffer16;
+
+	m_buffer8  = NULL;
+	m_buffer16 = NULL;
 }
 
 #endif

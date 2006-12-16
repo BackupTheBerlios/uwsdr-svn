@@ -24,6 +24,9 @@
 #if defined(__WINDOWS__)
 #include <windows.h>
 #include <mmsystem.h>
+#else
+#include <wx/ffile.h>
+#endif
 
 typedef unsigned char uint8;
 typedef signed short  sint16;
@@ -35,9 +38,6 @@ enum {
 	FORMAT_16BIT,
 	FORMAT_32BIT
 };
-#else
-#include <sndfile.h>
-#endif
 
 #include "DataReader.h"
 
@@ -62,22 +62,22 @@ class CSoundFileReader : public IDataReader {
 
     private:
 	wxString       m_fileName;
-	float          m_sampleRate;
 	unsigned int   m_blockSize;
 	IDataCallback* m_callback;
 	int            m_id;
 	float*         m_buffer;
+	unsigned int   m_format;
+	uint8*         m_buffer8;
+	sint16*        m_buffer16;
+	float32*       m_buffer32;
 #if defined(__WINDOWS__)
 	HMMIO          m_handle;
 	MMCKINFO       m_parent;
 	MMCKINFO       m_child;
 	LONG           m_offset;
-	unsigned int   m_format;
-	uint8*         m_buffer8;
-	sint16*        m_buffer16;
-	float32*       m_buffer32;
 #else
-	SNDFILE*       m_file;
+	wxFFile*       m_file;
+	wxFileOffset   m_offset;
 #endif
 };
 

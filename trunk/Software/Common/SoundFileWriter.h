@@ -24,19 +24,20 @@
 #if defined(__WINDOWS__)
 #include <windows.h>
 #include <mmsystem.h>
+#else
+#include <wx/ffile.h>
+#endif
 
 typedef unsigned char uint8;
 typedef signed short  sint16;
-#else
-#include <sndfile.h>
-#endif
+
 
 #include "DataWriter.h"
 
 class CSoundFileWriter : public IDataWriter {
 
     public:
-    CSoundFileWriter(const wxString& fileName, unsigned int sampleWidth = 16);
+    CSoundFileWriter(const wxString& fileName, unsigned int channels = 2, unsigned int sampleWidth = 16);
 	virtual ~CSoundFileWriter();
 
 	virtual bool open(float sampleRate, unsigned int blockSize);
@@ -49,16 +50,20 @@ class CSoundFileWriter : public IDataWriter {
 
     private:
 	wxString     m_fileName;
-	float        m_sampleWidth;
-#if defined(__WINDOWS__)
+	unsigned int m_channels;
+	unsigned int m_sampleWidth;
 	unsigned int m_blockSize;
+	uint8*       m_buffer8;
+	sint16*      m_buffer16;
+#if defined(__WINDOWS__)
 	HMMIO        m_handle;
 	MMCKINFO     m_parent;
 	MMCKINFO     m_child;
-	uint8*       m_buffer8;
-	sint16*      m_buffer16;
 #else
-	SNDFILE*     m_file;
+	wxFFile*     m_file;
+	wxFileOffset m_offset1;
+	wxFileOffset m_offset2;
+	wxUint32     m_length;
 #endif
 };
 
