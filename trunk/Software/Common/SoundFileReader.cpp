@@ -184,7 +184,7 @@ void CSoundFileReader::clock()
 			n /= sizeof(uint8);
 
 			for (i = 0; i < n; i++)
-				m_buffer[i] = (float(m_buffer8[i]) - 127.0) / 128.0;
+				m_buffer[i] = (float(m_buffer8[i]) - 127.0F) / 128.0F;
 			break;
 
 		case FORMAT_16BIT:
@@ -198,7 +198,7 @@ void CSoundFileReader::clock()
 			n /= sizeof(sint16);
 
 			for (i = 0; i < n; i++)
-				m_buffer[i] = float(m_buffer16[i]) / 32768.0;
+				m_buffer[i] = float(m_buffer16[i]) / 32768.0F;
 			break;
 
 		case FORMAT_32BIT:
@@ -258,7 +258,9 @@ m_buffer8(NULL),
 m_buffer16(NULL),
 m_buffer32(NULL),
 m_file(NULL),
-m_offset(0)
+m_offset(0),
+m_length(0),
+m_read(0)
 {
 }
 
@@ -269,6 +271,7 @@ CSoundFileReader::~CSoundFileReader()
 bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 {
 	m_blockSize = blockSize;
+	m_read      = 0;
 
 	m_file = new wxFFile(m_fileName, "rb");
 
@@ -394,6 +397,8 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 		return false;
 	}
 
+	m_length = wxUINT32_SWAP_ON_BE(uint32);
+
 	// Get the current location so we can rewind if needed
 	m_offset = m_file->Tell();
 
@@ -421,43 +426,65 @@ void CSoundFileReader::clock()
 
 	unsigned int n = 0;
 	unsigned int i;
+	unsigned int readSize;
 
 	switch (m_format) {
 		case FORMAT_8BIT:
-			n = m_file->Read(m_buffer8, m_blockSize * 2 * sizeof(uint8));
+			readSize = m_blockSize * 2 * sizeof(uint8);
+
+			if (readSize > (m_length - m_read))
+				readSize = (m_length - m_read) / (2 * sizeof(uint8));
+
+			n = m_file->Read(m_buffer8, readSize);
 
 			if (n <= 0) {
 				m_callback->callback(m_buffer, 0, m_id);
 				return;
 			}
+
+			m_read += n;
 
 			n /= sizeof(uint8);
 
 			for (i = 0; i < n; i++)
-				m_buffer[i] = (float(m_buffer8[i]) - 127.0) / 128.0;
+				m_buffer[i] = (float(m_buffer8[i]) - 127.0F) / 128.0F;
 			break;
 
 		case FORMAT_16BIT:
-			n = m_file->Read(m_buffer16, m_blockSize * 2 * sizeof(sint16));
+			readSize = m_blockSize * 2 * sizeof(sint16);
+
+			if (readSize > (m_length - m_read))
+				readSize = (m_length - m_read) / (2 * sizeof(sint16));
+
+			n = m_file->Read(m_buffer16, readSize);
 
 			if (n <= 0) {
 				m_callback->callback(m_buffer, 0, m_id);
 				return;
 			}
+
+			m_read += n;
 
 			n /= sizeof(sint16);
 
 			for (i = 0; i < n; i++)
-				m_buffer[i] = float(m_buffer16[i]) / 32768.0;
+				m_buffer[i] = float(m_buffer16[i]) / 32768.0F;
 			break;
 
 		case FORMAT_32BIT:
-			n = m_file->Read(m_buffer32, m_blockSize * 2 * sizeof(float32));
+			readSize = m_blockSize * 2 * sizeof(float32);
+
+			if (readSize > (m_length - m_read))
+				readSize = (m_length - m_read) / (2 * sizeof(float32));
+
+			n = m_file->Read(m_buffer32, readSize);
 
 			if (n <= 0) {
 				m_callback->callback(m_buffer, 0, m_id);
 				return;
 			}
+
+			m_read += n;
 
 			n /= sizeof(float32);
 
@@ -480,6 +507,8 @@ void CSoundFileReader::rewind()
 	wxASSERT(m_file != NULL);
 
 	m_file->Seek(m_offset);
+
+	m_read = 0;
 }
 
 void CSoundFileReader::close()

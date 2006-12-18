@@ -78,6 +78,8 @@ class CSoundFileReader : public IDataReader {
 #else
 	wxFFile*       m_file;
 	wxFileOffset   m_offset;
+	unsigned int   m_length;
+	unsigned int   m_read;
 #endif
 };
 

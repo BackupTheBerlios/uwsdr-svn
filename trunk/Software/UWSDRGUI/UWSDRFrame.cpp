@@ -1228,13 +1228,15 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 			}
 			break;
 		case wxID_ABOUT: {
+			// The wxABoutBox under Windows looks horrible, so use a home made one
 #if defined(__WXMSW__)
 			::wxMessageBox(VERSION + wxT(" - ") + REL_DATE + _("\n\n"
 				"A Software Define Radio for Microwaves\n\n"
 				"Hardware:\tChris Bartram, GW4DGU\n"
 				"\t\tGrant Hodgson, G8UBN\n"
+				"\t\tNeil Whiting, G4BRK\n"
 				"Firmware:\tTobias Weber, DG3YEV\n"
-				"GUI:\t\tJonathan Naylor, ON/G4KLX\n"
+				"Software:\tJonathan Naylor, ON/G4KLX\n"
 				"\t\tMichael White, G3WOE\n"
 				"DTTSP:\t\tBob McGwier, N4HY\n"
 				"\t\tFrank Brickle, AB2KT"),
@@ -1252,6 +1254,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 				info.AddDeveloper(wxT("Chris Bartram, GW4DGU"));
 				info.AddDeveloper(wxT("Grant Hodgson, G8UBN"));
 				info.AddDeveloper(wxT("Tobias Weber, DG3YEV"));
+				info.AddDeveloper(wxT("Neil Whiting, G4BRK"));
 				info.AddDeveloper(wxT("Bob McGwier, N4HY"));
 				info.AddDeveloper(wxT("Frank Brickle, AB2KT"));
 
