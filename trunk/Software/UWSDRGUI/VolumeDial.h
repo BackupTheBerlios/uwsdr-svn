@@ -27,9 +27,9 @@ class CVolumeDial : public wxPanel {
 
     public:
 	CVolumeDial(wxWindow* parent, int id, int min, int max, int value, IDialInterface* callback, const wxPoint& pos, const wxSize& size, long style = 0L, const wxString& name = wxPanelNameStr);
-	virtual ~CVolumeDial();
+	~CVolumeDial();
 
-	virtual void setValue(unsigned int value);
+	void setValue(unsigned int value);
 
 	void onPaint(wxPaintEvent& event);
 	void onMouse(wxMouseEvent& event);

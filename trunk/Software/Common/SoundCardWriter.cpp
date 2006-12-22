@@ -93,8 +93,10 @@ bool CSoundCardWriter::open(float sampleRate, unsigned int blockSize)
 
 void CSoundCardWriter::write(const float* buffer, unsigned int nSamples)
 {
+	if (nSamples == 0)
+		return;
+
 	wxASSERT(buffer != NULL);
-	wxASSERT(nSamples > 0);
 
 	unsigned int n = m_buffer->addData(buffer, nSamples);
 

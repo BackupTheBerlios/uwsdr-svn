@@ -86,9 +86,9 @@ m_rfValue(NULL),
 m_rxIQPhase(NULL),
 m_rxIQGain(NULL),
 m_txIQPhase(NULL),
-m_txIQGain(NULL)
-// m_methodLabel(NULL),
-// m_method(NULL)
+m_txIQGain(NULL),
+m_methodLabel(NULL),
+m_method(NULL)
 {
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -184,13 +184,12 @@ m_txIQGain(NULL)
 	m_rxIQGain->SetValue(m_parameters->m_rxIQgain);
 	m_txIQPhase->SetValue(m_parameters->m_txIQphase);
 	m_txIQGain->SetValue(m_parameters->m_txIQgain);
-/*
-	m_method->SetSelection(m_parameters->m_weaver ? 1 : 0);
+
+	m_method->SetSelection(m_parameters->m_zeroIF ? 1 : 0);
 	if (m_parameters->m_hardwareStepSize > 100.0F) {
 		m_methodLabel->Disable();
 		m_method->Disable();
 	}
-*/
 }
 
 CUWSDRPreferences::~CUWSDRPreferences()
@@ -460,7 +459,7 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 	m_parameters->m_txIQphase = m_txIQPhase->GetValue();
 	m_parameters->m_txIQgain  = m_txIQGain->GetValue();
 
-	// m_parameters->m_weaver = m_method->GetSelection() == 1;
+	m_parameters->m_zeroIF = m_method->GetSelection() == 1;
 
 	if (IsModal()) {
 		EndModal(wxID_OK);
@@ -955,15 +954,15 @@ wxPanel* CUWSDRPreferences::createIQTab(wxNotebook* noteBook)
 	m_txIQGain = new wxSpinCtrl(panel, TXIQ_GAIN, wxEmptyString, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
 	m_txIQGain->SetRange(-500, 500);
 	sizer->Add(m_txIQGain, 0, wxALL, BORDER_SIZE);
-/*
+
 	m_methodLabel = new wxStaticText(panel, -1, _("Method"));
 	sizer->Add(m_methodLabel, 0, wxALL, BORDER_SIZE);
 
 	m_method = new wxChoice(panel, -1, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
-	m_method->Append(_("Hartley"));
-	m_method->Append(_("Weaver"));
+	m_method->Append(_("Fs/4"));
+	m_method->Append(_("Zero-IF"));
 	sizer->Add(m_method, 0, wxALL, BORDER_SIZE);
-*/
+
 	mainSizer->Add(sizer, 0, wxALL, BORDER_SIZE);
 
 	panel->SetAutoLayout(true);

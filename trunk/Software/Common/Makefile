@@ -2,7 +2,7 @@ all:		Common.a
 
 OBJS := 	Frequency.o Log.o NullController.o NullReader.o NullWriter.o RingBuffer.o SDRDataReader.o \
 		SDRDataWriter.o SignalReader.o SoundCardInfo.o SoundCardReader.o SoundCardWriter.o \
-		SoundFileReader.o SoundFileWriter.o TwoToneReader.o UWSDRController.o
+		SoundFileReader.o SoundFileWriter.o ThreeToneReader.o TwoToneReader.o UWSDRController.o
 
 Common.a:	$(OBJS)
 		ar rcs Common.a $(OBJS)
@@ -48,6 +48,9 @@ SoundFileReader.o: SoundFileReader.cpp SoundFileReader.h DataReader.h
 
 SoundFileWriter.o: SoundFileWriter.cpp SoundFileWriter.h DataWriter.h
 		$(CC) $(CFLAGS) -c SoundFileWriter.cpp
+
+ThreeToneReader.o:	ThreeToneReader.cpp ThreeToneReader.h DataReader.h DataCallback.h
+		$(CC) $(CFLAGS) -c ThreeToneReader.cpp
 
 TwoToneReader.o:	TwoToneReader.cpp TwoToneReader.h DataReader.h DataCallback.h
 		$(CC) $(CFLAGS) -c TwoToneReader.cpp

@@ -27,12 +27,12 @@ class CFreqKeypad : public wxDialog {
 
     public:
 	CFreqKeypad(wxWindow* parent, int id, const CFrequency& vfo, const CFrequency& minFreq, const CFrequency& maxFres);
-	virtual ~CFreqKeypad();
+	~CFreqKeypad();
 
 	void onOK(wxCommandEvent& event);
 	void onButton(wxCommandEvent& event);
 
-	virtual CFrequency getFrequency() const;
+	CFrequency getFrequency() const;
 
     private:
 	CFrequency  m_vfo;

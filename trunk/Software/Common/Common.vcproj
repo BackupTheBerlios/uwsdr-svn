@@ -485,6 +485,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\ThreeToneReader.cpp"
+				>
+			</File>
+			<File
 				RelativePath="TwoToneReader.cpp"
 				>
 				<FileConfiguration
@@ -607,6 +611,10 @@
 			</File>
 			<File
 				RelativePath="SoundFileWriter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ThreeToneReader.h"
 				>
 			</File>
 			<File

@@ -43,7 +43,8 @@ m_oBuf(NULL),
 m_iq(NULL),
 m_dcBlock(NULL),
 m_dcBlockFlag(true),
-m_oscillator(NULL),
+m_oscillator1(NULL),
+m_oscillator2(NULL),
 m_filter(NULL),
 m_modulator(NULL),
 m_amModulator(NULL),
@@ -53,6 +54,10 @@ m_alc(NULL),
 m_speechProc(NULL),
 m_speechProcFlag(false),
 m_mode(USB),
+m_zeroIF(true),
+m_freq(0.0),
+m_lowFreq(0.0),
+m_highFreq(0.0),
 m_tick(0UL)
 {
 	ASSERT(meter != NULL);
@@ -67,7 +72,8 @@ m_tick(0UL)
 
 	m_dcBlock = new CDCBlock(DCB_MED, sampleRate, m_iBuf);
 
-	m_oscillator = new COscillator(m_oBuf, 0.0, 0.0, sampleRate);
+	m_oscillator1 = new COscillator(m_oBuf, sampleRate);
+	m_oscillator2 = new COscillator(m_iBuf, sampleRate);
 
 	m_amModulator  = new CAMMod(0.5F, m_iBuf);
 	m_fmModulator  = new CFMMod(5000.0F, sampleRate, m_iBuf);
@@ -75,16 +81,16 @@ m_tick(0UL)
 	m_modulator    = m_ssbModulator;
 
 	m_alc = new CAGC(agcLONG,	// mode kept around for control reasons alone
-			    m_iBuf,	// input buffer
-			    1.2F,	// Target output 
-			    2,	// Attack time constant in ms
-			    10,	// Decay time constant in ms
-			    1,	// Slope
-			    500,	//Hangtime in ms
-			    sampleRate,	// Sample rate
-				1.0,	// Maximum gain as a multipler, linear not dB
-			    0.000001F,	// Minimum gain as a multipler, linear not dB
-			    1.0);		// Set the current gain
+			    	m_iBuf,	// input buffer
+			    	1.2F,	// Target output
+			    	2,	// Attack time constant in ms
+			    	10,	// Decay time constant in ms
+			    	1,	// Slope
+			    	500,	//Hangtime in ms
+			    	sampleRate,	// Sample rate
+					1.0,	// Maximum gain as a multipler, linear not dB
+			    	0.000001F,	// Minimum gain as a multipler, linear not dB
+			    	1.0);		// Set the current gain
 
 	m_speechProc = new CSpeechProc(0.4F, 3.0, m_iBuf);
 }
@@ -96,7 +102,8 @@ CTX::~CTX()
 	delete m_ssbModulator;
 	delete m_fmModulator;
 	delete m_amModulator;
-	delete m_oscillator;
+	delete m_oscillator1;
+	delete m_oscillator2;
 	delete m_dcBlock;
 	delete m_iq;
 	delCXB(m_oBuf);
@@ -117,7 +124,7 @@ void CTX::process()
 
 	meter(m_iBuf, TX_MIC);
 
-	if (m_speechProcFlag)
+	if (m_speechProcFlag && (m_mode == USB || m_mode == LSB))
 		m_speechProc->process();
 
 	meter(m_iBuf, TX_COMP);
@@ -131,12 +138,15 @@ void CTX::process()
 	if (m_tick == 0UL)
 		m_filter->reset();
 
+	// Only active for the third method and zero-IF
+	m_oscillator2->mix();
+
 	m_filter->filter();
 	CXBhave(m_oBuf) = CXBhave(m_iBuf);
 
 	m_spectrum->setData(m_oBuf);
 
-	m_oscillator->mix();
+	m_oscillator1->mix();
 
 	m_iq->process();
 
@@ -168,23 +178,53 @@ SDRMODE CTX::getMode() const
 void CTX::setMode(SDRMODE mode)
 {
 	m_mode = mode;
-
-	switch (m_mode) {
-		case LSB:
-		case USB:
-		case CWL:
-		case CWU:
-			m_modulator = m_ssbModulator;
-			break;
-
-		case AM:
-		case SAM:
-			m_modulator = m_amModulator;
-			break;
-
-		case FMN:
-			m_modulator = m_fmModulator;
-			break;
+ 
+	if (m_zeroIF) {
+		switch (mode) {
+			case AM:
+			case SAM:
+				m_oscillator2->setFrequency(-INV_FREQ);
+				m_modulator = m_amModulator;
+				break;
+ 
+			case FMN:
+				m_oscillator2->setFrequency(-INV_FREQ);
+				m_modulator = m_fmModulator;
+				break;
+ 
+			case USB:
+			case CWU:
+				m_oscillator2->setFrequency(-INV_FREQ);
+				m_modulator = m_ssbModulator;
+				break;
+               
+			case LSB:
+			case CWL:
+				m_oscillator2->setFrequency(INV_FREQ);
+				m_modulator = m_ssbModulator;
+				break;
+		}
+	} else {
+		switch (mode) {
+			case AM:
+			case SAM:
+				m_oscillator2->setFrequency(0.0);
+				m_modulator = m_amModulator;
+				break;
+ 
+			case FMN:
+				m_oscillator2->setFrequency(0.0);
+				m_modulator = m_fmModulator;
+				break;
+ 
+			case USB:
+			case LSB:
+			case CWL:
+			case CWU:
+				m_oscillator2->setFrequency(0.0);
+				m_modulator = m_ssbModulator;
+				break;
+		}
 	}
 }
 
@@ -193,14 +233,38 @@ void CTX::setDCBlockFlag(bool flag)
 	m_dcBlockFlag = flag;
 }
 
+void CTX::setZeroIF(bool flag)
+{
+	m_zeroIF = flag;
+
+	setFrequency(m_freq);
+	setFilter(m_lowFreq, m_highFreq);
+	setMode(m_mode);
+}
+
 void CTX::setFilter(double lowFreq, double highFreq)
 {
-	m_filter->setFilter(lowFreq, highFreq);
+	m_lowFreq  = lowFreq;
+	m_highFreq = highFreq;
+ 
+	if (m_zeroIF) {
+		if (m_mode == LSB)
+			m_filter->setFilter(lowFreq + INV_FREQ, highFreq + INV_FREQ);
+		else
+			m_filter->setFilter(lowFreq - INV_FREQ, highFreq - INV_FREQ);
+	} else {
+		m_filter->setFilter(lowFreq, highFreq);
+	}
 }
 
 void CTX::setFrequency(double freq)
 {
-	m_oscillator->setFrequency(freq);
+	m_freq = freq;
+ 
+	if (m_zeroIF)
+		m_oscillator1->setFrequency(freq);
+	else
+		m_oscillator1->setFrequency(m_sampleRate / 4.0F + freq);
 }
 
 void CTX::setAMCarrierLevel(float level)
@@ -252,4 +316,16 @@ void CTX::setCompressionFlag(bool flag)
 void CTX::setCompressionLevel(float level)
 {
 	m_speechProc->setCompression(level);
+}
+
+float CTX::getOffset() const
+{
+	if (m_zeroIF) {
+		if (m_mode == LSB)
+			return INV_FREQ;
+		else
+			return -INV_FREQ;
+	} else {
+		return 0.0F;
+	}
 }

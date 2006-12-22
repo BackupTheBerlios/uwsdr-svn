@@ -84,11 +84,11 @@ typedef enum {
 extern void    Setup_SDR(float sampleRate, unsigned int audioSize);
 extern void    Destroy_SDR();
 extern void    SetMode(SDRMODE m);
+extern void    SetZeroIF(bool setit);
 extern void    SetDCBlock(bool setit);
 extern void    SetFilter(double low_frequency, double high_frequency, int taps, TRXMODE trx);
 extern void    Release_Update();
 extern void    SetOsc(double newfreq);
-extern void    SetRIT(double newfreq);
 extern void    SetTXOsc(double newfreq);
 extern void    SetNR(bool setit);
 extern void    SetBlkNR(bool setit);
@@ -131,6 +131,8 @@ extern void    Process_Phase(float* results, unsigned int numpoints);
 extern void    Process_Scope(float* results, unsigned int numpoints);
 extern float   Calculate_Meters(METERTYPE mt);
 extern void    SetDeviation(float value);
+extern float   GetTXOffset();
+extern float   GetRXOffset();
 
 extern void    Audio_Callback(float* input_i, float* input_q, float* output_i, float* output_q, unsigned int nframes);
 extern void    Audio_CallbackIL(float* input, float* output, unsigned int nframes);

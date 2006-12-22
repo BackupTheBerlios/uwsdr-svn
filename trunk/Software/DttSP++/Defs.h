@@ -53,4 +53,6 @@ const unsigned int RINGSIZE  = 4096;
 const SDRMODE      DEFMODE   = USB;
 const unsigned int DEFSPEC   = 4096;
 
+const float        INV_FREQ  = 1300.0F;
+
 #endif

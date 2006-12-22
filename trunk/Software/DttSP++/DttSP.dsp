@@ -163,10 +163,6 @@ SOURCE=.\SpeechProc.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\SpotTone.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\Squelch.cpp
 # End Source File
 # Begin Source File
@@ -296,10 +292,6 @@ SOURCE=.\Spectrum.h
 # Begin Source File
 
 SOURCE=.\SpeechProc.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SpotTone.h
 # End Source File
 # Begin Source File
 

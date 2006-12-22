@@ -143,6 +143,10 @@ SOURCE=.\SoundFileWriter.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ThreeToneReader.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\TwoToneReader.cpp
 # End Source File
 # Begin Source File
@@ -228,6 +232,10 @@ SOURCE=.\SoundFileReader.h
 # Begin Source File
 
 SOURCE=.\SoundFileWriter.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ThreeToneReader.h
 # End Source File
 # Begin Source File
 

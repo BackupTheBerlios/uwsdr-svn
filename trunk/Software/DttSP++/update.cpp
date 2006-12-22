@@ -53,6 +53,11 @@ void SetMode(SDRMODE m)
 	dttsp->setMode(m);
 }
 
+void SetZeroIF(bool setit)
+{
+	dttsp->setZeroIF(setit);
+}
+
 void SetDCBlock(bool setit)
 {
 	dttsp->setDCBlockFlag(setit);
@@ -78,12 +83,6 @@ void Release_Update()
 void SetOsc(double freq)
 {
 	dttsp->setRXFrequency(freq);
-}
-
-void SetRIT(double freq)
-{
-
-	dttsp->setRITFrequency(freq);
 }
 
 void SetTXOsc(double freq)
@@ -231,16 +230,6 @@ void SetTXALCLimit(float limit)
 	dttsp->setALCGainTop(limit);
 }
 
-void setSpotTone(bool flag)
-{
-	dttsp->setSpotToneFlag(flag);
-}
-
-void setSpotToneVals(float gain, float freq, float rise, float fall)
-{
-	dttsp->setSpotToneValues(gain, freq, rise, fall);
-}
-
 void Process_Spectrum(float *results)
 {
 	dttsp->setSpectrumType(SPEC_POST_FILT);
@@ -284,6 +273,16 @@ void RingBufferReset()
 void SetRXPan(float pos)
 {
 	dttsp->setRXPan(pos);
+}
+
+float GetTXOffset()
+{
+	return dttsp->getTXOffset();
+}
+
+float GetRXOffset()
+{
+	return dttsp->getRXOffset();
 }
 
 void  Audio_Callback(float* input_i, float* input_q, float* output_i, float* output_q, unsigned int nframes)

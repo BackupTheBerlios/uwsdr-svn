@@ -65,6 +65,8 @@ class CTX {
 
 	virtual void setMode(SDRMODE mode);
 
+	virtual void setZeroIF(bool flag);
+
 	virtual void setDCBlockFlag(bool flag);
 
 	virtual void setFilter(double lowFreq, double highFreq);
@@ -86,6 +88,8 @@ class CTX {
 	virtual void setCompressionFlag(bool flag);
 	virtual void setCompressionLevel(float level);
 
+	virtual float getOffset() const;
+
     private:
 	float         m_sampleRate;
 
@@ -100,7 +104,8 @@ class CTX {
 	CDCBlock*     m_dcBlock;
 	bool          m_dcBlockFlag;
 
-	COscillator*  m_oscillator;
+	COscillator*  m_oscillator1;
+	COscillator*  m_oscillator2;
 
 	CFilterOVSV*  m_filter;
 
@@ -115,6 +120,11 @@ class CTX {
 	bool          m_speechProcFlag;
 
 	SDRMODE       m_mode;
+	bool          m_zeroIF;
+
+	double        m_freq;
+	double        m_lowFreq;
+	double        m_highFreq;
 
 	unsigned long m_tick;
 

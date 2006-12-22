@@ -52,11 +52,11 @@ class CDSPControl : public wxThread, public IDataCallback {
 
 	// Many of these are pass throughs to DTTSP
 	virtual void setMode(int mode);
+	virtual void setZeroIF(bool onOff);
 	virtual void setFilter(int filter);
 	virtual void setAGC(int agc);
 	virtual void setDeviation(int dev);
 	virtual void setTXAndFreq(bool transmit, float freq);
-	virtual void setRIT(float freq);
 
 	virtual void setNB(bool onOff);
 	virtual void setNBValue(unsigned int value);
@@ -83,6 +83,9 @@ class CDSPControl : public wxThread, public IDataCallback {
 
 	virtual float getMeter(int type);
 	virtual void  getSpectrum(float* spectrum, int pos);
+
+	virtual float getTXOffset();
+	virtual float getRXOffset();
 
 	virtual void sendCW(unsigned int speed, const wxString& text);
 	virtual void sendAudio(const wxString& fileName, int state);

@@ -75,7 +75,8 @@ m_speed(0),
 m_position(0),
 m_factor(1),
 m_ticks(0),
-m_pick(0.0F)
+m_pick(0.0F),
+m_offset(0.0F)
 {
 	m_bitmap     = new wxBitmap(m_width, m_height);
 	m_background = new wxBitmap(m_width, m_height);
@@ -137,9 +138,11 @@ void CSpectrumDisplay::setBandwidth(float bandwidth)
 	show(clientDC);
 }
 
-void CSpectrumDisplay::showSpectrum(const float* spectrum, float bottom)
+void CSpectrumDisplay::showSpectrum(const float* spectrum, float bottom, float offset)
 {
 	wxASSERT(spectrum != NULL);
+
+	m_offset = offset;
 
 	if ((m_ticks % m_factor) == 0) {
 		switch (m_type) {
@@ -301,6 +304,10 @@ void CSpectrumDisplay::drawPanadapter1(const float* spectrum, float bottom)
 
 	float binsPerPixel = float(lastBin - firstBin) / float(m_width - 5);
 
+	int binOffset = int(float(lastBin - firstBin) * (m_offset / m_bandwidth) + 0.5F);
+	firstBin += binOffset;
+	lastBin  += binOffset;
+
 	int lastX = 0, lastY = 0;
 	for (int x = 2; x < (m_width - 3); x++) {
 		int bin = firstBin + int(float(x - 2) * binsPerPixel + 0.5F);
@@ -348,6 +355,10 @@ void CSpectrumDisplay::drawPanadapter2(const float* spectrum, float bottom)
 
 	float binsPerPixel = float(lastBin - firstBin) / float(m_width - 5);
 
+	int binOffset = int(float(lastBin - firstBin) * (m_offset / m_bandwidth) + 0.5F);
+	firstBin += binOffset;
+	lastBin  += binOffset;
+
 	for (int x = 2; x < (m_width - 3); x++) {
 		int bin = firstBin + int(float(x - 2) * binsPerPixel + 0.5F);
 
@@ -384,6 +395,10 @@ void CSpectrumDisplay::drawWaterfall(const float* spectrum, float bottom)
 
 	float binsPerPixel = float(lastBin - firstBin) / float(m_width - 5);
 
+	int binOffset = int(float(lastBin - firstBin) * (m_offset / m_bandwidth) + 0.5F);
+	firstBin += binOffset;
+	lastBin  += binOffset;
+
 	// Do all of the work on a wxImage
 	wxImage image = m_bitmap->ConvertToImage();
 
@@ -392,7 +407,7 @@ void CSpectrumDisplay::drawWaterfall(const float* spectrum, float bottom)
 	// Scroll the image up by one pixel
 	::memcpy(data, data + m_width * 3, (m_height - 16) * m_width * 3);
 
-	unsigned char* offset = data + m_width * (m_height - 16) * 3;
+	unsigned char* imgOffset = data + m_width * (m_height - 16) * 3;
 
 	for (int x = 2; x < (m_width - 3); x++) {
 		int bin = firstBin + int(float(x - 2) * binsPerPixel + 0.5);
@@ -435,9 +450,9 @@ void CSpectrumDisplay::drawWaterfall(const float* spectrum, float bottom)
 			b = (unsigned char)(percent * 255.0F + 0.5F);
 		}
 
-		*offset++ = r;
-		*offset++ = g;
-		*offset++ = b;
+		*imgOffset++ = r;
+		*imgOffset++ = g;
+		*imgOffset++ = b;
 	}
 
 	delete m_bitmap;
@@ -453,8 +468,7 @@ void CSpectrumDisplay::onLeftMouse(wxMouseEvent& event)
 
    if (m_pick < -m_bandwidth / 2.0F)
       m_pick = 0.0F;
-
-   if (m_pick > m_bandwidth / 2.0F)
+   else if (m_pick > m_bandwidth / 2.0F)
       m_pick = 0.0F;
 }
 

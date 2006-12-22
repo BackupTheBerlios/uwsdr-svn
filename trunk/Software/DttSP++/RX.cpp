@@ -35,14 +35,15 @@ Bridgewater, NJ 08807
 
 
 CRX::CRX(unsigned int bufLen, unsigned int bits, float sampleRate, CMeter* meter, CSpectrum* spectrum) :
+m_sampleRate(sampleRate),
 m_meter(meter),
 m_spectrum(spectrum),
 m_type(SPEC_POST_FILT),
 m_iBuf(NULL),
 m_oBuf(NULL),
 m_iq(NULL),
-m_oscillator(NULL),
-m_rit(NULL),
+m_oscillator1(NULL),
+m_oscillator2(NULL),
 m_filter(NULL),
 m_nb(NULL),
 m_nbFlag(false),
@@ -61,11 +62,13 @@ m_demodulator(NULL),
 m_amDemodulator(NULL),
 m_fmDemodulator(NULL),
 m_ssbDemodulator(NULL),
-m_spotTone(NULL),
-m_spotToneFlag(false),
 m_squelch(NULL),
 m_mode(USB),
 m_binFlag(false),
+m_zeroIF(true),
+m_freq(0.0),
+m_lowFreq(0.0),
+m_highFreq(0.0),
 m_azim(),
 m_tick(0UL)
 {
@@ -79,9 +82,8 @@ m_tick(0UL)
 
 	m_iq = new CCorrectIQ(m_iBuf);
 
-	m_oscillator = new COscillator(m_iBuf, -sampleRate / 4.0F, 0.0, sampleRate);
-
-	m_rit = new COscillator(m_iBuf, 0.0F, 0.0, sampleRate);
+	m_oscillator1 = new COscillator(m_iBuf, sampleRate);
+	m_oscillator2 = new COscillator(m_oBuf, sampleRate);
 
 	m_agc = new CAGC(agcLONG,	// mode kept around for control reasons alone
 				    m_oBuf,	// input buffer
@@ -139,14 +141,6 @@ m_tick(0UL)
 
 	m_nbSDROM = new CNoiseBlanker(m_iBuf, 2.5F);
 
-	m_spotTone = new CSpotTone(-12.0,	// gain
-				   700.0,	// freq
-				   5.0,	// ms rise
-				   5.0,	// ms fall
-				   bufLen,	// length of spot tone buffer
-				   sampleRate	// sample rate
-    );
-
 	m_squelch = new CSquelch(m_oBuf, -150.0F, 0.0F, bufLen - 48);
 
 	float pos = 0.5;		// 0 <= pos <= 1, left->right
@@ -156,7 +150,6 @@ m_tick(0UL)
 
 CRX::~CRX()
 {
-	delete m_spotTone;
 	delete m_agc;
 	delete m_nbSDROM;
 	delete m_nb;
@@ -167,8 +160,8 @@ CRX::~CRX()
 	delete m_amDemodulator;
 	delete m_fmDemodulator;
 	delete m_ssbDemodulator;
-	delete m_oscillator;
-	delete m_rit;
+	delete m_oscillator1;
+	delete m_oscillator2;
 	delete m_iq;
 	delete m_squelch;
 	delCXB(m_oBuf);
@@ -188,11 +181,9 @@ void CRX::process()
 
 	m_iq->process();
 
-	m_oscillator->mix();
+	m_oscillator1->mix();
 
 	spectrum(m_iBuf, SPEC_PRE_FILT);
-
-	m_rit->mix();
 
 	if (m_tick == 0UL)
 		m_filter->reset();
@@ -202,6 +193,9 @@ void CRX::process()
 
 	meter(m_oBuf, RXMETER_POST_FILT);
 	spectrum(m_oBuf, SPEC_POST_FILT);
+
+	// Only active for the third method/zero-IF
+	m_oscillator2->mix();
 
 	if (m_squelch->isSquelch())
 		m_squelch->doSquelch();
@@ -239,20 +233,8 @@ void CRX::process()
 //			CXBimag(m_oBuf, i) = CXBreal(m_oBuf, i);
 	}
 
-	if (!m_squelch->isSet()) {
+	if (!m_squelch->isSet())
 		m_squelch->noSquelch();
-
-		// spotting tone
-		if (m_spotToneFlag) {
-			// remember whether it's turned itself off during this pass
-			m_spotToneFlag = m_spotTone->generate();
-
-			unsigned int n = CXBhave(m_oBuf);
-
-			for (unsigned int i = 0; i < n; i++)
-				CXBdata(m_oBuf, i) = Cadd(CXBdata(m_oBuf, i), CXBdata(m_spotTone->getData(), i));
-		}
-	}
 
 	spectrum(m_oBuf, SPEC_POST_DET);
 
@@ -283,46 +265,102 @@ CXB* CRX::getOBuf()
 void CRX::setMode(SDRMODE mode)
 {
 	m_mode = mode;
-
-	switch (m_mode) {
-		case LSB:
-		case USB:
-		case CWL:
-		case CWU:
-			m_demodulator = m_ssbDemodulator;
-			break;
-
-		case AM:
-			m_amDemodulator->setMode(AMdet);
-			m_demodulator = m_amDemodulator;
-			break;
-
-		case SAM:
-			m_amDemodulator->setMode(SAMdet);
-			m_demodulator = m_amDemodulator;
-			break;
-
-		case FMN:
-			m_demodulator = m_fmDemodulator;
-			break;
+ 
+	if (m_zeroIF) {
+		switch (mode) {
+			case AM:
+				m_amDemodulator->setMode(AMdet);
+				m_oscillator2->setFrequency(-INV_FREQ);
+				m_demodulator = m_amDemodulator;
+				break;
+ 
+			case SAM:
+				m_amDemodulator->setMode(SAMdet);
+				m_oscillator2->setFrequency(-INV_FREQ);
+				m_demodulator = m_amDemodulator;
+				break;
+ 
+			case FMN:
+				m_oscillator2->setFrequency(-INV_FREQ);
+				m_demodulator = m_fmDemodulator;
+				break;
+ 
+			case USB:
+			case CWU:
+				m_oscillator2->setFrequency(-INV_FREQ);
+				m_demodulator = m_ssbDemodulator;
+				break;
+               
+			case LSB:
+			case CWL:
+				m_oscillator2->setFrequency(INV_FREQ);
+				m_demodulator = m_ssbDemodulator;
+				break;
+		}
+	} else {
+		switch (mode) {
+			case AM:
+				m_amDemodulator->setMode(AMdet);
+				m_oscillator2->setFrequency(0.0);
+				m_demodulator = m_amDemodulator;
+				break;
+ 
+			case SAM:
+				m_amDemodulator->setMode(SAMdet);
+				m_oscillator2->setFrequency(0.0);
+				m_demodulator = m_amDemodulator;
+				break;
+ 
+			case FMN:
+				m_oscillator2->setFrequency(0.0);
+				m_demodulator = m_fmDemodulator;
+				break;
+ 
+			case USB:
+			case LSB:
+			case CWL:
+			case CWU:
+				m_oscillator2->setFrequency(0.0);
+				m_demodulator = m_ssbDemodulator;
+				break;
+		}
 	}
+}
+
+void CRX::setZeroIF(bool flag)
+{
+	m_zeroIF = flag;
+
+	setFrequency(m_freq);
+	setFilter(m_lowFreq, m_highFreq);
+	setMode(m_mode);
 }
 
 void CRX::setFilter(double lowFreq, double highFreq)
 {
-	m_filter->setFilter(lowFreq, highFreq);
+	m_lowFreq  = lowFreq;
+	m_highFreq = highFreq;
+ 
+	if (m_zeroIF) {
+		if (m_mode == LSB)
+			m_filter->setFilter(lowFreq + INV_FREQ, highFreq + INV_FREQ);
+		else
+			m_filter->setFilter(lowFreq - INV_FREQ, highFreq - INV_FREQ);
+	} else {
+		m_filter->setFilter(lowFreq, highFreq);
+	}
 
 	m_fmDemodulator->setBandwidth(lowFreq, highFreq);
 }
 
 void CRX::setFrequency(double freq)
 {
-	m_oscillator->setFrequency(freq);
-}
-
-void CRX::setRITFrequency(double freq)
-{
-	m_rit->setFrequency(freq);
+	m_freq = freq;
+ 
+	if (m_zeroIF)
+		m_oscillator1->setFrequency(freq);
+	else
+		m_oscillator1->setFrequency(-m_sampleRate / 4.0F - freq);
 }
 
 void CRX::setSquelchFlag(bool flag)
@@ -416,22 +454,6 @@ void CRX::setAGCMode(AGCMODE mode)
 	m_agc->setMode(mode);
 }
 
-void CRX::setSpotToneFlag(bool flag)
-{
-	if (flag) {
-		m_spotTone->on();
-		m_spotToneFlag = true;
-	} else {
-		m_spotTone->off();
-		m_spotToneFlag = false;
-	}
-}
-
-void CRX::setSpotToneValues(float gain, float freq, float rise, float fall)
-{
-	m_spotTone->setValues(gain, freq, rise, fall);
-}
-
 void CRX::setAzim(float azim)
 {
 	float theta = float((1.0 - azim) * M_PI / 2.0);
@@ -444,3 +466,14 @@ void CRX::setSpectrumType(SPECTRUMtype type)
 	m_type = type;
 }
 
+float CRX::getOffset() const
+{
+	if (m_zeroIF) {
+		if (m_mode == LSB)
+			return -INV_FREQ;
+		else
+			return INV_FREQ;
+	} else {
+		return 0.0F;
+	}
+}

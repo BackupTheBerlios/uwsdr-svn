@@ -379,6 +379,11 @@ void CDSPControl::setMode(int mode)
 	m_dttsp->setMode(mode);
 }
 
+void CDSPControl::setZeroIF(bool onOff)
+{
+	m_dttsp->setZeroIF(onOff);
+}
+
 void CDSPControl::setFilter(int filter)
 {
 	m_dttsp->setFilter(filter);
@@ -420,17 +425,7 @@ void CDSPControl::setTXAndFreq(bool transmit, float freq)
 
 	m_transmit = transmit;
 
-	float centreFreq = m_sampleRate / 4.0F;		// XXX
-
-	if (transmit)
-		m_dttsp->setTXAndFreq(true, freq + centreFreq);
-	else
-		m_dttsp->setTXAndFreq(false, -(freq + centreFreq));
-}
-
-void CDSPControl::setRIT(float freq)
-{
-	m_dttsp->setRIT(freq);
+	m_dttsp->setTXAndFreq(transmit, freq);
 }
 
 void CDSPControl::setNB(bool onOff)
@@ -486,6 +481,16 @@ void CDSPControl::setTXIAndQ(int phase, int gain)
 float CDSPControl::getMeter(int type)
 {
 	return m_dttsp->getMeter(type);
+}
+
+float CDSPControl::getTXOffset()
+{
+	return m_dttsp->getTXOffset();
+}
+
+float CDSPControl::getRXOffset()
+{
+	return m_dttsp->getRXOffset();
 }
 
 void CDSPControl::getSpectrum(float* spectrum, int pos)

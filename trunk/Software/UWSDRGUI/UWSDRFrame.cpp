@@ -28,6 +28,7 @@
 #include "NullWriter.h"
 #include "SignalReader.h"
 #include "TwoToneReader.h"
+#include "ThreeToneReader.h"
 #include "SDRDataReader.h"
 #include "SDRDataWriter.h"
 #include "SoundCardReader.h"
@@ -120,7 +121,6 @@ m_rxOn(true),
 m_txOn(false),
 m_stepSize(0.0),
 m_record(false),
-m_dspOffset(0.0F),
 m_menu(NULL),
 m_freqDisplay(NULL),
 m_spectrumDisplay(NULL),
@@ -273,7 +273,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 #if defined(GRANT_TX)
 	// RX is disabled, TX is from audio card for signal output fed by a two-tone signal
-	m_dsp->setTXReader(new CTwoToneReader(1000, 0.4F, 1300, 0.4F, new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev)));
+	m_dsp->setTXReader(new CTwoToneReader(1000.0F, 1300.0F, 0.4F, new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev)));
 	m_dsp->setTXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
 
 	m_dsp->setRXReader(new CNullReader());
@@ -287,14 +287,15 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
 #elif defined(DEMO)
 	// A self contained variant for demo's and testing
-	m_dsp->setTXReader(new CTwoToneReader(1000, 0.4F, 1300, 0.4F, new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev)));
+	// m_dsp->setTXReader(new CTwoToneReader(1000.0F, 1300.0F, 0.4F, new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev)));
+	m_dsp->setTXReader(new CThreeToneReader(500.0F, 1500.0F, 2000.0F, 0.25F, new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev)));
 	m_dsp->setTXWriter(new CNullWriter());
 
 	m_dsp->setRXReader(new CSignalReader(int(m_parameters->m_hardwareSampleRate / 4.0F + 1000.5F), 0.0003F, 0.0004F));
 	m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
 #elif defined(TOBIAS)
 	// UDP in/out with audio on loudspeaker and two-tone audio on transmit
-	m_dsp->setTXReader(new CTwoToneReader(1000, 0.4F, 1300, 0.4F, new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev)));
+	m_dsp->setTXReader(new CTwoToneReader(1000.0F, 1300.0F, 0.4F, new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev)));
 	m_dsp->setTXWriter(new CSDRDataWriter(m_parameters->m_ipAddress, m_parameters->m_dataPort));
 
 	m_dsp->setRXReader(new CSDRDataReader(m_parameters->m_ipAddress, m_parameters->m_dataPort));
@@ -318,12 +319,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_ritCtrl->SetValue(m_parameters->m_ritOn);
 	m_ritCtrl->SetLabel(m_parameters->m_ritOn ? _("Off") : _("On"));
-
 	m_rit->setValue(m_parameters->m_ritFreq);
-	if (m_ritCtrl)
-		m_dsp->setRIT(float(m_parameters->m_ritFreq));
-
-	m_dspOffset = m_parameters->m_hardwareSampleRate / 4.0F;
 
 	m_micGain->setValue(m_parameters->m_micGain);
 	m_dsp->setMicGain(m_parameters->m_micGain);
@@ -373,6 +369,9 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_timer.Start(100);
 
 	normaliseMode();
+
+	// Must be after normaliseMode
+	m_dsp->setZeroIF(m_parameters->m_zeroIF);
 
 	normaliseFreq();
 
@@ -1004,16 +1003,11 @@ void CUWSDRFrame::normaliseFreq()
 
 	// Set the RIT
 	if (m_parameters->m_ritOn && !m_txOn)
-		m_dsp->setRIT(float(m_parameters->m_ritFreq));
-	else
-		m_dsp->setRIT(0.0F);
+		freq += double(m_parameters->m_ritFreq);
 
 	CFrequency dispFreq = freq;
 
 	// Adjust the display ONLY frequency
-	if (m_parameters->m_ritOn && !m_txOn)
-		dispFreq += m_parameters->m_ritFreq;
-
 	if (m_parameters->m_mode == MODE_CWW || m_parameters->m_mode == MODE_CWN)
 		dispFreq += CW_OFFSET;
 
@@ -1023,7 +1017,17 @@ void CUWSDRFrame::normaliseFreq()
 	m_freqDisplay->setFrequency(dispFreq);
 
 	// Subtract the IF frequency
-	freq -= m_dspOffset;
+	float dspOffset;
+	if (m_parameters->m_zeroIF) {
+		if (m_txOn)
+			dspOffset = m_dsp->getTXOffset();
+		else
+			dspOffset = m_dsp->getRXOffset();
+	} else {
+		dspOffset = m_parameters->m_hardwareSampleRate / 4.0F;
+	}
+
+	freq -= dspOffset;
 
 	// Now take into account the frequency steps of the SDR ...
 	double offset = 0.0;
@@ -1141,6 +1145,8 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 					m_dsp->setCarrierLevel(m_parameters->m_carrierLevel);
 
 					m_dsp->setALCValue(m_parameters->m_alcAttack, m_parameters->m_alcDecay, m_parameters->m_alcHang);
+
+					m_dsp->setZeroIF(m_parameters->m_zeroIF);
 
 					normaliseFreq();
 				}
@@ -1299,8 +1305,13 @@ void CUWSDRFrame::onTimer(wxTimerEvent& event)
 		if (val != -200.0F) {
 			m_sMeter->setLevel(val);
 
+			float offset = 0.0F;
+			if (m_parameters->m_zeroIF)
+				offset = m_dsp->getTXOffset();
+
 			m_dsp->getSpectrum(m_spectrum, m_parameters->m_spectrumPos);
-			m_spectrumDisplay->showSpectrum(m_spectrum, 0.0F);
+
+			m_spectrumDisplay->showSpectrum(m_spectrum, 0.0F, offset);
 			m_spectrumDisplay->getFreqPick();
 		}
 	} else {
@@ -1312,12 +1323,17 @@ void CUWSDRFrame::onTimer(wxTimerEvent& event)
 		if (val != -200.0F) {
 			m_sMeter->setLevel(val);
 
-			m_dsp->getSpectrum(m_spectrum, m_parameters->m_spectrumPos);
-			m_spectrumDisplay->showSpectrum(m_spectrum, -35.0F);
+			float offset = 0.0F;
+			if (m_parameters->m_zeroIF)
+				offset = m_dsp->getRXOffset();
 
-			float offset = m_spectrumDisplay->getFreqPick();
-			if (offset != 0.0F)
-				freqChange(offset);
+			m_dsp->getSpectrum(m_spectrum, m_parameters->m_spectrumPos);
+
+			m_spectrumDisplay->showSpectrum(m_spectrum, -35.0F, offset);
+
+			float freq = m_spectrumDisplay->getFreqPick();
+			if (freq != 0.0F)
+				freqChange(freq);
 		}
 	}
 }

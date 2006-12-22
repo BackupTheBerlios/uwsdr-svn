@@ -16,8 +16,8 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	TwoToneReader_H
-#define	TwoToneReader_H
+#ifndef	ThreeToneReader_H
+#define	ThreeToneReader_H
 
 #include <wx/wx.h>
 
@@ -25,11 +25,11 @@
 #include "DataCallback.h"
 
 
-class CTwoToneReader : public IDataReader, public IDataCallback {
+class CThreeToneReader : public IDataReader, public IDataCallback {
 
     public:
-    CTwoToneReader(float frequency1, float frequency2, float amplitude, IDataReader* reader = NULL);
-	virtual ~CTwoToneReader();
+    CThreeToneReader(float frequency1, float frequency2, float frequency3, float amplitude, IDataReader* reader = NULL);
+	virtual ~CThreeToneReader();
 
 	virtual void setCallback(IDataCallback* callback, int id);
 
@@ -47,6 +47,7 @@ class CTwoToneReader : public IDataReader, public IDataCallback {
     private:
 	float          m_frequency1;
 	float          m_frequency2;
+	float          m_frequency3;
 	float          m_amplitude;
 	IDataReader*   m_reader;
 	unsigned int   m_blockSize;
@@ -61,6 +62,10 @@ class CTwoToneReader : public IDataReader, public IDataCallback {
 	float          m_sinVal2;
 	float          m_cosDelta2;
 	float          m_sinDelta2;
+	float          m_cosVal3;
+	float          m_sinVal3;
+	float          m_cosDelta3;
+	float          m_sinDelta3;
 };
 
 #endif

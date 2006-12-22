@@ -27,9 +27,9 @@ m_sampleRate(0.0F),
 m_blockSize(0),
 m_filter(-1),
 m_mode(-1),
+m_zeroIF(true),
 m_rxFreq(99999.9F),
 m_txFreq(99999.9F),
-m_rit(99999.9F),
 m_transmit(false),
 m_deviation(-1),
 m_agc(-1),
@@ -132,6 +132,16 @@ void CDTTSPControl::setMode(int mode)
 	normaliseFilter();
 }
 
+void CDTTSPControl::setZeroIF(bool onOff)
+{
+	if (onOff == m_zeroIF)
+		return;
+
+	::SetZeroIF(onOff);
+
+	m_zeroIF = onOff;
+}
+
 void CDTTSPControl::setTXAndFreq(bool transmit, float freq)
 {
 	if (transmit) {
@@ -153,16 +163,6 @@ void CDTTSPControl::setTXAndFreq(bool transmit, float freq)
 		m_rxFreq   = freq;
 		m_transmit = false;
 	}
-}
-
-void CDTTSPControl::setRIT(float freq)
-{
-	if (freq == m_rit)
-		return;
-
-	::SetRIT(freq);
-
-	m_rit = freq;
 }
 
 void CDTTSPControl::setAGC(int agc)
@@ -337,6 +337,16 @@ void CDTTSPControl::setSquelch(unsigned int value)
 	::SetSquelchVal(sql);
 
 	m_squelch = value;
+}
+
+float CDTTSPControl::getTXOffset()
+{
+	return ::GetTXOffset();
+}
+
+float CDTTSPControl::getRXOffset()
+{
+	return ::GetRXOffset();
 }
 
 float CDTTSPControl::getMeter(int type)

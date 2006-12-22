@@ -593,28 +593,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="SpotTone.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="Squelch.cpp"
 				>
 				<FileConfiguration
@@ -871,10 +849,6 @@
 			</File>
 			<File
 				RelativePath="SpeechProc.h"
-				>
-			</File>
-			<File
-				RelativePath="SpotTone.h"
 				>
 			</File>
 			<File

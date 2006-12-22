@@ -39,7 +39,7 @@ Bridgewater, NJ 08807
 
 const double HUGE_PHASE = 1256637061.43593;
 
-COscillator::COscillator(CXB* buf, double frequency, double phase, float sampleRate) :
+COscillator::COscillator(CXB* buf, float sampleRate, double frequency, double phase) :
 m_buf(buf),
 m_frequency(0.0),
 m_sampleRate(sampleRate),

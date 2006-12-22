@@ -16,15 +16,16 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "TwoToneReader.h"
+#include "ThreeToneReader.h"
 
 #include <wx/debug.h>
 #include <wx/log.h>
 
 
-CTwoToneReader::CTwoToneReader(float frequency1, float frequency2, float amplitude, IDataReader* reader) :
+CThreeToneReader::CThreeToneReader(float frequency1, float frequency2, float frequency3, float amplitude, IDataReader* reader) :
 m_frequency1(frequency1),
 m_frequency2(frequency2),
+m_frequency3(frequency3),
 m_amplitude(amplitude),
 m_reader(reader),
 m_blockSize(0),
@@ -38,28 +39,34 @@ m_sinDelta1(0.0F),
 m_cosVal2(0.0F),
 m_sinVal2(0.0F),
 m_cosDelta2(0.0F),
-m_sinDelta2(0.0F)
+m_sinDelta2(0.0F),
+m_cosVal3(0.0F),
+m_sinVal3(0.0F),
+m_cosDelta3(0.0F),
+m_sinDelta3(0.0F)
 {
 	wxASSERT(m_frequency1 > 0.0F);
 	wxASSERT(m_frequency2 > 0.0F);
-	wxASSERT(m_amplitude >= 0.0 && m_amplitude < 0.5F);
+	wxASSERT(m_frequency3 > 0.0F);
+	wxASSERT(m_amplitude >= 0.0 && m_amplitude < 0.33F);
 }
 
-CTwoToneReader::~CTwoToneReader()
+CThreeToneReader::~CThreeToneReader()
 {
 	delete m_reader;
 }
 
-void CTwoToneReader::setCallback(IDataCallback* callback, int id)
+void CThreeToneReader::setCallback(IDataCallback* callback, int id)
 {
 	m_callback = callback;
 	m_id       = id;
 }
 
-bool CTwoToneReader::open(float sampleRate, unsigned int blockSize)
+bool CThreeToneReader::open(float sampleRate, unsigned int blockSize)
 {
 	wxASSERT(m_frequency1 < (sampleRate + 0.5F) / 2.0F);
 	wxASSERT(m_frequency2 < (sampleRate + 0.5F) / 2.0F);
+	wxASSERT(m_frequency3 < (sampleRate + 0.5F) / 2.0F);
 
 	if (m_reader != NULL) {
 		m_reader->setCallback(this, 0);
@@ -73,8 +80,8 @@ bool CTwoToneReader::open(float sampleRate, unsigned int blockSize)
 
 	m_buffer = new float[m_blockSize * 2];
 
-	m_cosVal1 = m_cosVal2 = 1.0F;
-	m_sinVal1 = m_sinVal2 = 0.0F;
+	m_cosVal1 = m_cosVal2 = m_cosVal3 = 1.0F;
+	m_sinVal1 = m_sinVal2 = m_sinVal3 = 0.0F;
 
 	float delta = m_frequency1 / sampleRate * 2.0 * M_PI;
 	m_cosDelta1 = ::cos(delta);
@@ -84,10 +91,14 @@ bool CTwoToneReader::open(float sampleRate, unsigned int blockSize)
 	m_cosDelta2 = ::cos(delta);
 	m_sinDelta2 = ::sin(delta);
 
+	delta = m_frequency3 / sampleRate * 2.0 * M_PI;
+	m_cosDelta3 = ::cos(delta);
+	m_sinDelta3 = ::sin(delta);
+
 	return true;
 }
 
-void CTwoToneReader::close()
+void CThreeToneReader::close()
 {
 	if (m_reader != NULL)
 		m_reader->close();
@@ -95,16 +106,16 @@ void CTwoToneReader::close()
 	delete[] m_buffer;
 }
 
-void CTwoToneReader::purge()
+void CThreeToneReader::purge()
 {
 }
 
-bool CTwoToneReader::hasClock()
+bool CThreeToneReader::hasClock()
 {
 	return m_reader != NULL;
 }
 
-void CTwoToneReader::clock()
+void CThreeToneReader::clock()
 {
 	wxASSERT(m_callback != NULL);
 
@@ -117,14 +128,18 @@ void CTwoToneReader::clock()
 		m_sinVal2 = m_cosVal2 * m_sinDelta2 + m_sinVal2 * m_cosDelta2;
 		m_cosVal2 = tmpVal;
 
-		m_buffer[i * 2 + 0] = m_cosVal1 * m_amplitude + m_cosVal2 * m_amplitude;
-		m_buffer[i * 2 + 1] = m_sinVal1 * m_amplitude + m_sinVal2 * m_amplitude;
+		tmpVal = m_cosVal3 * m_cosDelta3 - m_sinVal3 * m_sinDelta3;
+		m_sinVal3 = m_cosVal3 * m_sinDelta3 + m_sinVal3 * m_cosDelta3;
+		m_cosVal3 = tmpVal;
+
+		m_buffer[i * 2 + 0] = m_cosVal1 * m_amplitude + m_cosVal2 * m_amplitude + m_cosVal3 * m_amplitude;
+		m_buffer[i * 2 + 1] = m_sinVal1 * m_amplitude + m_sinVal2 * m_amplitude + m_sinVal3 * m_amplitude;
 	}
 
 	m_callback->callback(m_buffer, m_blockSize, m_id);
 }
 
-void CTwoToneReader::callback(float* buffer, unsigned int nSamples, int id)
+void CThreeToneReader::callback(float* buffer, unsigned int nSamples, int id)
 {
 	::memset(buffer, 0x00, nSamples * 2 * sizeof(float));
 

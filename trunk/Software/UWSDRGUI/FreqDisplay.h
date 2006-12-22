@@ -27,9 +27,9 @@ class CFreqDisplay : public wxPanel {
 
     public:
 	CFreqDisplay(wxWindow* parent, int id, const wxPoint& pos, const wxSize& size, long style = 0L, const wxString& name = wxPanelNameStr);
-	virtual ~CFreqDisplay();
+	~CFreqDisplay();
 
-	virtual void setFrequency(const CFrequency& frequency);
+	void setFrequency(const CFrequency& frequency);
 
 	void onPaint(wxPaintEvent& event);
 

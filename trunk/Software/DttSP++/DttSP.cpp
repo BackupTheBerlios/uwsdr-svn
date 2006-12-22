@@ -139,6 +139,12 @@ void CDttSP::setMode(SDRMODE m)
 	SEM_POST(m_update);
 }
 
+void CDttSP::setZeroIF(bool flag)
+{
+	m_tx->setZeroIF(flag);
+	m_rx->setZeroIF(flag);
+}
+
 void CDttSP::setDCBlockFlag(bool flag)
 {
 	m_tx->setDCBlockFlag(flag);
@@ -173,14 +179,6 @@ void CDttSP::setRXFrequency(double freq)
 		return;
 
 	m_rx->setFrequency(freq);
-}
-
-void CDttSP::setRITFrequency(double freq)
-{
-	if (::fabs(freq) > 5000.0)
-		return;
-
-	m_rx->setRITFrequency(freq);
 }
 
 void CDttSP::setTXFrequency(double freq)
@@ -359,16 +357,6 @@ void CDttSP::setALCGainTop(float gain)
 	m_tx->setALCGainTop(gain);
 }
 
-void CDttSP::setSpotToneFlag(bool flag)
-{
-	m_rx->setSpotToneFlag(flag);
-}
-
-void CDttSP::setSpotToneValues(float gain, float freq, float rise, float fall)
-{
-	m_rx->setSpotToneValues(gain, freq, rise, fall);
-}
-
 void CDttSP::getSpectrum(float *results)
 {
 	ASSERT(results != NULL);
@@ -501,6 +489,16 @@ void CDttSP::setRXPan(float pos)
 		return;
 
 	m_rx->setAzim(pos);
+}
+
+float CDttSP::getTXOffset() const
+{
+	return m_tx->getOffset();
+}
+
+float CDttSP::getRXOffset() const
+{
+	return m_rx->getOffset();
 }
 
 void CDttSP::audioEntry(float* input_i, float* input_q, float* output_i, float* output_q, unsigned int nframes)

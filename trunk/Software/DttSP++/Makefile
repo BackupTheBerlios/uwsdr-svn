@@ -4,7 +4,7 @@ CFLAGS :=	-I../Common $(CFLAGS)
 
 OBJS :=		AGC.o AMDemod.o AMMod.o BlockLMS.o CorrectIQ.o CXB.o DCBlock.o DttSP.o FIR.o FMDemod.o \
 		FMMod.o FilterOVSV.o LMS.o Meter.o NoiseBlanker.o Oscillator.o RX.o Spectrum.o \
-		SpeechProc.o SpotTone.o Squelch.o TX.o Window.o SSBDemod.o SSBMod.o Utils.o update.o
+		SpeechProc.o Squelch.o TX.o Window.o SSBDemod.o SSBMod.o Utils.o update.o
 
 DttSP.a:	$(OBJS)
 		ar rcs DttSP.a $(OBJS)
@@ -58,7 +58,7 @@ Oscillator.o: 	Oscillator.cpp Oscillator.h CXB.h FromSys.h
 		$(CC) $(CFLAGS) -c Oscillator.cpp
 
 RX.o:		RX.cpp RX.h AGC.h AMDemod.h BlockLMS.h CorrectIQ.h CXB.h Defs.h Demod.h FilterOVSV.h FMDemod.h \
-		LMS.h Meter.h NoiseBlanker.h Oscillator.h Spectrum.h SpotTone.h Squelch.h SSBDemod.h
+		LMS.h Meter.h NoiseBlanker.h Oscillator.h Spectrum.h Squelch.h SSBDemod.h
 		$(CC) $(CFLAGS) -c RX.cpp
 
 Spectrum.o:	Spectrum.cpp Spectrum.h CXB.h FIR.h FromSys.h Utils.h Window.h
@@ -66,9 +66,6 @@ Spectrum.o:	Spectrum.cpp Spectrum.h CXB.h FIR.h FromSys.h Utils.h Window.h
 
 SpeechProc.o: 	SpeechProc.cpp SpeechProc.h Complex.h CXB.h FromSys.h Utils.h
 		$(CC) $(CFLAGS) -c SpeechProc.cpp
-
-SpotTone.o:	SpotTone.cpp SpotTone.h CXB.h FromSys.h Oscillator.h
-		$(CC) $(CFLAGS) -c SpotTone.cpp
 
 Squelch.o:	Squelch.cpp Squelch.h CXB.h
 		$(CC) $(CFLAGS) -c Squelch.cpp

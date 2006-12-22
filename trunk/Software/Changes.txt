@@ -238,3 +238,9 @@ Changed to the old About box on Windows.
 Added dB numbers to the Panadpater.
 
 Removed the need for libsndfile on non-Windows platforms.
+
+Speech Processor only works on SSB now.
+
+RIT now changes the spectrum display.
+
+Now possible to run in Zero-IF/3rd Method mode as well as Fs/4.

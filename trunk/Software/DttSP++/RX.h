@@ -49,7 +49,6 @@ Bridgewater, NJ 08807
 #include "AMDemod.h"
 #include "FMDemod.h"
 #include "SSBDemod.h"
-#include "SpotTone.h"
 #include "Squelch.h"
 
 
@@ -65,10 +64,11 @@ class CRX {
 
 	virtual void setMode(SDRMODE mode);
 
+	virtual void setZeroIF(bool flag);
+
 	virtual void setFilter(double lowFreq, double highFreq);
 
 	virtual void setFrequency(double freq);
-	virtual void setRITFrequency(double freq);
 
 	virtual void setSquelchFlag(bool flag);
 	virtual void setSquelchThreshold(float threshold);
@@ -95,14 +95,15 @@ class CRX {
 
 	virtual void setAGCMode(AGCMODE mode);
 
-	virtual void setSpotToneFlag(bool flag);
-	virtual void setSpotToneValues(float gain, float freq, float rise, float fall);
-
 	virtual void setAzim(float azim);
 
 	virtual void setSpectrumType(SPECTRUMtype type);
 
+	virtual float getOffset() const;
+
     private:
+	float          m_sampleRate;
+
 	CMeter*        m_meter;
 	CSpectrum*     m_spectrum;
 	SPECTRUMtype   m_type;
@@ -112,9 +113,8 @@ class CRX {
 
 	CCorrectIQ*    m_iq;
 
-	COscillator*   m_oscillator;
-
-	COscillator*   m_rit;
+	COscillator*   m_oscillator1;
+	COscillator*   m_oscillator2;
 
 	CFilterOVSV*   m_filter;
 
@@ -143,14 +143,17 @@ class CRX {
 	CFMDemod*      m_fmDemodulator;
 	CSSBDemod*     m_ssbDemodulator;
 
-	CSpotTone*     m_spotTone;
-	bool           m_spotToneFlag;
-
 	CSquelch*      m_squelch;
 
 	SDRMODE        m_mode;
 
     bool           m_binFlag;
+
+	bool           m_zeroIF;
+
+	double         m_freq;
+	double         m_lowFreq;
+	double         m_highFreq;
 
 	COMPLEX        m_azim;
 	unsigned long  m_tick;

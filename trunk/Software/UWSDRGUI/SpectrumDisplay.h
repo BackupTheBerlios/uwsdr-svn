@@ -25,22 +25,22 @@ class CSpectrumDisplay : public wxPanel {
 
     public:
 	CSpectrumDisplay(wxWindow* parent, int id, const wxPoint& pos, const wxSize& size, long style = 0L, const wxString& name = wxPanelNameStr);
-	virtual ~CSpectrumDisplay();
+	~CSpectrumDisplay();
 
-	virtual void setSampleRate(float sampleRate);
-	virtual void setBandwidth(float hertz);
+	void setSampleRate(float sampleRate);
+	void setBandwidth(float hertz);
 
-	virtual void showSpectrum(const float* spectrum, float bottom);
+	void showSpectrum(const float* spectrum, float bottom = 0.0F, float offset = 0.0F);
 
-	virtual void setType(int type);
-	virtual void setPosition(int pos);
-	virtual void setSpeed(int speed);
+	void setType(int type);
+	void setPosition(int pos);
+	void setSpeed(int speed);
 
-	virtual int  getType() const;
-	virtual int  getPosition() const;
-	virtual int  getSpeed() const;
+	int  getType() const;
+	int  getPosition() const;
+	int  getSpeed() const;
 
-	virtual float getFreqPick();
+	float getFreqPick();
 
 	void onPaint(wxPaintEvent& event);
 	void onLeftMouse(wxMouseEvent& event);
@@ -64,6 +64,7 @@ class CSpectrumDisplay : public wxPanel {
 	int          m_factor;
 	unsigned int m_ticks;
 	float        m_pick;
+	float        m_offset;
 
 	DECLARE_EVENT_TABLE()
 

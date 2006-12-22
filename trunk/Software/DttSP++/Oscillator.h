@@ -40,7 +40,7 @@ Bridgewater, NJ 08807
 
 class COscillator {
     public:
-	COscillator(CXB* buf, double frequency, double phase, float sampleRate);
+	COscillator(CXB* buf, float sampleRate, double frequency = 0.0, double phase = 0.0);
 	virtual ~COscillator();
 
 	virtual double getPhase() const;
