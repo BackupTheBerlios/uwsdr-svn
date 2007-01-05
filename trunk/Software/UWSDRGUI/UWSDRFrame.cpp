@@ -224,11 +224,17 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_parameters = parameters;
 
-	// In all configurations bar the standard one, TCP control data is disabled
-#if defined(TOBIAS) || defined(GRANT_RX) || defined(GRANT_TX) || defined(DEMO)
+#if defined(TOBIAS) || defined(GRANT_TX)
 	m_sdr = new CNullController();
 #else
-	m_sdr = new CUWSDRController(m_parameters->m_ipAddress, m_parameters->m_controlPort, m_parameters->m_hardwareProtocolVersion);
+	switch (m_parameters->m_hardwareType) {
+		case TYPE_UWSDR1:
+			m_sdr = new CUWSDRController(m_parameters->m_ipAddress, m_parameters->m_controlPort, 1);
+			break;
+		default:
+			m_sdr = new CNullController();
+			break;
+	}
 #endif
 	m_sdr->setCallback(this, -1);
 
@@ -268,45 +274,48 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	else
 		m_spectrumDisplay->setBandwidth(5000.0F);
 
-	// FIXME
 	m_dsp = new CDSPControl(m_parameters->m_hardwareSampleRate);
 
+// FIXME
 #if defined(GRANT_TX)
 	// RX is disabled, TX is from audio card for signal output fed by a two-tone signal
 	m_dsp->setTXReader(new CTwoToneReader(1000.0F, 1300.0F, 0.4F, new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev)));
 	m_dsp->setTXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
-
 	m_dsp->setRXReader(new CNullReader());
 	m_dsp->setRXWriter(new CNullWriter());
-#elif defined(GRANT_RX)
-	// TX is disabled, RX is from audio card for signal input and audio output
-	m_dsp->setTXReader(new CNullReader());
-	m_dsp->setTXWriter(new CNullWriter());
-
-	m_dsp->setRXReader(new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev));
-	m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
-#elif defined(DEMO)
-	// A self contained variant for demo's and testing
-	// m_dsp->setTXReader(new CTwoToneReader(1000.0F, 1300.0F, 0.4F, new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev)));
-	m_dsp->setTXReader(new CThreeToneReader(500.0F, 1500.0F, 2000.0F, 0.25F, new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev)));
-	m_dsp->setTXWriter(new CNullWriter());
-
-	m_dsp->setRXReader(new CSignalReader(int(m_parameters->m_hardwareSampleRate / 4.0F + 1000.5F), 0.0003F, 0.0004F));
-	m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
 #elif defined(TOBIAS)
 	// UDP in/out with audio on loudspeaker and two-tone audio on transmit
 	m_dsp->setTXReader(new CTwoToneReader(1000.0F, 1300.0F, 0.4F, new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev)));
-	m_dsp->setTXWriter(new CSDRDataWriter(m_parameters->m_ipAddress, m_parameters->m_dataPort));
-
-	m_dsp->setRXReader(new CSDRDataReader(m_parameters->m_ipAddress, m_parameters->m_dataPort));
+	m_dsp->setTXWriter(new CSDRDataWriter(m_parameters->m_ipAddress, m_parameters->m_dataPort, 1));
+	m_dsp->setRXReader(new CSDRDataReader(m_parameters->m_ipAddress, m_parameters->m_dataPort, 1));
 	m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
 #else
-	// The standard configuration, UDP in/out and sound card for the user
-	m_dsp->setTXReader(new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev));
-	m_dsp->setTXWriter(new CSDRDataWriter(m_parameters->m_ipAddress, m_parameters->m_dataPort));
+	switch (m_parameters->m_hardwareType) {
+		case TYPE_AUDIORX:
+			// TX is disabled, RX is from audio card for signal input and audio output
+			m_dsp->setTXReader(new CNullReader());
+			m_dsp->setTXWriter(new CNullWriter());
+			m_dsp->setRXReader(new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev));
+			m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
+			break;
 
-	m_dsp->setRXReader(new CSDRDataReader(m_parameters->m_ipAddress, m_parameters->m_dataPort));
-	m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
+		case TYPE_DEMO:
+			// A self contained variant for demo's and testing
+			// m_dsp->setTXReader(new CTwoToneReader(1000.0F, 1300.0F, 0.4F, new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev)));
+			m_dsp->setTXReader(new CThreeToneReader(500.0F, 1500.0F, 2000.0F, 0.25F, new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev)));
+			m_dsp->setTXWriter(new CNullWriter());
+			m_dsp->setRXReader(new CSignalReader(int(m_parameters->m_hardwareSampleRate / 4.0F + 1000.5F), 0.0003F, 0.0004F));
+			m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
+			break;
+
+		case TYPE_UWSDR1:
+			// The standard configuration, UDP in/out and sound card for the user
+			m_dsp->setTXReader(new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev));
+			m_dsp->setTXWriter(new CSDRDataWriter(m_parameters->m_ipAddress, m_parameters->m_dataPort, 1));
+			m_dsp->setRXReader(new CSDRDataReader(m_parameters->m_ipAddress, m_parameters->m_dataPort, 1));
+			m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
+			break;
+	}
 #endif
 
 	m_infoBox->setVFO(m_parameters->m_vfoChoice);
@@ -695,12 +704,26 @@ void CUWSDRFrame::freqChange(double value)
 	else if (m_parameters->m_vfoChoice == VFO_D)
 		freq = m_parameters->m_vfoD + value;
 
+	/*
+	 * The tuning loops around the frequencies set in the preferences, except in SoftRock mode where it
+	 * wraps on frequencies based on the centre frequency and sample rate.
+	 */
 	if (!m_txOn) {
-		if (freq >= m_parameters->m_maxReceiveFreq)
-			freq = (freq + m_parameters->m_minReceiveFreq) - m_parameters->m_maxReceiveFreq;
+		if (m_parameters->m_hardwareType == TYPE_AUDIORX) {
+			CFrequency highFreq = m_parameters->m_hardwareMaxFreq + m_parameters->m_hardwareSampleRate / 4.0F;
+			CFrequency lowFreq  = m_parameters->m_hardwareMinFreq - m_parameters->m_hardwareSampleRate / 4.0F;
 
-		if (freq < m_parameters->m_minReceiveFreq)
-			freq = (freq + m_parameters->m_maxReceiveFreq) - m_parameters->m_minReceiveFreq;
+			if (freq > highFreq)
+				freq = lowFreq;
+			else if (freq < lowFreq)
+				freq = highFreq;
+		} else {
+			if (freq >= m_parameters->m_maxReceiveFreq)
+				freq = (freq + m_parameters->m_minReceiveFreq) - m_parameters->m_maxReceiveFreq;
+
+			if (freq < m_parameters->m_minReceiveFreq)
+				freq = (freq + m_parameters->m_maxReceiveFreq) - m_parameters->m_minReceiveFreq;
+		}
 	} else {
 		if (freq >= m_parameters->m_maxTransmitFreq)
 			freq = (freq + m_parameters->m_minTransmitFreq) - m_parameters->m_maxTransmitFreq;
@@ -1216,18 +1239,28 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 				wxString sampleRate;
 				sampleRate.Printf(wxT("%.0f"), m_parameters->m_hardwareSampleRate);
 
-				wxString protocolVersion;
-				protocolVersion.Printf(wxT("%u"), m_parameters->m_hardwareProtocolVersion);
+				wxString type;
+				switch (m_parameters->m_hardwareType) {
+					case TYPE_AUDIORX:
+						type = wxT("Audio RX");
+						break;
+					case TYPE_DEMO:
+						type = wxT("Demo");
+						break;
+					case TYPE_UWSDR1:
+						type = wxT("UWSDR v1.0");
+						break;
+				}
 
 				wxString transmit = (m_parameters->m_hardwareReceiveOnly) ? _("No") : _("Yes");
 
 				::wxMessageBox(_("The hardware parameters are:\n\n"
 					"Name:\t\t") + m_parameters->m_hardwareName + _("\n"
-					"Max. Freq:\t") + m_parameters->m_maxHardwareFreq.getString(3) + _(" MHz\n"
-					"Min. Freq:\t") + m_parameters->m_minHardwareFreq.getString(3) + _(" MHz\n"
+					"Max. Freq:\t") + m_parameters->m_hardwareMaxFreq.getString(3) + _(" MHz\n"
+					"Min. Freq:\t") + m_parameters->m_hardwareMinFreq.getString(3) + _(" MHz\n"
 					"Step Size:\t") + stepSize + _(" Hz\n"
 					"Sample Rate:\t") + sampleRate + _(" samples/sec\n"
-					"Protocol Version:\t") + protocolVersion + _("\n"
+					"Type:\t\t") + type + _("\n"
 					"Transmit:\t\t") + transmit,
 					_("SDR Hardware Information"),
 					wxICON_INFORMATION);

@@ -20,11 +20,11 @@
 
 CSDRParameters::CSDRParameters() :
 m_hardwareName(),
-m_maxHardwareFreq(),
-m_minHardwareFreq(),
+m_hardwareType(0),
+m_hardwareMaxFreq(),
+m_hardwareMinFreq(),
 m_hardwareStepSize(0.0F),
 m_hardwareSampleRate(0.0F),
-m_hardwareProtocolVersion(0),
 m_hardwareReceiveOnly(true),
 m_fileName(),
 m_name(),

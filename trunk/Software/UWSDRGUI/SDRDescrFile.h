@@ -27,24 +27,24 @@ class CSDRDescrFile {
 
     public:
 	CSDRDescrFile(const wxString& fileName);
-	virtual ~CSDRDescrFile();
+	~CSDRDescrFile();
 
-	virtual wxString     getName() const;
-	virtual CFrequency   getMaxFreq() const;
-	virtual CFrequency   getMinFreq() const;
-	virtual float        getStepSize() const;
-	virtual float        getSampleRate() const;
-	virtual unsigned int getProtocolVersion() const;
-	virtual bool         getReceiveOnly() const;
-	virtual bool         isValid() const;
+	wxString   getName() const;
+	int        getType() const;
+	CFrequency getMaxFreq() const;
+	CFrequency getMinFreq() const;
+	float      getStepSize() const;
+	float      getSampleRate() const;
+	bool       getReceiveOnly() const;
+	bool       isValid() const;
 
     private:
 	wxString     m_name;
+	int          m_type;
 	CFrequency   m_maxFreq;
 	CFrequency   m_minFreq;
 	float        m_stepSize;
 	float        m_sampleRate;
-	unsigned int m_protocolVersion;
 	bool         m_receiveOnly;
 	bool         m_valid;
 };

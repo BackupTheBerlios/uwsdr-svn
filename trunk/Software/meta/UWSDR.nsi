@@ -67,8 +67,13 @@ Section "UWSDR Program Files" SecProgram
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Changes.txt"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Install.txt"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Jobs.txt"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Demo.sdr"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\13cms.sdr"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\13cms.sdr"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\23cms.sdr"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\Demo.sdr"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\SoftRock30.sdr"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\SoftRock40.sdr"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\SoftRock80.sdr"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\SoftRock160.sdr"
 
   ;Create start menu entry
   CreateDirectory "$SMPROGRAMS\UWSDR"

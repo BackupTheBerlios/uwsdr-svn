@@ -31,11 +31,11 @@ class CSDRParameters {
 	~CSDRParameters();
 
 	wxString     m_hardwareName;
-	CFrequency   m_maxHardwareFreq;
-	CFrequency   m_minHardwareFreq;
+	int			 m_hardwareType;
+	CFrequency   m_hardwareMaxFreq;
+	CFrequency   m_hardwareMinFreq;
 	float        m_hardwareStepSize;
 	float        m_hardwareSampleRate;
-	unsigned int m_hardwareProtocolVersion;
 	bool         m_hardwareReceiveOnly;
 
 	wxString     m_fileName;

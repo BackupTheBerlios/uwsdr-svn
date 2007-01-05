@@ -157,8 +157,7 @@ bool CUWSDRApp::OnInit()
 		return false;
 	}
 
-	// If the step size is too large, we can't use the Weaver method
-	if (m_parameters->m_hardwareStepSize > 100.0F)
+	if (m_parameters->m_hardwareStepSize > 100.0F || m_parameters->m_hardwareType == TYPE_AUDIORX || m_parameters->m_hardwareType == TYPE_DEMO)
 		m_parameters->m_zeroIF = false;
 
 	wxString title = VERSION + wxT(" - ") + m_parameters->m_name;
@@ -172,10 +171,10 @@ bool CUWSDRApp::OnInit()
 	SetTopWindow(m_frame);
 
 	// Sanity checking for the frequencies
-	if (m_parameters->m_maxReceiveFreq > m_parameters->m_maxHardwareFreq)
-		m_parameters->m_maxReceiveFreq = m_parameters->m_maxHardwareFreq;
-	if (m_parameters->m_minReceiveFreq < m_parameters->m_minHardwareFreq)
-		m_parameters->m_minReceiveFreq = m_parameters->m_minHardwareFreq;
+	if (m_parameters->m_maxReceiveFreq > m_parameters->m_hardwareMaxFreq)
+		m_parameters->m_maxReceiveFreq = m_parameters->m_hardwareMaxFreq;
+	if (m_parameters->m_minReceiveFreq < m_parameters->m_hardwareMinFreq)
+		m_parameters->m_minReceiveFreq = m_parameters->m_hardwareMinFreq;
 	if (m_parameters->m_maxTransmitFreq > m_parameters->m_maxReceiveFreq)
 		m_parameters->m_maxTransmitFreq = m_parameters->m_maxReceiveFreq;
 	if (m_parameters->m_minTransmitFreq < m_parameters->m_minReceiveFreq)
@@ -237,13 +236,13 @@ bool CUWSDRApp::readDescrFile()
 	if (!descrFile.isValid())
 		return false;
 
-	m_parameters->m_hardwareName            = descrFile.getName();
-	m_parameters->m_maxHardwareFreq         = descrFile.getMaxFreq();
-	m_parameters->m_minHardwareFreq         = descrFile.getMinFreq();
-	m_parameters->m_hardwareStepSize        = descrFile.getStepSize();
-	m_parameters->m_hardwareSampleRate      = descrFile.getSampleRate();
-	m_parameters->m_hardwareProtocolVersion = descrFile.getProtocolVersion();
-	m_parameters->m_hardwareReceiveOnly     = descrFile.getReceiveOnly();
+	m_parameters->m_hardwareName        = descrFile.getName();
+	m_parameters->m_hardwareType        = descrFile.getType();
+	m_parameters->m_hardwareMaxFreq     = descrFile.getMaxFreq();
+	m_parameters->m_hardwareMinFreq     = descrFile.getMinFreq();
+	m_parameters->m_hardwareStepSize    = descrFile.getStepSize();
+	m_parameters->m_hardwareSampleRate  = descrFile.getSampleRate();
+	m_parameters->m_hardwareReceiveOnly = descrFile.getReceiveOnly();
 
 	return true;
 }

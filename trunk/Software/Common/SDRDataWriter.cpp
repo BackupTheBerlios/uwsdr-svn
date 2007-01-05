@@ -25,10 +25,11 @@ const unsigned int SAMPLE_SIZE = 6;
 // const unsigned int MAX_SAMPLES = 210;
 
 
-CSDRDataWriter::CSDRDataWriter(const wxString& address, int port, unsigned int maxSamples, bool delay) :
+CSDRDataWriter::CSDRDataWriter(const wxString& address, int port, unsigned int version, unsigned int maxSamples, bool delay) :
 wxThread(),
 m_address(address),
 m_port(port),
+m_version(version),
 m_fd(-1),
 m_remAddr(),
 m_sequence(0),

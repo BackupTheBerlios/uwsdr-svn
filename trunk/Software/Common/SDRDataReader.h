@@ -28,7 +28,7 @@
 class CSDRDataReader : public wxThread, public IDataReader {
 
     public:
-	CSDRDataReader(const wxString& address, int port);
+	CSDRDataReader(const wxString& address, int port, unsigned int version);
 	virtual ~CSDRDataReader();
 
 	virtual void setCallback(IDataCallback* callback, int id);
@@ -47,6 +47,7 @@ class CSDRDataReader : public wxThread, public IDataReader {
     private:
 	wxString       m_address;
 	unsigned short m_port;
+	unsigned int   m_version;
 	unsigned int   m_blockSize;
 	unsigned int   m_size;
 	char*          m_remAddr;

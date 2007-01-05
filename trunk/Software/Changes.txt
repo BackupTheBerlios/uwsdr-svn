@@ -244,3 +244,7 @@ Speech Processor only works on SSB now.
 RIT now changes the spectrum display.
 
 Now possible to run in Zero-IF/3rd Method mode as well as Fs/4.
+
+New option in the .sdr file of "type" and removed the "protocolVersion" option.
+
+A number of new .sdr files to use the new "type" feature are included.

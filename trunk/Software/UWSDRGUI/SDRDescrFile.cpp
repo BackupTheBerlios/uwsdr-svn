@@ -17,6 +17,7 @@
  */
 
 #include "SDRDescrFile.h"
+#include "UWSDRDefs.h"
 
 #include <wx/textfile.h>
 #include <wx/tokenzr.h>
@@ -24,11 +25,11 @@
 
 CSDRDescrFile::CSDRDescrFile(const wxString& fileName) :
 m_name(),
+m_type(TYPE_UWSDR1),
 m_maxFreq(),
 m_minFreq(),
 m_stepSize(0.0F),
 m_sampleRate(0.0F),
-m_protocolVersion(0),
 m_receiveOnly(true),
 m_valid(false)
 {
@@ -49,7 +50,20 @@ m_valid(false)
 		if (line.length() > 0 && line.GetChar(0) != wxT('#')) {
 			if (line.Left(5).Cmp(wxT("name=")) == 0)
 				m_name = line.Mid(5);
-			else if (line.Left(9).Cmp(wxT("highFreq=")) == 0)
+			else if (line.Left(5).Cmp(wxT("type=")) == 0) {
+				wxString type = line.Mid(5);
+
+				if (type.Cmp(wxT("audiorx")) == 0)
+					m_type = TYPE_AUDIORX;
+				else if (type.Cmp(wxT("demo")) == 0)
+					m_type = TYPE_DEMO;
+				else if (type.Cmp(wxT("uwsdr1")) == 0)
+					m_type = TYPE_UWSDR1;
+				else {
+					::wxLogError(wxT("Unknown type - %s in the .sdr file"), type.c_str());
+					return;
+				}
+			} else if (line.Left(9).Cmp(wxT("highFreq=")) == 0)
 				m_maxFreq.setFrequency(line.Mid(9));
 			else if (line.Left(8).Cmp(wxT("lowFreq=")) == 0)
 				m_minFreq.setFrequency(line.Mid(8));
@@ -61,10 +75,6 @@ m_valid(false)
 				double temp;
 				line.Mid(11).ToDouble(&temp);
 				m_sampleRate = temp;
-			} else if (line.Left(16).Cmp(wxT("protocolVersion=")) == 0) {
-				unsigned long temp;
-				line.Mid(16).ToULong(&temp);
-				m_protocolVersion = temp;
 			} else if (line.Left(12).Cmp(wxT("receiveOnly=")) == 0) {
 				unsigned long temp;
 				line.Mid(12).ToULong(&temp);
@@ -72,6 +82,16 @@ m_valid(false)
 			}
 		}
 	}
+
+	if (m_type == TYPE_AUDIORX) {
+		if (m_minFreq != m_maxFreq) {
+			::wxLogError(wxT("The min and max frequencies must be the same for \"type=audiorx\""));
+			return;
+		}
+	}
+
+	if (m_type == TYPE_AUDIORX)
+		m_receiveOnly = true;
 
 	m_valid = true;
 
@@ -85,6 +105,11 @@ CSDRDescrFile::~CSDRDescrFile()
 wxString CSDRDescrFile::getName() const
 {
 	return m_name;
+}
+
+int CSDRDescrFile::getType() const
+{
+	return m_type;
 }
 
 CFrequency CSDRDescrFile::getMaxFreq() const
@@ -105,11 +130,6 @@ float CSDRDescrFile::getStepSize() const
 float CSDRDescrFile::getSampleRate() const
 {
 	return m_sampleRate;
-}
-
-unsigned int CSDRDescrFile::getProtocolVersion() const
-{
-	return m_protocolVersion;
 }
 
 bool CSDRDescrFile::getReceiveOnly() const

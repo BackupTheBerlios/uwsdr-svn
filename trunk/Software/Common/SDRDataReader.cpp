@@ -32,10 +32,11 @@ const int HEADER_SIZE = 6;
 const int SAMPLE_SIZE = 6;
 
 
-CSDRDataReader::CSDRDataReader(const wxString& address, int port) :
+CSDRDataReader::CSDRDataReader(const wxString& address, int port, unsigned int version) :
 wxThread(),
 m_address(address),
 m_port(port),
+m_version(version),
 m_blockSize(0),
 m_size(0),
 m_remAddr(),

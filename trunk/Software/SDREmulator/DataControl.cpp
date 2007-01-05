@@ -154,11 +154,11 @@ bool CDataControl::openIO()
 	m_internal1Reader  = new CSignalReader(m_sampleRate / 4.0F + 1000.5F, 0.0003F, 0.0004F);
 	m_internal2Reader  = new CSignalReader(m_sampleRate / 4.0F, 0.0F, 0.001F);
 	m_soundCardReader  = new CSoundCardReader(m_api, m_inDev);
-	m_rxWriter         = new CSDRDataWriter(m_address, m_port, m_maxSamples, m_delay);
+	m_rxWriter         = new CSDRDataWriter(m_address, m_port, 1, m_maxSamples, m_delay);
 
 	m_nullWriter       = new CNullWriter();
 	m_soundCardWriter  = new CSoundCardWriter(m_api, m_outDev);
-	m_txReader         = new CSDRDataReader(m_address, m_port);
+	m_txReader         = new CSDRDataReader(m_address, m_port, 1);
 
 	// This should be done before opening
 	m_internal1Reader->setCallback(this, INTERNAL_READER_1);

@@ -38,6 +38,7 @@ Common/Common.a:
 install:
 		make -C GUISetup install
 		make -C SDREmulator install
+		make -C SDRFiles install
 		make -C SDRHelp install
 		make -C SDRSetup install
 		make -C UWSDRGUI install

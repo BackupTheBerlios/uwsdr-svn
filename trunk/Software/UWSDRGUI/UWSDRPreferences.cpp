@@ -186,7 +186,7 @@ m_method(NULL)
 	m_txIQGain->SetValue(m_parameters->m_txIQgain);
 
 	m_method->SetSelection(m_parameters->m_zeroIF ? 1 : 0);
-	if (m_parameters->m_hardwareStepSize > 100.0F) {
+	if (m_parameters->m_hardwareStepSize > 100.0F || m_parameters->m_hardwareType == TYPE_AUDIORX || m_parameters->m_hardwareType == TYPE_DEMO) {
 		m_methodLabel->Disable();
 		m_method->Disable();
 	}
@@ -207,8 +207,8 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 
 	CFrequency minRXFreq(text);
 
-	if (minRXFreq < m_parameters->m_minHardwareFreq ||
-	    minRXFreq > m_parameters->m_maxHardwareFreq) {
+	if (minRXFreq < m_parameters->m_hardwareMinFreq ||
+	    minRXFreq > m_parameters->m_hardwareMaxFreq) {
 		::wxMessageBox(_("The Min RX frequency may not be outside the\nrange of the hardware."), _("uWave SDR Error"), wxICON_ERROR);
 		return;
 	}
@@ -222,8 +222,8 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 
 	CFrequency maxRXFreq(text);
 
-	if (maxRXFreq < m_parameters->m_minHardwareFreq ||
-	    maxRXFreq > m_parameters->m_maxHardwareFreq) {
+	if (maxRXFreq < m_parameters->m_hardwareMinFreq ||
+	    maxRXFreq > m_parameters->m_hardwareMaxFreq) {
 		::wxMessageBox(_("The Max RX frequency may not be outside the\nrange of the hardware."), _("uWave SDR Error"), wxICON_ERROR);
 		return;
 	}

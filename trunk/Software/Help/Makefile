@@ -7,9 +7,9 @@ install:
 	$(ZIP) -j -9 GUISetup/GUISetup.zip GUISetup/*.htm GUISetup/*.png GUISetup/*.hh[ckp]
 	$(ZIP) -j -9 SDRSetup/SDRSetup.zip SDRSetup/*.htm SDRSetup/*.png SDRSetup/*.hh[ckp]
 	$(ZIP) -j -9 UWSDR/UWSDR.zip UWSDR/*.htm UWSDR/*.png UWSDR/*.hh[ckp]
-	install -g bin -o root -m 0775 GUISetup/GUISetup.zip $(DATADIR)
-	install -g bin -o root -m 0775 SDRSetup/SDRSetup.zip $(DATADIR)
-	install -g bin -o root -m 0775 UWSDR/UWSDR.zip       $(DATADIR)
+	install -g bin -o root -m 0664 GUISetup/GUISetup.zip $(DATADIR)
+	install -g bin -o root -m 0664 SDRSetup/SDRSetup.zip $(DATADIR)
+	install -g bin -o root -m 0664 UWSDR/UWSDR.zip       $(DATADIR)
 
 clean:
 	rm -f GUISetup/GUISetup.zip
