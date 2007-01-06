@@ -1,5 +1,6 @@
 These are the changes in the µWave SDR GUI.
 
+
 Prototype 1 - 11 March 2006
 ===========================
 
@@ -230,8 +231,8 @@ Changes to the Frequency Display and Info Box so that unused segments appear dim
 The action of the turnable knobs has been changed significantly.
 
 
-Version 0.7.1 - January 2007
-============================
+Version 0.7.1 - 6 January 2007
+==============================
 
 Changed to the old About box on Windows.
 

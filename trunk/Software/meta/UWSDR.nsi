@@ -47,6 +47,8 @@
 
 Section "UWSDR Program Files" SecProgram
 
+  CreateDirectory "$INSTDIR\SDR Files"
+
   SetOutPath "$INSTDIR"
   
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\UWSDR.exe"
@@ -67,6 +69,9 @@ Section "UWSDR Program Files" SecProgram
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Changes.txt"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Install.txt"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Jobs.txt"
+
+  SetOutPath "$INSTDIR\SDR Files"
+
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\13cms.sdr"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\23cms.sdr"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\Demo.sdr"
@@ -104,6 +109,9 @@ SectionEnd
 ;Uninstaller Section
 
 Section "Uninstall"
+
+  Delete "$INSTDIR\SDR Files\*.*"
+  RMDir  "$INSTDIR\SDR Files"
 
   Delete "$INSTDIR\*.*"
   RMDir  "$INSTDIR"
