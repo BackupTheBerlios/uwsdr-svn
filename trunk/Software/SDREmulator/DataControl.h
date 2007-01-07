@@ -25,11 +25,11 @@
 #include "SignalReader.h"
 #include "SoundFileReader.h"
 #include "SoundCardReader.h"
-#include "SDRDataReader.h"
+#include "SDREmulatorReader.h"
 #include "NullWriter.h"
 #include "NullReader.h"
 #include "SoundCardWriter.h"
-#include "SDRDataWriter.h"
+#include "SDREmulatorWriter.h"
 
 
 enum {
@@ -64,15 +64,15 @@ class CDataControl : public wxThread, public IDataCallback {
 	long           m_inDev;
 	long           m_outDev;
 
-	CSignalReader*    m_internal1Reader;
-	CSignalReader*    m_internal2Reader;
-	CSoundCardReader* m_soundCardReader;
-	CSoundFileReader* m_soundFileReader;
-	CSDRDataWriter*   m_rxWriter;
+	CSignalReader*      m_internal1Reader;
+	CSignalReader*      m_internal2Reader;
+	CSoundCardReader*   m_soundCardReader;
+	CSoundFileReader*   m_soundFileReader;
+	CSDREmulatorWriter* m_rxWriter;
 
-	CNullWriter*      m_nullWriter;
-	CSoundCardWriter* m_soundCardWriter;
-	CSDRDataReader*   m_txReader;
+	CNullWriter*        m_nullWriter;
+	CSoundCardWriter*   m_soundCardWriter;
+	CSDREmulatorReader* m_txReader;
 
 	wxSemaphore    m_waiting;
 

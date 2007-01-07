@@ -283,6 +283,14 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\SDREmulatorReader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SDREmulatorWriter.cpp"
+				>
+			</File>
+			<File
 				RelativePath="SoundCardDialog.cpp"
 				>
 				<FileConfiguration
@@ -319,6 +327,14 @@
 			</File>
 			<File
 				RelativePath="SDREmulatorFrame.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SDREmulatorReader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SDREmulatorWriter.h"
 				>
 			</File>
 			<File

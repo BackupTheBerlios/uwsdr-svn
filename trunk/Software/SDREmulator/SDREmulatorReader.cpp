@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "SDRDataReader.h"
+#include "SDREmulatorReader.h"
 
 #if !defined(__WINDOWS__)
 #include <netdb.h>
@@ -28,11 +28,11 @@
 #include <arpa/inet.h>
 #endif
 
-const int HEADER_SIZE = 7;
-const int SAMPLE_SIZE = 6;
+const int HEADER_SIZE = 6;
+const int SAMPLE_SIZE = 4;
 
 
-CSDRDataReader::CSDRDataReader(const wxString& address, int port, unsigned int version) :
+CSDREmulatorReader::CSDREmulatorReader(const wxString& address, int port, unsigned int version) :
 wxThread(),
 m_address(address),
 m_port(port),
@@ -54,17 +54,17 @@ m_underruns(0)
 {
 }
 
-CSDRDataReader::~CSDRDataReader()
+CSDREmulatorReader::~CSDREmulatorReader()
 {
 }
 
-void CSDRDataReader::setCallback(IDataCallback* callback, int id)
+void CSDREmulatorReader::setCallback(IDataCallback* callback, int id)
 {
 	m_callback = callback;
 	m_id       = id;
 }
 
-bool CSDRDataReader::open(float sampleRate, unsigned int blockSize)
+bool CSDREmulatorReader::open(float sampleRate, unsigned int blockSize)
 {
 	m_blockSize = blockSize;
 
@@ -73,7 +73,7 @@ bool CSDRDataReader::open(float sampleRate, unsigned int blockSize)
 
 	int wsaRet =  ::WSAStartup(0x101, &data);
 	if (wsaRet != 0) {
-		::wxLogError(wxT("SDRDataReader: Error %d when initialising Winsock."), wsaRet);
+		::wxLogError(wxT("SDREmulatorReader: Error %d when initialising Winsock."), wsaRet);
 		return false;
 	}
 #endif
@@ -89,7 +89,7 @@ bool CSDRDataReader::open(float sampleRate, unsigned int blockSize)
 		struct hostent* host = ::gethostbyname(m_address.c_str());
 
 		if (host == NULL) {
-			::wxLogError(wxT("SDRDataReader: Error %d when resolving host: %s"),
+			::wxLogError(wxT("SDREmulatorReader: Error %d when resolving host: %s"),
 #if defined(__WINDOWS__)
 				::WSAGetLastError(),
 #else
@@ -109,7 +109,7 @@ bool CSDRDataReader::open(float sampleRate, unsigned int blockSize)
 
 	m_fd = ::socket(PF_INET, SOCK_DGRAM, 0);
 	if (m_fd < 0) {
-		::wxLogError(wxT("SDRDataReader: Error %d when creating the reading datagram socket"),
+		::wxLogError(wxT("SDREmulatorReader: Error %d when creating the reading datagram socket"),
 #if defined(__WINDOWS__)
 			::WSAGetLastError());
 #else
@@ -126,7 +126,7 @@ bool CSDRDataReader::open(float sampleRate, unsigned int blockSize)
 
 	int ret = ::bind(m_fd, (struct sockaddr *)&sockaddr, sizeof(struct sockaddr_in));
 	if (ret < 0) {
-		::wxLogError(wxT("SDRDataReader: Error %d when binding the reading datagram socket"),
+		::wxLogError(wxT("SDREmulatorReader: Error %d when binding the reading datagram socket"),
 #if defined(__WINDOWS__)
 			::WSAGetLastError());
 #else
@@ -147,12 +147,12 @@ bool CSDRDataReader::open(float sampleRate, unsigned int blockSize)
 	return true;
 }
 
-void CSDRDataReader::close()
+void CSDREmulatorReader::close()
 {
 	Delete();
 }
 
-void* CSDRDataReader::Entry()
+void* CSDREmulatorReader::Entry()
 {
 	bool ret;
 
@@ -181,12 +181,12 @@ void* CSDRDataReader::Entry()
 
 	m_sequence = -1;
 
-	::wxLogMessage(wxT("SDRDataReader: %u missed frames, %u requests, %u underruns"), m_missed, m_requests, m_underruns);
+	::wxLogMessage(wxT("SDREmulatorReader: %u missed frames, %u requests, %u underruns"), m_missed, m_requests, m_underruns);
 
 	return (void *)0;
 }
 
-void CSDRDataReader::clock()
+void CSDREmulatorReader::clock()
 {
 	wxASSERT(m_callback != NULL);
 
@@ -201,17 +201,17 @@ void CSDRDataReader::clock()
 		m_callback->callback(m_sampBuffer, len, m_id);
 }
 
-void CSDRDataReader::purge()
+void CSDREmulatorReader::purge()
 {
 	m_buffer->clear();
 }
 
-bool CSDRDataReader::hasClock()
+bool CSDREmulatorReader::hasClock()
 {
 	return false;
 }
 
-bool CSDRDataReader::readSocket()
+bool CSDREmulatorReader::readSocket()
 {
 	// Check that the readfrom() won't block
 	fd_set readFds;
@@ -229,7 +229,7 @@ bool CSDRDataReader::readSocket()
 
 	int ret = ::select(m_fd + 1, &readFds, NULL, NULL, &tv);
 	if (ret < 0) {
-		::wxLogError(wxT("SDRDataReader: Error %d while performing a select"),
+		::wxLogError(wxT("SDREmulatorReader: Error %d while performing a select"),
 #if defined(__WINDOWS__)
 			::WSAGetLastError());
 #else
@@ -251,7 +251,7 @@ bool CSDRDataReader::readSocket()
 
 	ssize_t len = ::recvfrom(m_fd, (char *)m_sockBuffer, m_size, 0, &addr, &size);
 	if (len < 0) {
-		::wxLogError(wxT("SDRDataReader: Error %d reading from the datagram socket"),
+		::wxLogError(wxT("SDREmulatorReader: Error %d reading from the datagram socket"),
 #if defined(__WINDOWS__)
 			::WSAGetLastError());
 #else
@@ -261,7 +261,7 @@ bool CSDRDataReader::readSocket()
 	}
 
 	if (addr.sa_family != AF_INET) {
-		::wxLogError(wxT("SDRDataReader: Received datagram from a non IP address!"));
+		::wxLogError(wxT("SDREmulatorReader: Received datagram from a non IP address!"));
 		return true;
 	}
 
@@ -271,13 +271,13 @@ bool CSDRDataReader::readSocket()
 	if (::memcmp(m_remAddr, &inaddr->sin_addr.s_addr, m_remAddrLen) != 0) {
 		unsigned char* p = (unsigned char *)&inaddr->sin_addr.s_addr;
 		unsigned char* q = (unsigned char *)m_remAddr;
-		::wxLogWarning(wxT("SDRDataReader: SDR Data received from an invalid IP address: %u.%u.%u.%u, wanted: %u.%u.%u.%u"),
+		::wxLogWarning(wxT("SDREmulatorReader: SDR Data received from an invalid IP address: %u.%u.%u.%u, wanted: %u.%u.%u.%u"),
 			p[0], p[1], p[2], p[3], q[0], q[1], q[2], q[3]);
 		return true;
 	}
 
-	if (len < HEADER_SIZE || m_sockBuffer[0] != 'D' || m_sockBuffer[1] != 'R') {
-		::wxLogWarning(wxT("SDRDataReader: Received a badly formatted data packet"));
+	if (len < HEADER_SIZE || m_sockBuffer[0] != 'D' || m_sockBuffer[1] != 'T') {
+		::wxLogWarning(wxT("SDREmulatorReader: Received a badly formatted data packet"));
 		return true;
 	}
 
@@ -287,10 +287,10 @@ bool CSDRDataReader::readSocket()
 		m_missed++;
 
 		if (seqNo < m_sequence && (seqNo % 2) == (m_sequence % 2)) {
-			::wxLogWarning(wxT("SDRDataReader: Packet dropped at sequence no: %d, expected: %d"), seqNo, m_sequence);
+			::wxLogWarning(wxT("SDREmulatorReader: Packet dropped at sequence no: %d, expected: %d"), seqNo, m_sequence);
 			return true;
 		} else {
-			::wxLogWarning(wxT("SDRDataReader: Packet missed at sequence no: %d, expected: %d"), seqNo, m_sequence);
+			::wxLogWarning(wxT("SDREmulatorReader: Packet missed at sequence no: %d, expected: %d"), seqNo, m_sequence);
 		}
 	}
 
@@ -302,23 +302,19 @@ bool CSDRDataReader::readSocket()
 			m_sequence = 0;
 	}
 
-	unsigned int agc = m_sockBuffer[4];
-
-	unsigned int nSamples = (m_sockBuffer[6] << 8) + m_sockBuffer[5];
+	unsigned int nSamples = (m_sockBuffer[5] << 8) + m_sockBuffer[4];
 
 	int n = HEADER_SIZE;
 	for (unsigned int i = 0; i < nSamples && n < len; n += SAMPLE_SIZE, i++) {
-		unsigned int iData = (m_sockBuffer[n + 0] << 16) & 0xFF0000;
-		iData += (m_sockBuffer[n + 1] << 8) & 0xFF00;
-		iData += (m_sockBuffer[n + 2] << 0) & 0xFF;
+		unsigned int iData = (m_sockBuffer[n + 0] << 8) & 0xFF00;
+		iData += (m_sockBuffer[n + 1] << 0) & 0xFF;
 
-		unsigned int qData = (m_sockBuffer[n + 3] << 16) & 0xFF0000;
-		qData += (m_sockBuffer[n + 4] << 8) & 0xFF00;
-		qData += (m_sockBuffer[n + 5] << 0) & 0xFF;
+		unsigned int qData = (m_sockBuffer[n + 2] << 8) & 0xFF00;
+		qData += (m_sockBuffer[n + 3] << 0) & 0xFF;
 
 		float buffer[2];
-		buffer[0] = float(iData) / 8388607.0F - 1.0F;
-		buffer[1] = float(qData) / 8388607.0F - 1.0F;
+		buffer[0] = float(iData) / 32767.0F - 1.0F;
+		buffer[1] = float(qData) / 32767.0F - 1.0F;
 
 		m_buffer->addData(buffer, 1);
 	}

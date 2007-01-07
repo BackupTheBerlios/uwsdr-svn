@@ -4,7 +4,7 @@ CFLAGS :=	-I../Common $(CFLAGS)
 
 LIBS :=		-lportaudio $(LIBS)
 
-OBJS :=		SDREmulatorApp.o SDREmulatorFrame.o DataControl.o SoundCardDialog.o
+OBJS :=		SDREmulatorApp.o SDREmulatorFrame.o SDREmulatorReader.o SDREmulatorWriter.o DataControl.o SoundCardDialog.o
 
 SDREmulator:	$(OBJS)
 		$(CC) $(LDFLAGS) -o SDREmulator $(OBJS) ../Common/Common.a $(LIBS)
@@ -16,8 +16,14 @@ SDREmulatorFrame.o:	SDREmulatorFrame.cpp SDREmulatorFrame.h DataControl.h ../Com
 		../Common/SoundFileReader.h
 		$(CC) $(CFLAGS) -c SDREmulatorFrame.cpp
 
+SDREmulatorReader.o:	SDREmulatorReader.cpp SDREmulatorReader.h ../Common/DataReader.h ../Common/RingBuffer.h
+		$(CC) $(CFLAGS) -c SDREmulatorReader.cpp
+
+SDREmulatorWriter.o:	SDREmulatorWriter.cpp SDREmulatorWriter.h ../Common/DataReader.h ../Common/RingBuffer.h
+		$(CC) $(CFLAGS) -c SDREmulatorWriter.cpp
+
 DataControl.o:	DataControl.cpp DataControl.h ../Common/DataReader.h ../Common/DataWriter.h ../Common/NullWriter.h \
-		../Common/SignalReader.h ../Common/RingBuffer.h ../Common/SDRDataReader.h ../Common/SDRDataWriter.h \
+		../Common/SignalReader.h ../Common/RingBuffer.h SDREmulatorReader.h SDREmulatorWriter.h \
 		../Common/SoundCardReader.h ../Common/SoundCardWriter.h ../Common/SoundFileReader.h
 		$(CC) $(CFLAGS) -c DataControl.cpp
 

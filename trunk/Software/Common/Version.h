@@ -21,7 +21,7 @@
 
 #include <wx/wx.h>
 
-const wxString VERSION  = wxT("uWave SDR 0.7.1");
-const wxString REL_DATE = wxT("6 January 2007");
+const wxString VERSION  = wxT("uWave SDR 0.7.2");
+const wxString REL_DATE = wxT("January 2007");
 
 #endif

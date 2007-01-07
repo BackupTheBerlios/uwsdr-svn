@@ -106,6 +106,14 @@ SOURCE=.\SDREmulatorFrame.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\SDREmulatorReader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SDREmulatorWriter.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\SoundCardDialog.cpp
 # End Source File
 # End Group
@@ -123,6 +131,14 @@ SOURCE=.\SDREmulatorApp.h
 # Begin Source File
 
 SOURCE=.\SDREmulatorFrame.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SDREmulatorReader.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SDREmulatorWriter.h
 # End Source File
 # Begin Source File
 
