@@ -45,19 +45,13 @@ $ ./configure --enable-float
 
 I would like feedback on this issue. Is it needed, or is it default?
 
-Finally you will need PortAudio V19. This is still in beta, and has been for years, and can be found at http://www.portaudio.com/usingsvn.html and download the pa_snapshot_v19.tar.gz file. Build this and install it as per its instrucions.
+Finally you will need PortAudio V19. This is still in beta, and has been for years, and can be found at http://www.portaudio.com and download the latest release of the V19 branch. Build this and install it as per its instrucions.
 
 Once all of these packages are installed, you can build the UWSDR software. From the command line type:
 
 $ make
 
 Which should build all of the programs without errors.
-
-The Help files need to be built seperately. Go into the Help sub-directory and type:
-
-$ make
-
-This should build three zip files. They will be installed with the main installation step below.
 
 Then logged on as root, type:
 

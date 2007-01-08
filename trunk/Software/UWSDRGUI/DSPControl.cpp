@@ -237,10 +237,10 @@ void CDSPControl::closeIO()
 {
 	setRecord(false);
 
+	m_rxWriter->close();
 	m_txReader->close();
 	m_rxReader->close();
 	m_txWriter->close();
-	m_rxWriter->close();
 
 	m_dttsp->close();
 	m_cwKeyer->close();
@@ -254,12 +254,12 @@ void CDSPControl::closeIO()
 
 void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 {
-	wxASSERT(inBuffer != NULL);
-	wxASSERT(nSamples > 0);
-
 	// Don't process any data until the main thread is ready
 	if (!m_running)
 		return;
+
+	wxASSERT(inBuffer != NULL);
+	wxASSERT(nSamples > 0);
 
 	// Use whatever clock is available to run everything
 	if (id == m_clockId) {
@@ -410,14 +410,13 @@ void CDSPControl::setTXAndFreq(bool transmit, float freq)
 			status = m_waiting.TryWait();
 		}
 
-		m_txRingBuffer.clear();
-		m_rxRingBuffer.clear();
-
-		m_txReader->purge();
-		m_txWriter->purge();
-
-		m_rxReader->purge();
 		m_rxWriter->purge();
+		m_rxRingBuffer.clear();
+		m_rxReader->purge();
+
+		m_txWriter->purge();
+		m_txRingBuffer.clear();
+		m_txReader->purge();
 
 		m_cwKeyer->purge();
 		m_voiceKeyer->purge();

@@ -162,9 +162,6 @@ bool CUWSDRApp::OnInit()
 
 	wxString title = VERSION + wxT(" - ") + m_parameters->m_name;
 
-	if (m_parameters->m_hardwareReceiveOnly)
-		title.Append(wxT(" - Receive Only"));
-
 	m_frame = new CUWSDRFrame(title);
 	m_frame->Show();
 

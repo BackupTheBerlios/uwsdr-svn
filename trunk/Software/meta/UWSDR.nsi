@@ -13,8 +13,8 @@
 ;Configuration
 
   ;General
-  Name "UWSDR 0.7.1"
-  OutFile "UWSDR-0.7.1.exe"
+  Name "UWSDR 0.7.2"
+  OutFile "UWSDR-0.7.2.exe"
 
   ;Folder selection page
   InstallDir "$PROGRAMFILES\UWSDR"
@@ -72,6 +72,7 @@ Section "UWSDR Program Files" SecProgram
 
   SetOutPath "$INSTDIR\SDR Files"
 
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\Readme.txt"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\13cms.sdr"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\23cms.sdr"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\Demo.sdr"

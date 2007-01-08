@@ -22,7 +22,6 @@
 #include <wx/log.h>
 #include <wx/datetime.h>
 
-const int WAVE_FORMAT_IEEE_FLOAT = 3;
 
 void CSoundFileReader::setCallback(IDataCallback* callback, int id)
 {
@@ -40,6 +39,8 @@ bool CSoundFileReader::hasClock()
 }
 
 #if defined(__WINDOWS__)
+
+const int WAVE_FORMAT_IEEE_FLOAT = 3;
 
 CSoundFileReader::CSoundFileReader(const wxString& fileName) :
 m_fileName(fileName),
@@ -246,6 +247,9 @@ void CSoundFileReader::close()
 }
 
 #else
+
+const int WAVE_FORMAT_PCM        = 1;
+const int WAVE_FORMAT_IEEE_FLOAT = 3;
 
 CSoundFileReader::CSoundFileReader(const wxString& fileName) :
 m_fileName(fileName),

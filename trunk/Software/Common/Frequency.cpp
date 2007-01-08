@@ -18,7 +18,7 @@
 
 #include "Frequency.h"
 
-CFrequency::CFrequency(unsigned int mhz, double hz) :
+CFrequency::CFrequency(int mhz, double hz) :
 m_mhz(mhz),
 m_hz(hz)
 {
@@ -71,7 +71,7 @@ void CFrequency::addHz(double hz)
 	}
 }
 
-void CFrequency::setMHz(unsigned int mhz)
+void CFrequency::setMHz(int mhz)
 {
 	m_mhz = mhz;
 }
@@ -109,8 +109,8 @@ bool CFrequency::setFrequency(const wxString& freq)
 	int pos = freq.Find(wxT('.'));
 
 	if (pos == -1) {
-		unsigned long temp;
-		freq.ToULong(&temp);
+		long temp;
+		freq.ToLong(&temp);
 		m_mhz = temp;
 
 		m_hz  = 0.0;
@@ -121,8 +121,8 @@ bool CFrequency::setFrequency(const wxString& freq)
 		hertz.Truncate(8);				// Maybe wrong
 		hertz.insert(6, wxT("."));
 
-		unsigned long temp;
-		freq.Left(pos).ToULong(&temp);
+		long temp;
+		freq.Left(pos).ToLong(&temp);
 		m_mhz = temp;
 
 		hertz.ToDouble(&m_hz);
@@ -142,12 +142,12 @@ wxString CFrequency::getString(unsigned int decimals) const
 	hertz.Truncate(decimals);
 
 	wxString text;
-	text.Printf(wxT("%u.%s"), m_mhz, hertz.c_str());
+	text.Printf(wxT("%d.%s"), m_mhz, hertz.c_str());
 
 	return text;
 }
 
-unsigned int CFrequency::getMHz() const
+int CFrequency::getMHz() const
 {
 	return m_mhz;
 }

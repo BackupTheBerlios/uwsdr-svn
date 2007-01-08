@@ -255,3 +255,9 @@ Version 0.7.2 - January 2007
 ============================
 
 Changed the format of the ethernet data frames on TX and RX.
+
+Fixed compile problems on Linux.
+
+Removed the "Receive Only" in the title bar, but instead remove certain menu items and disable the transmit button.
+
+Fixed the audiorx (aka SoftRock) mode.

@@ -1,4 +1,4 @@
-export BINDIR  := "/usr/bin"
+export BINDIR  := "/usr/local/bin"
 export DATADIR := "/usr/share/uwsdr"
 export DESKTOPDIR := "/usr/share/applications"
 export GNOMEPNGDIR := "/opt/gnome/share/pixmaps"

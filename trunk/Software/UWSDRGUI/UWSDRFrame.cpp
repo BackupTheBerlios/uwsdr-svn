@@ -296,6 +296,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			m_dsp->setTXReader(new CNullReader());
 			m_dsp->setTXWriter(new CNullWriter());
 			m_dsp->setRXReader(new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev));
+			// m_dsp->setRXReader(new CSignalReader(int(m_parameters->m_hardwareSampleRate / 4.0F + 1000.5F), 0.0003F, 0.0004F, new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev)));
 			m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
 			break;
 
@@ -376,6 +377,13 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_timer.SetOwner(this, DISPLAY_TIMER);
 	m_timer.Start(100);
+
+	// If receive only disable/remove transmit possibilities
+	if (m_parameters->m_hardwareReceiveOnly) {
+		m_transmit->Disable();
+		m_menu->Remove(MENU_VOICE_KEYBOARD);
+		m_menu->Remove(MENU_CW_KEYBOARD);
+	}
 
 	normaliseMode();
 
@@ -1039,40 +1047,47 @@ void CUWSDRFrame::normaliseFreq()
 
 	m_freqDisplay->setFrequency(dispFreq);
 
-	// Subtract the IF frequency
-	float dspOffset;
-	if (m_parameters->m_zeroIF) {
-		if (m_txOn)
-			dspOffset = m_dsp->getTXOffset();
-		else
-			dspOffset = m_dsp->getRXOffset();
+	if (m_parameters->m_hardwareType == TYPE_AUDIORX) {
+		CFrequency diff = freq - m_parameters->m_hardwareMinFreq;
+
+		// Finally go to TX or RX
+		m_dsp->setTXAndFreq(m_txOn, diff.getHz());
 	} else {
-		dspOffset = m_parameters->m_hardwareSampleRate / 4.0F;
-	}
-
-	freq -= dspOffset;
-
-	// Now take into account the frequency steps of the SDR ...
-	double offset = 0.0;
-	if (m_parameters->m_hardwareStepSize > 1.0F) {		// FIXME XXX
-		double stepSize = m_parameters->m_hardwareStepSize;
-		double hz       = freq.getHz();
-
-		offset = ::fmod(hz, stepSize);
-
-		double base = hz - offset;
-
-		if (offset >= stepSize / 2.0) {
-			offset -= stepSize;
-			base   += stepSize;
+		// Subtract the IF frequency
+		float dspOffset;
+		if (m_parameters->m_zeroIF) {
+			if (m_txOn)
+				dspOffset = m_dsp->getTXOffset();
+			else
+				dspOffset = m_dsp->getRXOffset();
+		} else {
+			dspOffset = m_parameters->m_hardwareSampleRate / 4.0F;
 		}
 
-		freq.setHz(base);
-	}
+		freq -= dspOffset;
 
-	// Finally go to TX or RX
-	m_sdr->setTXAndFreq(m_txOn, freq);
-	m_dsp->setTXAndFreq(m_txOn, offset);
+		// Now take into account the frequency steps of the SDR ...
+		double offset = 0.0;
+		if (m_parameters->m_hardwareStepSize > 1.0F) {		// FIXME XXX
+			double stepSize = m_parameters->m_hardwareStepSize;
+			double hz       = freq.getHz();
+
+			offset = ::fmod(hz, stepSize);
+
+			double base = hz - offset;
+
+			if (offset >= stepSize / 2.0) {
+				offset -= stepSize;
+				base   += stepSize;
+			}
+
+			freq.setHz(base);
+		}
+
+		// Finally go to TX or RX
+		m_sdr->setTXAndFreq(m_txOn, freq);
+		m_dsp->setTXAndFreq(m_txOn, offset);
+	}
 }
 
 void CUWSDRFrame::normaliseMode()

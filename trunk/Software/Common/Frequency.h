@@ -24,7 +24,7 @@
 class CFrequency {
 
     public:
-	CFrequency(unsigned int mhz, double hz);
+	CFrequency(int mhz, double hz);
 	CFrequency(const CFrequency& frequency);
 	CFrequency(const wxString& freq);
 	CFrequency();
@@ -36,11 +36,11 @@ class CFrequency {
 	virtual bool setFrequency(const wxString& freq);
 
 	virtual void setHz(double hz);
-	virtual void setMHz(unsigned int mhz);
+	virtual void setMHz(int mhz);
 
-	virtual wxString     getString(unsigned int decimals = 8) const;
-	virtual unsigned int getMHz() const;
-	virtual double       getHz() const;
+	virtual wxString getString(unsigned int decimals = 8) const;
+	virtual int      getMHz() const;
+	virtual double   getHz() const;
 
 	CFrequency operator+(double hz)
 	{
@@ -58,10 +58,10 @@ class CFrequency {
 
 	CFrequency operator+(const CFrequency& freq)
 	{
-		unsigned int mhz = this->m_mhz + freq.m_mhz;
-		double        hz = this->m_hz  + freq.m_hz;
+		int    mhz = this->m_mhz + freq.m_mhz;
+		double  hz = this->m_hz  + freq.m_hz;
 
-		if (hz > 1000000.0) {
+		while (hz > 1000000.0) {
 			hz  -= 1000000.0;
 			mhz += 1;
 		}
@@ -72,12 +72,17 @@ class CFrequency {
 
 	CFrequency operator-(const CFrequency& freq)
 	{
-		unsigned int mhz = (this->m_mhz - 1) - freq.m_mhz;
-		double        hz = (this->m_hz + 1000000.0) - freq.m_hz;
+		int    mhz = this->m_mhz - freq.m_mhz;
+		double  hz = this->m_hz  - freq.m_hz;
 
-		if (hz > 1000000.0) {
+		while (hz > 1000000.0) {
 			hz  -= 1000000.0;
 			mhz += 1;
+		}
+
+		while (hz < -1000000.0) {
+			hz  += 1000000.0;
+			mhz -= 1;
 		}
 
 		CFrequency temp(mhz, hz);
@@ -134,8 +139,8 @@ class CFrequency {
 	}
 
     private:
-	unsigned int m_mhz;
-	double       m_hz;
+	int    m_mhz;
+	double m_hz;
 };
 
 #endif
