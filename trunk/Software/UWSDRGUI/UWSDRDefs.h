@@ -237,12 +237,6 @@ enum {
 	VOICE_CONTINUOUS
 };
 
-enum {
-	TYPE_AUDIORX,
-	TYPE_DEMO,
-	TYPE_UWSDR1
-};
-
 const int CWKEYBOARD_COUNT    = 6;
 
 const int VOICEKEYER_COUNT    = 20;

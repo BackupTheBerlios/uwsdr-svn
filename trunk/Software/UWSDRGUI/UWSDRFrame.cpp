@@ -279,42 +279,42 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 // FIXME
 #if defined(GRANT_TX)
 	// RX is disabled, TX is from audio card for signal output fed by a two-tone signal
-	m_dsp->setTXReader(new CTwoToneReader(1000.0F, 1300.0F, 0.4F, new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev)));
-	m_dsp->setTXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
+	m_dsp->setTXReader(new CTwoToneReader(1000.0F, 1300.0F, 0.4F, new CSoundCardReader(m_parameters->m_userAudioAPI, m_parameters->m_userAudioInDev)));
+	m_dsp->setTXWriter(new CSoundCardWriter(m_parameters->m_sdrAudioAPI, m_parameters->m_sdrAudioOutDev));
 	m_dsp->setRXReader(new CNullReader());
 	m_dsp->setRXWriter(new CNullWriter());
 #elif defined(TOBIAS)
 	// UDP in/out with audio on loudspeaker and two-tone audio on transmit
-	m_dsp->setTXReader(new CTwoToneReader(1000.0F, 1300.0F, 0.4F, new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev)));
+	m_dsp->setTXReader(new CTwoToneReader(1000.0F, 1300.0F, 0.4F, new CSoundCardReader(m_parameters->m_userAudioAPI, m_parameters->m_userAudioInDev)));
 	m_dsp->setTXWriter(new CSDRDataWriter(m_parameters->m_ipAddress, m_parameters->m_dataPort, 1));
 	m_dsp->setRXReader(new CSDRDataReader(m_parameters->m_ipAddress, m_parameters->m_dataPort, 1));
-	m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
+	m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_userAudioAPI, m_parameters->m_userAudioOutDev));
 #else
 	switch (m_parameters->m_hardwareType) {
 		case TYPE_AUDIORX:
 			// TX is disabled, RX is from audio card for signal input and audio output
 			m_dsp->setTXReader(new CNullReader());
 			m_dsp->setTXWriter(new CNullWriter());
-			m_dsp->setRXReader(new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev));
-			// m_dsp->setRXReader(new CSignalReader(int(m_parameters->m_hardwareSampleRate / 4.0F + 1000.5F), 0.0003F, 0.0004F, new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev)));
-			m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
+			m_dsp->setRXReader(new CSoundCardReader(m_parameters->m_sdrAudioAPI, m_parameters->m_sdrAudioInDev));
+			// m_dsp->setRXReader(new CSignalReader(int(m_parameters->m_hardwareSampleRate / 4.0F + 1000.5F), 0.0003F, 0.0004F, new CSoundCardReader(m_parameters->m_sdrAudioAPI, m_parameters->m_sdrAudioInDev)));
+			m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_userAudioAPI, m_parameters->m_userAudioOutDev));
 			break;
 
 		case TYPE_DEMO:
 			// A self contained variant for demo's and testing
-			// m_dsp->setTXReader(new CTwoToneReader(1000.0F, 1300.0F, 0.4F, new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev)));
-			m_dsp->setTXReader(new CThreeToneReader(500.0F, 1500.0F, 2000.0F, 0.25F, new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev)));
+			// m_dsp->setTXReader(new CTwoToneReader(1000.0F, 1300.0F, 0.4F, new CSoundCardReader(m_parameters->m_userAudioAPI, m_parameters->m_userAudioInDev)));
+			m_dsp->setTXReader(new CThreeToneReader(500.0F, 1500.0F, 2000.0F, 0.25F, new CSoundCardReader(m_parameters->m_userAudioAPI, m_parameters->m_userAudioInDev)));
 			m_dsp->setTXWriter(new CNullWriter());
 			m_dsp->setRXReader(new CSignalReader(int(m_parameters->m_hardwareSampleRate / 4.0F + 1000.5F), 0.0003F, 0.0004F));
-			m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
+			m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_userAudioAPI, m_parameters->m_userAudioOutDev));
 			break;
 
 		case TYPE_UWSDR1:
 			// The standard configuration, UDP in/out and sound card for the user
-			m_dsp->setTXReader(new CSoundCardReader(m_parameters->m_audioAPI, m_parameters->m_audioInDev));
+			m_dsp->setTXReader(new CSoundCardReader(m_parameters->m_userAudioAPI, m_parameters->m_userAudioInDev));
 			m_dsp->setTXWriter(new CSDRDataWriter(m_parameters->m_ipAddress, m_parameters->m_dataPort, 1));
 			m_dsp->setRXReader(new CSDRDataReader(m_parameters->m_ipAddress, m_parameters->m_dataPort, 1));
-			m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_audioAPI, m_parameters->m_audioOutDev));
+			m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_userAudioAPI, m_parameters->m_userAudioOutDev));
 			break;
 	}
 #endif

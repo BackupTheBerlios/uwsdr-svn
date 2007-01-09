@@ -119,6 +119,10 @@ SOURCE=.\SDRDataWriter.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\SDRDescrFile.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\SignalReader.cpp
 # End Source File
 # Begin Source File
@@ -208,6 +212,10 @@ SOURCE=.\SDRDataReader.h
 # Begin Source File
 
 SOURCE=.\SDRDataWriter.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SDRDescrFile.h
 # End Source File
 # Begin Source File
 

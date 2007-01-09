@@ -94,16 +94,28 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=.\EthernetDialog.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\GUISetupApp.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\GUISetupFrame.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=.\SoundCardDialog.cpp
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=.\EthernetDialog.h
+# End Source File
 # Begin Source File
 
 SOURCE=.\GUISetupApp.h
@@ -114,7 +126,7 @@ SOURCE=.\GUISetupFrame.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\GUISetupXpm.h
+SOURCE=.\SoundCardDialog.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

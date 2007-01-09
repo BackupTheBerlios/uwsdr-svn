@@ -23,6 +23,7 @@
 
 #include "UWSDRDefs.h"
 #include "Frequency.h"
+#include "SDRDescrFile.h"
 
 class CSDRParameters {
 
@@ -87,9 +88,13 @@ class CSDRParameters {
 	unsigned int m_controlPort;
 	unsigned int m_dataPort;
 
-	int          m_audioAPI;
-	int          m_audioInDev;
-	int          m_audioOutDev;
+	int          m_userAudioAPI;
+	int          m_userAudioInDev;
+	int          m_userAudioOutDev;
+
+	int          m_sdrAudioAPI;
+	int          m_sdrAudioInDev;
+	int          m_sdrAudioOutDev;
 
 	bool         m_ritOn;
 	int          m_ritFreq;

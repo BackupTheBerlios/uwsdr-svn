@@ -3,7 +3,7 @@ all:		GUISetup
 CFLAGS :=	-I../UWSDRGUI -I../Common $(CFLAGS)
 LIBS   :=	-lportaudio $(LIBS)
 
-OBJS :=		GUISetupApp.o GUISetupFrame.o
+OBJS :=		GUISetupApp.o GUISetupFrame.o EthernetDialog.o SoundCardDialog.o
 
 GUISetup:	$(OBJS)
 		$(CC) $(LDFLAGS) -o GUISetup $(OBJS) ../Common/Common.a $(LIBS)
@@ -11,8 +11,14 @@ GUISetup:	$(OBJS)
 GUISetupApp.o:	GUISetupApp.cpp GUISetupApp.h GUISetupFrame.h GUISetup.xpm
 		$(CC) $(CFLAGS) -c GUISetupApp.cpp
 
-GUISetupFrame.o: GUISetupFrame.cpp GUISetupFrame.h ../Common/SoundCardInfo.h
+GUISetupFrame.o: GUISetupFrame.cpp GUISetupFrame.h EthernetDialog.h SoundCardDialog.h ../Common/SDRDescrFile.h
 		$(CC) $(CFLAGS) -c GUISetupFrame.cpp
+
+EthernetDialog.o:	EthernetDialog.cpp EthernetDialog.h
+		$(CC) $(CFLAGS) -c EthernetDialog.cpp
+
+SoundCardDialog.o:	SoundCardDialog.cpp SoundCardDialog.h ../Common/SoundCardInfo.h
+		$(CC) $(CFLAGS) -c SoundCardDialog.cpp
 
 install:	GUISetup
 		install -g bin -o root -m 0775 GUISetup $(BINDIR)

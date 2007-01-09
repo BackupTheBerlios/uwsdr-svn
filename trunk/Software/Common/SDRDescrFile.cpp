@@ -17,7 +17,6 @@
  */
 
 #include "SDRDescrFile.h"
-#include "UWSDRDefs.h"
 
 #include <wx/textfile.h>
 #include <wx/tokenzr.h>

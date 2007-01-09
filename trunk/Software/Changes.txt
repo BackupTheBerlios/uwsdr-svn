@@ -261,3 +261,5 @@ Fixed compile problems on Linux.
 Removed the "Receive Only" in the title bar, but instead remove certain menu items and disable the transmit button.
 
 Fixed the audiorx (aka SoftRock) mode.
+
+Changed GUISetup extensively to better support non UWSDR hardware.

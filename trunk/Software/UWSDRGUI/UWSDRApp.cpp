@@ -67,9 +67,12 @@ const wxString KEY_FILTER_CWN      = wxT("/FilterCWN");
 const wxString KEY_IP_ADDRESS      = wxT("/IPAddress");
 const wxString KEY_CONTROL_PORT    = wxT("/ControlPort");
 const wxString KEY_DATA_PORT       = wxT("/DataPort");
-const wxString KEY_AUDIO_API       = wxT("/AudioAPI");
-const wxString KEY_AUDIO_IN_DEV    = wxT("/AudioInDev");
-const wxString KEY_AUDIO_OUT_DEV   = wxT("/AudioOutDev");
+const wxString KEY_USER_AUDIO_API     = wxT("/UserAudioAPI");
+const wxString KEY_USER_AUDIO_IN_DEV  = wxT("/UserAudioInDev");
+const wxString KEY_USER_AUDIO_OUT_DEV = wxT("/UserAudioOutDev");
+const wxString KEY_SDR_AUDIO_API      = wxT("/SDRAudioAPI");
+const wxString KEY_SDR_AUDIO_IN_DEV   = wxT("/SDRAudioInDev");
+const wxString KEY_SDR_AUDIO_OUT_DEV  = wxT("/SDRAudioOutDev");
 const wxString KEY_RIT_CTRL        = wxT("/RitCtrl");
 const wxString KEY_RIT_VALUE       = wxT("/RitFreq");
 const wxString KEY_NB_CTRL         = wxT("/NoiseBlankerCtrl");
@@ -286,9 +289,12 @@ bool CUWSDRApp::readConfig()
 	wxString keyIpAddress     = wxT("/") + m_parameters->m_name + KEY_IP_ADDRESS;
 	wxString keyControlPort   = wxT("/") + m_parameters->m_name + KEY_CONTROL_PORT;
 	wxString keyDataPort      = wxT("/") + m_parameters->m_name + KEY_DATA_PORT;
-	wxString keyAudioAPI      = wxT("/") + m_parameters->m_name + KEY_AUDIO_API;
-	wxString keyAudioInDev    = wxT("/") + m_parameters->m_name + KEY_AUDIO_IN_DEV;
-	wxString keyAudioOutDev   = wxT("/") + m_parameters->m_name + KEY_AUDIO_OUT_DEV;
+	wxString keyUserAudioAPI    = wxT("/") + m_parameters->m_name + KEY_USER_AUDIO_API;
+	wxString keyUserAudioInDev  = wxT("/") + m_parameters->m_name + KEY_USER_AUDIO_IN_DEV;
+	wxString keyUserAudioOutDev = wxT("/") + m_parameters->m_name + KEY_USER_AUDIO_OUT_DEV;
+	wxString keySDRAudioAPI     = wxT("/") + m_parameters->m_name + KEY_SDR_AUDIO_API;
+	wxString keySDRAudioInDev   = wxT("/") + m_parameters->m_name + KEY_SDR_AUDIO_IN_DEV;
+	wxString keySDRAudioOutDev  = wxT("/") + m_parameters->m_name + KEY_SDR_AUDIO_OUT_DEV;
 	wxString keyRitCtrl       = wxT("/") + m_parameters->m_name + KEY_RIT_CTRL;
 	wxString keyRitValue      = wxT("/") + m_parameters->m_name + KEY_RIT_VALUE;
 	wxString keyNbCtrl        = wxT("/") + m_parameters->m_name + KEY_NB_CTRL;
@@ -424,9 +430,13 @@ bool CUWSDRApp::readConfig()
 	profile->Read(keyDataPort,         &num);
 	m_parameters->m_dataPort = num;
 
-	profile->Read(keyAudioAPI,         &m_parameters->m_audioAPI);
-	profile->Read(keyAudioInDev,       &m_parameters->m_audioInDev);
-	profile->Read(keyAudioOutDev,      &m_parameters->m_audioOutDev);
+	profile->Read(keyUserAudioAPI,     &m_parameters->m_userAudioAPI);
+	profile->Read(keyUserAudioInDev,   &m_parameters->m_userAudioInDev);
+	profile->Read(keyUserAudioOutDev,  &m_parameters->m_userAudioOutDev);
+
+	profile->Read(keySDRAudioAPI,      &m_parameters->m_sdrAudioAPI);
+	profile->Read(keySDRAudioInDev,    &m_parameters->m_sdrAudioInDev);
+	profile->Read(keySDRAudioOutDev,   &m_parameters->m_sdrAudioOutDev);
 
 	profile->Read(keyRitCtrl,          &m_parameters->m_ritOn,   false);
 	profile->Read(keyRitValue,         &m_parameters->m_ritFreq, 0);

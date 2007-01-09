@@ -126,10 +126,6 @@ SOURCE=.\InfoBox.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\SDRDescrFile.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\SDRParameters.cpp
 # End Source File
 # Begin Source File
@@ -210,10 +206,6 @@ SOURCE=.\InfoBox.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\SDRDescrFile.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\SDRParameters.h
 # End Source File
 # Begin Source File
@@ -239,10 +231,6 @@ SOURCE=.\UWSDRFrame.h
 # Begin Source File
 
 SOURCE=.\UWSDRPreferences.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\UWSDRXpm.h
 # End Source File
 # Begin Source File
 

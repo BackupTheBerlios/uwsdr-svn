@@ -23,6 +23,12 @@
 
 #include "Frequency.h"
 
+enum {
+	TYPE_AUDIORX,
+	TYPE_DEMO,
+	TYPE_UWSDR1
+};
+
 class CSDRDescrFile {
 
     public:

@@ -18,8 +18,13 @@
 
 #include "GUISetupFrame.h"
 
+#include "SDRDescrFile.h"
+#include "EthernetDialog.h"
+#include "SoundCardDialog.h"
+
 #include <wx/file.h>
 #include <wx/config.h>
+#include <wx/filename.h>
 
 #if defined(__WXGTK__) || defined(__WXMAC__)
 #include "GUISetup.xpm"
@@ -31,32 +36,46 @@
 #include <shlobj.h>
 #endif
 
-const int CREATE_BUTTON   = 27543;
-const int BROWSE_BUTTON   = 27544;
-const int API_COMBO       = 27545;
-const int NAME_COMBO      = 27546;
+const int CREATE_BUTTON     = 27543;
+const int BROWSE_BUTTON     = 27544;
+const int USER_AUDIO_BUTTON = 27545;
+const int SDR_AUDIO_BUTTON  = 27546;
+const int ETHERNET_BUTTON   = 27547;
+const int NAME_COMBO        = 27548;
+
 
 const int BORDER_SIZE     = 5;
 const int DATA_WIDTH      = 150;
 
+
 BEGIN_EVENT_TABLE(CGUISetupFrame, wxFrame)
-	EVT_CHOICE(API_COMBO, CGUISetupFrame::onAPI)
-	EVT_COMBOBOX(NAME_COMBO, CGUISetupFrame::onName)
-	EVT_BUTTON(CREATE_BUTTON, CGUISetupFrame::onCreate)
-	EVT_BUTTON(BROWSE_BUTTON, CGUISetupFrame::onBrowse)
+	EVT_COMBOBOX(NAME_COMBO,      CGUISetupFrame::onName)
+	EVT_BUTTON(CREATE_BUTTON,     CGUISetupFrame::onCreate)
+	EVT_BUTTON(BROWSE_BUTTON,     CGUISetupFrame::onBrowse)
+	EVT_BUTTON(USER_AUDIO_BUTTON, CGUISetupFrame::onUserAudio)
+	EVT_BUTTON(SDR_AUDIO_BUTTON,  CGUISetupFrame::onSDRAudio)
+	EVT_BUTTON(ETHERNET_BUTTON,   CGUISetupFrame::onEthernet)
 END_EVENT_TABLE()
+
 
 CGUISetupFrame::CGUISetupFrame() :
 wxFrame(NULL, -1, wxString(_("uWave SDR GUI Setup")), wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX  | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN),
 m_name(NULL),
-m_filename(NULL),
-m_apiChoice(NULL),
-m_devChoice(NULL),
-m_address(NULL),
-m_control(NULL),
-m_data(NULL),
+m_filenameText(NULL),
 m_startMenu(NULL),
-m_info()
+m_userAudio(NULL),
+m_sdrAudio(NULL),
+m_ethernet(NULL),
+m_filename(),
+m_userAudioAPI(-1),
+m_userAudioInDev(-1L),
+m_userAudioOutDev(-1L),
+m_sdrAudioAPI(-1),
+m_sdrAudioInDev(-1L),
+m_sdrAudioOutDev(-1L),
+m_ipAddress(),
+m_controlPort(-1L),
+m_dataPort(-1L)
 {
 	SetIcon(wxICON(GUISetup));
 
@@ -78,79 +97,64 @@ m_info()
 	wxStaticText* label2 = new wxStaticText(panel, -1, _("SDR File Name:"));
 	panelSizer->Add(label2, 0, wxALL, BORDER_SIZE);
 
-	m_filename = new wxTextCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
-	panelSizer->Add(m_filename, 0, wxALL, BORDER_SIZE);
+	m_filenameText = new wxTextCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxSize(DATA_WIDTH, -1), wxTE_READONLY);
+	panelSizer->Add(m_filenameText, 0, wxALL, BORDER_SIZE);
 
 	wxButton* browse = new wxButton(panel, BROWSE_BUTTON, _("Browse..."));
 	panelSizer->Add(browse, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label3 = new wxStaticText(panel, -1, _("Audio API:"));
+	wxStaticText* label3 = new wxStaticText(panel, -1, _("User Audio:"));
 	panelSizer->Add(label3, 0, wxALL, BORDER_SIZE);
 
-	m_apiChoice = new wxChoice(panel, API_COMBO, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
-	panelSizer->Add(m_apiChoice, 0, wxALL, BORDER_SIZE);
+	m_userAudio = new wxButton(panel, USER_AUDIO_BUTTON, _("Set"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	m_userAudio->Disable();
+	panelSizer->Add(m_userAudio, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* dummy2 = new wxStaticText(panel, -1, wxEmptyString);
 	panelSizer->Add(dummy2, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label4 = new wxStaticText(panel, -1, _("Audio Device:"));
+	wxStaticText* label4 = new wxStaticText(panel, -1, _("SDR Audio:"));
 	panelSizer->Add(label4, 0, wxALL, BORDER_SIZE);
 
-	m_devChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
-	panelSizer->Add(m_devChoice, 0, wxALL, BORDER_SIZE);
+	m_sdrAudio = new wxButton(panel, SDR_AUDIO_BUTTON, _("Set"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	m_sdrAudio->Disable();
+	panelSizer->Add(m_sdrAudio, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* dummy3 = new wxStaticText(panel, -1, wxEmptyString);
 	panelSizer->Add(dummy3, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label6 = new wxStaticText(panel, -1, _("SDR IP Address:"));
-	panelSizer->Add(label6, 0, wxALL, BORDER_SIZE);
+	wxStaticText* label5 = new wxStaticText(panel, -1, _("Ethernet:"));
+	panelSizer->Add(label5, 0, wxALL, BORDER_SIZE);
 
-	m_address = new wxTextCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
-	panelSizer->Add(m_address, 0, wxALL, BORDER_SIZE);
+	m_ethernet = new wxButton(panel, ETHERNET_BUTTON, _("Set"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	m_ethernet->Disable();
+	panelSizer->Add(m_ethernet, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* dummy5 = new wxStaticText(panel, -1, wxEmptyString);
 	panelSizer->Add(dummy5, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label7 = new wxStaticText(panel, -1, _("SDR Control Port:"));
-	panelSizer->Add(label7, 0, wxALL, BORDER_SIZE);
-
-	m_control = new wxTextCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
-	panelSizer->Add(m_control, 0, wxALL, BORDER_SIZE);
-
-	wxStaticText* dummy6 = new wxStaticText(panel, -1, wxEmptyString);
-	panelSizer->Add(dummy6, 0, wxALL, BORDER_SIZE);
-
-	wxStaticText* label8 = new wxStaticText(panel, -1, _("SDR Data Port:"));
-	panelSizer->Add(label8, 0, wxALL, BORDER_SIZE);
-
-	m_data = new wxTextCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
-	panelSizer->Add(m_data, 0, wxALL, BORDER_SIZE);
-
-	wxStaticText* dummy7 = new wxStaticText(panel, -1, wxEmptyString);
-	panelSizer->Add(dummy7, 0, wxALL, BORDER_SIZE);
-
-	wxStaticText* label9 = new wxStaticText(panel, -1, _("Create Start Menu entry:"));
-	panelSizer->Add(label9, 0, wxALL, BORDER_SIZE);
+	wxStaticText* label6 = new wxStaticText(panel, -1, _("Create Start Menu entry:"));
+	panelSizer->Add(label6, 0, wxALL, BORDER_SIZE);
 
 	m_startMenu = new wxCheckBox(panel, -1, wxEmptyString);
 	panelSizer->Add(m_startMenu, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* dummy8 = new wxStaticText(panel, -1, wxEmptyString);
-	panelSizer->Add(dummy8, 0, wxALL, BORDER_SIZE);
+	wxStaticText* dummy6 = new wxStaticText(panel, -1, wxEmptyString);
+	panelSizer->Add(dummy6, 0, wxALL, BORDER_SIZE);
 
 #if defined(__WXMSW__)
-	wxStaticText* label10 = new wxStaticText(panel, -1, _("Create Desktop icon:"));
-	panelSizer->Add(label10, 0, wxALL, BORDER_SIZE);
+	wxStaticText* label7 = new wxStaticText(panel, -1, _("Create Desktop icon:"));
+	panelSizer->Add(label7, 0, wxALL, BORDER_SIZE);
 
 	m_deskTop = new wxCheckBox(panel, -1, wxEmptyString);
 	panelSizer->Add(m_deskTop, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* dummy9 = new wxStaticText(panel, -1, wxEmptyString);
-	panelSizer->Add(dummy9, 0, wxALL, BORDER_SIZE);
+	wxStaticText* dummy7 = new wxStaticText(panel, -1, wxEmptyString);
+	panelSizer->Add(dummy7, 0, wxALL, BORDER_SIZE);
 #endif
 
-	wxStaticText* dummy10 = new wxStaticText(panel, -1, wxEmptyString);
-	panelSizer->Add(dummy10, 0, wxALL, BORDER_SIZE);
+	wxStaticText* dummy8 = new wxStaticText(panel, -1, wxEmptyString);
+	panelSizer->Add(dummy8, 0, wxALL, BORDER_SIZE);
 
 	wxButton* create = new wxButton(panel, CREATE_BUTTON, _("Create"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
 	panelSizer->Add(create, 0, wxALL, BORDER_SIZE);
@@ -164,7 +168,6 @@ m_info()
 	mainSizer->SetSizeHints(this);
 
 	enumerateConfigs();
-	enumerateAPI();
 }
 
 CGUISetupFrame::~CGUISetupFrame()
@@ -178,23 +181,17 @@ void CGUISetupFrame::onName(wxCommandEvent& event)
 	readConfig(name);
 }
 
-void CGUISetupFrame::onAPI(wxCommandEvent& event)
-{
-	int n = event.GetSelection();
-
-	CSoundCardAPI* api = m_info.getAPIs().at(n);
-
-	enumerateAudio(*api);
-}
-
 void CGUISetupFrame::onBrowse(wxCommandEvent& event)
 {
 	wxFileDialog files(this, _("Choose an SDR Configuration File"), wxEmptyString, wxEmptyString, _("SDR files (*.sdr)|*.sdr"), wxFD_FILE_MUST_EXIST);
 	int ret = files.ShowModal();
 
 	if (ret == wxID_OK) {
-		wxString fileName = files.GetPath();
-		m_filename->SetValue(fileName);
+		m_filename = files.GetPath();
+
+		wxFileName filePath(m_filename);
+
+		m_filenameText->SetValue(filePath.GetFullName());
 	}
 }
 
@@ -206,72 +203,53 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 		return;
 	}
 
-	wxString fileName = m_filename->GetValue();
-	if (fileName.IsEmpty()) {
+	if (m_filename.IsEmpty()) {
 		::wxMessageBox(_("The SDR File Name is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
-	if (!wxFile::Exists(fileName.c_str())) {
-		::wxMessageBox(_("The SDR File does not exist"), _("GUISetup Error"), wxICON_ERROR);
+
+	CSDRDescrFile file(m_filename);
+	if (!file.isValid()) {
+		::wxMessageBox(_("The SDR File does not exist or is invalid"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
-	long audioAPI = m_apiChoice->GetSelection();
-	if (audioAPI == wxNOT_FOUND) {
-		::wxMessageBox(_("The Audio API is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
+	int type = file.getType();
+
+	if (m_userAudioAPI == -1 || m_userAudioInDev == -1L || m_userAudioOutDev == -1L) {
+		::wxMessageBox(_("The User Audio has not been set"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
-	int devChoice = m_devChoice->GetSelection();
-	if (devChoice == wxNOT_FOUND) {
-		::wxMessageBox(_("The Audio Device is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
-		return;
-	}
-
-	long audioInDev  = m_info.getDevs().at(devChoice)->getInDev();
-	long audioOutDev = m_info.getDevs().at(devChoice)->getOutDev();
-
-	wxString ipAddress = m_address->GetValue();
-	if (ipAddress.IsEmpty()) {
-		::wxMessageBox(_("The SDR IP Address is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
-		return;
-	}
-
-	wxString control = m_control->GetValue();
-	if (control.IsEmpty()) {
-		::wxMessageBox(_("The SDR Control Port is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
-		return;
-	}
-
-	long controlPort;
-	control.ToLong(&controlPort);
-	if (controlPort < 1L || controlPort > 65536L) {
-		::wxMessageBox(_("The SDR Control Port must be between 1 and 65536"), _("GUISetup Error"), wxICON_ERROR);
-		return;
-	}
-	
-	wxString data = m_data->GetValue();
-	if (data.IsEmpty()) {
-		::wxMessageBox(_("The SDR Data Port is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
-		return;
-	}
-
-	long dataPort;
-	data.ToLong(&dataPort);
-	if (dataPort < 1L || dataPort > 65536L) {
-		::wxMessageBox(_("The SDR Data Port must be between 1 and 65536"), _("GUISetup Error"), wxICON_ERROR);
-		return;
+	switch (type) {
+		case TYPE_AUDIORX:
+			if (m_sdrAudioAPI == -1 || m_sdrAudioInDev == -1L || m_sdrAudioOutDev == -1L) {
+				::wxMessageBox(_("The SDR Audio has not been set"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+			break;
+		case TYPE_UWSDR1:
+			if (m_ipAddress.IsEmpty() || m_controlPort == -1L || m_dataPort == -1L) {
+				::wxMessageBox(_("The Ethernet has not been set"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+			break;
+		default:
+			break;
 	}
 
 	wxConfig* config = new wxConfig(wxT("UWSDR"));
 
-	wxString fileNameKey    = wxT("/") + name + wxT("/FileName");
-	wxString audioAPIKey    = wxT("/") + name + wxT("/AudioAPI");
-	wxString audioOutDevKey = wxT("/") + name + wxT("/AudioOutDev");
-	wxString audioInDevKey  = wxT("/") + name + wxT("/AudioInDev");
-	wxString ipAddressKey   = wxT("/") + name + wxT("/IPAddress");
-	wxString controlPortKey = wxT("/") + name + wxT("/ControlPort");
-	wxString dataPortKey    = wxT("/") + name + wxT("/DataPort");
+	wxString fileNameKey        = wxT("/") + name + wxT("/FileName");
+	wxString userAudioAPIKey    = wxT("/") + name + wxT("/UserAudioAPI");
+	wxString userAudioOutDevKey = wxT("/") + name + wxT("/UserAudioOutDev");
+	wxString userAudioInDevKey  = wxT("/") + name + wxT("/UserAudioInDev");
+	wxString sdrAudioAPIKey     = wxT("/") + name + wxT("/SDRAudioAPI");
+	wxString sdrAudioOutDevKey  = wxT("/") + name + wxT("/SDRAudioOutDev");
+	wxString sdrAudioInDevKey   = wxT("/") + name + wxT("/SDRAudioInDev");
+	wxString ipAddressKey       = wxT("/") + name + wxT("/IPAddress");
+	wxString controlPortKey     = wxT("/") + name + wxT("/ControlPort");
+	wxString dataPortKey        = wxT("/") + name + wxT("/DataPort");
 
 	wxString test;
 	if (config->Read(fileNameKey, &test)) {
@@ -280,46 +258,73 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 			return;
 	}
 
-	bool ret = config->Write(fileNameKey, fileName);
+	bool ret = config->Write(fileNameKey, m_filename);
 	if (!ret) {
 		::wxMessageBox(_("Unable to write configuration data - FileName"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
-	ret = config->Write(audioAPIKey, audioAPI);
+	ret = config->Write(userAudioAPIKey, m_userAudioAPI);
 	if (!ret) {
-		::wxMessageBox(_("Unable to write configuration data - AudioAPI"), _("GUISetup Error"), wxICON_ERROR);
+		::wxMessageBox(_("Unable to write configuration data - UserAudioAPI"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
-	ret = config->Write(audioOutDevKey, audioOutDev);
+	ret = config->Write(userAudioOutDevKey, m_userAudioOutDev);
 	if (!ret) {
-		::wxMessageBox(_("Unable to write configuration data - AudioOutDev"), _("GUISetup Error"), wxICON_ERROR);
+		::wxMessageBox(_("Unable to write configuration data - UserAudioOutDev"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
-	ret = config->Write(audioInDevKey, audioInDev);
+	ret = config->Write(userAudioInDevKey, m_userAudioInDev);
 	if (!ret) {
-		::wxMessageBox(_("Unable to write configuration data - AudioInDev"), _("GUISetup Error"), wxICON_ERROR);
+		::wxMessageBox(_("Unable to write configuration data - UserAudioInDev"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
-	ret = config->Write(ipAddressKey, ipAddress);
-	if (!ret) {
-		::wxMessageBox(_("Unable to write configuration data - IPAddress"), _("GUISetup Error"), wxICON_ERROR);
-		return;
-	}
+	switch (type) {
+		case TYPE_AUDIORX:
+			ret = config->Write(sdrAudioAPIKey, m_sdrAudioAPI);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - SDRAudioAPI"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
 
-	ret = config->Write(controlPortKey, controlPort);
-	if (!ret) {
-		::wxMessageBox(_("Unable to write configuration data - ControlPort"), _("GUISetup Error"), wxICON_ERROR);
-		return;
-	}
+			ret = config->Write(sdrAudioOutDevKey, m_sdrAudioOutDev);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - SDRAudioOutDev"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
 
-	ret = config->Write(dataPortKey, dataPort);
-	if (!ret) {
-		::wxMessageBox(_("Unable to write configuration data - DataPort"), _("GUISetup Error"), wxICON_ERROR);
-		return;
+			ret = config->Write(sdrAudioInDevKey, m_sdrAudioInDev);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - SDRAudioInDev"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+			break;
+
+		case TYPE_UWSDR1:
+			ret = config->Write(ipAddressKey, m_ipAddress);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - IPAddress"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+
+			ret = config->Write(controlPortKey, m_controlPort);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - ControlPort"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+
+			ret = config->Write(dataPortKey, m_dataPort);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - DataPort"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+			break;
+
+		default:
+			break;
 	}
 
 	config->Flush();
@@ -375,92 +380,100 @@ void CGUISetupFrame::readConfig(const wxString& name)
 {
 	wxConfig* config = new wxConfig(wxT("UWSDR"));
 
-	wxString fileNameKey    = wxT("/") + name + wxT("/FileName");
-	wxString audioAPIKey    = wxT("/") + name + wxT("/AudioAPI");
-	wxString audioOutDevKey = wxT("/") + name + wxT("/AudioOutDev");
-	wxString ipAddressKey   = wxT("/") + name + wxT("/IPAddress");
-	wxString controlPortKey = wxT("/") + name + wxT("/ControlPort");
-	wxString dataPortKey    = wxT("/") + name + wxT("/DataPort");
+	wxString fileNameKey        = wxT("/") + name + wxT("/FileName");
+	wxString userAudioAPIKey    = wxT("/") + name + wxT("/UserAudioAPI");
+	wxString userAudioInDevKey  = wxT("/") + name + wxT("/UserAudioInDev");
+	wxString userAudioOutDevKey = wxT("/") + name + wxT("/UserAudioOutDev");
+	wxString sdrAudioAPIKey     = wxT("/") + name + wxT("/SDRAudioAPI");
+	wxString sdrAudioInDevKey   = wxT("/") + name + wxT("/SDRAudioInDev");
+	wxString sdrAudioOutDevKey  = wxT("/") + name + wxT("/SDRAudioOutDev");
+	wxString ipAddressKey       = wxT("/") + name + wxT("/IPAddress");
+	wxString controlPortKey     = wxT("/") + name + wxT("/ControlPort");
+	wxString dataPortKey        = wxT("/") + name + wxT("/DataPort");
 
-	wxString text;
-	config->Read(fileNameKey, &text);
-	m_filename->SetValue(text);
+	config->Read(fileNameKey, &m_filename);
+	wxFileName filePath(m_filename);
+	m_filenameText->SetValue(filePath.GetFullName());
 
-	long api;
-	config->Read(audioAPIKey, &api);
-	m_apiChoice->SetSelection(api);
+	CSDRDescrFile file(m_filename);
+	if (!file.isValid()) {
+		::wxMessageBox(_("Cannot open the SDR File"), _("GUISetup Error"), wxICON_ERROR);
+		m_userAudio->Disable();
+		m_sdrAudio->Disable();
+		m_ethernet->Disable();
+		return;
+	}
 
-	long outDev;
-	config->Read(audioOutDevKey, &outDev);
+	config->Read(userAudioAPIKey,    &m_userAudioAPI);
+	config->Read(userAudioInDevKey,  &m_userAudioInDev);
+	config->Read(userAudioOutDevKey, &m_userAudioOutDev);
 
-	vector<CSoundCardDev*>& devs = m_info.getDevs();
+	config->Read(sdrAudioAPIKey,    &m_sdrAudioAPI);
+	config->Read(sdrAudioInDevKey,  &m_sdrAudioInDev);
+	config->Read(sdrAudioOutDevKey, &m_sdrAudioOutDev);
 
-	for (unsigned int i = 0; i < devs.size(); i++)
-		if (devs.at(i)->getOutDev() == outDev)
-			m_devChoice->SetSelection(i);
-
-	config->Read(ipAddressKey, &text);
-	m_address->SetValue(text);
-
-	long port;
-	config->Read(controlPortKey, &port);
-	text.Printf(wxT("%ld"), port);
-	m_control->SetValue(text);
-
-	config->Read(dataPortKey, &port);
-	text.Printf(wxT("%ld"), port);
-	m_data->SetValue(text);
+	config->Read(ipAddressKey,   &m_ipAddress);
+	config->Read(controlPortKey, &m_controlPort);
+	config->Read(dataPortKey,    &m_dataPort);
 
 	delete config;
+
+	int type = file.getType();
+
+	switch (type) {
+		case TYPE_AUDIORX:
+			m_userAudio->Enable();
+			m_sdrAudio->Enable();
+			m_ethernet->Disable();
+			break;
+
+		case TYPE_DEMO:
+			m_userAudio->Enable();
+			m_sdrAudio->Disable();
+			m_ethernet->Disable();
+			break;
+
+		case TYPE_UWSDR1:
+			m_userAudio->Enable();
+			m_sdrAudio->Disable();
+			m_ethernet->Enable();
+			break;
+	}
 }
 
-void CGUISetupFrame::enumerateAPI()
+void CGUISetupFrame::onUserAudio(wxCommandEvent& event)
 {
-	bool ret = m_info.enumerateAPIs();
+	CSoundCardDialog dialog(this, _("User Audio Setup"), m_userAudioAPI, m_userAudioInDev, m_userAudioOutDev);
 
-	if (!ret) {
-		::wxMessageBox(_("Cannot access the sound access system."), _("GUISetup Error"), wxICON_ERROR);
-		return;
+	int ret = dialog.ShowModal();
+	if (ret == wxID_OK) {
+		m_userAudioAPI    = dialog.getAPI();
+		m_userAudioInDev  = dialog.getInDev();
+		m_userAudioOutDev = dialog.getOutDev();
 	}
-
-	vector<CSoundCardAPI*>& apis = m_info.getAPIs();
-	CSoundCardAPI* defAPI = NULL;
-
-	for (unsigned int i = 0; i < apis.size(); i++) {
-		CSoundCardAPI* api = apis.at(i);
-
-		m_apiChoice->Append(api->getName());
-
-		if (api->getDefault()) {
-			m_apiChoice->SetSelection(i);
-			defAPI = api;
-		}
-	}
-
-	if (defAPI != NULL)
-		enumerateAudio(*defAPI);
 }
 
-void CGUISetupFrame::enumerateAudio(const CSoundCardAPI& api)
+void CGUISetupFrame::onSDRAudio(wxCommandEvent& event)
 {
-	bool ret = m_info.enumerateDevs(api);
+	CSoundCardDialog dialog(this, _("SDR Audio Setup"), m_sdrAudioAPI, m_sdrAudioInDev, m_sdrAudioOutDev);
 
-	if (!ret) {
-		::wxMessageBox(_("Cannot access the sound access system."), _("GUISetup Error"), wxICON_ERROR);
-		return;
+	int ret = dialog.ShowModal();
+	if (ret == wxID_OK) {
+		m_sdrAudioAPI    = dialog.getAPI();
+		m_sdrAudioInDev  = dialog.getInDev();
+		m_sdrAudioOutDev = dialog.getOutDev();
 	}
+}
 
-	m_devChoice->Clear();
+void CGUISetupFrame::onEthernet(wxCommandEvent& event)
+{
+	CEthernetDialog dialog(this, _("Ethernet Setup"), m_ipAddress, m_controlPort, m_dataPort);
 
-	vector<CSoundCardDev*>& devs = m_info.getDevs();
-
-	for (unsigned int  i = 0; i < devs.size(); i++) {
-		CSoundCardDev* dev = devs.at(i);
-
-		m_devChoice->Append(dev->getName());
-
-		if (dev->getInDefault())
-			m_devChoice->SetSelection(i);
+	int ret = dialog.ShowModal();
+	if (ret == wxID_OK) {
+		m_ipAddress   = dialog.getIPAddress();
+		m_controlPort = dialog.getControlPort();
+		m_dataPort    = dialog.getDataPort();
 	}
 }
 

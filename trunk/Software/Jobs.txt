@@ -15,8 +15,6 @@ Create Linux RPMs, DEBs, etc
 
 Set of screenshots for all platforms
 
-Convert to Weaver method for transmit.
-
 
 Future
 ------

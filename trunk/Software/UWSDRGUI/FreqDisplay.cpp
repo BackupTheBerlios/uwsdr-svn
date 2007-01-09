@@ -46,8 +46,8 @@ CFreqDisplay::~CFreqDisplay()
 
 void CFreqDisplay::setFrequency(const CFrequency& frequency)
 {
-	unsigned int mhz = frequency.getMHz();
-	unsigned int  hz = (unsigned int)frequency.getHz();
+	int mhz = frequency.getMHz();
+	int  hz = (int)frequency.getHz();
 
 	// Only display to 10 Hz
 	if (m_lastFrequency.getMHz() == mhz && int(m_lastFrequency.getHz() / 10) == int(hz / 10))
