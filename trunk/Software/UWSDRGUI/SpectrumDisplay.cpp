@@ -205,6 +205,11 @@ void CSpectrumDisplay::createPanadapter()
 	dc.DrawLine(left, bottom, right, bottom);
 	dc.DrawLine(left, top, right, top);
 
+	wxFont font = wxSystemSettings::GetFont(wxSYS_SYSTEM_FONT);
+	font.SetPointSize(11);
+	font.SetWeight(wxFONTWEIGHT_BOLD);
+	dc.SetFont(font);
+
 	dc.SetTextForeground(*wxCYAN);
 
 	// Draw the frequency lines
@@ -270,6 +275,11 @@ void CSpectrumDisplay::createWaterfall()
 	dc.SetPen(*wxCYAN_PEN);
 
 	dc.DrawLine(left, bottom, right, bottom);
+
+	wxFont font = wxSystemSettings::GetFont(wxSYS_SYSTEM_FONT);
+	font.SetPointSize(11);
+	font.SetWeight(wxFONTWEIGHT_BOLD);
+	dc.SetFont(font);
 
 	dc.SetTextForeground(*wxCYAN);
 

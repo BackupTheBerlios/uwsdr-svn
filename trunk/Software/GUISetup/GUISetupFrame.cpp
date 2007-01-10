@@ -89,7 +89,7 @@ m_dataPort(-1L)
 	wxStaticText* label1 = new wxStaticText(panel, -1, _("Name:"));
 	panelSizer->Add(label1, 0, wxALL, BORDER_SIZE);
 
-	m_name = new wxComboBox(panel, NAME_COMBO, wxEmptyString, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	m_name = new wxComboBox(panel, NAME_COMBO, wxEmptyString, wxDefaultPosition, wxSize(DATA_WIDTH, -1), 0, NULL, wxCB_DROPDOWN);
 	panelSizer->Add(m_name, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* dummy1 = new wxStaticText(panel, -1, wxEmptyString);
@@ -193,6 +193,35 @@ void CGUISetupFrame::onBrowse(wxCommandEvent& event)
 		wxFileName filePath(m_filename);
 
 		m_filenameText->SetValue(filePath.GetFullName());
+
+		// Clear everything
+		m_userAudio->Disable();
+		m_sdrAudio->Disable();
+		m_ethernet->Disable();
+
+		CSDRDescrFile file(m_filename);
+		if (!file.isValid()) {
+			::wxMessageBox(_("Cannot open the SDR File"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
+
+		int type = file.getType();
+
+		switch (type) {
+			case TYPE_AUDIORX:
+				m_userAudio->Enable();
+				m_sdrAudio->Enable();
+				break;
+
+			case TYPE_DEMO:
+				m_userAudio->Enable();
+				break;
+
+			case TYPE_UWSDR1:
+				m_userAudio->Enable();
+				m_ethernet->Enable();
+				break;
+		}
 	}
 }
 

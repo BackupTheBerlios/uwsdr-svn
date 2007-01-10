@@ -345,7 +345,7 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 
 	wxUint32 samplesPerSec = wxUINT32_SWAP_ON_BE(uint32);
 	if (n != sizeof(wxUint32) || samplesPerSec != sampleRate) {
-		::wxLogError(wxT("%s has sample rate %lu, not %.0f"), m_fileName.c_str(), samplesPerSec, sampleRate);
+		::wxLogError(wxT("%s has sample rate %lu, not %.0f"), m_fileName.c_str(), (unsigned long)samplesPerSec, sampleRate);
 		return false;
 	}
 

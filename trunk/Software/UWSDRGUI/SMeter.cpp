@@ -167,6 +167,12 @@ void CSMeter::createBackground()
 	dc.DrawEllipticArc(0, 20, SMETER_WIDTH, SMETER_WIDTH, 45.0, 90.0);
 
 	dc.SetPen(*wxWHITE_PEN);
+
+	wxFont font = wxSystemSettings::GetFont(wxSYS_SYSTEM_FONT);
+	font.SetPointSize(11);
+	font.SetWeight(wxFONTWEIGHT_BOLD);
+	dc.SetFont(font);
+
 	dc.SetTextForeground(*wxWHITE);
 
 	int centreX = SMETER_WIDTH / 2;

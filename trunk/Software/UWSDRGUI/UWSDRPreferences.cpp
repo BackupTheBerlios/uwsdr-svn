@@ -245,7 +245,7 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 
 	CFrequency minTXFreq;
 	CFrequency maxTXFreq;
-	long shift = 0.0L;
+	long shift = 0L;
 
 	if (m_parameters->m_hardwareType != TYPE_AUDIORX) {
 		text = m_minTXFreq->GetValue();
