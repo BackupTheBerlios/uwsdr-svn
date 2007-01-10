@@ -353,6 +353,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\SDRDescrFile.cpp"
+				>
+			</File>
+			<File
 				RelativePath="SignalReader.cpp"
 				>
 				<FileConfiguration
@@ -587,6 +591,10 @@
 			</File>
 			<File
 				RelativePath="SDRDataWriter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SDRDescrFile.h"
 				>
 			</File>
 			<File

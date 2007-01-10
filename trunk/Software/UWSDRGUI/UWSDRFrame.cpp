@@ -717,21 +717,11 @@ void CUWSDRFrame::freqChange(double value)
 	 * wraps on frequencies based on the centre frequency and sample rate.
 	 */
 	if (!m_txOn) {
-		if (m_parameters->m_hardwareType == TYPE_AUDIORX) {
-			CFrequency highFreq = m_parameters->m_hardwareMaxFreq + m_parameters->m_hardwareSampleRate / 4.0F;
-			CFrequency lowFreq  = m_parameters->m_hardwareMinFreq - m_parameters->m_hardwareSampleRate / 4.0F;
+		if (freq >= m_parameters->m_maxReceiveFreq)
+			freq = (freq + m_parameters->m_minReceiveFreq) - m_parameters->m_maxReceiveFreq;
 
-			if (freq > highFreq)
-				freq = lowFreq;
-			else if (freq < lowFreq)
-				freq = highFreq;
-		} else {
-			if (freq >= m_parameters->m_maxReceiveFreq)
-				freq = (freq + m_parameters->m_minReceiveFreq) - m_parameters->m_maxReceiveFreq;
-
-			if (freq < m_parameters->m_minReceiveFreq)
-				freq = (freq + m_parameters->m_maxReceiveFreq) - m_parameters->m_minReceiveFreq;
-		}
+		if (freq < m_parameters->m_minReceiveFreq)
+			freq = (freq + m_parameters->m_maxReceiveFreq) - m_parameters->m_minReceiveFreq;
 	} else {
 		if (freq >= m_parameters->m_maxTransmitFreq)
 			freq = (freq + m_parameters->m_minTransmitFreq) - m_parameters->m_maxTransmitFreq;

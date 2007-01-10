@@ -395,28 +395,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="SDRDescrFile.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="SDRParameters.cpp"
 				>
 				<FileConfiguration
@@ -660,10 +638,6 @@
 				>
 			</File>
 			<File
-				RelativePath="SDRDescrFile.h"
-				>
-			</File>
-			<File
 				RelativePath="SDRParameters.h"
 				>
 			</File>
@@ -689,10 +663,6 @@
 			</File>
 			<File
 				RelativePath="UWSDRPreferences.h"
-				>
-			</File>
-			<File
-				RelativePath="UWSDRXpm.h"
 				>
 			</File>
 			<File

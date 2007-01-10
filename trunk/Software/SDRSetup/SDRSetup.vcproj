@@ -273,10 +273,6 @@
 				RelativePath="SDRSetupFrame.h"
 				>
 			</File>
-			<File
-				RelativePath="SDRSetupXpm.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

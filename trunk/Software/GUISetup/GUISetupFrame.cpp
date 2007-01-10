@@ -50,6 +50,7 @@ const int DATA_WIDTH      = 150;
 
 BEGIN_EVENT_TABLE(CGUISetupFrame, wxFrame)
 	EVT_COMBOBOX(NAME_COMBO,      CGUISetupFrame::onName)
+	EVT_TEXT_ENTER(NAME_COMBO,    CGUISetupFrame::onName)
 	EVT_BUTTON(CREATE_BUTTON,     CGUISetupFrame::onCreate)
 	EVT_BUTTON(BROWSE_BUTTON,     CGUISetupFrame::onBrowse)
 	EVT_BUTTON(USER_AUDIO_BUTTON, CGUISetupFrame::onUserAudio)
@@ -378,6 +379,13 @@ void CGUISetupFrame::enumerateConfigs()
 
 void CGUISetupFrame::readConfig(const wxString& name)
 {
+	// Clear everything
+	m_userAudio->Disable();
+	m_sdrAudio->Disable();
+	m_ethernet->Disable();
+
+	m_filenameText->Clear();
+
 	wxConfig* config = new wxConfig(wxT("UWSDR"));
 
 	wxString fileNameKey        = wxT("/") + name + wxT("/FileName");
@@ -391,16 +399,16 @@ void CGUISetupFrame::readConfig(const wxString& name)
 	wxString controlPortKey     = wxT("/") + name + wxT("/ControlPort");
 	wxString dataPortKey        = wxT("/") + name + wxT("/DataPort");
 
-	config->Read(fileNameKey, &m_filename);
+	bool ret = config->Read(fileNameKey, &m_filename);
+	if (!ret)
+		return;
+
 	wxFileName filePath(m_filename);
 	m_filenameText->SetValue(filePath.GetFullName());
 
 	CSDRDescrFile file(m_filename);
 	if (!file.isValid()) {
 		::wxMessageBox(_("Cannot open the SDR File"), _("GUISetup Error"), wxICON_ERROR);
-		m_userAudio->Disable();
-		m_sdrAudio->Disable();
-		m_ethernet->Disable();
 		return;
 	}
 
@@ -424,18 +432,14 @@ void CGUISetupFrame::readConfig(const wxString& name)
 		case TYPE_AUDIORX:
 			m_userAudio->Enable();
 			m_sdrAudio->Enable();
-			m_ethernet->Disable();
 			break;
 
 		case TYPE_DEMO:
 			m_userAudio->Enable();
-			m_sdrAudio->Disable();
-			m_ethernet->Disable();
 			break;
 
 		case TYPE_UWSDR1:
 			m_userAudio->Enable();
-			m_sdrAudio->Disable();
 			m_ethernet->Enable();
 			break;
 	}

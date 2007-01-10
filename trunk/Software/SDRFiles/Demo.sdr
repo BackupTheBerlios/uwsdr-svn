@@ -3,45 +3,17 @@
 # should not be modified.
 #
 
-#
-# The name of the SDR hardware that this file refers to.
-#
 name=Demo SDR
 
-#
-# The control of the hardware may be via a number of different hardware interfaces,
-# the valid values are "audiorx" for something like a SoftRock, "demo" for a working
-# transmit and receive GUI but no hardware connected, and "uwsdr1" for the first
-# version of the uwsdr hardware (using the Ethernet port).
-#
 type=demo
 
-#
-# The frequency limits of the hardware, in MHz. For the "audiorx" type above, the low and
-# high frequencies must be the same.
-#
 lowFreq=2300
 highFreq=2450
 
-#
-# The local oscillator step size in Hertz. This is unused for the "audiorx" type.
-#
 stepSize=10000.0
 
-#
-# This is the sample rate of the CODEC, this is somewhat important. The value
-# is in samples per second. For the "audiorx" type it is the sample rate of the
-# sound card, the higher the sample rate, the greater the tuning range.
-#
 sampleRate=48000
 
-#
-# It is possible that a receive only SDR will be produced, so there is no point
-# sending it transmit commands or data to it. 1 for receive only, 0 for the full
-# monty. For a type of "audiorx" above, it is set to receive only within the GUI.
-#
 receiveOnly=0
 
-#
-# End of file
 #

@@ -102,9 +102,10 @@ m_method(NULL)
 
 	m_noteBook->AddPage(createReceiveTab(m_noteBook), _("Receive"), false);
 
-	m_noteBook->AddPage(createTransmitTab(m_noteBook), _("Transmit"), false);
-
-	m_noteBook->AddPage(createALCTab(m_noteBook), _("ALC"), false);
+	if (m_parameters->m_hardwareType != TYPE_AUDIORX) {
+		m_noteBook->AddPage(createTransmitTab(m_noteBook), _("Transmit"), false);
+		m_noteBook->AddPage(createALCTab(m_noteBook), _("ALC"), false);
+	}
 
 	m_noteBook->AddPage(createIQTab(m_noteBook), _("I + Q"), false);
 
@@ -120,20 +121,24 @@ m_method(NULL)
 
 	SetSizer(mainSizer);
 
-	wxString text;
-	text.Printf(wxT("%u"), m_parameters->m_freqShift / 1000);
-	m_freqShift->SetValue(text);
-
-	text.Printf(wxT("%.1lf"), m_parameters->m_freqOffset);
-	m_freqOffset->SetValue(text);
-
 	m_minRXFreq->SetValue(m_parameters->m_minReceiveFreq.getString(3));
 	m_maxRXFreq->SetValue(m_parameters->m_maxReceiveFreq.getString(3));
-	m_minTXFreq->SetValue(m_parameters->m_minTransmitFreq.getString(3));
-	m_maxTXFreq->SetValue(m_parameters->m_maxTransmitFreq.getString(3));
 
-	m_deviationFMW->SetSelection(m_parameters->m_deviationFMW);
-	m_deviationFMN->SetSelection(m_parameters->m_deviationFMN);
+	if (m_parameters->m_hardwareType != TYPE_AUDIORX) {
+		m_minTXFreq->SetValue(m_parameters->m_minTransmitFreq.getString(3));
+		m_maxTXFreq->SetValue(m_parameters->m_maxTransmitFreq.getString(3));
+
+		wxString text;
+		text.Printf(wxT("%u"), m_parameters->m_freqShift / 1000);
+		m_freqShift->SetValue(text);
+
+		m_deviationFMW->SetSelection(m_parameters->m_deviationFMW);
+		m_deviationFMN->SetSelection(m_parameters->m_deviationFMN);
+	}
+
+	wxString text;
+	text.Printf(wxT("%.1lf"), m_parameters->m_freqOffset);
+	m_freqOffset->SetValue(text);
 
 	m_agcAM->SetSelection(m_parameters->m_agcAM);
 	m_agcSSB->SetSelection(m_parameters->m_agcSSB);
@@ -172,18 +177,23 @@ m_method(NULL)
 	unsigned int val = (unsigned int)(20.0 * ::log10(double(m_parameters->m_rfGain) / 1000.0) + 0.5);
 	m_rfValue->SetValue(val);
 
-	m_spButton->SetValue(m_parameters->m_spOn);
-	m_spValue->SetValue(m_parameters->m_spValue);
-	m_carrierLevel->SetValue(m_parameters->m_carrierLevel);
+	if (m_parameters->m_hardwareType != TYPE_AUDIORX) {
+		m_spButton->SetValue(m_parameters->m_spOn);
+		m_spValue->SetValue(m_parameters->m_spValue);
+		m_carrierLevel->SetValue(m_parameters->m_carrierLevel);
 
-	m_alcAttack->SetValue(m_parameters->m_alcAttack);
-	m_alcDecay->SetValue(m_parameters->m_alcDecay);
-	m_alcHang->SetValue(m_parameters->m_alcHang);
+		m_alcAttack->SetValue(m_parameters->m_alcAttack);
+		m_alcDecay->SetValue(m_parameters->m_alcDecay);
+		m_alcHang->SetValue(m_parameters->m_alcHang);
+	}
 
 	m_rxIQPhase->SetValue(m_parameters->m_rxIQphase);
 	m_rxIQGain->SetValue(m_parameters->m_rxIQgain);
-	m_txIQPhase->SetValue(m_parameters->m_txIQphase);
-	m_txIQGain->SetValue(m_parameters->m_txIQgain);
+
+	if (m_parameters->m_hardwareType != TYPE_AUDIORX) {
+		m_txIQPhase->SetValue(m_parameters->m_txIQphase);
+		m_txIQGain->SetValue(m_parameters->m_txIQgain);
+	}
 
 	m_method->SetSelection(m_parameters->m_zeroIF ? 1 : 0);
 	if (m_parameters->m_hardwareStepSize > 100.0F || m_parameters->m_hardwareType == TYPE_AUDIORX || m_parameters->m_hardwareType == TYPE_DEMO) {
@@ -233,59 +243,64 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 		return;
 	}
 
-	text = m_minTXFreq->GetValue();
+	CFrequency minTXFreq;
+	CFrequency maxTXFreq;
+	long shift = 0.0L;
 
-	if (text.IsEmpty()) {
-		::wxMessageBox(_("The Min TX frequency may not empty."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
+	if (m_parameters->m_hardwareType != TYPE_AUDIORX) {
+		text = m_minTXFreq->GetValue();
 
-	CFrequency minTXFreq(text);
+		if (text.IsEmpty()) {
+			::wxMessageBox(_("The Min TX frequency may not empty."), _("uWave SDR Error"), wxICON_ERROR);
+			return;
+		}
 
-	if (minTXFreq < minRXFreq ||
-	    minTXFreq > maxRXFreq) {
-		::wxMessageBox(_("The Min TX frequency may not be outside the\nrange of the receive frequencies."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
+		minTXFreq.setFrequency(text);
 
-	text = m_maxTXFreq->GetValue();
+		if (minTXFreq < minRXFreq ||
+		    minTXFreq > maxRXFreq) {
+			::wxMessageBox(_("The Min TX frequency may not be outside the\nrange of the receive frequencies."), _("uWave SDR Error"), wxICON_ERROR);
+			return;
+		}
 
-	if (text.IsEmpty()) {
-		::wxMessageBox(_("The Max TX frequency may not empty."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
+		text = m_maxTXFreq->GetValue();
 
-	CFrequency maxTXFreq(text);
+		if (text.IsEmpty()) {
+			::wxMessageBox(_("The Max TX frequency may not empty."), _("uWave SDR Error"), wxICON_ERROR);
+			return;
+		}
 
-	if (maxTXFreq < minRXFreq ||
-	    maxTXFreq > maxRXFreq) {
-		::wxMessageBox(_("The Max TX frequency may not be outside the\nrange of the receive frequencies."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
+		maxTXFreq.setFrequency(text);
 
-	if (maxTXFreq <= minTXFreq) {
-		::wxMessageBox(_("The Max TX frequency must be higher than the\nMin TX frequency."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
+		if (maxTXFreq < minRXFreq ||
+		    maxTXFreq > maxRXFreq) {
+			::wxMessageBox(_("The Max TX frequency may not be outside the\nrange of the receive frequencies."), _("uWave SDR Error"), wxICON_ERROR);
+			return;
+		}
 
-	text = m_freqShift->GetValue();
+		if (maxTXFreq <= minTXFreq) {
+			::wxMessageBox(_("The Max TX frequency must be higher than the\nMin TX frequency."), _("uWave SDR Error"), wxICON_ERROR);
+			return;
+		}
 
-	if (text.IsEmpty()) {
-		::wxMessageBox(_("The shift may not empty."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
+		text = m_freqShift->GetValue();
 
-	long shift;
-	bool ret = text.ToLong(&shift);
+		if (text.IsEmpty()) {
+			::wxMessageBox(_("The shift may not empty."), _("uWave SDR Error"), wxICON_ERROR);
+			return;
+		}
 
-	if (!ret) {
-		::wxMessageBox(_("The shift is not a valid number."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
+		bool ret = text.ToLong(&shift);
 
-	if (shift < 0L) {
-		::wxMessageBox(_("The Shift may not be negative."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
+		if (!ret) {
+			::wxMessageBox(_("The shift is not a valid number."), _("uWave SDR Error"), wxICON_ERROR);
+			return;
+		}
+
+		if (shift < 0L) {
+			::wxMessageBox(_("The Shift may not be negative."), _("uWave SDR Error"), wxICON_ERROR);
+			return;
+		}
 	}
 
 	text = m_freqOffset->GetValue();
@@ -296,7 +311,7 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 	}
 
 	double offset;
-	ret = text.ToDouble(&offset);
+	bool ret = text.ToDouble(&offset);
 
 	if (!ret) {
 		::wxMessageBox(_("The offset is not a valid number."), _("uWave SDR Error"), wxICON_ERROR);
@@ -403,16 +418,20 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 		return;
 	}
 
-	m_parameters->m_freqShift  = shift * 1000;
-	m_parameters->m_freqOffset = offset;
-
 	m_parameters->m_minReceiveFreq  = minRXFreq;
 	m_parameters->m_maxReceiveFreq  = maxRXFreq;
-	m_parameters->m_minTransmitFreq = minTXFreq;
-	m_parameters->m_maxTransmitFreq = maxTXFreq;
 
-	m_parameters->m_deviationFMW  = m_deviationFMW->GetSelection();
-	m_parameters->m_deviationFMN = m_deviationFMN->GetSelection();
+	if (m_parameters->m_hardwareType != TYPE_AUDIORX) {
+		m_parameters->m_minTransmitFreq = minTXFreq;
+		m_parameters->m_maxTransmitFreq = maxTXFreq;
+
+		m_parameters->m_freqShift = shift * 1000;
+
+		m_parameters->m_deviationFMW = m_deviationFMW->GetSelection();
+		m_parameters->m_deviationFMN = m_deviationFMN->GetSelection();
+	}
+
+	m_parameters->m_freqOffset = offset;
 
 	m_parameters->m_agcAM  = m_agcAM->GetSelection();
 	m_parameters->m_agcSSB = m_agcSSB->GetSelection();
@@ -446,18 +465,21 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 	double gainDb = double(m_rfValue->GetValue());
 	m_parameters->m_rfGain    = (unsigned int)(1000.0 * ::pow(10.0, gainDb / 20.0) + 0.5);
 
-	m_parameters->m_spOn         = m_spButton->IsChecked();
-	m_parameters->m_spValue      = m_spValue->GetValue();
-	m_parameters->m_carrierLevel = m_carrierLevel->GetValue();
+	if (m_parameters->m_hardwareType != TYPE_AUDIORX) {
+		m_parameters->m_spOn         = m_spButton->IsChecked();
+		m_parameters->m_spValue      = m_spValue->GetValue();
+		m_parameters->m_carrierLevel = m_carrierLevel->GetValue();
 
-	m_parameters->m_alcAttack = m_alcAttack->GetValue();
-	m_parameters->m_alcDecay  = m_alcDecay->GetValue();
-	m_parameters->m_alcHang   = m_alcHang->GetValue();
+		m_parameters->m_alcAttack = m_alcAttack->GetValue();
+		m_parameters->m_alcDecay  = m_alcDecay->GetValue();
+		m_parameters->m_alcHang   = m_alcHang->GetValue();
+
+		m_parameters->m_txIQphase = m_txIQPhase->GetValue();
+		m_parameters->m_txIQgain  = m_txIQGain->GetValue();
+	}
 
 	m_parameters->m_rxIQphase = m_rxIQPhase->GetValue();
 	m_parameters->m_rxIQgain  = m_rxIQGain->GetValue();
-	m_parameters->m_txIQphase = m_txIQPhase->GetValue();
-	m_parameters->m_txIQgain  = m_txIQGain->GetValue();
 
 	m_parameters->m_zeroIF = m_method->GetSelection() == 1;
 
@@ -507,23 +529,25 @@ wxPanel* CUWSDRPreferences::createFrequencyTab(wxNotebook* noteBook)
 	m_maxRXFreq = new wxTextCtrl(panel, -1);
 	sizer->Add(m_maxRXFreq, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label3 = new wxStaticText(panel, -1, _("Min TX frequency (MHz)"));
-	sizer->Add(label3, 0, wxALL, BORDER_SIZE);
+	if (m_parameters->m_hardwareType != TYPE_AUDIORX) {
+		wxStaticText* label3 = new wxStaticText(panel, -1, _("Min TX frequency (MHz)"));
+		sizer->Add(label3, 0, wxALL, BORDER_SIZE);
 
-	m_minTXFreq = new wxTextCtrl(panel, -1);
-	sizer->Add(m_minTXFreq, 0, wxALL, BORDER_SIZE);
+		m_minTXFreq = new wxTextCtrl(panel, -1);
+		sizer->Add(m_minTXFreq, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label4 = new wxStaticText(panel, -1, _("Max TX frequency (MHz)"));
-	sizer->Add(label4, 0, wxALL, BORDER_SIZE);
+		wxStaticText* label4 = new wxStaticText(panel, -1, _("Max TX frequency (MHz)"));
+		sizer->Add(label4, 0, wxALL, BORDER_SIZE);
 
-	m_maxTXFreq = new wxTextCtrl(panel, -1);
-	sizer->Add(m_maxTXFreq, 0, wxALL, BORDER_SIZE);
+		m_maxTXFreq = new wxTextCtrl(panel, -1);
+		sizer->Add(m_maxTXFreq, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label5 = new wxStaticText(panel, -1, _("Shift (kHz)"));
-	sizer->Add(label5, 0, wxALL, BORDER_SIZE);
+		wxStaticText* label5 = new wxStaticText(panel, -1, _("Shift (kHz)"));
+		sizer->Add(label5, 0, wxALL, BORDER_SIZE);
 
-	m_freqShift = new wxTextCtrl(panel, -1);
-	sizer->Add(m_freqShift, 0, wxALL, BORDER_SIZE);
+		m_freqShift = new wxTextCtrl(panel, -1);
+		sizer->Add(m_freqShift, 0, wxALL, BORDER_SIZE);
+	}
 
 	wxStaticText* label6 = new wxStaticText(panel, -1, _("Offset (Hz)"));
 	sizer->Add(label6, 0, wxALL, BORDER_SIZE);
@@ -567,8 +591,13 @@ wxPanel* CUWSDRPreferences::createModeTab(wxNotebook* noteBook)
 	wxStaticText* labelC = new wxStaticText(panel, -1, _("Tuning"));
 	sizer->Add(labelC, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* labelD = new wxStaticText(panel, -1, _("AGC/Deviation"));
-	sizer->Add(labelD, 0, wxALL, BORDER_SIZE);
+	if (m_parameters->m_hardwareType != TYPE_AUDIORX) {
+		wxStaticText* labelD = new wxStaticText(panel, -1, _("AGC/Deviation"));
+		sizer->Add(labelD, 0, wxALL, BORDER_SIZE);
+	} else {
+		wxStaticText* labelD = new wxStaticText(panel, -1, _("AGC"));
+		sizer->Add(labelD, 0, wxALL, BORDER_SIZE);
+	}
 
 	wxStaticText* label2a = new wxStaticText(panel, -1, _("FM Wide"));
 	sizer->Add(label2a, 0, wxALL, BORDER_SIZE);
@@ -579,8 +608,13 @@ wxPanel* CUWSDRPreferences::createModeTab(wxNotebook* noteBook)
  	m_tuningFM = createTuningChoice(panel);
 	sizer->Add(m_tuningFM, 0, wxALL, BORDER_SIZE);
 
-   m_deviationFMW = createDeviationChoice(panel);
-	sizer->Add(m_deviationFMW, 0, wxALL, BORDER_SIZE);
+	if (m_parameters->m_hardwareType != TYPE_AUDIORX) {
+		m_deviationFMW = createDeviationChoice(panel);
+		sizer->Add(m_deviationFMW, 0, wxALL, BORDER_SIZE);
+	} else {
+		wxStaticText* dummy = new wxStaticText(panel, -1, wxEmptyString);
+		sizer->Add(dummy, 0, wxALL, BORDER_SIZE);
+	}
 
 	wxStaticText* label2b = new wxStaticText(panel, -1, _("FM Narrow"));
 	sizer->Add(label2b, 0, wxALL, BORDER_SIZE);
@@ -591,8 +625,13 @@ wxPanel* CUWSDRPreferences::createModeTab(wxNotebook* noteBook)
 	wxStaticText* dummy2b = new wxStaticText(panel, -1, wxEmptyString);
 	sizer->Add(dummy2b, 0, wxALL, BORDER_SIZE);
 
-   m_deviationFMN = createDeviationChoice(panel);
-	sizer->Add(m_deviationFMN, 0, wxALL, BORDER_SIZE);
+	if (m_parameters->m_hardwareType != TYPE_AUDIORX) {
+		m_deviationFMN = createDeviationChoice(panel);
+		sizer->Add(m_deviationFMN, 0, wxALL, BORDER_SIZE);
+	} else {
+		wxStaticText* dummy = new wxStaticText(panel, -1, wxEmptyString);
+		sizer->Add(dummy, 0, wxALL, BORDER_SIZE);
+	}
 
 	wxStaticText* label3 = new wxStaticText(panel, -1, _("AM"));
 	sizer->Add(label3, 0, wxALL, BORDER_SIZE);
@@ -917,12 +956,10 @@ wxPanel* CUWSDRPreferences::createIQTab(wxNotebook* noteBook)
 	wxStaticText* label = new wxStaticText(panel, -1,
 		_("For optimum performance the I and Q elements of the receive and transmit signal\n"
 		  "need to be balanced. These controls allow the relative phase and gain between the\n"
-		  "I and Q channels to be changed.\n"));
-/*
-		   The method is a choice between the Hartley or\n"
+		  "I and Q channels to be changed. The method is a choice between the Hartley or\n"
 		  "Weaver methods, the choice is disabled and set to Hartley if the step size of the\n"
 		  "hardware is greater than 100Hz."));
-*/
+
 	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(4);
@@ -934,12 +971,14 @@ wxPanel* CUWSDRPreferences::createIQTab(wxNotebook* noteBook)
 	m_rxIQPhase->SetRange(-400, 400);
 	sizer->Add(m_rxIQPhase, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label3 = new wxStaticText(panel, -1, _("Transmit phase"));
-	sizer->Add(label3, 0, wxALL, BORDER_SIZE);
+	if (m_parameters->m_hardwareType != TYPE_AUDIORX) {
+		wxStaticText* label3 = new wxStaticText(panel, -1, _("Transmit phase"));
+		sizer->Add(label3, 0, wxALL, BORDER_SIZE);
 
-	m_txIQPhase = new wxSpinCtrl(panel, TXIQ_PHASE, wxEmptyString, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
-	m_txIQPhase->SetRange(-400, 400);
-	sizer->Add(m_txIQPhase, 0, wxALL, BORDER_SIZE);
+		m_txIQPhase = new wxSpinCtrl(panel, TXIQ_PHASE, wxEmptyString, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
+		m_txIQPhase->SetRange(-400, 400);
+		sizer->Add(m_txIQPhase, 0, wxALL, BORDER_SIZE);
+	}
 
 	wxStaticText* label2 = new wxStaticText(panel, -1, _("Receive gain"));
 	sizer->Add(label2, 0, wxALL, BORDER_SIZE);
@@ -948,12 +987,14 @@ wxPanel* CUWSDRPreferences::createIQTab(wxNotebook* noteBook)
 	m_rxIQGain->SetRange(-500, 500);
 	sizer->Add(m_rxIQGain, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label4 = new wxStaticText(panel, -1, _("Transmit gain"));
-	sizer->Add(label4, 0, wxALL, BORDER_SIZE);
+	if (m_parameters->m_hardwareType != TYPE_AUDIORX) {
+		wxStaticText* label4 = new wxStaticText(panel, -1, _("Transmit gain"));
+		sizer->Add(label4, 0, wxALL, BORDER_SIZE);
 
-	m_txIQGain = new wxSpinCtrl(panel, TXIQ_GAIN, wxEmptyString, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
-	m_txIQGain->SetRange(-500, 500);
-	sizer->Add(m_txIQGain, 0, wxALL, BORDER_SIZE);
+		m_txIQGain = new wxSpinCtrl(panel, TXIQ_GAIN, wxEmptyString, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
+		m_txIQGain->SetRange(-500, 500);
+		sizer->Add(m_txIQGain, 0, wxALL, BORDER_SIZE);
+	}
 
 	m_methodLabel = new wxStaticText(panel, -1, _("Method"));
 	sizer->Add(m_methodLabel, 0, wxALL, BORDER_SIZE);

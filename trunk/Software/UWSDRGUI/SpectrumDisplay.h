@@ -50,6 +50,7 @@ class CSpectrumDisplay : public wxPanel {
     private:
 	int          m_width;
 	int          m_height;
+	float        m_dbScale;
 	wxBitmap*    m_background;
 	wxBitmap*    m_bitmap;
 	float        m_sampleRate;

@@ -25,7 +25,7 @@ const wxString APPNAME     = wxT("UWSDR");
 const int BORDER_SIZE      = 5;
 
 #if defined(__WXMSW__)
-const int BUTTON_HEIGHT    = -1;
+const int BUTTON_HEIGHT    = 23;
 
 const int FREQDIAL_WIDTH   = 150;
 const int FREQDIAL_HEIGHT  = 150;

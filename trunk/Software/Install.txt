@@ -1,9 +1,6 @@
 SDR Installation
 ================
 
-On Windows, unless you are building UWSDR yourself or have Visual C++ Express installed, then you'll need to download and install the Visual C++ 2005 support files. These can be found at http://www.microsoft.com/downloads/details.aspx?FamilyID=32bc1bee-a3f9-4c13-9c99-220b62a191ee&DisplayLang=en
-Once installed, which only needs to be done once, you can then install and run the UWSDR executable files from the UWSDR installation program as found on http://uwsdr.berlios.de
-
 There are five programs. UWSDR/UWSDR.exe which is the SDR GUI itself, SDREmulator/SDREmulator.exe which is as the name suggests, an emulator for the SDR, GUISetup/GUISetup.exe which sets up the required parameters to start the SDR, SDRHelp/SDRHelp.exe which allows access to the documentation, and finally SDRSetup/SDRSetup.exe which sets the initial parameters of the SDR hardware.
 
 To start you need to setup the GUI. Run GUISetup/GUISetup.exe and choose a name for your SDR, then an SDR filename. The Audio API to use should be selected, followed by the Audio  Device. On Windows the API choice is MME, DirectAudio and ASIO. These are in reverse order of preference with ASIO better than DirectAudio which is in turn better than MME. Choose the best that your sound card supports. For Linux the choices are ALSA or OSS. With modern versions of Linux, OSS is a layer on top of ALSA, so choose ALSA.

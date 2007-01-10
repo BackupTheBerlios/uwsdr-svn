@@ -62,6 +62,7 @@ CSpectrumDisplay::CSpectrumDisplay(wxWindow* parent, int id, const wxPoint& pos,
 wxPanel(parent, id, pos, size, style, name),
 m_width(size.GetWidth()),
 m_height(size.GetHeight()),
+m_dbScale(0.0F),
 m_background(NULL),
 m_bitmap(NULL),
 m_sampleRate(0.0F),
@@ -80,6 +81,8 @@ m_offset(0.0F)
 {
 	m_bitmap     = new wxBitmap(m_width, m_height);
 	m_background = new wxBitmap(m_width, m_height);
+
+	m_dbScale = float(m_height - 17) / 20.0F;
 
 	m_speedMenu = new wxMenu();
 	m_speedMenu->AppendRadioItem(MENU_100MS,  wxT("100 ms"));
@@ -192,7 +195,6 @@ void CSpectrumDisplay::createPanadapter()
 	int top     = 3;
 	int bottom  = m_height - 15;
 	int middleX = left + (right - left) / 2;
-	// int lowY    = top + 13 * (bottom - top) / 15;
 	double incrX = double(right - left) / 10.0;
 
 	dc.SetPen(*wxCYAN_PEN);
@@ -206,15 +208,14 @@ void CSpectrumDisplay::createPanadapter()
 	dc.SetTextForeground(*wxCYAN);
 
 	// Draw the frequency lines
-	for (int i = 1; i < 10; i++) {
+	for (unsigned int i = 1; i < 10; i++) {
 		int x = left + int(i * incrX + 0.5);
 		dc.DrawLine(x, top /* lowY */, x, bottom);
 	}
 
 	// Draw the dB lines, every 5dB
-	unsigned int dB = 0;
-	for (int j = 1; true; j += 10, dB += 5) {
-		int y = bottom - int(double(j) / DB_SCALE + 0.5);
+	for (unsigned int dB = 0; true; dB += 5) {
+		int y = bottom - int(float(dB) * m_dbScale + 0.5);
 		if (y < top)
 			break;
 
@@ -320,7 +321,7 @@ void CSpectrumDisplay::drawPanadapter1(const float* spectrum, float bottom)
 				value = val;
 		}
 
-		int y = int((value - bottom) / DB_SCALE + 0.5F);
+		int y = int((value - bottom) * m_dbScale + 0.5F);
 		if (y < 0)
 			y = 0;
 		if (y > (m_height - 18))
@@ -370,7 +371,7 @@ void CSpectrumDisplay::drawPanadapter2(const float* spectrum, float bottom)
 				value = val;
 		}
 
-		int y = int((value - bottom) / DB_SCALE + 0.5F);
+		int y = int((value - bottom) * m_dbScale + 0.5F);
 		if (y < 0)
 			y = 0;
 		if (y > (m_height - 18))

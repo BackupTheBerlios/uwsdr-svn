@@ -247,10 +247,6 @@
 				RelativePath="SDRHelpApp.h"
 				>
 			</File>
-			<File
-				RelativePath="SDRHelpXpm.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
