@@ -54,6 +54,15 @@ CVolumeDial::~CVolumeDial()
 	delete m_bitmap;
 }
 
+bool CVolumeDial::Enable(bool enable)
+{
+	bool ret = wxPanel::Enable(enable);
+
+	drawDial();
+
+	return ret;
+}
+
 void CVolumeDial::setValue(unsigned int value)
 {
 	m_value = value;
@@ -88,9 +97,14 @@ void CVolumeDial::drawDial()
 	dc.SetBrush(brush0);
 	dc.DrawRectangle(0, 0, m_width, m_height);
 
-	dc.SetBrush(*wxLIGHT_GREY_BRUSH);
-	wxPen pen1(*wxBLACK, 2, wxSOLID);
-	dc.SetPen(pen1);
+	if (IsEnabled()) {
+		dc.SetBrush(*wxLIGHT_GREY_BRUSH);
+		dc.SetPen(wxPen(*wxBLACK, 2, wxSOLID));
+	} else {
+		dc.SetBrush(brush0);
+		dc.SetPen(wxPen(*wxLIGHT_GREY, 2, wxSOLID));
+	}
+
 	dc.DrawEllipse(1, 1, m_width - 2, m_height - 2);
 
 	double incr = 270.0 / double(m_max - m_min); 
@@ -106,8 +120,11 @@ void CVolumeDial::drawDial()
 	int endX = m_width / 2 - int(double(m_width / 2 - 20) * xFrac + 0.5);
 	int endY = m_height / 2 + int(double(m_height / 2 - 20) * yFrac + 0.5);
 
-	wxPen pen2(*wxBLACK, 5, wxSOLID);
-	dc.SetPen(pen2);
+	if (IsEnabled())
+		dc.SetPen(wxPen(*wxBLACK, 5, wxSOLID));
+	else
+		dc.SetPen(wxPen(*wxLIGHT_GREY, 2, wxSOLID));
+
 	dc.DrawLine(startX, startY, endX, endY);	
 
 	dc.SelectObject(wxNullBitmap);

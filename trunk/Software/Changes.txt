@@ -258,8 +258,19 @@ Changed the format of the ethernet data frames on TX and RX.
 
 Fixed compile problems on Linux.
 
-Removed the "Receive Only" in the title bar, but instead remove certain menu items and disable the transmit button.
+Removed the "Receive Only" in the title bar, but instead remove certain menu items and disable the various items in the GUI and
+the Preferences.
 
 Fixed the audiorx (aka SoftRock) mode.
 
 Changed GUISetup extensively to better support non UWSDR hardware.
+
+Lots of GUI changes for Linux, change of font, etc.
+
+Transmit preferences are suppressed for audiorx mode.
+
+Spectrum display goes up to 40 dB from the previous 20 dB.
+
+Added a switch to swap the I and Q lines when using a sound card to communicate with the SDR.
+
+Added higher tuning rates to the tuning dial menu.

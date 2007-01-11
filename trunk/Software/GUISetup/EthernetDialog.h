@@ -25,7 +25,7 @@ class CEthernetDialog : public wxDialog {
 
     public:
 	CEthernetDialog(wxWindow* parent, const wxString& title, const wxString& address, long control, long data, int id = -1);
-	~CEthernetDialog();
+	virtual ~CEthernetDialog();
 
 	void onOK(wxCommandEvent& event);
 

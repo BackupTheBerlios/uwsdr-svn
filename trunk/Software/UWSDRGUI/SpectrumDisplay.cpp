@@ -55,8 +55,6 @@ BEGIN_EVENT_TABLE(CSpectrumDisplay, wxPanel)
 	EVT_MENU(MENU_1000MS, CSpectrumDisplay::onMenu)
 END_EVENT_TABLE()
 
-const float DB_SCALE = 0.5F;
-
 
 CSpectrumDisplay::CSpectrumDisplay(wxWindow* parent, int id, const wxPoint& pos, const wxSize& size, long style, const wxString& name) :
 wxPanel(parent, id, pos, size, style, name),
@@ -82,7 +80,7 @@ m_offset(0.0F)
 	m_bitmap     = new wxBitmap(m_width, m_height);
 	m_background = new wxBitmap(m_width, m_height);
 
-	m_dbScale = float(m_height - 17) / 20.0F;
+	m_dbScale = float(m_height - 17) / 40.0F;
 
 	m_speedMenu = new wxMenu();
 	m_speedMenu->AppendRadioItem(MENU_100MS,  wxT("100 ms"));
@@ -218,8 +216,8 @@ void CSpectrumDisplay::createPanadapter()
 		dc.DrawLine(x, top /* lowY */, x, bottom);
 	}
 
-	// Draw the dB lines, every 5dB
-	for (unsigned int dB = 0; true; dB += 5) {
+	// Draw the dB lines, every 10 dB
+	for (unsigned int dB = 0; true; dB += 10) {
 		int y = bottom - int(float(dB) * m_dbScale + 0.5);
 		if (y < top)
 			break;

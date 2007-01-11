@@ -21,31 +21,66 @@
                   <param name="ID" value=4>
                   <param name="Local" value="SDRFileName.htm">
               </object>
+
          <li> <object type="text/sitemap">
-                  <param name="Name" value="Audio API">
+                  <param name="Name" value="User Audio Setup">
                   <param name="ID" value=5>
-                  <param name="Local" value="AudioAPI.htm">
+                  <param name="Local" value="UserAudio.htm">
               </object>
+         <ul>
+             <li> <object type="text/sitemap">
+                      <param name="Name" value="Audio API">
+                      <param name="ID" value=10>
+                      <param name="Local" value="AudioAPI.htm">
+                  </object>
+            <li> <object type="text/sitemap">
+                     <param name="Name" value="Audio Device">
+                     <param name="ID" value=11>
+                     <param name="Local" value="AudioDevice.htm">
+                 </object>
+         </ul>
+
          <li> <object type="text/sitemap">
-                  <param name="Name" value="Audio Device">
+                  <param name="Name" value="SDR Audio Setup">
                   <param name="ID" value=6>
-                  <param name="Local" value="AudioDevice.htm">
+                  <param name="Local" value="SDRAudio.htm">
               </object>
+         <ul>
+             <li> <object type="text/sitemap">
+                      <param name="Name" value="Audio API">
+                      <param name="ID" value=20>
+                      <param name="Local" value="AudioAPI.htm">
+                  </object>
+            <li> <object type="text/sitemap">
+                     <param name="Name" value="Audio Device">
+                     <param name="ID" value=21>
+                     <param name="Local" value="AudioDevice.htm">
+                 </object>
+         </ul>
+
          <li> <object type="text/sitemap">
-                  <param name="Name" value="SDR IP Address">
+                  <param name="Name" value="Ethernet Setup">
                   <param name="ID" value=7>
-                  <param name="Local" value="SDRIPAddress.htm">
+                  <param name="Local" value="Ethernet.htm">
               </object>
-         <li> <object type="text/sitemap">
-                  <param name="Name" value="SDR Control Port">
-                  <param name="ID" value=8>
-                  <param name="Local" value="SDRControlPort.htm">
-              </object>
-         <li> <object type="text/sitemap">
-                  <param name="Name" value="SDR Data Port">
-                  <param name="ID" value=9>
-                  <param name="Local" value="SDRDataPort.htm">
-              </object>
+         <ul>
+             <li> <object type="text/sitemap">
+                      <param name="Name" value="SDR IP Address">
+                      <param name="ID" value=30>
+                      <param name="Local" value="SDRIPAddress.htm">
+                  </object>
+             <li> <object type="text/sitemap">
+                      <param name="Name" value="SDR Control Port">
+                      <param name="ID" value=31>
+                      <param name="Local" value="SDRControlPort.htm">
+                  </object>
+             <li> <object type="text/sitemap">
+                      <param name="Name" value="SDR Data Port">
+                      <param name="ID" value=32>
+                      <param name="Local" value="SDRDataPort.htm">
+                  </object>
+         </ul>
+
          <li> <object type="text/sitemap">
                   <param name="Name" value="Create Start Menu entry">
                   <param name="ID" value=10>

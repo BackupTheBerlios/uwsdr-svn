@@ -55,6 +55,7 @@ m_rfGain(0.0F),
 m_micGain(0.0F),
 m_power(0.0F),
 m_mode(MODE_USB),
+m_swap(false),
 m_clockId(-1)
 {
 	m_dttsp = new CDTTSPControl();
@@ -141,7 +142,7 @@ void* CDSPControl::Entry()
 					::wxLogError(wxT("Underrun in TX ring buffer, wanted %u available %u"), BLOCK_SIZE, nSamples);
 
 				if (nSamples > 0) {
-					scaleBuffer(m_txBuffer, nSamples, m_power);
+					scaleBuffer(m_txBuffer, nSamples, m_power, m_swap);
 					m_txWriter->write(m_txBuffer, nSamples);
 				}
 			}
@@ -283,7 +284,7 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 				if (m_transmit)
 					return;
 
-				scaleBuffer(inBuffer, nSamples, m_rfGain);
+				scaleBuffer(inBuffer, nSamples, m_rfGain, m_swap);
 
 				m_dttsp->dataIO(inBuffer, m_outBuffer, nSamples);
 
@@ -382,6 +383,11 @@ void CDSPControl::setMode(int mode)
 void CDSPControl::setZeroIF(bool onOff)
 {
 	m_dttsp->setZeroIF(onOff);
+}
+
+void CDSPControl::swapIQ(bool swap)
+{
+	m_swap = swap;
 }
 
 void CDSPControl::setFilter(int filter)
@@ -553,13 +559,21 @@ bool CDSPControl::setRecord(bool record)
 	return true;
 }
 
-void CDSPControl::scaleBuffer(float* buffer, unsigned int nSamples, float scale)
+void CDSPControl::scaleBuffer(float* buffer, unsigned int nSamples, float scale, bool swap)
 {
 	wxASSERT(buffer != NULL);
 	wxASSERT(scale >= 0.0 && scale <= 1.0);
 
-	for (unsigned int i = 0; i < nSamples * 2; i++)
-		buffer[i] *= scale;
+	if (swap) {
+		for (unsigned int i = 0; i < nSamples; i++) {
+			float val = buffer[i * 2 + 0];
+			buffer[i * 2 + 0] = buffer[i * 2 + 1] * scale;
+			buffer[i * 2 + 1] = val * scale;
+		}
+	} else {
+		for (unsigned int i = 0; i < nSamples * 2; i++)
+			buffer[i] *= scale;
+	}
 }
 
 void CDSPControl::sendCW(unsigned int speed, const wxString& text)

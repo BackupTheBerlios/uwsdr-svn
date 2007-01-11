@@ -30,7 +30,9 @@ enum {
 	MENU_AGC,
 	MENU_MICROPHONE,
 	MENU_POWER,
-	MENU_ALC
+	MENU_ALC,
+	MENU_RX_MENU,
+	MENU_TX_MENU
 };
 
 BEGIN_EVENT_TABLE(CSMeter, wxPanel)
@@ -75,8 +77,8 @@ m_lastLevel(999.9F)
 	m_txMenu->AppendRadioItem(MENU_ALC,        _("ALC"));
 
 	m_menu = new wxMenu();
-	m_menu->Append(-1, _("Receive"),  m_rxMenu);
-	m_menu->Append(-1, _("Transmit"), m_txMenu);
+	m_menu->Append(MENU_RX_MENU, _("Receive"),  m_rxMenu);
+	m_menu->Append(MENU_TX_MENU, _("Transmit"), m_txMenu);
 
 	createBackground();
 	setLevel(0.0);
@@ -87,6 +89,11 @@ CSMeter::~CSMeter()
 	delete m_bitmap;
 	delete m_background;
 	delete m_menu;
+}
+
+void CSMeter::setTXMenu(bool set)
+{
+	m_menu->Enable(MENU_TX_MENU, set);
 }
 
 void CSMeter::setLevel(float level)

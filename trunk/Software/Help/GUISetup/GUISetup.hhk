@@ -36,6 +36,11 @@
               </object>
 
          <li> <object type="text/sitemap">
+                  <param name="Name" value="Ethernet Setup">
+                  <param name="Local" value="Ethernet.htm">
+              </object>
+
+         <li> <object type="text/sitemap">
                   <param name="Name" value="GUI">
                   <param name="Local" value="GUI.htm">
               </object>
@@ -61,6 +66,11 @@
               </object>
 
          <li> <object type="text/sitemap">
+                  <param name="Name" value="SDR Audio Setup">
+                  <param name="Local" value="SDRAudio.htm">
+              </object>
+
+         <li> <object type="text/sitemap">
                   <param name="Name" value="SDR Control Port">
                   <param name="Local" value="SDRControlPort.htm">
               </object>
@@ -83,6 +93,11 @@
          <li> <object type="text/sitemap">
                   <param name="Name" value="Start Menu Entry">
                   <param name="Local" value="CreateStartMenu.htm">
+              </object>
+
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="User Audio Setup">
+                  <param name="Local" value="UserAudio.htm">
               </object>
 
          <li> <object type="text/sitemap">

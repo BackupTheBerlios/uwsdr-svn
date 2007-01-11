@@ -53,6 +53,7 @@ class CDSPControl : public wxThread, public IDataCallback {
 	// Many of these are pass throughs to DTTSP
 	virtual void setMode(int mode);
 	virtual void setZeroIF(bool onOff);
+	virtual void swapIQ(bool swap);
 	virtual void setFilter(int filter);
 	virtual void setAGC(int agc);
 	virtual void setDeviation(int dev);
@@ -118,10 +119,11 @@ class CDSPControl : public wxThread, public IDataCallback {
 	float          m_micGain;
 	float          m_power;
 	int            m_mode;
+	bool           m_swap;
 
 	int            m_clockId;
 
-	void scaleBuffer(float* buffer, unsigned int nSamples, float scale);
+	void scaleBuffer(float* buffer, unsigned int nSamples, float scale, bool swap = false);
 
 #if defined(__WXDEBUG__)
 	void dumpBuffer(const wxString& title, float* buffer, unsigned int nSamples) const;

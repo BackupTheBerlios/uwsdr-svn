@@ -69,6 +69,7 @@ class CSDRParameters {
 
 	int          m_mode;
 	bool         m_zeroIF;
+	bool         m_swapIQ;
 
 	int          m_deviationFMW;
 	int          m_deviationFMN;

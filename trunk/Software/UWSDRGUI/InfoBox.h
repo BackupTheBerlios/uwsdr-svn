@@ -27,10 +27,10 @@ class CInfoBox : public wxPanel {
 	CInfoBox(wxWindow* parent, int id, const wxPoint& pos, const wxSize& size, long style = 0L, const wxString& name = wxPanelNameStr);
 	virtual ~CInfoBox();
 
-	virtual void setVFO(int vfoNum);
-	virtual void setTX(bool onOff);
-	virtual void setRIT(bool onOff);
-	virtual void setSplitShift(int splitShift);
+	void setVFO(int vfoNum);
+	void setTX(bool onOff);
+	void setRIT(bool onOff);
+	void setSplitShift(int splitShift);
 
 	void onPaint(wxPaintEvent& event);
 

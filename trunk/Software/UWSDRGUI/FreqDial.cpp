@@ -25,7 +25,9 @@
 enum {
 	MENU_1X = 6743,
 	MENU_4X,
-	MENU_9X
+	MENU_9X,
+	MENU_16X,
+	MENU_25X
 };
 
 BEGIN_EVENT_TABLE(CFreqDial, wxPanel)
@@ -33,9 +35,11 @@ BEGIN_EVENT_TABLE(CFreqDial, wxPanel)
 	EVT_LEFT_DOWN(CFreqDial::onMouse)
 	EVT_MOTION(CFreqDial::onMouse)
 	EVT_RIGHT_DOWN(CFreqDial::onMouseMenu)
-	EVT_MENU(MENU_1X, CFreqDial::onMenu)
-	EVT_MENU(MENU_4X, CFreqDial::onMenu)
-	EVT_MENU(MENU_9X, CFreqDial::onMenu)
+	EVT_MENU(MENU_1X,  CFreqDial::onMenu)
+	EVT_MENU(MENU_4X,  CFreqDial::onMenu)
+	EVT_MENU(MENU_9X,  CFreqDial::onMenu)
+	EVT_MENU(MENU_16X, CFreqDial::onMenu)
+	EVT_MENU(MENU_25X, CFreqDial::onMenu)
 END_EVENT_TABLE()
 
 CFreqDial::CFreqDial(wxWindow* parent, int id, IDialInterface* callback, const wxPoint& pos, const wxSize& size, long style, const wxString& name) :
@@ -46,7 +50,7 @@ m_height(size.GetHeight()),
 m_callback(callback),
 m_bitmap(NULL),
 m_angle(0.0),
-m_mult(1)
+m_mult(9)
 {
 	wxASSERT(m_height == m_width);
 	wxASSERT(m_callback != NULL);
@@ -54,9 +58,11 @@ m_mult(1)
 	m_bitmap = new wxBitmap(m_width, m_height);
 
 	m_menu = new wxMenu();
-	m_menu->AppendRadioItem(MENU_1X, _("1x"));
-	m_menu->AppendRadioItem(MENU_4X, _("4x"));
-	m_menu->AppendRadioItem(MENU_9X, _("9x"));
+	m_menu->AppendRadioItem(MENU_1X,  _("1x"));
+	m_menu->AppendRadioItem(MENU_4X,  _("4x"));
+	m_menu->AppendRadioItem(MENU_9X,  _("9x"));
+	m_menu->AppendRadioItem(MENU_16X, _("16x"));
+	m_menu->AppendRadioItem(MENU_25X, _("25x"));
 
 	drawDial();
 }
@@ -140,6 +146,12 @@ void CFreqDial::onMouseMenu(wxMouseEvent& event)
 		case 9:
 			m_menu->Check(MENU_9X, true);
 			break;
+		case 16:
+			m_menu->Check(MENU_16X, true);
+			break;
+		case 25:
+			m_menu->Check(MENU_25X, true);
+			break;
 		default:
 			::wxLogError(wxT("Unknown freq dial multiplier = %u"), m_mult);
 			break;
@@ -193,6 +205,12 @@ void CFreqDial::onMenu(wxCommandEvent& event)
 	int id = event.GetId();
 
 	switch (id) {
+		case MENU_25X:
+			m_mult = 25;
+			break;
+		case MENU_16X:
+			m_mult = 16;
+			break;
 		case MENU_9X:
 			m_mult = 9;
 			break;

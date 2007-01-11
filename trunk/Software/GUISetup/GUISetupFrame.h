@@ -25,7 +25,7 @@ class CGUISetupFrame : public wxFrame {
 
     public:
 	CGUISetupFrame();
-	~CGUISetupFrame();
+	virtual ~CGUISetupFrame();
 
 	void onName(wxCommandEvent& event);
 	void onBrowse(wxCommandEvent& event);

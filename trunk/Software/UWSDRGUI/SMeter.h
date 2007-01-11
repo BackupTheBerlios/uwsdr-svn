@@ -27,13 +27,15 @@ class CSMeter : public wxPanel {
 	CSMeter(wxWindow* parent, int id, const wxPoint& pos, const wxSize& size, long style = 0L, const wxString& name = wxPanelNameStr);
 	virtual ~CSMeter();
 
-	virtual void setLevel(float level);
+	void setTXMenu(bool set);
 
-	virtual void setRXMeter(int meter);
-	virtual void setTXMeter(int meter);
+	void setLevel(float level);
 
-	virtual int  getRXMeter() const;
-	virtual int  getTXMeter() const;
+	void setRXMeter(int meter);
+	void setTXMeter(int meter);
+
+	int  getRXMeter() const;
+	int  getTXMeter() const;
 
 	void onPaint(wxPaintEvent& event);
 	void onMouse(wxMouseEvent& event);

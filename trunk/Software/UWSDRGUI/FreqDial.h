@@ -27,7 +27,7 @@ class CFreqDial : public wxPanel {
 
     public:
 	CFreqDial(wxWindow* parent, int id, IDialInterface* callback, const wxPoint& pos, const wxSize& size, long style = 0L, const wxString& name = wxPanelNameStr);
-	~CFreqDial();
+	virtual ~CFreqDial();
 
 	void onPaint(wxPaintEvent& event);
 	void onMouse(wxMouseEvent& event);

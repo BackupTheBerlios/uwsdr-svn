@@ -122,6 +122,12 @@ m_txOn(false),
 m_stepSize(0.0),
 m_record(false),
 m_menu(NULL),
+m_swap(NULL),
+m_split(NULL),
+m_shift1(NULL),
+m_shift2(NULL),
+m_mhzMinus(NULL),
+m_mhzPlus(NULL),
 m_freqDisplay(NULL),
 m_spectrumDisplay(NULL),
 m_infoBox(NULL),
@@ -359,6 +365,8 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_dsp->setRXIAndQ(m_parameters->m_rxIQphase, m_parameters->m_rxIQgain);
 	m_dsp->setTXIAndQ(m_parameters->m_txIQphase, m_parameters->m_txIQgain);
 
+	m_dsp->swapIQ(m_parameters->m_swapIQ);
+
 	m_sMeter->setRXMeter(m_parameters->m_rxMeter);
 	m_sMeter->setTXMeter(m_parameters->m_txMeter);
 
@@ -380,9 +388,21 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	// If receive only disable/remove transmit possibilities
 	if (m_parameters->m_hardwareReceiveOnly) {
+		m_swap->Disable();
+		m_split->Disable();
+		m_shift1->Disable();
+		m_shift2->Disable();
+		m_mhzMinus->Disable();
+		m_mhzPlus->Disable();
+		m_ritCtrl->Disable();
+		m_mute->Disable();
+		m_rit->Disable();
 		m_transmit->Disable();
-		m_menu->Remove(MENU_VOICE_KEYBOARD);
-		m_menu->Remove(MENU_CW_KEYBOARD);
+		m_micGain->Disable();
+		m_power->Disable();
+		m_sMeter->setTXMenu(false);
+		m_menu->Enable(MENU_VOICE_KEYBOARD, false);
+		m_menu->Enable(MENU_CW_KEYBOARD, false);
 	}
 
 	normaliseMode();
@@ -438,17 +458,17 @@ wxSizer* CUWSDRFrame::createVFOButtons(wxWindow* window)
 	wxButton* vfoB = new wxButton(window, VFO_CD_BUTTON, _("VFO C/D"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
 	grid->Add(vfoB);
 
-	wxButton* swap = new wxButton(window, VFO_SWAP_BUTTON, _("SWAP"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
-	grid->Add(swap);
+	m_swap = new wxButton(window, VFO_SWAP_BUTTON, _("SWAP"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
+	grid->Add(m_swap);
 
-	wxButton* split = new wxButton(window, VFO_SPLIT_BUTTON, _("SPLIT"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
-	grid->Add(split);
+	m_split = new wxButton(window, VFO_SPLIT_BUTTON, _("SPLIT"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
+	grid->Add(m_split);
 
-	wxButton* shift1 = new wxButton(window, VFO_SHIFT1_BUTTON, _("SHIFT -"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
-	grid->Add(shift1);
+	m_shift1 = new wxButton(window, VFO_SHIFT1_BUTTON, _("SHIFT -"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
+	grid->Add(m_shift1);
 
-	wxButton* shift2 = new wxButton(window, VFO_SHIFT2_BUTTON, _("SHIFT +"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
-	grid->Add(shift2);
+	m_shift2 = new wxButton(window, VFO_SHIFT2_BUTTON, _("SHIFT +"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
+	grid->Add(m_shift2);
 
 	grid->SetSizeHints(window);
 
@@ -466,11 +486,11 @@ wxSizer* CUWSDRFrame::createMHzButtons(wxWindow* window)
 {
 	wxSizer* grid = new wxGridSizer(2);
 
-	wxButton* mhzMinus = new wxButton(window, FREQ_MHZ1_BUTTON, _("MHz -"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
-	grid->Add(mhzMinus);
+	m_mhzMinus = new wxButton(window, FREQ_MHZ1_BUTTON, _("MHz -"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
+	grid->Add(m_mhzMinus);
 
-	wxButton* mhzPlus = new wxButton(window, FREQ_MHZ2_BUTTON, _("MHz +"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
-	grid->Add(mhzPlus);
+	m_mhzPlus = new wxButton(window, FREQ_MHZ2_BUTTON, _("MHz +"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
+	grid->Add(m_mhzPlus);
 
 	grid->SetSizeHints(window);
 
@@ -712,22 +732,18 @@ void CUWSDRFrame::freqChange(double value)
 	else if (m_parameters->m_vfoChoice == VFO_D)
 		freq = m_parameters->m_vfoD + value;
 
-	/*
-	 * The tuning loops around the frequencies set in the preferences, except in SoftRock mode where it
-	 * wraps on frequencies based on the centre frequency and sample rate.
-	 */
 	if (!m_txOn) {
 		if (freq >= m_parameters->m_maxReceiveFreq)
-			freq = (freq + m_parameters->m_minReceiveFreq) - m_parameters->m_maxReceiveFreq;
+			freq = (freq - m_parameters->m_maxReceiveFreq) + m_parameters->m_minReceiveFreq;
 
 		if (freq < m_parameters->m_minReceiveFreq)
-			freq = (freq + m_parameters->m_maxReceiveFreq) - m_parameters->m_minReceiveFreq;
+			freq = (freq - m_parameters->m_minReceiveFreq) + m_parameters->m_maxReceiveFreq;
 	} else {
 		if (freq >= m_parameters->m_maxTransmitFreq)
-			freq = (freq + m_parameters->m_minTransmitFreq) - m_parameters->m_maxTransmitFreq;
+			freq = (freq - m_parameters->m_maxTransmitFreq) + m_parameters->m_minTransmitFreq;
 
 		if (freq < m_parameters->m_minTransmitFreq)
-			freq = (freq + m_parameters->m_maxTransmitFreq) - m_parameters->m_minTransmitFreq;
+			freq = (freq - m_parameters->m_minTransmitFreq) + m_parameters->m_maxTransmitFreq;
 	}
 
 	if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn)
@@ -1175,6 +1191,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 					m_dsp->setALCValue(m_parameters->m_alcAttack, m_parameters->m_alcDecay, m_parameters->m_alcHang);
 
 					m_dsp->setZeroIF(m_parameters->m_zeroIF);
+					m_dsp->swapIQ(m_parameters->m_swapIQ);
 
 					normaliseFreq();
 				}

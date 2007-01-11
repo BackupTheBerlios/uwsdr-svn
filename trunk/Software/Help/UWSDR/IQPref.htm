@@ -7,5 +7,7 @@
 <p>This screen allows for the setting of the gain and phase imbalance between the I and Q channels on both transmit and receive, as well as the method used to create the I/Q signals.</p>
 <p>The imbalances within the hardware need to be cancelled otherwise image signals will be created, depending on the setting of the Method below, these images may make the transmitted signal wider, or create an interfering signal underneath your wanted signal. The same problems also manifest themselves on receive also if the receive I/Q balance is not set correctly. A value of zero means no change in either the gain or phase.</p>
 <p>The Method can take the values of "Fs/4" or "Zero-IF", indicating two methods used to create the I/Q signals that are sent to the SDR hardware. If the step size of the hardware exceeds 100Hz then only the "Fs/4" option is available. The main difference is down to how unwanted images appear, with "Fs/4" the image on USB would appear as an LSB signal, while under "Zero-IF" it will appear as an interfering signal underneath your wanted signal.</p>
+<p>If the connection to the SDR hardware is via a sound card then it is possible to swap the I and Q channels by clicking on the Swap IQ control. The default for UWSDR is left for the I channel and right for the Q channel.</p>
+<p>The transmit phase and gain controls are not operational when the SDR is receive only.</p>
 </body>
 </html>

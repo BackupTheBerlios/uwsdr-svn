@@ -41,7 +41,7 @@
 class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterface {
     public:
 	CUWSDRFrame(const wxString& title);
-	~CUWSDRFrame();
+	virtual ~CUWSDRFrame();
 
 	void onMenuButton(wxCommandEvent& event);
 	void onMenuSelection(wxCommandEvent& event);
@@ -78,6 +78,12 @@ class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterf
 	bool              m_record;
 
 	wxMenu*           m_menu;
+	wxButton*         m_swap;
+	wxButton*         m_split;
+	wxButton*         m_shift1;
+	wxButton*         m_shift2;
+	wxButton*         m_mhzMinus;
+	wxButton*         m_mhzPlus;
 	CFreqDisplay*     m_freqDisplay;
 	CSpectrumDisplay* m_spectrumDisplay;
 	CInfoBox*         m_infoBox;

@@ -27,7 +27,7 @@ class CSoundCardDialog : public wxDialog {
 
     public:
 	CSoundCardDialog(wxWindow* parent, const wxString& title, int api, long inDev, long outDev, int id = -1);
-	~CSoundCardDialog();
+	virtual ~CSoundCardDialog();
 
 	void onAPI(wxCommandEvent& event);
 	void onOK(wxCommandEvent& event);

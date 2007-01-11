@@ -52,6 +52,7 @@ const wxString KEY_STEP_SLOW       = wxT("/StepSlow");
 const wxString KEY_STEP_VERY_SLOW  = wxT("/StepVerySlow");
 const wxString KEY_MODE            = wxT("/Mode");
 const wxString KEY_ZERO_IF         = wxT("/ZeroIF");
+const wxString KEY_SWAP_IQ         = wxT("/SwapIQ");
 const wxString KEY_DEV_FMW         = wxT("/DeviationFMW");
 const wxString KEY_DEV_FMN         = wxT("/DeviationFMN");
 const wxString KEY_AGC_AM          = wxT("/AGCAM");
@@ -285,6 +286,7 @@ bool CUWSDRApp::readConfig()
 	wxString keyStepVerySlow  = wxT("/") + m_parameters->m_name + KEY_STEP_VERY_SLOW;
 	wxString keyMode          = wxT("/") + m_parameters->m_name + KEY_MODE;
 	wxString keyZeroIF        = wxT("/") + m_parameters->m_name + KEY_ZERO_IF;
+	wxString keySwapIQ        = wxT("/") + m_parameters->m_name + KEY_SWAP_IQ;
 	wxString keyFilter        = wxT("/") + m_parameters->m_name + KEY_FILTER;
 	wxString keyFilterFMW     = wxT("/") + m_parameters->m_name + KEY_FILTER_FMW;
 	wxString keyFilterFMN     = wxT("/") + m_parameters->m_name + KEY_FILTER_FMN;
@@ -419,6 +421,7 @@ bool CUWSDRApp::readConfig()
 
 	profile->Read(keyMode,             &m_parameters->m_mode, MODE_USB);
 	profile->Read(keyZeroIF,           &m_parameters->m_zeroIF, true);
+	profile->Read(keySwapIQ,           &m_parameters->m_swapIQ, false);
 
 	profile->Read(keyFilter,           &m_parameters->m_filter,    FILTER_AUTO);
 	profile->Read(keyFilterFMW,        &m_parameters->m_filterFMW, FILTER_20000);
@@ -553,6 +556,7 @@ void CUWSDRApp::writeConfig()
 	wxString keyStepVerySlow  = wxT("/") + m_parameters->m_name + KEY_STEP_VERY_SLOW;
 	wxString keyMode          = wxT("/") + m_parameters->m_name + KEY_MODE;
 	wxString keyZeroIF        = wxT("/") + m_parameters->m_name + KEY_ZERO_IF;
+	wxString keySwapIQ        = wxT("/") + m_parameters->m_name + KEY_SWAP_IQ;
 	wxString keyFilter        = wxT("/") + m_parameters->m_name + KEY_FILTER;
 	wxString keyFilterFMW     = wxT("/") + m_parameters->m_name + KEY_FILTER_FMW;
 	wxString keyFilterFMN     = wxT("/") + m_parameters->m_name + KEY_FILTER_FMN;
@@ -644,6 +648,7 @@ void CUWSDRApp::writeConfig()
 	profile->Write(keyStepVerySlow,     m_parameters->m_stepVerySlow);
 	profile->Write(keyMode,             m_parameters->m_mode);
 	profile->Write(keyZeroIF,           m_parameters->m_zeroIF);
+	profile->Write(keySwapIQ,           m_parameters->m_swapIQ);
 	profile->Write(keyFilter,           m_parameters->m_filter);
 	profile->Write(keyFilterFMW,        m_parameters->m_filterFMW);
 	profile->Write(keyFilterFMN,        m_parameters->m_filterFMN);
