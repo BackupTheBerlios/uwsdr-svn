@@ -25,6 +25,7 @@
 #include <wx/file.h>
 #include <wx/config.h>
 #include <wx/filename.h>
+#include <wx/dir.h>
 
 #if defined(__WXGTK__) || defined(__WXMAC__)
 #include "GUISetup.xpm"
@@ -662,7 +663,7 @@ void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 	fileName.Printf(wxT("%s/%s.desktop"), dir.c_str(), name.c_str());
 
 	wxFile file;
-	ret = file.Open(fileName, wxFile::write);
+	bool ret = file.Open(fileName, wxFile::write);
 	if (!ret) {
 		::wxMessageBox(_("Cannot open file: ") + fileName, _("GUISetup Error"), wxICON_ERROR);
 		return;
@@ -685,7 +686,7 @@ void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 	file.Close();
 }
 
-bool CGUISetup::getDesktopDir(wxString& dir) const
+bool CGUISetupFrame::getDesktopDir(wxString& dir) const
 {
 	bool ret = ::wxGetEnv(XDG_DATA_HOME_ENV, &dir);
 
