@@ -30,6 +30,13 @@
 #include "GUISetup.xpm"
 #endif
 
+#if defined(__WXGTK__)
+const wxString XDG_DATA_HOME_ENV = wxT("XDG_DATA_HOME");
+const wxString HOME_ENV          = wxT("HOME");
+const wxString DEFAULT_DIR       = wxT("/.local/share");
+const wxString APPLICATION_DIR   = wxT("/applications");
+#endif
+
 #if defined(__WINDOWS__)
 #include <windows.h>
 #include <shellapi.h>
@@ -134,14 +141,21 @@ m_dataPort(-1L)
 	wxStaticText* dummy5 = new wxStaticText(panel, -1, wxEmptyString);
 	panelSizer->Add(dummy5, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label6 = new wxStaticText(panel, -1, _("Create Start Menu entry:"));
-	panelSizer->Add(label6, 0, wxALL, BORDER_SIZE);
+#if defined(__WXGTK__)
+	wxString dir;
+	if (getDesktopDir(dir)) {
+#endif
+		wxStaticText* label6 = new wxStaticText(panel, -1, _("Create Start Menu entry:"));
+		panelSizer->Add(label6, 0, wxALL, BORDER_SIZE);
 
-	m_startMenu = new wxCheckBox(panel, -1, wxEmptyString);
-	panelSizer->Add(m_startMenu, 0, wxALL, BORDER_SIZE);
+		m_startMenu = new wxCheckBox(panel, -1, wxEmptyString);
+		panelSizer->Add(m_startMenu, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* dummy6 = new wxStaticText(panel, -1, wxEmptyString);
-	panelSizer->Add(dummy6, 0, wxALL, BORDER_SIZE);
+		wxStaticText* dummy6 = new wxStaticText(panel, -1, wxEmptyString);
+		panelSizer->Add(dummy6, 0, wxALL, BORDER_SIZE);
+#if defined(__WXGTK__)
+	}
+#endif
 
 #if defined(__WXMSW__)
 	wxStaticText* label7 = new wxStaticText(panel, -1, _("Create Desktop icon:"));
@@ -376,6 +390,14 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 		if (create)
 			writeDeskTop(name, dir);
 	}
+#elif defined(__WXGTK__)
+	bool create = m_startMenu->GetValue();
+	if (create) {
+		wxString dir;
+		getDesktopDir(dir);
+
+		writeStartMenu(name, dir);
+	}
 #else
 	bool create = m_startMenu->GetValue();
 	if (create)
@@ -511,6 +533,7 @@ void CGUISetupFrame::onEthernet(wxCommandEvent& event)
 }
 
 #if defined(__WXMSW__)
+
 void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 {
 	TCHAR folder[MAX_PATH];
@@ -630,18 +653,13 @@ void CGUISetupFrame::writeDeskTop(const wxString& name, const wxString& dir)
 
 	::CoUninitialize();
 }
-#endif
 
-#if defined(__WXGTK__)
+#elif defined(__WXGTK__)
+
 void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 {
-	wxString homeDir;
-	bool ret = wxGetEnv(wxT("HOME"), &homeDir);
-	if (!ret)
-		return;
-
 	wxString fileName;
-	fileName.Printf(wxT("%s/.local/applications/%s.desktop"), homeDir.c_str(), name.c_str());
+	fileName.Printf(wxT("%s/%s.desktop"), dir.c_str(), name.c_str());
 
 	wxFile file;
 	ret = file.Open(fileName, wxFile::write);
@@ -655,21 +673,40 @@ void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 	file.Write(wxT("Version=1.0\n"));
 	file.Write(wxT("Encoding=UTF-8\n"));
 	file.Write(wxT("Name=") + name + wxT("\n"));
+	file.Write(wxT("Name[de_DE]=") + name + wxT("\n"));
 	file.Write(wxT("Categories=Network;HamRadio\n"));
-	file.Write(wxT("Comment=\n"));
+	file.Write(wxT("Comment=UWSDR for ") + name + wxT("\n"));
+	file.Write(wxT("Comment[de_DE]=UWSDR fuer ") + name + wxT("\n"));
 	file.Write(wxT("Icon=UWSDR.png\n"));
 	file.Write(wxT("Exec=") + wxString(BIN_DIR) + wxT("/UWSDR ") + name + wxT("\n"));
-	file.Write(wxT("Path=.\n"));
 	file.Write(wxT("Terminal=false\n"));
 
 	file.Flush();
 	file.Close();
 }
-#endif
 
-#if defined(__WXMAC__) || defined(__WXCOCOA__)
+bool CGUISetup::getDesktopDir(wxString& dir) const
+{
+	bool ret = ::wxGetEnv(XDG_DATA_HOME_ENV, &dir);
+
+	if (!ret) {
+		ret = ::wxGetEnv(wxT(HOME_ENV), &dir);
+		if (!ret)
+			return false;
+
+		dir.Append(DEFAULT_DIR);
+	}
+
+	dir.Append(APPLICATION_DIR);
+
+	return wxDir::Exists(dir);
+}
+
+#else
+
 void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 {
    // To be filled in later
 }
+
 #endif

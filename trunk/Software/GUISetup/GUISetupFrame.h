@@ -63,6 +63,9 @@ class CGUISetupFrame : public wxFrame {
 #if defined(__WXMSW__)
 	void writeDeskTop(const wxString& name, const wxString& instDir);
 #endif
+#if defined(__WXGTK__)
+	bool getDesktopDir(wxString& dir) const;
+#endif
 };
 
 #endif

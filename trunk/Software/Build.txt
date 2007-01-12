@@ -59,6 +59,7 @@ $ make install
 
 Which will put the executables in /usr/local/bin and the icons and other files into /usr/local/share/uwsdr. These locations can be changed from the top level Makefile.
 
+If none of the programs within the UWSDR don't run and complains about being unable to find the wxGTK library then you probably have a problem with the configuration of library path. Thankfully the solution is simple. You need to log in as the super user and edit a configuration file, On Ubuntu/Debian and SuSE it's /etc/ld.so.conf and on Fedora Core it's /etc/ld.so.conf.d/mypath.conf. In those files you should add the path to your new libraries which will probably be /usr/local/lib.
 
 Mac OS X
 --------

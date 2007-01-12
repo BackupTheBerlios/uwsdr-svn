@@ -1053,26 +1053,26 @@ void CUWSDRFrame::normaliseFreq()
 
 	m_freqDisplay->setFrequency(dispFreq);
 
+	// Subtract the IF frequency
+	float dspOffset;
+	if (m_parameters->m_zeroIF) {
+		if (m_txOn)
+			dspOffset = m_dsp->getTXOffset();
+		else
+			dspOffset = m_dsp->getRXOffset();
+	} else {
+		dspOffset = m_parameters->m_hardwareSampleRate / 4.0F;
+	}
+
+	freq -= dspOffset;
+
 	if (m_parameters->m_hardwareType == TYPE_AUDIORX) {
 		CFrequency diff = freq - m_parameters->m_hardwareMinFreq;
 
 		// Finally go to TX or RX
 		m_dsp->setTXAndFreq(m_txOn, diff.getHz());
 	} else {
-		// Subtract the IF frequency
-		float dspOffset;
-		if (m_parameters->m_zeroIF) {
-			if (m_txOn)
-				dspOffset = m_dsp->getTXOffset();
-			else
-				dspOffset = m_dsp->getRXOffset();
-		} else {
-			dspOffset = m_parameters->m_hardwareSampleRate / 4.0F;
-		}
-
-		freq -= dspOffset;
-
-		// Now take into account the frequency steps of the SDR ...
+		// Take into account the frequency steps of the SDR ...
 		double offset = 0.0;
 		if (m_parameters->m_hardwareStepSize > 1.0F) {		// FIXME XXX
 			double stepSize = m_parameters->m_hardwareStepSize;

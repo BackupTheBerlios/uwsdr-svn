@@ -50,7 +50,7 @@ m_height(size.GetHeight()),
 m_callback(callback),
 m_bitmap(NULL),
 m_angle(0.0),
-m_mult(9)
+m_mult(4)
 {
 	wxASSERT(m_height == m_width);
 	wxASSERT(m_callback != NULL);
