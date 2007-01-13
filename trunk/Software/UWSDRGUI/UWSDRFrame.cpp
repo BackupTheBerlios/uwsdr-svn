@@ -911,11 +911,6 @@ void CUWSDRFrame::onTXButton(wxCommandEvent& event)
 
 bool CUWSDRFrame::setTransmit()
 {
-	if (!m_txOn && m_parameters->m_hardwareReceiveOnly) {
-		::wxMessageBox(_("This SDR is only a receiver!"), _("uWave SDR Error"), wxICON_ERROR);
-		return false;
-	}
-
 	// Sanity check on the transmit frequency
 	if (!m_txOn) {
 		CFrequency freq;
@@ -1067,10 +1062,10 @@ void CUWSDRFrame::normaliseFreq()
 	freq -= dspOffset;
 
 	if (m_parameters->m_hardwareType == TYPE_AUDIORX) {
-		CFrequency diff = freq - m_parameters->m_hardwareMinFreq;
+		// This won't work over a MHz boundary ....
+		double hz = m_parameters->m_hardwareMinFreq.getHz() + m_parameters->m_hardwareSampleRate / 4.0F;
 
-		// Finally go to TX or RX
-		m_dsp->setTXAndFreq(m_txOn, diff.getHz());
+		m_dsp->setTXAndFreq(m_txOn, freq.getHz() - hz);
 	} else {
 		// Take into account the frequency steps of the SDR ...
 		double offset = 0.0;
@@ -1290,8 +1285,14 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 			break;
 		case wxID_ABOUT: {
 			// The wxABoutBox under Windows looks horrible, so use a home made one
+			wxDateTime dateTime(REL_DATE_DAY, REL_DATE_MONTH, REL_DATE_YEAR);
+			if (!dateTime.IsValid())
+				return;
+
+			wxString dateText = dateTime.Format(wxT("%d %B %Y"));
+
 #if defined(__WXMSW__)
-			::wxMessageBox(VERSION + wxT(" - ") + REL_DATE + _("\n\n"
+			::wxMessageBox(VERSION + wxT(" - ") + dateText + _("\n\n"
 				"A Software Define Radio for Microwaves\n\n"
 				"Hardware:\tChris Bartram, GW4DGU\n"
 				"\t\tGrant Hodgson, G8UBN\n"
@@ -1307,7 +1308,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 				wxAboutDialogInfo info;
 
 				info.SetName(wxT("UWSDR"));
-				info.SetVersion(VERSION + wxT(" - ") + REL_DATE);
+				info.SetVersion(VERSION + wxT(" - ") + dateText);
 				info.SetDescription(_("A software defined radio for microwaves"));
 
 				info.AddDeveloper(wxT("Jonathan Naylor, ON/G4KLX"));

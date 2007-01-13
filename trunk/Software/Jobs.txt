@@ -15,6 +15,10 @@ Create Linux RPMs, DEBs, etc
 
 Set of screenshots for all platforms
 
+Sort out building with Visual C++ Express
+
+Internationalisation
+
 
 Future
 ------

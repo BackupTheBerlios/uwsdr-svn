@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -20,8 +20,12 @@
 #define	Version_H
 
 #include <wx/wx.h>
+#include <wx/datetime.h>
 
 const wxString VERSION  = wxT("uWave SDR 0.7.2");
-const wxString REL_DATE = wxT("January 2007");
+
+const wxDateTime::wxDateTime_t REL_DATE_DAY   = 13;
+const wxDateTime::Month        REL_DATE_MONTH = wxDateTime::Jan;
+const unsigned int             REL_DATE_YEAR  = 2007;
 
 #endif

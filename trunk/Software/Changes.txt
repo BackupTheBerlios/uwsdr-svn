@@ -251,8 +251,8 @@ New option in the .sdr file of "type" and removed the "protocolVersion" option.
 A number of new .sdr files to use the new "type" feature are included.
 
 
-Version 0.7.2 - January 2007
-============================
+Version 0.7.2 - 13 January 2007
+===============================
 
 Changed the format of the ethernet data frames on TX and RX.
 
@@ -274,3 +274,5 @@ Spectrum display goes up to 40 dB from the previous 20 dB.
 Added a switch to swap the I and Q lines when using a sound card to communicate with the SDR.
 
 Added higher tuning rates to the tuning dial menu.
+
+Changed back to Visual C++ 6.0 for building Windows binaries.

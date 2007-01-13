@@ -76,6 +76,7 @@ Section "UWSDR Program Files" SecProgram
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\13cms.sdr"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\23cms.sdr"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\Demo.sdr"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\Skeleton.sdr"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\SoftRock30.sdr"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\SoftRock40.sdr"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\SoftRock80.sdr"
