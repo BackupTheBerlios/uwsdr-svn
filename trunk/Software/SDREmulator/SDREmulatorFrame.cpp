@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -300,17 +300,14 @@ void CSDREmulatorFrame::processCommand(wxSocketBase& socket, wxChar* buffer)
 		bool echo = true;
 		wxString command = message.Left(2);
 
-		if (command.Cmp(wxT("FA")) == 0) {
-			wxString freqText = message.Mid(2);
-			CFrequency freq = CFrequency(freqText);
+		if (command.Cmp(wxT("CF")) == 0) {
+			long n;
+			message.Mid(2).ToLong(&n);
 
-			if (freq >= minFreq && freq < maxFreq) {
-				m_txFreq = freq;
-				m_rxFreq = freq;
+			if (n >= 0L && n <= 65536L)
 				ack = true;
-			}
 
-			echo = false;
+			echo = true;
 		} else if (command.Cmp(wxT("FR")) == 0) {
 			wxString freqText = message.Mid(2);
 			CFrequency freq = CFrequency(freqText);

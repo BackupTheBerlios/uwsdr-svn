@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -27,15 +27,15 @@ class CSMeter : public wxPanel {
 	CSMeter(wxWindow* parent, int id, const wxPoint& pos, const wxSize& size, long style = 0L, const wxString& name = wxPanelNameStr);
 	virtual ~CSMeter();
 
-	void setTXMenu(bool set);
+	virtual void setTXMenu(bool set);
 
-	void setLevel(float level);
+	virtual void setLevel(float level);
 
-	void setRXMeter(int meter);
-	void setTXMeter(int meter);
+	virtual void setRXMeter(int meter);
+	virtual void setTXMeter(int meter);
 
-	int  getRXMeter() const;
-	int  getTXMeter() const;
+	virtual int  getRXMeter() const;
+	virtual int  getTXMeter() const;
 
 	void onPaint(wxPaintEvent& event);
 	void onMouse(wxMouseEvent& event);

@@ -32,9 +32,9 @@ class CSoundCardDialog : public wxDialog {
 	void onAPI(wxCommandEvent& event);
 	void onOK(wxCommandEvent& event);
 
-	int  getAPI() const;
-	long getInDev() const;
-	long getOutDev() const;
+	virtual int  getAPI() const;
+	virtual long getInDev() const;
+	virtual long getOutDev() const;
 
     private:
 	wxChoice*      m_apiChoice;

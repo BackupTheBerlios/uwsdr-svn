@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -29,18 +29,18 @@ class CVoiceKeyboard : public wxDialog {
 
     public:
 	CVoiceKeyboard(wxWindow* parent, int id);
-	~CVoiceKeyboard();
+	virtual ~CVoiceKeyboard();
 
 	void onBrowse(wxCommandEvent& event);
 	void onTransmit(wxCommandEvent& event);
 	void onAbort(wxCommandEvent& event);
 	void onHelp(wxCommandEvent& event);
 
-	void     setDir(const wxString &dir);
-	wxString getDir() const;
+	virtual void     setDir(const wxString &dir);
+	virtual wxString getDir() const;
 
-	void     setFile(unsigned int n, const wxString& fileName);
-	wxString getFile(unsigned int n) const;
+	virtual void     setFile(unsigned int n, const wxString& fileName);
+	virtual wxString getFile(unsigned int n) const;
 
     private:
 	wxComboBox*    m_filename;

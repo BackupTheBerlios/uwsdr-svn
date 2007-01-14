@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -36,7 +36,8 @@ m_txFreq(),
 m_rxFreq(),
 m_enableTX(false),
 m_enableRX(false),
-m_tx(false)
+m_tx(false),
+m_clock(99999)
 {
 }
 
@@ -156,6 +157,26 @@ void CUWSDRController::setTXAndFreq(bool transmit, const CFrequency& freq)
 	}
 
 	m_tx = transmit;
+}
+
+void CUWSDRController::setClockTune(unsigned int clock)
+{
+	if (clock == m_clock)
+		return;
+
+	switch (m_version) {
+		case 1: {
+			char command[25];
+			::sprintf(command, "CF%u;", clock);
+			sendCommand(command);
+			break;
+		}
+		default:
+			wxASSERT(false);
+			break;
+	}
+
+	m_clock = clock;
 }
 
 void CUWSDRController::sendCommand(const char* command)

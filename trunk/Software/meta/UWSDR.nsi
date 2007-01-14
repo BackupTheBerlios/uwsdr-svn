@@ -13,8 +13,8 @@
 ;Configuration
 
   ;General
-  Name "UWSDR 0.7.2"
-  OutFile "UWSDR-0.7.2.exe"
+  Name "UWSDR 0.7.3"
+  OutFile "UWSDR-0.7.3.exe"
 
   ;Folder selection page
   InstallDir "$PROGRAMFILES\UWSDR"
@@ -79,7 +79,9 @@ Section "UWSDR Program Files" SecProgram
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\Skeleton.sdr"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\SoftRock30.sdr"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\SoftRock40.sdr"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\SoftRock40-TXRX.sdr"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\SoftRock80.sdr"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\SoftRock80-TXRX.sdr"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\SoftRock160.sdr"
 
   ;Create start menu entry

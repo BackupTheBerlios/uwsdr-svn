@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -228,6 +228,11 @@ void CGUISetupFrame::onBrowse(wxCommandEvent& event)
 				m_sdrAudio->Enable();
 				break;
 
+			case TYPE_AUDIOTXRX:
+				m_userAudio->Enable();
+				m_sdrAudio->Enable();
+				break;
+
 			case TYPE_DEMO:
 				m_userAudio->Enable();
 				break;
@@ -268,6 +273,12 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 
 	switch (type) {
 		case TYPE_AUDIORX:
+			if (m_sdrAudioAPI == -1 || m_sdrAudioInDev == -1L || m_sdrAudioOutDev == -1L) {
+				::wxMessageBox(_("The SDR Audio has not been set"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+			break;
+		case TYPE_AUDIOTXRX:
 			if (m_sdrAudioAPI == -1 || m_sdrAudioInDev == -1L || m_sdrAudioOutDev == -1L) {
 				::wxMessageBox(_("The SDR Audio has not been set"), _("GUISetup Error"), wxICON_ERROR);
 				return;
@@ -329,6 +340,26 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 
 	switch (type) {
 		case TYPE_AUDIORX:
+			ret = config->Write(sdrAudioAPIKey, m_sdrAudioAPI);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - SDRAudioAPI"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+
+			ret = config->Write(sdrAudioOutDevKey, m_sdrAudioOutDev);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - SDRAudioOutDev"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+
+			ret = config->Write(sdrAudioInDevKey, m_sdrAudioInDev);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - SDRAudioInDev"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+			break;
+
+		case TYPE_AUDIOTXRX:
 			ret = config->Write(sdrAudioAPIKey, m_sdrAudioAPI);
 			if (!ret) {
 				::wxMessageBox(_("Unable to write configuration data - SDRAudioAPI"), _("GUISetup Error"), wxICON_ERROR);
@@ -482,6 +513,11 @@ void CGUISetupFrame::readConfig(const wxString& name)
 
 	switch (type) {
 		case TYPE_AUDIORX:
+			m_userAudio->Enable();
+			m_sdrAudio->Enable();
+			break;
+
+		case TYPE_AUDIOTXRX:
 			m_userAudio->Enable();
 			m_sdrAudio->Enable();
 			break;

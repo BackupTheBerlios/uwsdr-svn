@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #include "UWSDRApp.h"
 #include "UWSDRDefs.h"
 #include "NullController.h"
+#include "SRTXRXController.h"
 #include "UWSDRController.h"
 #include "FreqKeypad.h"
 #include "Version.h"
@@ -230,12 +231,15 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_parameters = parameters;
 
-#if defined(TOBIAS) || defined(GRANT_TX)
+#if defined(TOBIAS)
 	m_sdr = new CNullController();
 #else
 	switch (m_parameters->m_hardwareType) {
 		case TYPE_UWSDR1:
 			m_sdr = new CUWSDRController(m_parameters->m_ipAddress, m_parameters->m_controlPort, 1);
+			break;
+		case TYPE_AUDIOTXRX:
+			m_sdr = new CSRTXRXController();
 			break;
 		default:
 			m_sdr = new CNullController();
@@ -255,6 +259,8 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	if (!m_parameters->m_hardwareReceiveOnly)
 		m_sdr->enableTX(true);
 	m_sdr->enableRX(true);
+
+	m_sdr->setClockTune(m_parameters->m_clockTune);
 
 	m_spectrumDisplay->setSampleRate(m_parameters->m_hardwareSampleRate);
 	m_spectrumDisplay->setPosition(m_parameters->m_spectrumPos);
@@ -282,14 +288,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_dsp = new CDSPControl(m_parameters->m_hardwareSampleRate);
 
-// FIXME
-#if defined(GRANT_TX)
-	// RX is disabled, TX is from audio card for signal output fed by a two-tone signal
-	m_dsp->setTXReader(new CTwoToneReader(1000.0F, 1300.0F, 0.4F, new CSoundCardReader(m_parameters->m_userAudioAPI, m_parameters->m_userAudioInDev)));
-	m_dsp->setTXWriter(new CSoundCardWriter(m_parameters->m_sdrAudioAPI, m_parameters->m_sdrAudioOutDev));
-	m_dsp->setRXReader(new CNullReader());
-	m_dsp->setRXWriter(new CNullWriter());
-#elif defined(TOBIAS)
+#if defined(TOBIAS)
 	// UDP in/out with audio on loudspeaker and two-tone audio on transmit
 	m_dsp->setTXReader(new CTwoToneReader(1000.0F, 1300.0F, 0.4F, new CSoundCardReader(m_parameters->m_userAudioAPI, m_parameters->m_userAudioInDev)));
 	m_dsp->setTXWriter(new CSDRDataWriter(m_parameters->m_ipAddress, m_parameters->m_dataPort, 1));
@@ -303,6 +302,14 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			m_dsp->setTXWriter(new CNullWriter());
 			m_dsp->setRXReader(new CSoundCardReader(m_parameters->m_sdrAudioAPI, m_parameters->m_sdrAudioInDev));
 			// m_dsp->setRXReader(new CSignalReader(int(m_parameters->m_hardwareSampleRate / 4.0F + 1000.5F), 0.0003F, 0.0004F, new CSoundCardReader(m_parameters->m_sdrAudioAPI, m_parameters->m_sdrAudioInDev)));
+			m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_userAudioAPI, m_parameters->m_userAudioOutDev));
+			break;
+
+		case TYPE_AUDIOTXRX:
+			// TX and RX are from audio cards for signal input and audio output, also simple TX/RX control
+			m_dsp->setTXReader(new CSoundCardReader(m_parameters->m_userAudioAPI, m_parameters->m_userAudioInDev));
+			m_dsp->setTXWriter(new CSoundCardWriter(m_parameters->m_sdrAudioAPI, m_parameters->m_sdrAudioOutDev));
+			m_dsp->setRXReader(new CSoundCardReader(m_parameters->m_sdrAudioAPI, m_parameters->m_sdrAudioInDev));
 			m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_userAudioAPI, m_parameters->m_userAudioOutDev));
 			break;
 
@@ -1061,7 +1068,7 @@ void CUWSDRFrame::normaliseFreq()
 
 	freq -= dspOffset;
 
-	if (m_parameters->m_hardwareType == TYPE_AUDIORX) {
+	if (m_parameters->m_hardwareType == TYPE_AUDIORX || m_parameters->m_hardwareType == TYPE_AUDIOTXRX) {
 		// This won't work over a MHz boundary ....
 		double hz = m_parameters->m_hardwareMinFreq.getHz() + m_parameters->m_hardwareSampleRate / 4.0F;
 
@@ -1259,13 +1266,16 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 				wxString type;
 				switch (m_parameters->m_hardwareType) {
 					case TYPE_AUDIORX:
-						type = wxT("Audio RX");
+						type = _("Audio RX");
+						break;
+					case TYPE_AUDIOTXRX:
+						type = _("Audio TX/RX");
 						break;
 					case TYPE_DEMO:
-						type = wxT("Demo");
+						type = _("Demo");
 						break;
 					case TYPE_UWSDR1:
-						type = wxT("UWSDR v1.0");
+						type = _("UWSDR v1.0");
 						break;
 				}
 
@@ -1289,7 +1299,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 			if (!dateTime.IsValid())
 				return;
 
-			wxString dateText = dateTime.Format(wxT("%d %B %Y"));
+			wxString dateText = dateTime.Format(_("%d %B %Y"));
 
 #if defined(__WXMSW__)
 			::wxMessageBox(VERSION + wxT(" - ") + dateText + _("\n\n"

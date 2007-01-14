@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 
 enum {
 	TYPE_AUDIORX,
+	TYPE_AUDIOTXRX,
 	TYPE_DEMO,
 	TYPE_UWSDR1
 };

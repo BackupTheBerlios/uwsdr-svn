@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@ class CNullController : public ISDRController {
 	virtual void enableRX(bool on);
 	virtual void setTXAndFreq(bool transmit, const CFrequency& freq);
 	virtual void sendCommand(const char* command);
+	virtual void setClockTune(unsigned int clock);
 	virtual void close();
 
     private:

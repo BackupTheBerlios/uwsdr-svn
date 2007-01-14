@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -36,14 +36,14 @@ class CUWSDRApp : public wxApp {
 	virtual bool OnCmdLineParsed(wxCmdLineParser& parser);
 	virtual void OnInitCmdLine(wxCmdLineParser& parser);
 
-	bool readDescrFile();
-	bool readConfig();
-	void writeConfig();
+	virtual bool readDescrFile();
+	virtual bool readConfig();
+	virtual void writeConfig();
 
-	void showHelp(int id);
+	virtual void showHelp(int id);
 
-	void sendCW(unsigned int speed, const wxString& text);
-	void sendAudio(const wxString& fileName, int state);
+	virtual void sendCW(unsigned int speed, const wxString& text);
+	virtual void sendAudio(const wxString& fileName, int state);
 
 #if defined(__WXDEBUG__)
 	virtual void OnAssertFailure(const wxChar* file, int line, const wxChar* func, const wxChar* cond, const wxChar* msg);

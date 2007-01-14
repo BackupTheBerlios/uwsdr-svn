@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -190,10 +190,14 @@ m_swapIQ(NULL)
 	m_method->SetSelection(m_parameters->m_zeroIF ? 1 : 0);
 	m_swapIQ->SetValue(m_parameters->m_swapIQ);
 
-	if (m_parameters->m_hardwareStepSize > 100.0F || m_parameters->m_hardwareType == TYPE_AUDIORX || m_parameters->m_hardwareType == TYPE_DEMO)
+	if (m_parameters->m_hardwareStepSize > 100.0F      ||
+	    m_parameters->m_hardwareType == TYPE_AUDIORX   ||
+	    m_parameters->m_hardwareType == TYPE_AUDIOTXRX ||
+	    m_parameters->m_hardwareType == TYPE_DEMO)
 		m_method->Disable();
 
-	if (m_parameters->m_hardwareType != TYPE_AUDIORX)
+	if (m_parameters->m_hardwareType != TYPE_AUDIORX &&
+	    m_parameters->m_hardwareType != TYPE_AUDIOTXRX)
 		m_swapIQ->Disable();
 
 	if (m_parameters->m_hardwareReceiveOnly) {

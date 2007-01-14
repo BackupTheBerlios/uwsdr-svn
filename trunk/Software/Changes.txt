@@ -276,3 +276,11 @@ Added a switch to swap the I and Q lines when using a sound card to communicate 
 Added higher tuning rates to the tuning dial menu.
 
 Changed back to Visual C++ 6.0 for building Windows binaries.
+
+
+Version 0.7.3 - 2007
+=================================
+
+Removed the GRANT_TX build option.
+
+Added support for the SoftRock TXRX.

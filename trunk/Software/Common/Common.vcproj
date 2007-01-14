@@ -489,6 +489,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\SRTXRXController.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ThreeToneReader.cpp"
 				>
 			</File>
@@ -619,6 +623,10 @@
 			</File>
 			<File
 				RelativePath="SoundFileWriter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SRTXRXController.h"
 				>
 			</File>
 			<File

@@ -56,16 +56,16 @@ class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterf
 	void onTimer(wxTimerEvent& event);
 	void onClose(wxCloseEvent& event);
 
-	void            setParameters(CSDRParameters* parameters);
-	CSDRParameters* getParameters();
+	virtual void            setParameters(CSDRParameters* parameters);
+	virtual CSDRParameters* getParameters();
 
 	virtual void dialMoved(int id, int value);
 
 	virtual void sdrCommandNAK(const wxString& message, int id);
 	virtual void sdrConnectionLost(int id);
 
-	void sendCW(unsigned int speed, const wxString& text);
-	void sendAudio(const wxString& fileName, int state);
+	virtual void sendCW(unsigned int speed, const wxString& text);
+	virtual void sendAudio(const wxString& fileName, int state);
 
     private:
 	wxTimer           m_timer;

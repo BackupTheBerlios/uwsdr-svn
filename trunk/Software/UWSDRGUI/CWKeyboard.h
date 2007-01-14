@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -28,32 +28,32 @@ class CCWKeyboard : public wxDialog {
 
     public:
 	CCWKeyboard(wxWindow* parent, int id);
-	~CCWKeyboard();
+	virtual ~CCWKeyboard();
 
 	void onTransmit(wxCommandEvent& event);
 	void onAbort(wxCommandEvent& event);
 	void onHelp(wxCommandEvent& event);
 
-	void     setLocal(const wxString& text);
-	wxString getLocal() const;
+	virtual void     setLocal(const wxString& text);
+	virtual wxString getLocal() const;
 
-	void     setRemote(const wxString& text);
-	wxString getRemote() const;
+	virtual void     setRemote(const wxString& text);
+	virtual wxString getRemote() const;
 
-	void     setLocator(const wxString& text);
-	wxString getLocator() const;
+	virtual void     setLocator(const wxString& text);
+	virtual wxString getLocator() const;
 
-	void     setReport(const wxString& text);
-	wxString getReport() const;
+	virtual void     setReport(const wxString& text);
+	virtual wxString getReport() const;
 
-	void     setSerial(const wxString& text);
-	wxString getSerial() const;
+	virtual void     setSerial(const wxString& text);
+	virtual wxString getSerial() const;
 
-	void     setMessage(unsigned int n, const wxString& text);
-	wxString getMessage(unsigned int n) const;
+	virtual void     setMessage(unsigned int n, const wxString& text);
+	virtual wxString getMessage(unsigned int n) const;
 
-	void         setSpeed(unsigned int speed);
-	unsigned int getSpeed() const;
+	virtual void         setSpeed(unsigned int speed);
+	virtual unsigned int getSpeed() const;
 
     private:
 	wxTextCtrl*    m_local;

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,26 +16,32 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	SDRController_H
-#define	SDRController_H
+#ifndef	SRTXRXController_H
+#define	SRTXRXController_H
 
+#include <wx/wx.h>
+
+#include "SDRController.h"
 #include "Frequency.h"
 #include "ControlInterface.h"
 
-class ISDRController {
+class CSRTXRXController : public ISDRController {
 
     public:
-	virtual void setCallback(IControlInterface* callback, int id) = 0;
+	CSRTXRXController();
+	virtual ~CSRTXRXController();
 
-	virtual bool open() = 0;
+	virtual void setCallback(IControlInterface* callback, int id);
 
-	virtual void enableTX(bool on) = 0;
-	virtual void enableRX(bool on) = 0;
-	virtual void setTXAndFreq(bool transmit, const CFrequency& freq) = 0;
+	virtual bool open();
+	virtual void enableTX(bool on);
+	virtual void enableRX(bool on);
+	virtual void setTXAndFreq(bool transmit, const CFrequency& freq);
+	virtual void sendCommand(const char* command);
+	virtual void setClockTune(unsigned int clock);
+	virtual void close();
 
-	virtual void setClockTune(unsigned int clock) = 0;
-
-	virtual void close() = 0;
+    private:
 };
 
 #endif

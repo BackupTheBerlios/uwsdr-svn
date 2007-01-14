@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -27,20 +27,20 @@ class CSpectrumDisplay : public wxPanel {
 	CSpectrumDisplay(wxWindow* parent, int id, const wxPoint& pos, const wxSize& size, long style = 0L, const wxString& name = wxPanelNameStr);
 	virtual ~CSpectrumDisplay();
 
-	void setSampleRate(float sampleRate);
-	void setBandwidth(float hertz);
+	virtual void setSampleRate(float sampleRate);
+	virtual void setBandwidth(float hertz);
 
-	void showSpectrum(const float* spectrum, float bottom = 0.0F, float offset = 0.0F);
+	virtual void showSpectrum(const float* spectrum, float bottom = 0.0F, float offset = 0.0F);
 
-	void setType(int type);
-	void setPosition(int pos);
-	void setSpeed(int speed);
+	virtual void setType(int type);
+	virtual void setPosition(int pos);
+	virtual void setSpeed(int speed);
 
-	int  getType() const;
-	int  getPosition() const;
-	int  getSpeed() const;
+	virtual int  getType() const;
+	virtual int  getPosition() const;
+	virtual int  getSpeed() const;
 
-	float getFreqPick();
+	virtual float getFreqPick();
 
 	void onPaint(wxPaintEvent& event);
 	void onLeftMouse(wxMouseEvent& event);

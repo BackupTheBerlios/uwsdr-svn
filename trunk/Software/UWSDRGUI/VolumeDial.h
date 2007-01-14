@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ class CVolumeDial : public wxPanel {
 
 	virtual bool Enable(bool enable = true);
 
-	void setValue(unsigned int value);
+	virtual void setValue(unsigned int value);
 
 	void onPaint(wxPaintEvent& event);
 	void onMouse(wxMouseEvent& event);

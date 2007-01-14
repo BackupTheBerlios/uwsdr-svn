@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ class CUWSDRPreferences : public wxDialog {
 
     public:
 	CUWSDRPreferences(wxWindow* parent, int id, CSDRParameters* parameters, CDSPControl* dsp);
-	~CUWSDRPreferences();
+	virtual ~CUWSDRPreferences();
 
 	void onIQChanged(wxSpinEvent& event);
 	void onRFGainChanged(wxScrollEvent& event);

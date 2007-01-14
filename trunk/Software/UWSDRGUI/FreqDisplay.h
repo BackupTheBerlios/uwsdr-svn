@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ class CFreqDisplay : public wxPanel {
 	CFreqDisplay(wxWindow* parent, int id, const wxPoint& pos, const wxSize& size, long style = 0L, const wxString& name = wxPanelNameStr);
 	virtual ~CFreqDisplay();
 
-	void setFrequency(const CFrequency& frequency);
+	virtual void setFrequency(const CFrequency& frequency);
 
 	void onPaint(wxPaintEvent& event);
 

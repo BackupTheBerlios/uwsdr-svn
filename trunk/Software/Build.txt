@@ -7,9 +7,8 @@ Name          RX Input     RX Output    TX Input    TX Output    SDR Control    
 --------------------------------------------------------------------------------------
 Standard      UDP          Audio Card   Audio Card  UDP          TCP            (none)
 Tobias        UDP          Audio Card   Two-Tone    UDP          None           TOBIAS
-Grant (TX)    None         None         Two-Tone    Audio Card   None           GRANT_TX
 
-The Tobias configuration is for testing the back-end hardware for UDP only. Grant (TX) is for testing transmitters that require I/Q data.
+The Tobias configuration is for testing the back-end hardware for UDP only.
 
 
 Windows

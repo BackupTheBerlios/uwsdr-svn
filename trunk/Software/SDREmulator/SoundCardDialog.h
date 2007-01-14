@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -32,9 +32,9 @@ class CSoundCardDialog : public wxDialog {
 	void onAPI(wxCommandEvent& event);
 	void onOK(wxCommandEvent& event);
 
-	int  getAPI() const;
-	long getInDev() const;
-	long getOutDev() const;
+	virtual int  getAPI() const;
+	virtual long getInDev() const;
+	virtual long getOutDev() const;
 
     private:
 	wxChoice*      m_apiChoice;

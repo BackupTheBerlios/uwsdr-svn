@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -54,6 +54,8 @@ m_valid(false)
 
 				if (type.Cmp(wxT("audiorx")) == 0)
 					m_type = TYPE_AUDIORX;
+				else if (type.Cmp(wxT("audiotxrx")) == 0)
+					m_type = TYPE_AUDIOTXRX;
 				else if (type.Cmp(wxT("demo")) == 0)
 					m_type = TYPE_DEMO;
 				else if (type.Cmp(wxT("uwsdr1")) == 0)
@@ -82,9 +84,9 @@ m_valid(false)
 		}
 	}
 
-	if (m_type == TYPE_AUDIORX) {
+	if (m_type == TYPE_AUDIORX || m_type == TYPE_AUDIOTXRX) {
 		if (m_minFreq != m_maxFreq) {
-			::wxLogError(wxT("The min and max frequencies must be the same for \"type=audiorx\""));
+			::wxLogError(wxT("The min and max frequencies must be the same for \"type=audiorx\" or \"type=audiotxrx\""));
 			return;
 		}
 	}

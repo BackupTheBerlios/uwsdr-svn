@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -70,6 +70,7 @@ class CSDRParameters {
 	int          m_mode;
 	bool         m_zeroIF;
 	bool         m_swapIQ;
+	unsigned int m_clockTune;
 
 	int          m_deviationFMW;
 	int          m_deviationFMN;

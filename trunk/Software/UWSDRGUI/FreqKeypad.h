@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -27,12 +27,12 @@ class CFreqKeypad : public wxDialog {
 
     public:
 	CFreqKeypad(wxWindow* parent, int id, const CFrequency& vfo, const CFrequency& minFreq, const CFrequency& maxFres);
-	~CFreqKeypad();
+	virtual ~CFreqKeypad();
 
 	void onOK(wxCommandEvent& event);
 	void onButton(wxCommandEvent& event);
 
-	CFrequency getFrequency() const;
+	virtual CFrequency getFrequency() const;
 
     private:
 	CFrequency  m_vfo;

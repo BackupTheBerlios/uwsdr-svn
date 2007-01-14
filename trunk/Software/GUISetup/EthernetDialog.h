@@ -29,9 +29,9 @@ class CEthernetDialog : public wxDialog {
 
 	void onOK(wxCommandEvent& event);
 
-	wxString getIPAddress() const;
-	long     getControlPort() const;
-	long     getDataPort() const;
+	virtual wxString getIPAddress() const;
+	virtual long     getControlPort() const;
+	virtual long     getDataPort() const;
 
     private:
 	wxTextCtrl* m_address;

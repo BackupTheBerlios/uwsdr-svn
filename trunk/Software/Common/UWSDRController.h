@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ class CUWSDRController : public wxEvtHandler, public ISDRController {
 	virtual void enableRX(bool on);
 	virtual void setTXAndFreq(bool transmit, const CFrequency& freq);
 	virtual void sendCommand(const char* command);
+	virtual void setClockTune(unsigned int clock);
 	virtual void close();
 
 	void onSocket(wxSocketEvent& event);
@@ -55,6 +56,7 @@ class CUWSDRController : public wxEvtHandler, public ISDRController {
 	bool               m_enableTX;
 	bool               m_enableRX;
 	bool               m_tx;
+	unsigned int       m_clock;
 
 	DECLARE_EVENT_TABLE()
 };
