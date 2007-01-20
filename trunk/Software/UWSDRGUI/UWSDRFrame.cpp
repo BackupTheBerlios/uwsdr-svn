@@ -319,7 +319,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			// m_dsp->setTXReader(new CTwoToneReader(1000.0F, 1300.0F, 0.4F, new CSoundCardReader(m_parameters->m_userAudioAPI, m_parameters->m_userAudioInDev)));
 			m_dsp->setTXReader(new CThreeToneReader(500.0F, 1500.0F, 2000.0F, 0.25F, new CSoundCardReader(m_parameters->m_userAudioAPI, m_parameters->m_userAudioInDev)));
 			m_dsp->setTXWriter(new CNullWriter());
-			m_dsp->setRXReader(new CSignalReader(int(m_parameters->m_hardwareSampleRate / 4.0F + 1000.5F), 0.0003F, 0.0004F));
+			m_dsp->setRXReader(new CSignalReader(1000.5F, 0.0003F, 0.0004F));
 			m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_userAudioAPI, m_parameters->m_userAudioOutDev));
 			break;
 
@@ -1059,18 +1059,11 @@ void CUWSDRFrame::normaliseFreq()
 
 	m_freqDisplay->setFrequency(dispFreq);
 
-	// Subtract the IF frequency
-	float dspOffset;
-	if (m_parameters->m_zeroIF) {
-		if (m_txOn)
-			dspOffset = m_dsp->getTXOffset();
-		else
-			dspOffset = m_dsp->getRXOffset();
-	} else {
-		dspOffset = m_parameters->m_hardwareSampleRate / 4.0F;
-	}
-
-	freq -= dspOffset;
+	// Subtract any offset frequency needed
+	if (m_txOn)
+		freq -= m_dsp->getTXOffset();
+	else
+		freq -= m_dsp->getRXOffset();
 
 	if (m_parameters->m_hardwareType == TYPE_AUDIORX || m_parameters->m_hardwareType == TYPE_AUDIOTXRX) {
 		// This won't work over a MHz boundary ....

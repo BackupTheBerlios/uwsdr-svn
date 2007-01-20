@@ -261,10 +261,7 @@ void CTX::setFrequency(double freq)
 {
 	m_freq = freq;
  
-	if (m_zeroIF)
-		m_oscillator1->setFrequency(freq);
-	else
-		m_oscillator1->setFrequency(m_sampleRate / 4.0F + freq);
+	m_oscillator1->setFrequency(freq);
 }
 
 void CTX::setAMCarrierLevel(float level)

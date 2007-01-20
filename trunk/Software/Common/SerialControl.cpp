@@ -164,7 +164,7 @@ bool CSerialControl::open()
 	if (::isatty(m_fd) == 0) {
 		close();
 		::wxLogError(wxT("%s is not a serial port"), m_device.c_str());
-		return false
+		return false;
 	}
 
 	return unkeyTX();

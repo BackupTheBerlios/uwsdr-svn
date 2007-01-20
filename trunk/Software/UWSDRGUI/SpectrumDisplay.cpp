@@ -232,21 +232,21 @@ void CSpectrumDisplay::createPanadapter()
 	dc.SetTextForeground(*wxCYAN);
 
 	// Draw the frequency lines
-	for (unsigned int i = 1; i < 10; i++) {
+	for (unsigned int i = 1U; i < 10U; i++) {
 		int x = left + int(i * incrX + 0.5);
 		dc.DrawLine(x, top /* lowY */, x, bottom);
 	}
 
 	float dbScale = float(m_height - 17) / m_dbScale;
 
-	float dbIncr = 10.0F;
+	unsigned int dbIncr = 10U;
 	if (m_dbScale > 50.0F)
-		dbIncr = 20.0F;
-	else if (m_dbScale < 20.0F)
-		dbIncr = 5.0F;
+		dbIncr = 20U;
+	else if (m_dbScale < 30.0F)
+		dbIncr = 5U;
 
 	// Draw the dB lines, every 10 dB
-	for (unsigned int dB = 0; true; dB += dbIncr) {
+	for (unsigned int dB = 0U; true; dB += dbIncr) {
 		int y = bottom - int(float(dB) * dbScale + 0.5);
 		if (y < top)
 			break;
@@ -362,7 +362,7 @@ void CSpectrumDisplay::drawPanadapter1(const float* spectrum, float bottom)
 
 		value -= bottom;
 
-		int y = int(value * dbScale + 0.5F);
+		int y = int(value * 0.5F * dbScale + 0.5F);
 		if (y < 0)
 			y = 0;
 		if (y > (m_height - 18))
@@ -416,7 +416,7 @@ void CSpectrumDisplay::drawPanadapter2(const float* spectrum, float bottom)
 
 		value -= bottom;
 
-		int y = int(value * dbScale + 0.5F);
+		int y = int(value * 0.5F * dbScale + 0.5F);
 		if (y < 0)
 			y = 0;
 		if (y > (m_height - 18))
@@ -468,7 +468,7 @@ void CSpectrumDisplay::drawWaterfall(const float* spectrum, float bottom)
 
 		value -= bottom;
 
-		float percent = value / m_dbScale;
+		float percent = 0.5F * value / m_dbScale;
 		if (percent < 0.0F)
 			percent = 0.0F;
 		if (percent > 1.0F)
