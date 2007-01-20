@@ -271,6 +271,14 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 		return;
 	}
 
+	// Whitespace isn't allowed in the SDR name
+	int pos1 = name.Find(wxT(' '));
+	int pos2 = name.Find(wxT('\t'));
+	if (pos1 != wxNOT_FOUND || pos2 != wxNOT_FOUND) {
+		::wxMessageBox(_("The Name cannot contain white space (spaces, tabs, etc)"), _("GUISetup Error"), wxICON_ERROR);
+		return;
+	}
+
 	if (m_filename.IsEmpty()) {
 		::wxMessageBox(_("The SDR File Name is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
 		return;

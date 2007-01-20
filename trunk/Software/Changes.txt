@@ -292,3 +292,7 @@ Removed the verbal diarrhea from the preferences screens.
 Selectable dB ranges for the spectrum display, 10 dB to 60 dB in 10 dB steps.
 
 Removed logged text messages for underruns and overruns which affected performance and probably made it worse.
+
+Fixed long standing bug in the audio choice in GUISetup, hopefully.
+
+Stop the SDR Name in GUISetup from containing white space.

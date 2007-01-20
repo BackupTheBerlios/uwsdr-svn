@@ -74,14 +74,21 @@ m_pin(pin)
 
 		m_devChoice->Append(dev);
 
-		if (!device.IsEmpty() && dev.IsSameAs(device))
+		if (!m_device.IsEmpty() && dev.IsSameAs(m_device))
 			m_devChoice->SetSelection(i);
 	}
 
-	if (device.IsEmpty())
+	if (m_device.IsEmpty()) {
 		m_devChoice->SetSelection(0);
+		m_device = m_devChoice->GetStringSelection();
+	}
 
-	m_pinChoice->SetSelection((pin != -1) ? pin : 0);
+	if (m_pin == -1) {
+		m_pinChoice->SetSelection(0);
+		m_pin = 0;
+	} else {
+		m_pinChoice->SetSelection(m_pin);
+	}
 }
 
 CPortDialog::~CPortDialog()

@@ -73,7 +73,10 @@ m_outDev(outDev)
 	if (api != -1)
 		m_apiChoice->SetSelection(api);
 
-	if (outDev != -1L) {
+	if (api != -1 && outDev != -1L) {
+		CSoundCardAPI* sapi = m_info.getAPIs().at(api);
+		enumerateAudio(*sapi);
+
 		vector<CSoundCardDev*>& devs = m_info.getDevs();
 
 		for (unsigned int i = 0; i < devs.size(); i++)

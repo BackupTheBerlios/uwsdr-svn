@@ -53,6 +53,7 @@ class CSoundCardWriter : public IDataWriter {
 	float*       m_lastBuffer;
 	unsigned int m_requests;
 	unsigned int m_underruns;
+	unsigned int m_overruns;
 };
 
 #endif

@@ -2,7 +2,7 @@ all:		Common.a
 
 OBJS := 	Frequency.o Log.o NullController.o NullReader.o NullWriter.o RingBuffer.o SDRDataReader.o \
 		SDRDataWriter.o SDRDescrFile.o SerialControl.o SignalReader.o SoundCardInfo.o SoundCardReader.o \
-		SoundCardWriter.o SoundFileReader.o SoundFileWriter.o SRTXRXController.h ThreeToneReader.o \
+		SoundCardWriter.o SoundFileReader.o SoundFileWriter.o SRTXRXController.o ThreeToneReader.o \
 		TwoToneReader.o UWSDRController.o
 
 Common.a:	$(OBJS)
