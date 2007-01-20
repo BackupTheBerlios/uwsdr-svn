@@ -400,7 +400,7 @@
         <debug>1</debug>
         <option>
           <name>CRDIDriverDll</name>
-          <state>L:\Program Files\H-JTAG V0.4.0\H-JTAG.dll</state>
+          <state>L:\Program Files\H-JTAG V0.4.2\H-JTAG.dll</state>
         </option>
         <option>
           <name>CRDILogFileCheck</name>

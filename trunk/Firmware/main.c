@@ -22,6 +22,7 @@
 #include "timer.h"
 #include "debug.h"
 #include "delay.h"
+#include "i2c.h"
 //**************************** LOCAL DEFINES *********************************
 
 
@@ -63,8 +64,12 @@ void main(void)
   /****** PIN init  ******/
   
 #define _OUTPUT_PINS (ETH_IOW_PIN|ETH_IOR_PIN|ETH_PSEN_PIN|ETH_RST_PIN \
-                      |ETH_ADDR_MASK|_DBG_LED1) //|CODEC_PERIPH_A) //|CODEC_SPICS_PIN)
-  
+                      |ETH_ADDR_MASK|_DBG_LED1|CODEC_RST_PIN|I2C_SCL_PIN|I2C_SDA_PIN|CODEC_SPICS_PIN)
+
+  CLR_PIN(CODEC_RST_PIN);
+  SET_PIN(CODEC_SPICS_PIN);
+
+
   AT91F_PIO_CfgDirectDrive(AT91C_BASE_PIOA, _OUTPUT_PINS);
   ETH_CLR_RST();
   ETH_SET_IOW();
@@ -84,7 +89,7 @@ void main(void)
   //********* Init ETH **********
 
   ax88796Init();
- 
+  
   
 //  LED_RED_ON;
 //  LED_GREEN_OFF;
@@ -111,29 +116,29 @@ void main(void)
   
   /***** SPI ******/
   
-  AT91F_SPI_Reset(AT91C_BASE_SPI);
-  AT91F_SPI_CfgPMC();
-  AT91F_PIO_CfgPeriph(
-		AT91C_BASE_PIOA, // PIO controller base address
-		((unsigned int) AT91C_PA13_MOSI    ) |
-		//((unsigned int) AT91C_PA31_NPCS1   ) |
-		((unsigned int) AT91C_PA14_SPCK    ) |
-		((unsigned int) AT91C_PA11_NPCS0   ) |
-		((unsigned int) AT91C_PA12_MISO    ) //, // Peripheral A
-		//((unsigned int) AT91C_PA9_NPCS1   ) |
-		//((unsigned int) AT91C_PA22_NPCS3   ) |
-		//((unsigned int) AT91C_PA3_NPCS3   ) |
-		//((unsigned int) AT91C_PA5_NPCS3   ) |
-		//((unsigned int) AT91C_PA10_NPCS2   ) |
-		//((unsigned int) AT91C_PA30_NPCS2   )); // Peripheral B
-                ,0);
-  
-  AT91F_SPI_CfgCs(AT91C_BASE_SPI, 0, (20<<8) | AT91C_SPI_CPOL | AT91C_SPI_BITS_16);
-  
-  AT91F_SPI_CfgMode(AT91C_BASE_SPI, AT91C_SPI_MSTR|AT91C_SPI_PS_FIXED);
-  AT91F_SPI_Enable(AT91C_BASE_SPI);
-                
-  
+//  AT91F_SPI_Reset(AT91C_BASE_SPI);
+//  AT91F_SPI_CfgPMC();
+//  AT91F_PIO_CfgPeriph(
+//		AT91C_BASE_PIOA, // PIO controller base address
+//		((unsigned int) AT91C_PA13_MOSI    ) |
+//		//((unsigned int) AT91C_PA31_NPCS1   ) |
+//		((unsigned int) AT91C_PA14_SPCK    ) |
+//		((unsigned int) AT91C_PA11_NPCS0   ) |
+//		((unsigned int) AT91C_PA12_MISO    ) //, // Peripheral A
+//		//((unsigned int) AT91C_PA9_NPCS1   ) |
+//		//((unsigned int) AT91C_PA22_NPCS3   ) |
+//		//((unsigned int) AT91C_PA3_NPCS3   ) |
+//		//((unsigned int) AT91C_PA5_NPCS3   ) |
+//		//((unsigned int) AT91C_PA10_NPCS2   ) |
+//		//((unsigned int) AT91C_PA30_NPCS2   )); // Peripheral B
+//                ,0);
+//  
+//  AT91F_SPI_CfgCs(AT91C_BASE_SPI, 0, (20<<8) | AT91C_SPI_CPOL | AT91C_SPI_BITS_8);
+//  
+//  AT91F_SPI_CfgMode(AT91C_BASE_SPI, AT91C_SPI_MSTR|AT91C_SPI_PS_FIXED);
+//  AT91F_SPI_Enable(AT91C_BASE_SPI);
+
+
  
   /****** SSC *******/
 
@@ -198,11 +203,16 @@ void main(void)
 //    AT91C_BASE_SSC->SSC_IER = AT91C_SSC_ENDTX|AT91C_SSC_OVRUN|AT91C_SSC_ENDRX;
 
 
-  CODEC_init();
   
   //****************** the main loop ********************
 
+  //***** CODEC ******
+//while(1)
+  I2C_Init(1);
+  CODEC_init();
 
+    
+    
   __enable_interrupt();                         // Global interrupt enable
 
    uip_listen(HTONS(2221));
@@ -243,14 +253,9 @@ void main(void)
   {
     test32 = AT91C_BASE_SSC->SSC_SR;
     if(test32 & (AT91C_SSC_RXBUFF)) {
-      DBG_LED1_ON();
       CODEC_SSC_ISR();
-      DBG_LED1_OFF();
       if(codec_inactivebuf) {
-        DBG_LED1_OFF();
         LAN_DIS_IRQ();
-        
-       
         pHdr = (t_codec_hdr*)codec_inactivebuf; // - sizeof(t_codec_hdr);
         
         framecount += 2;
@@ -269,11 +274,16 @@ void main(void)
          codec_inactivebuf = 0;
         //uip_arp_out();
         //nic_send();
-        LAN_ENA_IRQ();
         DBG_LED1_ON();
+        
+        //calc peaks
+        codec_getpeaks();
+         
+      DBG_LED1_OFF();
+        LAN_ENA_IRQ();
       }
     }
-    
+
     if(i > 10000) {
       //uip_process(UIP_UDP_TIMER);
       i = 0;

@@ -107,7 +107,16 @@ typedef struct uwsdr_state uip_udp_appstate_t;
 #define ETH_RST_PIN       (1 << 23)
 #define ETH_IRQ_PIN       (1 << 30)
 
-#define CODEC_SPICS_PIN   (1 << 11)
+/****** CODEC DEFINITIONS ******/
+
+#define CODEC_SPICS_PIN   AT91C_PA11_NPCS0
+#define CODEC_RST_PIN     (1 << 16)
+
+
+/****** I2C DEFINITIONS ******/
+
+#define I2C_SCL_PIN       AT91C_PIO_PA14
+#define I2C_SDA_PIN       AT91C_PIO_PA13
 
 #define LED_RED_ON \
   AT91C_BASE_PIOA->PIO_SODR = LED2;
@@ -168,5 +177,9 @@ typedef struct uwsdr_state uip_udp_appstate_t;
 
 #define SET_PIN(x) AT91C_BASE_PIOA->PIO_SODR = x
 #define CLR_PIN(x) AT91C_BASE_PIOA->PIO_CODR = x
+#define GET_PIN(x) (AT91C_BASE_PIOA->PIO_PDSR & x)
+
+#define SET_PIN_OUTPUT(x)   AT91F_PIO_CfgOutput(AT91C_BASE_PIOA, x)
+#define SET_PIN_INPUT(x)    AT91F_PIO_CfgInput(AT91C_BASE_PIOA, x)
 
 #endif //__CONFIG_H__

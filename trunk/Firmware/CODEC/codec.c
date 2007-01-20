@@ -2,6 +2,8 @@
 #include "codec.h"
 #include "uip.h"
 #include "string.h"
+#include "delay.h"
+#include "i2c.h"
 
 u8    codec_buf[2*CODEC_BUFFERSIZE + 2*CODEC_HEADER_SIZE]; // ~6kb = 2000 24bit stereo samples
 //u16   codec_send_counter0;
@@ -9,6 +11,8 @@ u8    codec_buf[2*CODEC_BUFFERSIZE + 2*CODEC_HEADER_SIZE]; // ~6kb = 2000 24bit 
 u32   codec_status_flag;
 
 u8 *  codec_inactivebuf;
+volatile u32 max_I;
+volatile u32 max_Q;
 
 //********************************************************
 //
@@ -22,6 +26,20 @@ void CODEC_start_output()
 {
 }
 
+void codec_getpeaks()
+{
+  register u32 i;
+  
+  max_I = 0;
+  max_Q = 0;
+  
+  for(i = 0; i < CODEC_BUFFERSIZE; i += 6) {
+    if(codec_buf[i] > max_I) 
+      max_I = codec_buf[i];
+    if(codec_buf[i+3] > max_Q) 
+      max_Q = codec_buf[i+3];
+  }
+}
 
 //********************************************************
 //
@@ -33,33 +51,125 @@ void CODEC_start_output()
 //********************************************************
 void CODEC_init(void)
 {
+  u8 uc;
   int i;
   /****** AD1836A Init *******/
-     
-  i = CODEC_REG_ADC_CTRL3|CODEC_ADC_CLOCKMODE_X512; //0xE040
-  AT91F_SPI_PutChar(AT91C_BASE_SPI, i, 0); // ADC CTRL 3
-    
-  i = CODEC_REG_DAC_CTRL1|CODEC_DAC_SERMODE_LEFTJUSTIFIED;
-  AT91F_SPI_PutChar(AT91C_BASE_SPI, i, 0); // DAC CTRL 1
-  // set volume to max
-  i =   CODEC_REG_DAC_VOL_1L|1023;
-  AT91F_SPI_PutChar(AT91C_BASE_SPI, i, 0); // DAC CTRL 1
-  i =   CODEC_REG_DAC_VOL_1R|1023;
-  AT91F_SPI_PutChar(AT91C_BASE_SPI, i, 0); // DAC CTRL 1
+  
+  CLR_PIN(CODEC_RST_PIN);
+  delay_us(10000);
+  SET_PIN(CODEC_RST_PIN);
+  
+  /*** Init of the DAC PCM1740 ***/
+//  I2C_send_byte(0x98, 0x00, 0x00);
+//  delay_us(100);
+//  I2C_send_byte(0x98, 0x01, 0x00);
+//  delay_us(100);
+//  I2C_send_byte(0x98, 0x02, 0x98);
+//  delay_us(100);
+//  I2C_send_byte(0x98, 0x03, 0x4B);
+//  delay_us(1000);
+//  I2C_send_byte(0x98, 0x04, 0x00);
+//  delay_us(100);
 
-  i = CODEC_REG_DAC_CTRL2;
-  AT91F_SPI_PutChar(AT91C_BASE_SPI, i, 0); // DAC CTRL 2
-  
-  
-  AT91F_SPI_PutChar(AT91C_BASE_SPI, 0xC000, 0); // ADC CTRL 1
-//    AT91F_SPI_PutChar(AT91C_BASE_SPI, 0xD200, 0); // ADC CTRL 2
-  
-  i = CODEC_REG_ADC_CTRL2|CODEC_ADC_MASTER|CODEC_ADC_SOUT_MODE_LEFTJUSTIFIED;
-  //0xD2C0
-  AT91F_SPI_PutChar(AT91C_BASE_SPI, i, 0); // ADC CTRL 2
+  /*** Init of the CS4272 ***/
+  delay_us(500);
+  I2C_send_byte(0x20, 0x07, 0x03); // Mode Control 2
+  delay_us(100);
 
-  i = CODEC_REG_ADC_CTRL3|CODEC_ADC_CLOCKMODE_X512; //0xE040
-  AT91F_SPI_PutChar(AT91C_BASE_SPI, i, 0); // ADC CTRL 3
+  I2C_send_byte(0x20, 0x01, 0x29); // Mode Control
+  delay_us(100);
+  I2C_send_byte(0x20, 0x02, 0x00); // DAC Control
+  delay_us(100);
+  I2C_send_byte(0x20, 0x03, 0x09); // DAC Volume & Mixing control
+  delay_us(100);
+  I2C_send_byte(0x20, 0x04, 0x00); // Channel A Volume control
+  delay_us(100);
+  I2C_send_byte(0x20, 0x05, 0x00); // Channel B Volume control
+  delay_us(100);
+  I2C_send_byte(0x20, 0x06, 0x13); // ADC Control
+  delay_us(100);
+  I2C_send_byte(0x20, 0x07, 0x02); // Mode Control 2
+  delay_us(100);
+  
+//  //***** First init of Reg 7 *****
+//  delay_us(100);
+//  // Chip Adress
+//  uc = _CODEC_ADDR; 
+//  AT91F_SPI_PutChar(AT91C_BASE_SPI, uc, 0); 
+//  // Map adress 
+//  uc = 0x07;
+//  AT91F_SPI_PutChar(AT91C_BASE_SPI, uc, 0); 
+//  // Data    
+//  uc = 0x03;
+//  AT91F_SPI_PutChar(AT91C_BASE_SPI, uc, 0);
+//  
+//  //***** Mode control *****
+//  delay_us(100);
+//  // Chip Adress
+//  uc = _CODEC_ADDR; 
+//  AT91F_SPI_PutChar(AT91C_BASE_SPI, uc, 0); 
+//  // Map adress 
+//  uc = 0x01;
+//  AT91F_SPI_PutChar(AT91C_BASE_SPI, uc, 0); 
+//  // Data    
+//  uc = 0x04;
+//  AT91F_SPI_PutChar(AT91C_BASE_SPI, uc, 0);
+//
+//  //***** *****
+//  delay_us(100);
+//  // Chip Adress
+//  uc = _CODEC_ADDR; 
+//  AT91F_SPI_PutChar(AT91C_BASE_SPI, uc, 0); 
+//  // Map adress 
+//  uc = 0x07;
+//  AT91F_SPI_PutChar(AT91C_BASE_SPI, uc, 0); 
+//  // Data    
+//  uc = 0x02;
+//  AT91F_SPI_PutChar(AT91C_BASE_SPI, uc, 0);
+
+//  //***** *****
+//  delay_us(100);
+//  // Chip Adress
+//  uc = _CODEC_ADDR; 
+//  AT91F_SPI_PutChar(AT91C_BASE_SPI, uc, 0); 
+//  // Map adress 
+//  uc = 0x07;
+//  AT91F_SPI_PutChar(AT91C_BASE_SPI, uc, 0); 
+//  // Data    
+//  uc = 0x03;
+//  AT91F_SPI_PutChar(AT91C_BASE_SPI, uc, 0);
+  
+  
+
+  //SET_PIN(AT91C_PA11_NPCS0);
+
+  
+ 
+//******** AD1836A **********
+  
+//  //i = CODEC_REG_ADC_CTRL3|CODEC_ADC_CLOCKMODE_X256; //0xE040
+//  //AT91F_SPI_PutChar(AT91C_BASE_SPI, i, 0); // ADC CTRL 3
+//    
+//  i = CODEC_REG_DAC_CTRL1|CODEC_DAC_SERMODE_LEFTJUSTIFIED|CODEC_DAC_INTERPOL_96;
+//  AT91F_SPI_PutChar(AT91C_BASE_SPI, i, 0); // DAC CTRL 1
+//  // set volume to max
+//  i =   CODEC_REG_DAC_VOL_1L|1023;
+//  AT91F_SPI_PutChar(AT91C_BASE_SPI, i, 0); // DAC CTRL 1
+//  i =   CODEC_REG_DAC_VOL_1R|1023;
+//  AT91F_SPI_PutChar(AT91C_BASE_SPI, i, 0); // DAC CTRL 1
+//
+//  i = CODEC_REG_DAC_CTRL2;
+//  AT91F_SPI_PutChar(AT91C_BASE_SPI, i, 0); // DAC CTRL 2
+//  
+//  i = CODEC_REG_DAC_CTRL1|CODEC_ADC_SAMPLERATE_96;
+//  AT91F_SPI_PutChar(AT91C_BASE_SPI, i, 0); // ADC CTRL 1
+//  
+//  i = CODEC_REG_ADC_CTRL2|CODEC_ADC_MASTER|CODEC_ADC_SOUT_MODE_LEFTJUSTIFIED|0xf;
+//  //0xD2C0
+//  AT91F_SPI_PutChar(AT91C_BASE_SPI, i, 0); // ADC CTRL 2
+//
+//  i = CODEC_REG_ADC_CTRL3|CODEC_ADC_CLOCKMODE_X512; //0xE040
+//  AT91F_SPI_PutChar(AT91C_BASE_SPI, i, 0); // ADC CTRL 3
   
 }
 

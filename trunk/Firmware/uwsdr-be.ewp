@@ -1697,6 +1697,9 @@
     <file>
       <name>$PROJ_DIR$\SYSTEM\delay.c</name>
     </file>
+    <file>
+      <name>$PROJ_DIR$\SYSTEM\I2C.c</name>
+    </file>
   </group>
   <group>
     <name>UIP-1.0</name>

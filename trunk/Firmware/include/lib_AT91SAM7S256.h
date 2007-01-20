@@ -1902,6 +1902,9 @@ inline void AT91F_SPI_PutChar (
 	unsigned int character,
              unsigned int cs_number )
 {
+
+    while(!(pSPI->SPI_SR & AT91C_SPI_TDRE));
+
     unsigned int value_for_cs;
     value_for_cs = (~(1 << cs_number)) & 0xF;  //Place a zero among a 4 ONEs number
     pSPI->SPI_TDR = (character & 0xFFFF) | (value_for_cs << 16);

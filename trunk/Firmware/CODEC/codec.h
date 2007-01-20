@@ -5,10 +5,18 @@
 #include "config.h"
 
 
+//********* CS 4272 ***********
+
+#define _CODEC_ADDR     0x20
+
+
+
+//******** AD1836A **********
  
 //************************************************************ 
 #define CODEC_REG_DAC_CTRL1                (0x0 << 12)
 #define CODEC_DAC_SERMODE_LEFTJUSTIFIED    (0x3 << 5)
+#define CODEC_DAC_INTERPOL_96               (0x1 << 1)
 
 //************************************************************ 
 #define CODEC_REG_DAC_CTRL2                (0x1 << 12)
@@ -23,13 +31,19 @@
 #define CODEC_REG_DAC_VOL_2R               (0x5 << 12)
 
 //************************************************************ 
-#define CODEC_REG_ADC_CTRL3                 (0xE << 12)
-#define CODEC_ADC_CLOCKMODE_X512            (0x1 << 6)
+#define CODEC_REG_ADC_CTRL1                 (0xC << 12)
+#define CODEC_ADC_SAMPLERATE_96             (1 << 6)
 
 //************************************************************ 
 #define CODEC_REG_ADC_CTRL2                 (0xD << 12)
 #define CODEC_ADC_MASTER                    (0x1 << 9)
 #define CODEC_ADC_SOUT_MODE_LEFTJUSTIFIED   (0x3 << 6)
+
+//************************************************************ 
+#define CODEC_REG_ADC_CTRL3                 (0xE << 12)
+#define CODEC_ADC_CLOCKMODE_X512            (0x1 << 6)
+#define CODEC_ADC_CLOCKMODE_X256            (0x0 << 6)
+
 
 
 typedef struct s_codec_hdr {
@@ -69,7 +83,6 @@ extern u8 *codec_inactivebuf;
 
 #define CODEC_PERIPH_A \
           AT91C_PA15_TF| \
-          AT91C_PA16_TK| \
           AT91C_PA17_TD| \
           AT91C_PA18_RD| \
           AT91C_PA19_RK| \
@@ -80,6 +93,7 @@ void CODEC_start_output();
 void UDP_process(void);
 void CODEC_init(void);
 void CODEC_start(void);
+void codec_getpeaks(void);
 
 #endif //__CODEC_H__
 
