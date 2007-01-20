@@ -106,6 +106,10 @@ SOURCE=.\GUISetupFrame.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\PortDialog.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\SoundCardDialog.cpp
 # End Source File
 # End Group
@@ -123,6 +127,10 @@ SOURCE=.\GUISetupApp.h
 # Begin Source File
 
 SOURCE=.\GUISetupFrame.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\PortDialog.h
 # End Source File
 # Begin Source File
 

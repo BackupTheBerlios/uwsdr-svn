@@ -16,36 +16,32 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	SRTXRXController_H
-#define	SRTXRXController_H
+#ifndef	PortDialog_H
+#define	PortDialog_H
 
 #include <wx/wx.h>
 
-#include "SDRController.h"
-#include "Frequency.h"
-#include "ControlInterface.h"
-#include "PortControl.h"
 
-
-class CSRTXRXController : public ISDRController {
+class CPortDialog : public wxDialog {
 
     public:
-	CSRTXRXController(const wxString& device, int pin);
-	virtual ~CSRTXRXController();
+	CPortDialog(wxWindow* parent, const wxString& title, const wxString& device, int pin, int id = -1);
+	virtual ~CPortDialog();
 
-	virtual void setCallback(IControlInterface* callback, int id);
+	void onDevice(wxCommandEvent& event);
+	void onOK(wxCommandEvent& event);
 
-	virtual bool open();
-	virtual void enableTX(bool on);
-	virtual void enableRX(bool on);
-	virtual void setTXAndFreq(bool transmit, const CFrequency& freq);
-	virtual void sendCommand(const char* command);
-	virtual void setClockTune(unsigned int clock);
-	virtual void close();
+	virtual wxString getDevice() const;
+	virtual int      getPin() const;
 
     private:
-	bool          m_txEnable;
-	IPortControl* m_port;
+	wxChoice* m_devChoice;
+	wxChoice* m_pinChoice;
+
+	wxString  m_device;
+	int       m_pin;
+
+	DECLARE_EVENT_TABLE()
 };
 
 #endif

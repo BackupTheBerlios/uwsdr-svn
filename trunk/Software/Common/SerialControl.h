@@ -1,5 +1,6 @@
 /*
- *   Copyright (C) 2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2002-2004,2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 1999-2001 by Thomas Sailor HB9JNX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,36 +17,43 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	SRTXRXController_H
-#define	SRTXRXController_H
+#ifndef SerialControl_H
+#define	SerialControl_H
+
+#include "PortControl.h"
 
 #include <wx/wx.h>
 
-#include "SDRController.h"
-#include "Frequency.h"
-#include "ControlInterface.h"
-#include "PortControl.h"
+#if defined(__WINDOWS__)
+#include <windows.h>
+#endif
 
+enum {
+	PIN_RTS,
+	PIN_DTR
+};
 
-class CSRTXRXController : public ISDRController {
+class CSerialControl : public IPortControl {
 
     public:
-	CSRTXRXController(const wxString& device, int pin);
-	virtual ~CSRTXRXController();
-
-	virtual void setCallback(IControlInterface* callback, int id);
+	CSerialControl(const wxString& device, int pin);
+	virtual ~CSerialControl();
 
 	virtual bool open();
-	virtual void enableTX(bool on);
-	virtual void enableRX(bool on);
-	virtual void setTXAndFreq(bool transmit, const CFrequency& freq);
-	virtual void sendCommand(const char* command);
-	virtual void setClockTune(unsigned int clock);
+	virtual bool keyTX();
+	virtual bool unkeyTX();
 	virtual void close();
 
+	static wxArrayString getDevices();
+
     private:
-	bool          m_txEnable;
-	IPortControl* m_port;
+	wxString m_device;
+	int      m_pin;
+#if defined(__WINDOWS__)
+	HANDLE   m_handle;
+#else
+	int      m_fd;
+#endif
 };
 
 #endif

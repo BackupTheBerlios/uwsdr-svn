@@ -16,36 +16,16 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	SRTXRXController_H
-#define	SRTXRXController_H
+#ifndef PortControl_H
+#define	PortControl_H
 
-#include <wx/wx.h>
-
-#include "SDRController.h"
-#include "Frequency.h"
-#include "ControlInterface.h"
-#include "PortControl.h"
-
-
-class CSRTXRXController : public ISDRController {
+class IPortControl {
 
     public:
-	CSRTXRXController(const wxString& device, int pin);
-	virtual ~CSRTXRXController();
-
-	virtual void setCallback(IControlInterface* callback, int id);
-
-	virtual bool open();
-	virtual void enableTX(bool on);
-	virtual void enableRX(bool on);
-	virtual void setTXAndFreq(bool transmit, const CFrequency& freq);
-	virtual void sendCommand(const char* command);
-	virtual void setClockTune(unsigned int clock);
-	virtual void close();
-
-    private:
-	bool          m_txEnable;
-	IPortControl* m_port;
+	virtual bool open() = 0;
+	virtual bool keyTX() = 0;
+	virtual bool unkeyTX() = 0;
+	virtual void close() = 0;
 };
 
 #endif

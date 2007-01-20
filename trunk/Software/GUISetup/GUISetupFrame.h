@@ -32,6 +32,7 @@ class CGUISetupFrame : public wxFrame {
 	void onUserAudio(wxCommandEvent& event);
 	void onSDRAudio(wxCommandEvent& event);
 	void onEthernet(wxCommandEvent& event);
+	void onPort(wxCommandEvent& event);
 	void onCreate(wxCommandEvent& event);
 
     private:
@@ -41,6 +42,7 @@ class CGUISetupFrame : public wxFrame {
 	wxButton*      m_userAudio;
 	wxButton*      m_sdrAudio;
 	wxButton*      m_ethernet;
+	wxButton*      m_port;
 #if defined(__WXMSW__)
 	wxCheckBox*    m_deskTop;
 #endif
@@ -54,6 +56,8 @@ class CGUISetupFrame : public wxFrame {
 	wxString       m_ipAddress;
 	long           m_controlPort;
 	long           m_dataPort;
+	wxString       m_controlDevice;
+	int            m_controlPin;
 
 	DECLARE_EVENT_TABLE()
 

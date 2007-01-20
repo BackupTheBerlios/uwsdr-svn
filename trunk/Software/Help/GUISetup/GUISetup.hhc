@@ -82,6 +82,24 @@
          </ul>
 
          <li> <object type="text/sitemap">
+                  <param name="Name" value="Control Port Setup">
+                  <param name="ID" value=8>
+                  <param name="Local" value="Port.htm">
+              </object>
+         <ul>
+             <li> <object type="text/sitemap">
+                      <param name="Name" value="Control Device">
+                      <param name="ID" value=40>
+                      <param name="Local" value="ControlDevice.htm">
+                  </object>
+             <li> <object type="text/sitemap">
+                      <param name="Name" value="Control Pin">
+                      <param name="ID" value=41>
+                      <param name="Local" value="ControlPin.htm">
+                  </object>
+         </ul>
+
+         <li> <object type="text/sitemap">
                   <param name="Name" value="Create Start Menu entry">
                   <param name="ID" value=10>
                   <param name="Local" value="CreateStartMenu.htm">

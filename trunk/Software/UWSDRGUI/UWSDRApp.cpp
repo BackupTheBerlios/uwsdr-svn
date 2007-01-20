@@ -69,6 +69,8 @@ const wxString KEY_FILTER_CWN         = wxT("/FilterCWN");
 const wxString KEY_IP_ADDRESS         = wxT("/IPAddress");
 const wxString KEY_CONTROL_PORT       = wxT("/ControlPort");
 const wxString KEY_DATA_PORT          = wxT("/DataPort");
+const wxString KEY_CONTROL_DEVICE     = wxT("/ControlDevice");
+const wxString KEY_CONTROL_PIN        = wxT("/ControlPin");
 const wxString KEY_USER_AUDIO_API     = wxT("/UserAudioAPI");
 const wxString KEY_USER_AUDIO_IN_DEV  = wxT("/UserAudioInDev");
 const wxString KEY_USER_AUDIO_OUT_DEV = wxT("/UserAudioOutDev");
@@ -318,6 +320,8 @@ bool CUWSDRApp::readConfig()
 	wxString keyIpAddress       = wxT("/") + m_parameters->m_name + KEY_IP_ADDRESS;
 	wxString keyControlPort     = wxT("/") + m_parameters->m_name + KEY_CONTROL_PORT;
 	wxString keyDataPort        = wxT("/") + m_parameters->m_name + KEY_DATA_PORT;
+	wxString keyControlDevice   = wxT("/") + m_parameters->m_name + KEY_CONTROL_DEVICE;
+	wxString keyControlPin      = wxT("/") + m_parameters->m_name + KEY_CONTROL_PIN;
 	wxString keyUserAudioAPI    = wxT("/") + m_parameters->m_name + KEY_USER_AUDIO_API;
 	wxString keyUserAudioInDev  = wxT("/") + m_parameters->m_name + KEY_USER_AUDIO_IN_DEV;
 	wxString keyUserAudioOutDev = wxT("/") + m_parameters->m_name + KEY_USER_AUDIO_OUT_DEV;
@@ -462,6 +466,9 @@ bool CUWSDRApp::readConfig()
 
 	profile->Read(keyDataPort,         &num);
 	m_parameters->m_dataPort = num;
+
+	profile->Read(keyControlDevice,    &m_parameters->m_controlDevice);
+	profile->Read(keyControlPin,       &m_parameters->m_controlPin);
 
 	profile->Read(keyUserAudioAPI,     &m_parameters->m_userAudioAPI);
 	profile->Read(keyUserAudioInDev,   &m_parameters->m_userAudioInDev);

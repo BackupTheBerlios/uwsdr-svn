@@ -19,6 +19,7 @@
 #include "GUISetupFrame.h"
 
 #include "SDRDescrFile.h"
+#include "PortDialog.h"
 #include "EthernetDialog.h"
 #include "SoundCardDialog.h"
 
@@ -49,7 +50,8 @@ const int BROWSE_BUTTON     = 27544;
 const int USER_AUDIO_BUTTON = 27545;
 const int SDR_AUDIO_BUTTON  = 27546;
 const int ETHERNET_BUTTON   = 27547;
-const int NAME_COMBO        = 27548;
+const int PORT_BUTTON       = 27548;
+const int NAME_COMBO        = 27549;
 
 
 const int BORDER_SIZE     = 5;
@@ -64,6 +66,7 @@ BEGIN_EVENT_TABLE(CGUISetupFrame, wxFrame)
 	EVT_BUTTON(USER_AUDIO_BUTTON, CGUISetupFrame::onUserAudio)
 	EVT_BUTTON(SDR_AUDIO_BUTTON,  CGUISetupFrame::onSDRAudio)
 	EVT_BUTTON(ETHERNET_BUTTON,   CGUISetupFrame::onEthernet)
+	EVT_BUTTON(PORT_BUTTON,       CGUISetupFrame::onPort)
 END_EVENT_TABLE()
 
 
@@ -75,6 +78,7 @@ m_startMenu(NULL),
 m_userAudio(NULL),
 m_sdrAudio(NULL),
 m_ethernet(NULL),
+m_port(NULL),
 m_filename(),
 m_userAudioAPI(-1),
 m_userAudioInDev(-1L),
@@ -84,7 +88,9 @@ m_sdrAudioInDev(-1L),
 m_sdrAudioOutDev(-1L),
 m_ipAddress(),
 m_controlPort(-1L),
-m_dataPort(-1L)
+m_dataPort(-1L),
+m_controlDevice(),
+m_controlPin(-1)
 {
 	SetIcon(wxICON(GUISetup));
 
@@ -139,6 +145,16 @@ m_dataPort(-1L)
 	m_ethernet->Disable();
 	panelSizer->Add(m_ethernet, 0, wxALL, BORDER_SIZE);
 
+	wxStaticText* dummy4 = new wxStaticText(panel, -1, wxEmptyString);
+	panelSizer->Add(dummy4, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* label6 = new wxStaticText(panel, -1, _("Control Port:"));
+	panelSizer->Add(label6, 0, wxALL, BORDER_SIZE);
+
+	m_port = new wxButton(panel, PORT_BUTTON, _("Set"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	m_port->Disable();
+	panelSizer->Add(m_port, 0, wxALL, BORDER_SIZE);
+
 	wxStaticText* dummy5 = new wxStaticText(panel, -1, wxEmptyString);
 	panelSizer->Add(dummy5, 0, wxALL, BORDER_SIZE);
 
@@ -146,8 +162,8 @@ m_dataPort(-1L)
 	wxString dir;
 	if (getDesktopDir(dir)) {
 #endif
-		wxStaticText* label6 = new wxStaticText(panel, -1, _("Create Start Menu entry:"));
-		panelSizer->Add(label6, 0, wxALL, BORDER_SIZE);
+		wxStaticText* label7 = new wxStaticText(panel, -1, _("Create Start Menu entry:"));
+		panelSizer->Add(label7, 0, wxALL, BORDER_SIZE);
 
 		m_startMenu = new wxCheckBox(panel, -1, wxEmptyString);
 		panelSizer->Add(m_startMenu, 0, wxALL, BORDER_SIZE);
@@ -159,8 +175,8 @@ m_dataPort(-1L)
 #endif
 
 #if defined(__WXMSW__)
-	wxStaticText* label7 = new wxStaticText(panel, -1, _("Create Desktop icon:"));
-	panelSizer->Add(label7, 0, wxALL, BORDER_SIZE);
+	wxStaticText* label8 = new wxStaticText(panel, -1, _("Create Desktop icon:"));
+	panelSizer->Add(label8, 0, wxALL, BORDER_SIZE);
 
 	m_deskTop = new wxCheckBox(panel, -1, wxEmptyString);
 	panelSizer->Add(m_deskTop, 0, wxALL, BORDER_SIZE);
@@ -213,6 +229,7 @@ void CGUISetupFrame::onBrowse(wxCommandEvent& event)
 		m_userAudio->Disable();
 		m_sdrAudio->Disable();
 		m_ethernet->Disable();
+		m_port->Disable();
 
 		CSDRDescrFile file(m_filename);
 		if (!file.isValid()) {
@@ -231,6 +248,7 @@ void CGUISetupFrame::onBrowse(wxCommandEvent& event)
 			case TYPE_AUDIOTXRX:
 				m_userAudio->Enable();
 				m_sdrAudio->Enable();
+				m_port->Enable();
 				break;
 
 			case TYPE_DEMO:
@@ -283,6 +301,14 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 				::wxMessageBox(_("The SDR Audio has not been set"), _("GUISetup Error"), wxICON_ERROR);
 				return;
 			}
+			if (m_controlDevice.IsEmpty() || m_controlPin == -1) {
+				::wxMessageBox(_("The Control Port has not been set"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+			if (m_sdrAudioAPI == m_userAudioAPI && (m_sdrAudioInDev == m_userAudioInDev || m_sdrAudioOutDev == m_userAudioOutDev)) {
+				::wxMessageBox(_("The SDR Audio cannot be the same as the User Audio"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
 			break;
 		case TYPE_UWSDR1:
 			if (m_ipAddress.IsEmpty() || m_controlPort == -1L || m_dataPort == -1L) {
@@ -306,6 +332,8 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 	wxString ipAddressKey       = wxT("/") + name + wxT("/IPAddress");
 	wxString controlPortKey     = wxT("/") + name + wxT("/ControlPort");
 	wxString dataPortKey        = wxT("/") + name + wxT("/DataPort");
+	wxString controlDeviceKey   = wxT("/") + name + wxT("/ControlDevice");
+	wxString controlPinKey      = wxT("/") + name + wxT("/ControlPin");
 
 	wxString test;
 	if (config->Read(fileNameKey, &test)) {
@@ -375,6 +403,18 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 			ret = config->Write(sdrAudioInDevKey, m_sdrAudioInDev);
 			if (!ret) {
 				::wxMessageBox(_("Unable to write configuration data - SDRAudioInDev"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+
+			ret = config->Write(controlDeviceKey, m_controlDevice);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - ControlDevice"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+
+			ret = config->Write(controlPinKey, m_controlPin);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - ControlPin"), _("GUISetup Error"), wxICON_ERROR);
 				return;
 			}
 			break;
@@ -466,6 +506,7 @@ void CGUISetupFrame::readConfig(const wxString& name)
 	m_userAudio->Disable();
 	m_sdrAudio->Disable();
 	m_ethernet->Disable();
+	m_port->Disable();
 
 	m_filenameText->Clear();
 
@@ -481,6 +522,8 @@ void CGUISetupFrame::readConfig(const wxString& name)
 	wxString ipAddressKey       = wxT("/") + name + wxT("/IPAddress");
 	wxString controlPortKey     = wxT("/") + name + wxT("/ControlPort");
 	wxString dataPortKey        = wxT("/") + name + wxT("/DataPort");
+	wxString controlDeviceKey   = wxT("/") + name + wxT("/ControlDevice");
+	wxString controlPinKey      = wxT("/") + name + wxT("/ControlPin");
 
 	bool ret = config->Read(fileNameKey, &m_filename);
 	if (!ret)
@@ -507,6 +550,9 @@ void CGUISetupFrame::readConfig(const wxString& name)
 	config->Read(controlPortKey, &m_controlPort);
 	config->Read(dataPortKey,    &m_dataPort);
 
+	config->Read(controlDeviceKey, &m_controlDevice);
+	config->Read(controlPinKey,    &m_controlPin);
+
 	delete config;
 
 	int type = file.getType();
@@ -520,6 +566,7 @@ void CGUISetupFrame::readConfig(const wxString& name)
 		case TYPE_AUDIOTXRX:
 			m_userAudio->Enable();
 			m_sdrAudio->Enable();
+			m_port->Enable();
 			break;
 
 		case TYPE_DEMO:
@@ -566,6 +613,17 @@ void CGUISetupFrame::onEthernet(wxCommandEvent& event)
 		m_ipAddress   = dialog.getIPAddress();
 		m_controlPort = dialog.getControlPort();
 		m_dataPort    = dialog.getDataPort();
+	}
+}
+
+void CGUISetupFrame::onPort(wxCommandEvent& event)
+{
+	CPortDialog dialog(this, _("Control Port Setup"), m_controlDevice, m_controlPin);
+
+	int ret = dialog.ShowModal();
+	if (ret == wxID_OK) {
+		m_controlDevice = dialog.getDevice();
+		m_controlPin    = dialog.getPin();
 	}
 }
 

@@ -90,6 +90,9 @@ class CSDRParameters {
 	unsigned int m_controlPort;
 	unsigned int m_dataPort;
 
+	wxString     m_controlDevice;
+	int          m_controlPin;
+
 	int          m_userAudioAPI;
 	int          m_userAudioInDev;
 	int          m_userAudioOutDev;

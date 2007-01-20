@@ -239,7 +239,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			m_sdr = new CUWSDRController(m_parameters->m_ipAddress, m_parameters->m_controlPort, 1);
 			break;
 		case TYPE_AUDIOTXRX:
-			m_sdr = new CSRTXRXController();
+			m_sdr = new CSRTXRXController(m_parameters->m_controlDevice, m_parameters->m_controlPin);
 			break;
 		default:
 			m_sdr = new CNullController();

@@ -123,6 +123,10 @@ SOURCE=.\SDRDescrFile.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\SerialControl.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\SignalReader.cpp
 # End Source File
 # Begin Source File
@@ -203,6 +207,10 @@ SOURCE=.\NullWriter.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\PortControl.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\RingBuffer.h
 # End Source File
 # Begin Source File
@@ -220,6 +228,10 @@ SOURCE=.\SDRDataWriter.h
 # Begin Source File
 
 SOURCE=.\SDRDescrFile.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SerialControl.h
 # End Source File
 # Begin Source File
 
