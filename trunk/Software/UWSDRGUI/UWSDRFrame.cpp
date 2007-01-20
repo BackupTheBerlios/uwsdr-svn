@@ -266,6 +266,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_spectrumDisplay->setPosition(m_parameters->m_spectrumPos);
 	m_spectrumDisplay->setType(m_parameters->m_spectrumType);
 	m_spectrumDisplay->setSpeed(m_parameters->m_spectrumSpeed);
+	m_spectrumDisplay->setDB(m_parameters->m_spectrumDB);
 
 	// Set the spectrum width depending on the step size and sample rate,
 	float lowFreq = float(m_parameters->m_hardwareSampleRate) / 4.0F - m_parameters->m_hardwareStepSize / 2.0F;
@@ -402,7 +403,6 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 		m_mhzMinus->Disable();
 		m_mhzPlus->Disable();
 		m_ritCtrl->Disable();
-		m_mute->Disable();
 		m_rit->Disable();
 		m_transmit->Disable();
 		m_micGain->Disable();
@@ -411,6 +411,10 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 		m_menu->Enable(MENU_VOICE_KEYBOARD, false);
 		m_menu->Enable(MENU_CW_KEYBOARD, false);
 	}
+
+	// Mute only works with UWSDR hardware
+	if (m_parameters->m_hardwareType != TYPE_UWSDR1)
+		m_mute->Disable();
 
 	normaliseMode();
 
@@ -1181,6 +1185,8 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 				if (reply == wxID_OK) {
 					normaliseMode();
 
+					m_sdr->setClockTune(m_parameters->m_clockTune);
+
 					m_dsp->setNB(m_parameters->m_nbOn);
 					m_dsp->setNBValue(m_parameters->m_nbValue);
 					m_dsp->setNB2(m_parameters->m_nb2On);
@@ -1361,6 +1367,7 @@ void CUWSDRFrame::onTimer(wxTimerEvent& event)
 	m_parameters->m_spectrumPos   = m_spectrumDisplay->getPosition();
 	m_parameters->m_spectrumType  = m_spectrumDisplay->getType();
 	m_parameters->m_spectrumSpeed = m_spectrumDisplay->getSpeed();
+	m_parameters->m_spectrumDB    = m_spectrumDisplay->getDB();
 
 	if (m_txOn) {
 		int meter = m_sMeter->getTXMeter();

@@ -284,3 +284,11 @@ Version 0.7.3 - 2007
 Removed the GRANT_TX build option.
 
 Added support for the SoftRock TXRX.
+
+Added clock tune for adjusting the sample rate on UWSDR hardware.
+
+Removed the verbal diarrhea from the preferences screens.
+
+Selectable dB ranges for the spectrum display, 10 dB to 60 dB in 10 dB steps.
+
+Removed logged text messages for underruns and overruns which affected performance and probably made it worse.

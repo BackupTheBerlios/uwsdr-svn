@@ -92,6 +92,7 @@ const wxString KEY_TX_METER           = wxT("/TransmitMeter");
 const wxString KEY_SPECTRUM_POS       = wxT("/SpectrumPos");
 const wxString KEY_SPECTRUM_TYPE      = wxT("/SpectrumType");
 const wxString KEY_SPECTRUM_SPEED     = wxT("/SpectrumSpeed");
+const wxString KEY_SPECTRUM_DB        = wxT("/SpectrumDB");
 const wxString KEY_RX_IQ_PHASE        = wxT("/ReceiveIQPhase");
 const wxString KEY_RX_IQ_GAIN         = wxT("/ReceiveIQGain");
 const wxString KEY_TX_IQ_PHASE        = wxT("/TransmitIQPhase");
@@ -340,6 +341,7 @@ bool CUWSDRApp::readConfig()
 	wxString keySpectrumPos     = wxT("/") + m_parameters->m_name + KEY_SPECTRUM_POS;
 	wxString keySpectrumType    = wxT("/") + m_parameters->m_name + KEY_SPECTRUM_TYPE;
 	wxString keySpectrumSpeed   = wxT("/") + m_parameters->m_name + KEY_SPECTRUM_SPEED;
+	wxString keySpectrumDB      = wxT("/") + m_parameters->m_name + KEY_SPECTRUM_DB;
 	wxString keyRxIqPhase       = wxT("/") + m_parameters->m_name + KEY_RX_IQ_PHASE;
 	wxString keyRxIqGain        = wxT("/") + m_parameters->m_name + KEY_RX_IQ_GAIN;
 	wxString keyTxIqPhase       = wxT("/") + m_parameters->m_name + KEY_TX_IQ_PHASE;
@@ -442,7 +444,7 @@ bool CUWSDRApp::readConfig()
 	profile->Read(keyMode,             &m_parameters->m_mode, MODE_USB);
 	profile->Read(keyZeroIF,           &m_parameters->m_zeroIF, true);
 	profile->Read(keySwapIQ,           &m_parameters->m_swapIQ, false);
-	profile->Read(keyClockTune,        &num, 32768L);
+	profile->Read(keyClockTune,        &num, 0L);
 	m_parameters->m_clockTune = num;
 
 	profile->Read(keyFilter,           &m_parameters->m_filter,    FILTER_AUTO);
@@ -502,6 +504,7 @@ bool CUWSDRApp::readConfig()
 	profile->Read(keySpectrumPos,      &m_parameters->m_spectrumPos,   SPECTRUM_PRE_FILT);
 	profile->Read(keySpectrumType,     &m_parameters->m_spectrumType,  SPECTRUM_PANADAPTER1);
 	profile->Read(keySpectrumSpeed,    &m_parameters->m_spectrumSpeed, SPECTRUM_100MS);
+	profile->Read(keySpectrumDB,       &m_parameters->m_spectrumDB,    SPECTRUM_40DB);
 
 	profile->Read(keyRxIqPhase,        &m_parameters->m_rxIQphase, 0);
 	profile->Read(keyRxIqGain,         &m_parameters->m_rxIQgain,  0);
@@ -604,6 +607,7 @@ void CUWSDRApp::writeConfig()
 	wxString keySpectrumPos   = wxT("/") + m_parameters->m_name + KEY_SPECTRUM_POS;
 	wxString keySpectrumType  = wxT("/") + m_parameters->m_name + KEY_SPECTRUM_TYPE;
 	wxString keySpectrumSpeed = wxT("/") + m_parameters->m_name + KEY_SPECTRUM_SPEED;
+	wxString keySpectrumDB    = wxT("/") + m_parameters->m_name + KEY_SPECTRUM_DB;
 	wxString keyRxIqPhase     = wxT("/") + m_parameters->m_name + KEY_RX_IQ_PHASE;
 	wxString keyRxIqGain      = wxT("/") + m_parameters->m_name + KEY_RX_IQ_GAIN;
 	wxString keyTxIqPhase     = wxT("/") + m_parameters->m_name + KEY_TX_IQ_PHASE;
@@ -697,6 +701,7 @@ void CUWSDRApp::writeConfig()
 	profile->Write(keySpectrumPos,      m_parameters->m_spectrumPos);
 	profile->Write(keySpectrumType,     m_parameters->m_spectrumType);
 	profile->Write(keySpectrumSpeed,    m_parameters->m_spectrumSpeed);
+	profile->Write(keySpectrumDB,       m_parameters->m_spectrumDB);
 	profile->Write(keyRxIqPhase,        m_parameters->m_rxIQphase);
 	profile->Write(keyRxIqGain,         m_parameters->m_rxIQgain);
 	profile->Write(keyTxIqPhase,        m_parameters->m_txIQphase);

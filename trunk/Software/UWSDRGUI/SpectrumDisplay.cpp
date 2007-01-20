@@ -34,7 +34,13 @@ enum {
 	MENU_300MS,
 	MENU_400MS,
 	MENU_500MS,
-	MENU_1000MS
+	MENU_1000MS,
+	MENU_10DB,
+	MENU_20DB,
+	MENU_30DB,
+	MENU_40DB,
+	MENU_50DB,
+	MENU_60DB
 };
 
 BEGIN_EVENT_TABLE(CSpectrumDisplay, wxPanel)
@@ -47,12 +53,18 @@ BEGIN_EVENT_TABLE(CSpectrumDisplay, wxPanel)
 	EVT_MENU(MENU_PRE_FILT,    CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_POST_FILT,   CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_POST_AGC,    CSpectrumDisplay::onMenu)
-	EVT_MENU(MENU_100MS,  CSpectrumDisplay::onMenu)
-	EVT_MENU(MENU_200MS,  CSpectrumDisplay::onMenu)
-	EVT_MENU(MENU_300MS,  CSpectrumDisplay::onMenu)
-	EVT_MENU(MENU_400MS,  CSpectrumDisplay::onMenu)
-	EVT_MENU(MENU_500MS,  CSpectrumDisplay::onMenu)
-	EVT_MENU(MENU_1000MS, CSpectrumDisplay::onMenu)
+	EVT_MENU(MENU_100MS,       CSpectrumDisplay::onMenu)
+	EVT_MENU(MENU_200MS,       CSpectrumDisplay::onMenu)
+	EVT_MENU(MENU_300MS,       CSpectrumDisplay::onMenu)
+	EVT_MENU(MENU_400MS,       CSpectrumDisplay::onMenu)
+	EVT_MENU(MENU_500MS,       CSpectrumDisplay::onMenu)
+	EVT_MENU(MENU_1000MS,      CSpectrumDisplay::onMenu)
+	EVT_MENU(MENU_10DB,        CSpectrumDisplay::onMenu)
+	EVT_MENU(MENU_20DB,        CSpectrumDisplay::onMenu)
+	EVT_MENU(MENU_30DB,        CSpectrumDisplay::onMenu)
+	EVT_MENU(MENU_40DB,        CSpectrumDisplay::onMenu)
+	EVT_MENU(MENU_50DB,        CSpectrumDisplay::onMenu)
+	EVT_MENU(MENU_60DB,        CSpectrumDisplay::onMenu)
 END_EVENT_TABLE()
 
 
@@ -60,7 +72,7 @@ CSpectrumDisplay::CSpectrumDisplay(wxWindow* parent, int id, const wxPoint& pos,
 wxPanel(parent, id, pos, size, style, name),
 m_width(size.GetWidth()),
 m_height(size.GetHeight()),
-m_dbScale(0.0F),
+m_dbScale(40.0F),
 m_background(NULL),
 m_bitmap(NULL),
 m_sampleRate(0.0F),
@@ -69,9 +81,11 @@ m_menu(NULL),
 m_speedMenu(NULL),
 m_posMenu(NULL),
 m_typeMenu(NULL),
+m_dbMenu(NULL),
 m_type(SPECTRUM_NONE),
 m_speed(0),
 m_position(0),
+m_db(SPECTRUM_40DB),
 m_factor(1),
 m_ticks(0),
 m_pick(0.0F),
@@ -80,15 +94,21 @@ m_offset(0.0F)
 	m_bitmap     = new wxBitmap(m_width, m_height);
 	m_background = new wxBitmap(m_width, m_height);
 
-	m_dbScale = float(m_height - 17) / 40.0F;
-
 	m_speedMenu = new wxMenu();
-	m_speedMenu->AppendRadioItem(MENU_100MS,  wxT("100 ms"));
-	m_speedMenu->AppendRadioItem(MENU_200MS,  wxT("200 ms"));
-	m_speedMenu->AppendRadioItem(MENU_300MS,  wxT("300 ms"));
-	m_speedMenu->AppendRadioItem(MENU_400MS,  wxT("400 ms"));
-	m_speedMenu->AppendRadioItem(MENU_500MS,  wxT("500 ms"));
-	m_speedMenu->AppendRadioItem(MENU_1000MS, wxT("1 s"));
+	m_speedMenu->AppendRadioItem(MENU_100MS,  _("100 ms"));
+	m_speedMenu->AppendRadioItem(MENU_200MS,  _("200 ms"));
+	m_speedMenu->AppendRadioItem(MENU_300MS,  _("300 ms"));
+	m_speedMenu->AppendRadioItem(MENU_400MS,  _("400 ms"));
+	m_speedMenu->AppendRadioItem(MENU_500MS,  _("500 ms"));
+	m_speedMenu->AppendRadioItem(MENU_1000MS, _("1 s"));
+
+	m_dbMenu = new wxMenu();
+	m_dbMenu->AppendRadioItem(MENU_10DB, _("10 dB"));
+	m_dbMenu->AppendRadioItem(MENU_20DB, _("20 dB"));
+	m_dbMenu->AppendRadioItem(MENU_30DB, _("30 dB"));
+	m_dbMenu->AppendRadioItem(MENU_40DB, _("40 dB"));
+	m_dbMenu->AppendRadioItem(MENU_50DB, _("50 dB"));
+	m_dbMenu->AppendRadioItem(MENU_60DB, _("60 dB"));
 
 	m_posMenu = new wxMenu();
 	m_posMenu->AppendRadioItem(MENU_PRE_FILT,  _("Pre Filter"));
@@ -104,6 +124,7 @@ m_offset(0.0F)
 	m_menu->Append(-1, _("Position"), m_posMenu);
 	m_menu->Append(-1, _("Type"),     m_typeMenu);
 	m_menu->Append(-1, _("Refresh"),  m_speedMenu);
+	m_menu->Append(-1, _("dB Range"), m_dbMenu);
 }
 
 CSpectrumDisplay::~CSpectrumDisplay()
@@ -216,9 +237,17 @@ void CSpectrumDisplay::createPanadapter()
 		dc.DrawLine(x, top /* lowY */, x, bottom);
 	}
 
+	float dbScale = float(m_height - 17) / m_dbScale;
+
+	float dbIncr = 10.0F;
+	if (m_dbScale > 50.0F)
+		dbIncr = 20.0F;
+	else if (m_dbScale < 20.0F)
+		dbIncr = 5.0F;
+
 	// Draw the dB lines, every 10 dB
-	for (unsigned int dB = 0; true; dB += 10) {
-		int y = bottom - int(float(dB) * m_dbScale + 0.5);
+	for (unsigned int dB = 0; true; dB += dbIncr) {
+		int y = bottom - int(float(dB) * dbScale + 0.5);
 		if (y < top)
 			break;
 
@@ -313,6 +342,8 @@ void CSpectrumDisplay::drawPanadapter1(const float* spectrum, float bottom)
 
 	float binsPerPixel = float(lastBin - firstBin) / float(m_width - 5);
 
+	float dbScale = float(m_height - 17) / m_dbScale;
+
 	int binOffset = int(float(lastBin - firstBin) * (m_offset / m_bandwidth) + 0.5F);
 	firstBin += binOffset;
 	lastBin  += binOffset;
@@ -329,7 +360,9 @@ void CSpectrumDisplay::drawPanadapter1(const float* spectrum, float bottom)
 				value = val;
 		}
 
-		int y = int((value - bottom) * m_dbScale + 0.5F);
+		value -= bottom;
+
+		int y = int(value * dbScale + 0.5F);
 		if (y < 0)
 			y = 0;
 		if (y > (m_height - 18))
@@ -364,6 +397,8 @@ void CSpectrumDisplay::drawPanadapter2(const float* spectrum, float bottom)
 
 	float binsPerPixel = float(lastBin - firstBin) / float(m_width - 5);
 
+	float dbScale = float(m_height - 17) / m_dbScale;
+
 	int binOffset = int(float(lastBin - firstBin) * (m_offset / m_bandwidth) + 0.5F);
 	firstBin += binOffset;
 	lastBin  += binOffset;
@@ -379,7 +414,9 @@ void CSpectrumDisplay::drawPanadapter2(const float* spectrum, float bottom)
 				value = val;
 		}
 
-		int y = int((value - bottom) * m_dbScale + 0.5F);
+		value -= bottom;
+
+		int y = int(value * dbScale + 0.5F);
 		if (y < 0)
 			y = 0;
 		if (y > (m_height - 18))
@@ -429,7 +466,9 @@ void CSpectrumDisplay::drawWaterfall(const float* spectrum, float bottom)
 				value = val;
 		}
 
-		float percent = (value - bottom) / 40.0F;
+		value -= bottom;
+
+		float percent = value / m_dbScale;
 		if (percent < 0.0F)
 			percent = 0.0F;
 		if (percent > 1.0F)
@@ -537,6 +576,30 @@ void CSpectrumDisplay::onRightMouse(wxMouseEvent& event)
 			break;
 	}
 
+	switch (m_db) {
+		case SPECTRUM_10DB:
+			m_dbMenu->Check(MENU_10DB, true);
+			break;
+		case SPECTRUM_20DB:
+			m_dbMenu->Check(MENU_20DB, true);
+			break;
+		case SPECTRUM_30DB:
+			m_dbMenu->Check(MENU_30DB, true);
+			break;
+		case SPECTRUM_40DB:
+			m_dbMenu->Check(MENU_40DB, true);
+			break;
+		case SPECTRUM_50DB:
+			m_dbMenu->Check(MENU_50DB, true);
+			break;
+		case SPECTRUM_60DB:
+			m_dbMenu->Check(MENU_60DB, true);
+			break;
+		default:
+			::wxLogError(wxT("Unknown dB range = %d"), m_db);
+			break;
+	}
+
 	int x = event.GetX();
 	int y = event.GetY();
 
@@ -581,6 +644,24 @@ void CSpectrumDisplay::onMenu(wxCommandEvent& event)
 			break;
 		case MENU_1000MS:
 			setSpeed(SPECTRUM_1000MS);
+			break;
+		case MENU_10DB:
+			setDB(SPECTRUM_10DB);
+			break;
+		case MENU_20DB:
+			setDB(SPECTRUM_20DB);
+			break;
+		case MENU_30DB:
+			setDB(SPECTRUM_30DB);
+			break;
+		case MENU_40DB:
+			setDB(SPECTRUM_40DB);
+			break;
+		case MENU_50DB:
+			setDB(SPECTRUM_50DB);
+			break;
+		case MENU_60DB:
+			setDB(SPECTRUM_60DB);
 			break;
 		default:
 			::wxLogError(wxT("Unknown spectrum menu item = %d"), event.GetId());
@@ -644,6 +725,50 @@ void CSpectrumDisplay::setSpeed(int speed)
 	m_speed = speed;
 }
 
+void CSpectrumDisplay::setDB(int db)
+{
+	if (db == m_db)
+		return;
+
+	switch (db) {
+		case SPECTRUM_10DB:
+			m_dbScale = 10.0F;
+			break;
+		case SPECTRUM_20DB:
+			m_dbScale = 20.0F;
+			break;
+		case SPECTRUM_30DB:
+			m_dbScale = 30.0F;
+			break;
+		case SPECTRUM_40DB:
+			m_dbScale = 40.0F;
+			break;
+		case SPECTRUM_50DB:
+			m_dbScale = 50.0F;
+			break;
+		case SPECTRUM_60DB:
+			m_dbScale = 60.0F;
+			break;
+		default:
+			::wxLogError(wxT("Unknown db range = %d"), db);
+			break;
+	}
+
+	m_db = db;
+
+	switch (m_type) {
+		case SPECTRUM_PANADAPTER1:
+		case SPECTRUM_PANADAPTER2:
+			createPanadapter();
+			break;
+		default:
+			return;
+	}
+
+	wxClientDC clientDC(this);
+	show(clientDC);
+}
+
 void CSpectrumDisplay::setPosition(int position)
 {
 	m_position = position;
@@ -662,6 +787,11 @@ int CSpectrumDisplay::getSpeed() const
 int CSpectrumDisplay::getPosition() const
 {
 	return m_position;
+}
+
+int CSpectrumDisplay::getDB() const
+{
+	return m_db;
 }
 
 float CSpectrumDisplay::getFreqPick()

@@ -19,7 +19,7 @@ SDREmulatorFrame.o:	SDREmulatorFrame.cpp SDREmulatorFrame.h DataControl.h ../Com
 SDREmulatorReader.o:	SDREmulatorReader.cpp SDREmulatorReader.h ../Common/DataReader.h ../Common/RingBuffer.h
 		$(CC) $(CFLAGS) -c SDREmulatorReader.cpp
 
-SDREmulatorWriter.o:	SDREmulatorWriter.cpp SDREmulatorWriter.h ../Common/DataReader.h ../Common/RingBuffer.h
+SDREmulatorWriter.o:	SDREmulatorWriter.cpp SDREmulatorWriter.h ../Common/DataWriter.h ../Common/RingBuffer.h
 		$(CC) $(CFLAGS) -c SDREmulatorWriter.cpp
 
 DataControl.o:	DataControl.cpp DataControl.h ../Common/DataReader.h ../Common/DataWriter.h ../Common/NullWriter.h \

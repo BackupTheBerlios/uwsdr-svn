@@ -161,6 +161,8 @@ void CUWSDRController::setTXAndFreq(bool transmit, const CFrequency& freq)
 
 void CUWSDRController::setClockTune(unsigned int clock)
 {
+	clock += 32768;
+
 	if (clock == m_clock)
 		return;
 

@@ -86,6 +86,7 @@ class CUWSDRPreferences : public wxDialog {
 	wxSpinCtrl*     m_txIQPhase;
 	wxSpinCtrl*     m_txIQGain;
 	wxChoice*       m_method;
+	wxSpinCtrl*     m_clockTune;
 	wxCheckBox*     m_swapIQ;
 
 	DECLARE_EVENT_TABLE()

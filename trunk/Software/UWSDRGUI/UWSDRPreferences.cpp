@@ -27,7 +27,8 @@ enum {
 	RXIQ_GAIN,
 	TXIQ_PHASE,
 	TXIQ_GAIN,
-	RXRF_GAIN
+	RXRF_GAIN,
+	CLOCK_TUNE
 };
 
 BEGIN_EVENT_TABLE(CUWSDRPreferences, wxDialog)
@@ -88,6 +89,7 @@ m_rxIQGain(NULL),
 m_txIQPhase(NULL),
 m_txIQGain(NULL),
 m_method(NULL),
+m_clockTune(NULL),
 m_swapIQ(NULL)
 {
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
@@ -190,6 +192,8 @@ m_swapIQ(NULL)
 	m_method->SetSelection(m_parameters->m_zeroIF ? 1 : 0);
 	m_swapIQ->SetValue(m_parameters->m_swapIQ);
 
+	m_clockTune->SetValue(m_parameters->m_clockTune);
+
 	if (m_parameters->m_hardwareStepSize > 100.0F      ||
 	    m_parameters->m_hardwareType == TYPE_AUDIORX   ||
 	    m_parameters->m_hardwareType == TYPE_AUDIOTXRX ||
@@ -219,6 +223,9 @@ m_swapIQ(NULL)
 		m_txIQPhase->Disable();
 		m_txIQGain->Disable();
 	}
+
+	if (m_parameters->m_hardwareType != TYPE_UWSDR1)
+		m_clockTune->Disable();
 }
 
 CUWSDRPreferences::~CUWSDRPreferences()
@@ -493,6 +500,8 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 	m_parameters->m_zeroIF = m_method->GetSelection() == 1;
 	m_parameters->m_swapIQ = m_swapIQ->GetValue();
 
+	m_parameters->m_clockTune = m_clockTune->GetValue();
+
 	if (IsModal()) {
 		EndModal(wxID_OK);
 	} else {
@@ -516,14 +525,8 @@ wxPanel* CUWSDRPreferences::createFrequencyTab(wxNotebook* noteBook)
 
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
-	wxStaticText* label = new wxStaticText(panel, -1,
-		_("These are the highest and lowest transmit and receive frequencies that the SDR may\n"
-		  "use. They may not be outside of the limits set for the hardware, and the transmit\n"
-		  "frequency range must be within the receive frequency range. The frequency shift is\n"
-		  "used by the Shift + and Shift - buttons on the main screen. The frequency offset is\n"
-		  "used to remove any difference in the displayed frequency and the real frequency."));
-
-	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
+	wxStaticText* labelZ = new wxStaticText(panel, -1, _("Set the transmit and receive frequency limits.."));
+	mainSizer->Add(labelZ, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(2);
 
@@ -563,7 +566,7 @@ wxPanel* CUWSDRPreferences::createFrequencyTab(wxNotebook* noteBook)
 	m_freqOffset = new wxTextCtrl(panel, -1);
 	sizer->Add(m_freqOffset, 0, wxALL, BORDER_SIZE);
 
-	mainSizer->Add(sizer, 0, wxALL, BORDER_SIZE);
+	mainSizer->Add(sizer, 0, wxTOP, BORDER_SIZE);
 
 	panel->SetAutoLayout(true);
 
@@ -581,12 +584,8 @@ wxPanel* CUWSDRPreferences::createModeTab(wxNotebook* noteBook)
 
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
-	wxStaticText* label = new wxStaticText(panel, -1,
-		_("Set the filter bandwidth, tuning rate, deviation and AGC speed for each mode. The\n"
-		  "AGC speed can be set for all modes except for FM, for CW Wide settings also applies\n"
-		  "to CW Narrow. The tuning speed for FM Wide also applies to FM Narrow. The FM\n"
-		  "deviation values for FM Wide and FM Narrow may be set."));
-	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
+	wxStaticText* labelZ = new wxStaticText(panel, -1, _("Set the filter, tuning and AGC/Deviation for the modes."));
+	mainSizer->Add(labelZ, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(4);
 
@@ -671,7 +670,7 @@ wxPanel* CUWSDRPreferences::createModeTab(wxNotebook* noteBook)
 	m_tuningCWN = createTuningChoice(panel);
 	sizer->Add(m_tuningCWN, 0, wxALL, BORDER_SIZE);
 
-	mainSizer->Add(sizer, 0, wxALL, BORDER_SIZE);
+	mainSizer->Add(sizer, 0, wxTOP, BORDER_SIZE);
 
 	panel->SetAutoLayout(true);
 
@@ -748,11 +747,8 @@ wxPanel* CUWSDRPreferences::createStepTab(wxNotebook* noteBook)
 
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
-	wxStaticText* label = new wxStaticText(panel, -1,
-		_("These are the tuning step sizes for the VFO knob. Using the concentric bands, these\n"
-		  "can be increased by 1x, 4x, and 9x. The choice of which tuning step size to use for\n"
-		  "each mode is set in the Modes tab. The settings are in Hertz per step."));
-	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
+	wxStaticText* labelZ = new wxStaticText(panel, -1, _("Set the step sizes."));
+	mainSizer->Add(labelZ, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(2);
 
@@ -786,7 +782,7 @@ wxPanel* CUWSDRPreferences::createStepTab(wxNotebook* noteBook)
 	m_stepVerySlow = new wxTextCtrl(panel, -1);
 	sizer->Add(m_stepVerySlow, 0, wxALL, BORDER_SIZE);
 
-	mainSizer->Add(sizer, 0, wxALL, BORDER_SIZE);
+	mainSizer->Add(sizer, 0, wxTOP, BORDER_SIZE);
 
 	panel->SetAutoLayout(true);
 
@@ -804,12 +800,8 @@ wxPanel* CUWSDRPreferences::createReceiveTab(wxNotebook* noteBook)
 
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
-	wxStaticText* label = new wxStaticText(panel, -1,
-		_("The DSP includes two advanced notch blankers, they can be enabled here, and their\n"
-		  "detection threshold values set. The Mean Noise Blanker is used for general noise\n"
-		  "suppresion whereas the Impulse Noise Blanker is more useful for removing impulse\n"
-		  "noise. The amount of attenuation before the IF strip may also be changed here."));
-	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
+	wxStaticText* labelZ = new wxStaticText(panel, -1, _("Set the parameters for the receiver."));
+	mainSizer->Add(labelZ, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(3);
 
@@ -840,7 +832,7 @@ wxPanel* CUWSDRPreferences::createReceiveTab(wxNotebook* noteBook)
 	m_rfValue = new wxSlider(panel, RXRF_GAIN, 0, -30, 0, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
 	sizer->Add(m_rfValue, 0, wxALL, BORDER_SIZE);
 
-	mainSizer->Add(sizer, 0, wxALL, BORDER_SIZE);
+	mainSizer->Add(sizer, 0, wxTOP, BORDER_SIZE);
 
 	panel->SetAutoLayout(true);
 
@@ -858,11 +850,8 @@ wxPanel* CUWSDRPreferences::createTransmitTab(wxNotebook* noteBook)
 
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
-	wxStaticText* label = new wxStaticText(panel, -1,
-		_("The DSP includes a speech processor that increases the average power level of the\n"
-		  "transmission. The AM carrier level may be adjusted independently from zero up to\n"
-		  "the full output power"));
-	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
+	wxStaticText* labelZ = new wxStaticText(panel, -1, _("Set the parameters for the transmitter, except ALC."));
+	mainSizer->Add(labelZ, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(3);
 
@@ -884,7 +873,7 @@ wxPanel* CUWSDRPreferences::createTransmitTab(wxNotebook* noteBook)
 	m_carrierLevel = new wxSlider(panel, -1, 100, 0, 100, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
 	sizer->Add(m_carrierLevel, 0, wxALL, BORDER_SIZE);
 
-	mainSizer->Add(sizer, 0, wxALL, BORDER_SIZE);
+	mainSizer->Add(sizer, 0, wxTOP, BORDER_SIZE);
 
 	panel->SetAutoLayout(true);
 
@@ -902,11 +891,8 @@ wxPanel* CUWSDRPreferences::createALCTab(wxNotebook* noteBook)
 
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
-	wxStaticText* label = new wxStaticText(panel, -1,
-		_("The DSP is capable of processing the transmitted signal to increase its average power.\n"
-		  "The output level has to be controlled by the ALC to ensure that the hardware is not\n"
-		  "overdriven."));
-	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
+	wxStaticText* labelZ = new wxStaticText(panel, -1, _("Set the parameters for the transmit ALC."));
+	mainSizer->Add(labelZ, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(2);
 
@@ -928,7 +914,7 @@ wxPanel* CUWSDRPreferences::createALCTab(wxNotebook* noteBook)
 	m_alcHang = new wxSlider(panel, -1, 500, 10, 5000, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
 	sizer->Add(m_alcHang, 0, wxALL, BORDER_SIZE);
 
-	mainSizer->Add(sizer, 0, wxALL, BORDER_SIZE);
+	mainSizer->Add(sizer, 0, wxTOP, BORDER_SIZE);
 
 	panel->SetAutoLayout(true);
 
@@ -946,15 +932,8 @@ wxPanel* CUWSDRPreferences::createIQTab(wxNotebook* noteBook)
 
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
-	wxStaticText* label = new wxStaticText(panel, -1,
-		_("For optimum performance the I and Q elements of the receive and transmit signal\n"
-		  "need to be balanced. These controls allow the relative phase and gain between the\n"
-		  "I and Q channels to be changed. The method is a choice between the Hartley or\n"
-		  "Weaver methods, the choice is disabled and set to Hartley if the step size of the\n"
-		  "hardware is greater than 100Hz. When using SDR hardware that uses a sound card for\n"
-		  "its data, it is possible to swap the I and Q channels."));
-
-	mainSizer->Add(label, 0, wxALL, BORDER_SIZE);
+	wxStaticText* labelZ = new wxStaticText(panel, -1, _("Set the parameters for I/Q handling."));
+	mainSizer->Add(labelZ, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(4);
 
@@ -994,19 +973,20 @@ wxPanel* CUWSDRPreferences::createIQTab(wxNotebook* noteBook)
 	m_method->Append(_("Zero-IF"));
 	sizer->Add(m_method, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label6 = new wxStaticText(panel, -1, wxEmptyString);
+	wxStaticText* label6 = new wxStaticText(panel, -1, _("Clock tune"));
 	sizer->Add(label6, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label7 = new wxStaticText(panel, -1, wxEmptyString);
-	sizer->Add(label7, 0, wxALL, BORDER_SIZE);
+	m_clockTune = new wxSpinCtrl(panel, CLOCK_TUNE, wxEmptyString, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
+	m_clockTune->SetRange(-32768, 38768);
+	sizer->Add(m_clockTune, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label8 = new wxStaticText(panel, -1, _("Swap IQ"));
-	sizer->Add(label8, 0, wxALL, BORDER_SIZE);
+	wxStaticText* label7 = new wxStaticText(panel, -1, _("Swap IQ"));
+	sizer->Add(label7, 0, wxALL, BORDER_SIZE);
 
 	m_swapIQ = new wxCheckBox(panel, -1, wxEmptyString);
 	sizer->Add(m_swapIQ, 0, wxALL, BORDER_SIZE);
 
-	mainSizer->Add(sizer, 0, wxALL, BORDER_SIZE);
+	mainSizer->Add(sizer, 0, wxTOP, BORDER_SIZE);
 
 	panel->SetAutoLayout(true);
 

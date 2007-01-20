@@ -120,6 +120,7 @@ class CSDRParameters {
 	int          m_spectrumPos;
 	int          m_spectrumType;
 	int          m_spectrumSpeed;
+	int          m_spectrumDB;
 
 	int          m_rxIQphase;
 	int          m_rxIQgain;

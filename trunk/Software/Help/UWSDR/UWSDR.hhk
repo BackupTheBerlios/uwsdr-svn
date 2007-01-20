@@ -30,6 +30,11 @@
        </object>
 
   <li> <object type="text/sitemap">
+           <param name="Name" value="dB Range (Spectrum Display)">
+           <param name="Local" value="SDRange.htm">
+       </object>
+
+  <li> <object type="text/sitemap">
            <param name="Name" value="Exit">
            <param name="Local" value="Exit.htm">
        </object>

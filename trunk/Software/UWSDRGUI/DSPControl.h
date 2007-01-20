@@ -123,6 +123,11 @@ class CDSPControl : public wxThread, public IDataCallback {
 
 	int            m_clockId;
 
+	unsigned int   m_rxUnderruns;
+	unsigned int   m_rxOverruns;
+	unsigned int   m_txUnderruns;
+	unsigned int   m_txOverruns;
+
 	void scaleBuffer(float* buffer, unsigned int nSamples, float scale, bool swap = false);
 
 #if defined(__WXDEBUG__)

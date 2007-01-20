@@ -56,7 +56,11 @@ m_micGain(0.0F),
 m_power(0.0F),
 m_mode(MODE_USB),
 m_swap(false),
-m_clockId(-1)
+m_clockId(-1),
+m_rxUnderruns(0U),
+m_rxOverruns(0U),
+m_txUnderruns(0U),
+m_txOverruns(0U)
 {
 	m_dttsp = new CDTTSPControl();
 	m_dttsp->open(m_sampleRate, BLOCK_SIZE);
@@ -139,7 +143,7 @@ void* CDSPControl::Entry()
 			if (m_transmit) {
 				unsigned int nSamples = m_txRingBuffer.getData(m_txBuffer, BLOCK_SIZE);
 				if (nSamples != BLOCK_SIZE)
-					::wxLogError(wxT("Underrun in TX ring buffer, wanted %u available %u"), BLOCK_SIZE, nSamples);
+					m_txUnderruns++;
 
 				if (nSamples > 0) {
 					scaleBuffer(m_txBuffer, nSamples, m_power, m_swap);
@@ -156,7 +160,7 @@ void* CDSPControl::Entry()
 			}
 
 			if (nSamples != BLOCK_SIZE)
-				::wxLogError(wxT("Underrun in RX ring buffer, wanted %u available %u"), BLOCK_SIZE, nSamples);
+				m_rxUnderruns++;
 
 			scaleBuffer(m_rxBuffer, nSamples, m_afGain);
 			m_rxWriter->write(m_rxBuffer, nSamples);
@@ -168,6 +172,8 @@ void* CDSPControl::Entry()
 	}
 
 	m_running = false;
+
+	::wxLogMessage(wxT("DSPControl: RX Overruns=%u RX Underruns=%u TX Overruns=%u TX Underruns=%u"), m_rxOverruns, m_rxUnderruns, m_txOverruns, m_txUnderruns);
 
 	closeIO();
 
@@ -290,7 +296,7 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 
 				unsigned int n = m_rxRingBuffer.addData(m_outBuffer, nSamples);
 				if (n != nSamples)
-					::wxLogError(wxT("Overrun in RX ring buffer, needed %u available %u"), nSamples, n);
+					m_rxOverruns++;
 
 				if (n > 0)
 					m_waiting.Post();
@@ -313,7 +319,7 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 
 				unsigned int n = m_txRingBuffer.addData(m_outBuffer, nSamples);
 				if (n != nSamples)
-					::wxLogError(wxT("Overrun in TX ring buffer, needed %u available %u"), nSamples, n);
+					m_txOverruns++;
 
 				if (n > 0)
 					m_waiting.Post();
@@ -333,7 +339,7 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 
 				unsigned int n = m_txRingBuffer.addData(m_outBuffer, nSamples);
 				if (n != nSamples)
-					::wxLogError(wxT("Overrun in TX ring buffer, needed %u available %u"), nSamples, n);
+					m_txOverruns++;
 
 				if (n > 0)
 					m_waiting.Post();
@@ -352,14 +358,14 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 				// Send the tone out for the side tone
 				unsigned int n1 = m_rxRingBuffer.addData(inBuffer, nSamples);
 				if (n1 != nSamples)
-					::wxLogError(wxT("Overrun in RX ring buffer, needed %u available %u"), nSamples, n1);
+					m_rxOverruns++;
 
 				// Now transmit it
 				m_dttsp->dataIO(inBuffer, m_outBuffer, nSamples);
 
 				unsigned int n2 = m_txRingBuffer.addData(m_outBuffer, nSamples);
 				if (n2 != nSamples)
-					::wxLogError(wxT("Overrun in TX ring buffer, needed %u available %u"), nSamples, n2);
+					m_txOverruns++;
 
 				if (n1 > 0 || n2 > 0)
 					m_waiting.Post();
