@@ -1,12 +1,11 @@
 [Desktop Entry]
 Type=Application
 Version=1.0
-Encoding=UTF-8
 Name=SDR Help
 Name[de_DE]=SDR Help
 Categories=Network;HamRadio
 Comment=The UWSDR Help program
 Comment[de_DE]=UWSDR Hilfe
 Icon=SDRHelp.png
-Exec=/usr/local/bin/SDRHelp
+Exec=/usr/bin/SDRHelp
 Terminal=false

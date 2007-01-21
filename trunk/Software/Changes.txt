@@ -298,3 +298,7 @@ Fixed long standing bug in the audio choice in GUISetup, hopefully.
 Stop the SDR Name in GUISetup from containing white space.
 
 Open up the GUI to use the full sample rate = tuning range, I/Q sampling allows for this.
+
+GUI under Ubuntu looks almost as good as the Windows version :-)
+
+Muted transmit audio when on receive, this is an issue for the SoftRock TXRX.

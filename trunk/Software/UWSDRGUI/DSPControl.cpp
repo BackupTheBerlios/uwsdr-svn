@@ -149,11 +149,15 @@ void* CDSPControl::Entry()
 					scaleBuffer(m_txBuffer, nSamples, m_power, m_swap);
 					m_txWriter->write(m_txBuffer, nSamples);
 				}
+			} else {
+				// Create silence on receive
+				::memset(m_txBuffer, 0x00, BLOCK_SIZE * 2 * sizeof(float));
+				m_txWriter->write(m_txBuffer, BLOCK_SIZE);
 			}
 
 			unsigned int nSamples = m_rxRingBuffer.getData(m_rxBuffer, BLOCK_SIZE);
 
-			// Create silence on transmit
+			// Create silence on transmit if no sidetone is being transmitted
 			if (nSamples == 0 && m_transmit) {
 				::memset(m_rxBuffer, 0x00, BLOCK_SIZE * 2 * sizeof(float));
 				nSamples = BLOCK_SIZE;

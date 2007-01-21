@@ -95,19 +95,19 @@ const int VOICETEXT_WIDTH  = 225;
 const int VOICEKEYB_WIDTH  = 325;
 
 #elif defined(__WXGTK__)
-const int BUTTON_HEIGHT    = 24;
+const int BUTTON_HEIGHT    = 27;
 
-const int FREQDIAL_WIDTH   = 165;
-const int FREQDIAL_HEIGHT  = 165;
+const int FREQDIAL_WIDTH   = 160;
+const int FREQDIAL_HEIGHT  = 160;
 
-const int VOLSQL_WIDTH     = 85;
-const int VOLSQL_HEIGHT    = 85;
+const int VOLSQL_WIDTH     = 90;
+const int VOLSQL_HEIGHT    = 90;
 
 const int TXBUTTON_WIDTH   = 90;
-const int TXBUTTON_HEIGHT  = 85;
+const int TXBUTTON_HEIGHT  = 90;
 
 const int SPECTRUM_WIDTH   = 500;
-const int SPECTRUM_HEIGHT  = 105;
+const int SPECTRUM_HEIGHT  = 112;
 
 const int FREQPAD_WIDTH    = 70;
 const int FREQPAD_HEIGHT   = 25;
@@ -120,7 +120,7 @@ const int FREQUENCY_HEIGHT = 70;
 
 const int CONTROL_WIDTH    = 105;
 
-const int SMETER_WIDTH     = 210;
+const int SMETER_WIDTH     = 224;
 const int SMETER_HEIGHT    = 70;
 
 const int CWTEXT_WIDTH     = 700;

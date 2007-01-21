@@ -38,11 +38,9 @@ Before building the software you need to ensure that you have the pre-requisites
 
 wxWidgets 2.8.0 or later should be built and installed. This can be found at http://www.wxwidgets.org and will take some time to build. If you install it as a package then ensure that the devel part is installed as well.
 
-FFTW 3 should be either installed or built. This can be found at http://www.fftw.org and if building it yourself, you *may* have to configure it as:
+FFTW 3 should be either installed or built. This can be found at http://www.fftw.org and if building it yourself, you have to configure it as:
 
 $ ./configure --enable-float
-
-I would like feedback on this issue. Is it needed, or is it default?
 
 Finally you will need PortAudio V19. This is still in beta, and has been for years, and can be found at http://www.portaudio.com and download the latest release of the V19 branch. Build this and install it as per its instrucions.
 
@@ -56,7 +54,7 @@ Then logged on as root, type:
 
 $ make install
 
-Which will put the executables in /usr/local/bin and the icons and other files into /usr/local/share/uwsdr. These locations can be changed from the top level Makefile.
+Which will put the executables in /usr/bin and the icons and other files into /usr/share/uwsdr. These locations can be changed from the top level Makefile.
 
 If none of the programs within the UWSDR don't run and complains about being unable to find the wxGTK library then you probably have a problem with the configuration of library path. Thankfully the solution is simple. You need to log in as the super user and edit a configuration file, On Ubuntu/Debian and SuSE it's /etc/ld.so.conf and on Fedora Core it's /etc/ld.so.conf.d/mypath.conf. In those files you should add the path to your new libraries which will probably be /usr/local/lib.
 

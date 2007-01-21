@@ -184,7 +184,7 @@ void CSpectrum::snapSpectrum()
 	if (!m_polyphase) {
 		for (unsigned int i = 0; i < m_size; i++) {
 			CXBdata(m_timebuf, i) = Cscl(CXBdata(m_accum, j), m_window[i]);
-			j = (++j & m_mask);
+			j = (j + 1) & m_mask;
 		}
 	} else {
 		for (unsigned int i = 0; i < m_size; i++) {
@@ -199,7 +199,7 @@ void CSpectrum::snapSpectrum()
 				CXBimag(m_timebuf, i) += CXBimag(m_accum, accumidx) * m_window[winidx];
 			}
 
-			j = (++j & m_mask);
+			j = (j + 1) & m_mask;
 		}
 	}
 }
@@ -212,7 +212,7 @@ void CSpectrum::snapScope()
 	// copy starting from there in circular fashion
 	for (unsigned int i = 0; i < m_size; i++) {
 		CXBdata(m_timebuf, i) = CXBdata(m_accum, j);
-		j = (++j & m_mask);
+		j = (j + 1) & m_mask;
 	}
 }
 

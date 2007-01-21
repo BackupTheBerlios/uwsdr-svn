@@ -1051,6 +1051,7 @@ void CUWSDRFrame::normaliseFreq()
 		// This won't work over a MHz boundary ....
 		double hz = m_parameters->m_hardwareMinFreq.getHz() + m_parameters->m_hardwareSampleRate / 2.0F;
 
+		m_sdr->setTXAndFreq(m_txOn, freq);	// The frequency argument is unused
 		m_dsp->setTXAndFreq(m_txOn, freq.getHz() - hz);
 	} else {
 		// Take into account the frequency steps of the SDR ...

@@ -774,7 +774,6 @@ void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 	file.Write(wxT("[Desktop Entry]\n"));
 	file.Write(wxT("Type=Application\n"));
 	file.Write(wxT("Version=1.0\n"));
-	file.Write(wxT("Encoding=UTF-8\n"));
 	file.Write(wxT("Name=") + name + wxT("\n"));
 	file.Write(wxT("Name[de_DE]=") + name + wxT("\n"));
 	file.Write(wxT("Categories=Network;HamRadio\n"));

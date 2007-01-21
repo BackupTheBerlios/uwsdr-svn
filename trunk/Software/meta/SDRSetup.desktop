@@ -1,12 +1,11 @@
 [Desktop Entry]
 Type=Application
 Version=1.0
-Encoding=UTF-8
 Name=SDR Setup
 Name[de_DE]=SDR Setup
 Categories=Network;HamRadio
 Comment=Configure the UWSDR hardware
 Comment[de_DE]=Konfigurieren der UWSDR hardware
 Icon=SDRSetup.png
-Exec=/usr/local/bin/SDRSetup
+Exec=/usr/bin/SDRSetup
 Terminal=false
