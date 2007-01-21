@@ -19,6 +19,8 @@ Sort out building with Visual C++ Express
 
 Internationalisation
 
+Shading of the receive bandwidth on the spectrum display
+
 
 Future
 ------

@@ -269,8 +269,8 @@ bool CUWSDRApp::readDescrFile()
 
 	// Change the hardware frequency limits for SoftRock type radios
 	if (m_parameters->m_hardwareType == TYPE_AUDIORX || m_parameters->m_hardwareType == TYPE_AUDIOTXRX) {
-		m_parameters->m_hardwareMaxFreq += m_parameters->m_hardwareSampleRate / 4.0F;
-		m_parameters->m_hardwareMinFreq -= m_parameters->m_hardwareSampleRate / 4.0F;
+		m_parameters->m_hardwareMaxFreq += m_parameters->m_hardwareSampleRate / 2.0F;
+		m_parameters->m_hardwareMinFreq -= m_parameters->m_hardwareSampleRate / 2.0F;
 	}
 
 	return true;

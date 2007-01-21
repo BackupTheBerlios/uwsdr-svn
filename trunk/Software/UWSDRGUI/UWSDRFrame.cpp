@@ -267,25 +267,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_spectrumDisplay->setType(m_parameters->m_spectrumType);
 	m_spectrumDisplay->setSpeed(m_parameters->m_spectrumSpeed);
 	m_spectrumDisplay->setDB(m_parameters->m_spectrumDB);
-
-	// Set the spectrum width depending on the step size and sample rate,
-	float lowFreq = float(m_parameters->m_hardwareSampleRate) / 4.0F - m_parameters->m_hardwareStepSize / 2.0F;
-	wxASSERT(lowFreq > 0.0F);
-
-	if (lowFreq >= 20000.0F)
-		m_spectrumDisplay->setBandwidth(40000.0F);
-	else if (lowFreq >= 15000.0F)
-		m_spectrumDisplay->setBandwidth(30000.0F);
-	else if (lowFreq >= 12500.0F)
-		m_spectrumDisplay->setBandwidth(25000.0F);
-	else if (lowFreq >= 10000.0F)
-		m_spectrumDisplay->setBandwidth(20000.0F);
-	else if (lowFreq >= 7500.0F)
-		m_spectrumDisplay->setBandwidth(15000.0F);
-	else if (lowFreq >= 5000.0F)
-		m_spectrumDisplay->setBandwidth(10000.0F);
-	else
-		m_spectrumDisplay->setBandwidth(5000.0F);
+	m_spectrumDisplay->setBandwidth(m_parameters->m_hardwareSampleRate);
 
 	m_dsp = new CDSPControl(m_parameters->m_hardwareSampleRate);
 
@@ -302,7 +284,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			m_dsp->setTXReader(new CNullReader());
 			m_dsp->setTXWriter(new CNullWriter());
 			m_dsp->setRXReader(new CSoundCardReader(m_parameters->m_sdrAudioAPI, m_parameters->m_sdrAudioInDev));
-			// m_dsp->setRXReader(new CSignalReader(int(m_parameters->m_hardwareSampleRate / 4.0F + 1000.5F), 0.0003F, 0.0004F, new CSoundCardReader(m_parameters->m_sdrAudioAPI, m_parameters->m_sdrAudioInDev)));
+			// m_dsp->setRXReader(new CSignalReader(1000.5F, 0.0003F, 0.0004F, new CSoundCardReader(m_parameters->m_sdrAudioAPI, m_parameters->m_sdrAudioInDev)));
 			m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_userAudioAPI, m_parameters->m_userAudioOutDev));
 			break;
 
@@ -1067,7 +1049,7 @@ void CUWSDRFrame::normaliseFreq()
 
 	if (m_parameters->m_hardwareType == TYPE_AUDIORX || m_parameters->m_hardwareType == TYPE_AUDIOTXRX) {
 		// This won't work over a MHz boundary ....
-		double hz = m_parameters->m_hardwareMinFreq.getHz() + m_parameters->m_hardwareSampleRate / 4.0F;
+		double hz = m_parameters->m_hardwareMinFreq.getHz() + m_parameters->m_hardwareSampleRate / 2.0F;
 
 		m_dsp->setTXAndFreq(m_txOn, freq.getHz() - hz);
 	} else {

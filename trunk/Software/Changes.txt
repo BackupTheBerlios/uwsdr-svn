@@ -296,3 +296,5 @@ Removed logged text messages for underruns and overruns which affected performan
 Fixed long standing bug in the audio choice in GUISetup, hopefully.
 
 Stop the SDR Name in GUISetup from containing white space.
+
+Open up the GUI to use the full sample rate = tuning range, I/Q sampling allows for this.

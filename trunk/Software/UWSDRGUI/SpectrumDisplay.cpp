@@ -211,7 +211,7 @@ void CSpectrumDisplay::createPanadapter()
 
 	int left    = 2;
 	int right   = m_width - 3;
-	int top     = 3;
+	int top     = 2;
 	int bottom  = m_height - 15;
 	int middleX = left + (right - left) / 2;
 	double incrX = double(right - left) / 10.0;
@@ -237,7 +237,7 @@ void CSpectrumDisplay::createPanadapter()
 		dc.DrawLine(x, top /* lowY */, x, bottom);
 	}
 
-	float dbScale = float(m_height - 17) / m_dbScale;
+	float dbScale = float(m_height - 15) / m_dbScale;
 
 	unsigned int dbIncr = 10U;
 	if (m_dbScale > 50.0F)
@@ -342,7 +342,7 @@ void CSpectrumDisplay::drawPanadapter1(const float* spectrum, float bottom)
 
 	float binsPerPixel = float(lastBin - firstBin) / float(m_width - 5);
 
-	float dbScale = float(m_height - 17) / m_dbScale;
+	float dbScale = float(m_height - 15) / m_dbScale;
 
 	int binOffset = int(float(lastBin - firstBin) * (m_offset / m_bandwidth) + 0.5F);
 	firstBin += binOffset;
@@ -363,8 +363,8 @@ void CSpectrumDisplay::drawPanadapter1(const float* spectrum, float bottom)
 		value -= bottom;
 
 		int y = int(value * 0.5F * dbScale + 0.5F);
-		if (y < 0)
-			y = 0;
+		if (y < 2)
+			y = 2;
 		if (y > (m_height - 18))
 			y = m_height - 18;
 
@@ -397,7 +397,7 @@ void CSpectrumDisplay::drawPanadapter2(const float* spectrum, float bottom)
 
 	float binsPerPixel = float(lastBin - firstBin) / float(m_width - 5);
 
-	float dbScale = float(m_height - 17) / m_dbScale;
+	float dbScale = float(m_height - 15) / m_dbScale;
 
 	int binOffset = int(float(lastBin - firstBin) * (m_offset / m_bandwidth) + 0.5F);
 	firstBin += binOffset;
@@ -417,8 +417,8 @@ void CSpectrumDisplay::drawPanadapter2(const float* spectrum, float bottom)
 		value -= bottom;
 
 		int y = int(value * 0.5F * dbScale + 0.5F);
-		if (y < 0)
-			y = 0;
+		if (y < 2)
+			y = 2;
 		if (y > (m_height - 18))
 			y = m_height - 18;
 
