@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,6 +18,9 @@
 
 #include "DataControl.h"
 
+#include "SoundCardReader.h"
+#include "SoundCardWriter.h"
+#include "SoundCardReaderWriter.h"
 
 const int INTERNAL_READER_1 = 77;
 const int INTERNAL_READER_2 = 78;
@@ -86,6 +89,8 @@ void* CDataControl::Entry()
 {
 	m_running = true;
 
+	m_rxWriter->enable();
+
 	while (!TestDestroy()) {
 		wxSemaError ret = m_waiting.WaitTimeout(500UL);
 
@@ -151,14 +156,24 @@ bool CDataControl::setSoundFileReader(const wxString& fileName)
 
 bool CDataControl::openIO()
 {
-	m_internal1Reader  = new CSignalReader(m_sampleRate / 4.0F + 1000.5F, 0.0003F, 0.0004F);
-	m_internal2Reader  = new CSignalReader(m_sampleRate / 4.0F, 0.0F, 0.001F);
-	m_soundCardReader  = new CSoundCardReader(m_api, m_inDev);
-	m_rxWriter         = new CSDREmulatorWriter(m_address, m_port, 1, m_maxSamples, m_delay);
+	// If the same device is used for both, then use the shared sound card input/output
+	// driver. This is for ALSA.
+	if (m_inDev == m_outDev) {
+		CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_api, m_inDev);
 
-	m_nullWriter       = new CNullWriter();
-	m_soundCardWriter  = new CSoundCardWriter(m_api, m_outDev);
-	m_txReader         = new CSDREmulatorReader(m_address, m_port, 1);
+		m_soundCardReader = scrw;
+		m_soundCardWriter = scrw;
+	} else {
+		m_soundCardReader = new CSoundCardReader(m_api, m_inDev);
+		m_soundCardWriter = new CSoundCardWriter(m_api, m_outDev);
+	}
+
+	m_internal1Reader = new CSignalReader(m_sampleRate / 4.0F + 1000.5F, 0.0003F, 0.0004F);
+	m_internal2Reader = new CSignalReader(m_sampleRate / 4.0F, 0.0F, 0.001F);
+	m_rxWriter        = new CSDREmulatorWriter(m_address, m_port, 1, m_maxSamples, m_delay);
+
+	m_nullWriter      = new CNullWriter();
+	m_txReader        = new CSDREmulatorReader(m_address, m_port, 1);
 
 	// This should be done before opening
 	m_internal1Reader->setCallback(this, INTERNAL_READER_1);
@@ -326,6 +341,11 @@ void CDataControl::setTX(bool transmit)
 	// On a change from transmit to receive and vice versa we empty the ring buffers and
 	// drain the semaphore.
 	if (transmit != m_transmit) {
+		if (transmit)
+			m_rxWriter->disable();
+		else
+			m_rxWriter->enable();
+
 		wxSemaError status = m_waiting.TryWait();
 		while (status != wxSEMA_BUSY) {
 			m_waiting.Wait();
@@ -364,10 +384,11 @@ void CDataControl::setMute(bool mute)
 		m_internal2Reader->purge();
 		m_soundCardReader->purge();
 
-		m_nullWriter->purge();
-		m_soundCardWriter->purge();
+		if (mute)
+			m_rxWriter->disable();
+		else
+			m_rxWriter->enable();
 
-		m_rxWriter->purge();
 		m_txReader->purge();
 
 		if (m_soundFileReader != NULL)

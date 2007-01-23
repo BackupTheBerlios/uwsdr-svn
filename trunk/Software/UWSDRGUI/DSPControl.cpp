@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -136,6 +136,8 @@ void* CDSPControl::Entry()
 	// Open for business
 	m_running = true;
 
+	m_rxWriter->enable();
+
 	while (!TestDestroy()) {
 		wxSemaError ret = m_waiting.WaitTimeout(500UL);
 
@@ -149,10 +151,6 @@ void* CDSPControl::Entry()
 					scaleBuffer(m_txBuffer, nSamples, m_power, m_swap);
 					m_txWriter->write(m_txBuffer, nSamples);
 				}
-			} else {
-				// Create silence on receive
-				::memset(m_txBuffer, 0x00, BLOCK_SIZE * 2 * sizeof(float));
-				m_txWriter->write(m_txBuffer, BLOCK_SIZE);
 			}
 
 			unsigned int nSamples = m_rxRingBuffer.getData(m_rxBuffer, BLOCK_SIZE);
@@ -176,6 +174,9 @@ void* CDSPControl::Entry()
 	}
 
 	m_running = false;
+
+	m_rxWriter->disable();
+	m_txWriter->disable();
 
 	::wxLogMessage(wxT("DSPControl: RX Overruns=%u RX Underruns=%u TX Overruns=%u TX Underruns=%u"), m_rxOverruns, m_rxUnderruns, m_txOverruns, m_txUnderruns);
 
@@ -418,19 +419,22 @@ void CDSPControl::setDeviation(int dev)
 void CDSPControl::setTXAndFreq(bool transmit, float freq)
 {
 	// On a change from transmit to receive and vice versa we empty the ring buffers and
-	// drain the semaphore.
+	// drain the semaphore. We mute the transmit writer when on receive.
 	if (transmit != m_transmit) {
+		if (transmit)
+			m_txWriter->enable();
+		else
+			m_txWriter->disable();
+
 		wxSemaError status = m_waiting.TryWait();
 		while (status != wxSEMA_BUSY) {
 			m_waiting.Wait();
 			status = m_waiting.TryWait();
 		}
 
-		m_rxWriter->purge();
 		m_rxRingBuffer.clear();
 		m_rxReader->purge();
 
-		m_txWriter->purge();
 		m_txRingBuffer.clear();
 		m_txReader->purge();
 

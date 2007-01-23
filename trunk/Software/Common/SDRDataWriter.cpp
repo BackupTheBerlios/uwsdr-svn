@@ -43,7 +43,8 @@ m_overruns(0),
 m_packets(0),
 MAX_SAMPLES(maxSamples),
 DELAY(delay),
-m_packetRequests(0)
+m_packetRequests(0),
+m_enabled(false)
 {
 }
 
@@ -53,6 +54,8 @@ CSDRDataWriter::~CSDRDataWriter()
 
 bool CSDRDataWriter::open(float sampleRate, unsigned int blockSize)
 {
+	m_enabled = false;
+
 #if defined(__WINDOWS__)
 	WSAData data;
 
@@ -127,6 +130,9 @@ void CSDRDataWriter::write(const float* buffer, unsigned int nSamples)
 {
 	wxASSERT(buffer != NULL);
 	wxASSERT(nSamples > 0);
+
+	if (!m_enabled)
+		return;
 
 	unsigned int n = m_buffer->addData(buffer, nSamples);
 
@@ -231,10 +237,12 @@ void CSDRDataWriter::writePacket()
 
 void CSDRDataWriter::close()
 {
+	m_enabled = false;
+
 	Delete();
 }
 
-void CSDRDataWriter::purge()
+void CSDRDataWriter::enable(bool enable)
 {
 	m_buffer->clear();
 
@@ -243,4 +251,11 @@ void CSDRDataWriter::purge()
 		m_waiting.Wait();
 		status = m_waiting.TryWait();
 	}
+
+	m_enabled = enable;
+}
+
+void CSDRDataWriter::disable()
+{
+	enable(false);
 }

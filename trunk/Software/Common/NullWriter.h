@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -32,7 +32,8 @@ class CNullWriter : public IDataWriter {
 	virtual void write(const float* buffer, unsigned int nSamples);
 	virtual void close();
 
-	virtual void purge();
+	virtual void enable(bool enable = true);
+	virtual void disable();
 
     private:
 };

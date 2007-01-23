@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -21,14 +21,15 @@
 
 #include <wx/wx.h>
 
+#include "DataReader.h"
+#include "DataWriter.h"
+#include "DataCallback.h"
 #include "RingBuffer.h"
 #include "SignalReader.h"
 #include "SoundFileReader.h"
-#include "SoundCardReader.h"
 #include "SDREmulatorReader.h"
 #include "NullWriter.h"
 #include "NullReader.h"
-#include "SoundCardWriter.h"
 #include "SDREmulatorWriter.h"
 
 
@@ -66,12 +67,12 @@ class CDataControl : public wxThread, public IDataCallback {
 
 	CSignalReader*      m_internal1Reader;
 	CSignalReader*      m_internal2Reader;
-	CSoundCardReader*   m_soundCardReader;
+	IDataReader*        m_soundCardReader;
 	CSoundFileReader*   m_soundFileReader;
 	CSDREmulatorWriter* m_rxWriter;
 
 	CNullWriter*        m_nullWriter;
-	CSoundCardWriter*   m_soundCardWriter;
+	IDataWriter*        m_soundCardWriter;
 	CSDREmulatorReader* m_txReader;
 
 	wxSemaphore    m_waiting;

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,12 +16,14 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	SoundCardWriter_H
-#define	SoundCardWriter_H
+#ifndef	SoundCardReaderWriter_H
+#define	SoundCardReaderWriter_H
 
 #include <wx/wx.h>
 
+#include "DataReader.h"
 #include "DataWriter.h"
+#include "DataCallback.h"
 #include "RingBuffer.h"
 
 #include "portaudio.h"
@@ -32,10 +34,12 @@ extern "C" {
 }
 
 
-class CSoundCardWriter : public IDataWriter {
+class CSoundCardReaderWriter : public IDataWriter, public IDataReader {
     public:
-	CSoundCardWriter(int api, int dev);
-	virtual ~CSoundCardWriter();
+	CSoundCardReaderWriter(int api, int dev);
+	virtual ~CSoundCardReaderWriter();
+
+	virtual void setCallback(IDataCallback* callback, int id);
 
 	virtual bool open(float sampleRate, unsigned int blockSize);
 	virtual void write(const float* buffer, unsigned int nSamples);
@@ -44,19 +48,27 @@ class CSoundCardWriter : public IDataWriter {
 	virtual void enable(bool enable = true);
 	virtual void disable();
 
-	virtual int  callback(void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags);
+	virtual void purge();
+
+	virtual int  callback(const void* input, void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags);
+
+	virtual bool hasClock();
+	virtual void clock();
 
     private:
-	int          m_api;
-	int          m_dev;
-	unsigned int m_blockSize;
-	PaStream*    m_stream;
-	CRingBuffer* m_buffer;
-	float*       m_lastBuffer;
-	unsigned int m_requests;
-	unsigned int m_underruns;
-	unsigned int m_overruns;
-	bool         m_enabled;
+	int            m_api;
+	int            m_dev;
+	unsigned int   m_blockSize;
+	IDataCallback* m_callback;
+	int            m_id;
+	PaStream*      m_stream;
+	CRingBuffer*   m_buffer;
+	float*         m_lastBuffer;
+	unsigned int   m_requests;
+	unsigned int   m_underruns;
+	unsigned int   m_overruns;
+	bool           m_enabled;
+	unsigned int   m_opened;
 };
 
 #endif

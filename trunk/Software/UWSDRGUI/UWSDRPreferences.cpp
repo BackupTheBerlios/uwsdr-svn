@@ -224,8 +224,10 @@ m_swapIQ(NULL)
 		m_txIQGain->Disable();
 	}
 
-	if (m_parameters->m_hardwareType != TYPE_UWSDR1)
+	if (m_parameters->m_hardwareType != TYPE_UWSDR1) {
+		m_freqOffset->Disable();
 		m_clockTune->Disable();
+	}
 }
 
 CUWSDRPreferences::~CUWSDRPreferences()

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2002-2004,2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2002-2004,2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -46,7 +46,8 @@ class CSoundFileWriter : public IDataWriter {
 
 	virtual void close();
 
-	virtual void purge();
+	virtual void enable(bool enable = true);
+	virtual void disable();
 
     private:
 	wxString     m_fileName;
@@ -55,6 +56,7 @@ class CSoundFileWriter : public IDataWriter {
 	unsigned int m_blockSize;
 	uint8*       m_buffer8;
 	sint16*      m_buffer16;
+	bool         m_enabled;
 #if defined(__WINDOWS__)
 	HMMIO        m_handle;
 	MMCKINFO     m_parent;

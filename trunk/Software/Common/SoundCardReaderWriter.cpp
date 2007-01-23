@@ -16,39 +16,55 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "SoundCardWriter.h"
+#include "SoundCardReaderWriter.h"
 
 
-int scwCallback(const void* input, void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void* userData)
+int scrwCallback(const void* input, void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void* userData)
 {
 	wxASSERT(userData != NULL);
 
-	CSoundCardWriter* object = reinterpret_cast<CSoundCardWriter*>(userData);
+	CSoundCardReaderWriter* object = reinterpret_cast<CSoundCardReaderWriter*>(userData);
 
-	return object->callback(output, nSamples, timeInfo, statusFlags);
+	return object->callback(input, output, nSamples, timeInfo, statusFlags);
 }
 
 
-CSoundCardWriter::CSoundCardWriter(int api, int dev) :
+CSoundCardReaderWriter::CSoundCardReaderWriter(int api, int dev) :
 m_api(api),
 m_dev(dev),
 m_blockSize(0),
+m_callback(NULL),
+m_id(0),
 m_stream(NULL),
 m_buffer(NULL),
 m_lastBuffer(NULL),
 m_requests(0),
 m_underruns(0),
 m_overruns(0),
-m_enabled(false)
+m_enabled(false),
+m_opened(0)
 {
 }
 
-CSoundCardWriter::~CSoundCardWriter()
+CSoundCardReaderWriter::~CSoundCardReaderWriter()
 {
 }
 
-bool CSoundCardWriter::open(float sampleRate, unsigned int blockSize)
+void CSoundCardReaderWriter::setCallback(IDataCallback* callback, int id)
 {
+	wxASSERT(callback != NULL);
+
+	m_callback = callback;
+	m_id       = id;
+}
+
+bool CSoundCardReaderWriter::open(float sampleRate, unsigned int blockSize)
+{
+	if (m_opened > 0) {
+		m_opened++;
+		return true;
+	}
+
 	m_blockSize = blockSize;
 	m_enabled   = false;
 
@@ -59,14 +75,14 @@ bool CSoundCardWriter::open(float sampleRate, unsigned int blockSize)
 
 	PaError error = ::Pa_Initialize();
 	if (error != paNoError) {
-		::wxLogError(wxT("Received %d:%s from Pa_Initialise() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
+		::wxLogError(wxT("Received %d:%s from Pa_Initialise() in SoundCardReaderWriter"), error, ::Pa_GetErrorText(error));
 		return false;
 	}
 
 	PaDeviceIndex dev = ::Pa_HostApiDeviceIndexToDeviceIndex(m_api, m_dev);
 	if (dev < 0) {
 		::Pa_Terminate();
-		::wxLogError(wxT("Received %d:%s from Pa_HostApiDeviceIndexToDeviceIndex() in SoundCardWriter for API:%d Dev:%d"), error, ::Pa_GetErrorText(dev), m_api, m_dev);
+		::wxLogError(wxT("Received %d:%s from Pa_HostApiDeviceIndexToDeviceIndex() in SoundCardReaderWriter for API:%d Dev:%d"), error, ::Pa_GetErrorText(dev), m_api, m_dev);
 		return false;
 	}
 
@@ -77,10 +93,10 @@ bool CSoundCardWriter::open(float sampleRate, unsigned int blockSize)
 	params.hostApiSpecificStreamInfo = NULL;
 	params.suggestedLatency          = PaTime(0);
 
-	error = ::Pa_OpenStream(&m_stream, NULL, &params, sampleRate, blockSize, paNoFlag, &scwCallback, this);
+	error = ::Pa_OpenStream(&m_stream, &params, &params, sampleRate, blockSize, paNoFlag, &scrwCallback, this);
 	if (error != paNoError) {
 		::Pa_Terminate();
-		::wxLogError(wxT("Received %d:%s from Pa_OpenStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
+		::wxLogError(wxT("Received %d:%s from Pa_OpenStream() in SoundCardReaderWriter"), error, ::Pa_GetErrorText(error));
 		return false;
 	}
 
@@ -90,14 +106,16 @@ bool CSoundCardWriter::open(float sampleRate, unsigned int blockSize)
 		m_stream = NULL;
 
 		::Pa_Terminate();
-		::wxLogError(wxT("Received %d:%s from Pa_StartStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
+		::wxLogError(wxT("Received %d:%s from Pa_StartStream() in SoundCardReaderWriter"), error, ::Pa_GetErrorText(error));
 		return false;
 	}
+
+	m_opened++;
 
 	return true;
 }
 
-void CSoundCardWriter::write(const float* buffer, unsigned int nSamples)
+void CSoundCardReaderWriter::write(const float* buffer, unsigned int nSamples)
 {
 	if (!m_enabled)
 		return;
@@ -113,11 +131,15 @@ void CSoundCardWriter::write(const float* buffer, unsigned int nSamples)
 		m_overruns++;
 }
 
-int CSoundCardWriter::callback(void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags)
+int CSoundCardReaderWriter::callback(const void* input, void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags)
 {
+	wxASSERT(input != NULL);
 	wxASSERT(output != NULL);
+	wxASSERT(m_callback != NULL);
 
 	m_requests++;
+
+	m_callback->callback((float *)input, nSamples, m_id);
 
 	if (m_buffer->dataSpace() >= nSamples) {
 		m_buffer->getData((float*)output, nSamples);
@@ -131,20 +153,25 @@ int CSoundCardWriter::callback(void* output, unsigned long nSamples, const PaStr
 	return paContinue;
 }
 
-void CSoundCardWriter::close()
+void CSoundCardReaderWriter::close()
 {
+	if (m_opened > 1) {
+		m_opened--;
+		return;
+	}
+
 	if (m_stream != NULL) {
 		PaError error = ::Pa_AbortStream(m_stream);
 		if (error != paNoError)
-			::wxLogError(wxT("Received %d:%s from Pa_AbortStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
+			::wxLogError(wxT("Received %d:%s from Pa_AbortStream() in SoundCardReaderWriter"), error, ::Pa_GetErrorText(error));
 
 		error = ::Pa_CloseStream(m_stream);
 		if (error != paNoError)
-			::wxLogError(wxT("Received %d:%s from Pa_CloseStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
+			::wxLogError(wxT("Received %d:%s from Pa_CloseStream() in SoundCardReaderWriter"), error, ::Pa_GetErrorText(error));
 
 		error = ::Pa_Terminate();
 		if (error != paNoError)
-			::wxLogError(wxT("Received %d:%s from Pa_Terminate() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
+			::wxLogError(wxT("Received %d:%s from Pa_Terminate() in SoundCardReaderWriter"), error, ::Pa_GetErrorText(error));
 
 		m_stream = NULL;
 	}
@@ -152,12 +179,13 @@ void CSoundCardWriter::close()
 	delete   m_buffer;
 	delete[] m_lastBuffer;
 
+	m_opened  = 0;
 	m_enabled = false;
 
-	::wxLogMessage(wxT("SoundCardWriter: %u underruns and %u overruns from %u requests"), m_underruns, m_overruns, m_requests);
+	::wxLogMessage(wxT("SoundCardReaderWriter: %u underruns and %u overruns from %u requests"), m_underruns, m_overruns, m_requests);
 }
 
-void CSoundCardWriter::enable(bool enable)
+void CSoundCardReaderWriter::enable(bool enable)
 {
 	m_enabled = enable;
 
@@ -165,7 +193,20 @@ void CSoundCardWriter::enable(bool enable)
 		::memset(m_lastBuffer, 0x00, m_blockSize * 2 * sizeof(float));
 }
 
-void CSoundCardWriter::disable()
+void CSoundCardReaderWriter::disable()
 {
 	enable(false);
+}
+
+void CSoundCardReaderWriter::purge()
+{
+}
+
+bool CSoundCardReaderWriter::hasClock()
+{
+	return true;
+}
+
+void CSoundCardReaderWriter::clock()
+{
 }

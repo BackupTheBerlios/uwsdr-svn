@@ -1,8 +1,7 @@
 export BINDIR  := "/usr/bin"
 export DATADIR := "/usr/share/uwsdr"
 export DESKTOPDIR := "/usr/share/applications"
-export GNOMEPNGDIR := "/usr/local/pixmaps"
-export KDEPNGDIR := "/opt/kde3/share/icons/hicolor/32x32/apps"
+export PNGDIR := "/usr/local/pixmaps"
 
 export CC := $(shell wx-config --cxx)
 

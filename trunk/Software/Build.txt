@@ -42,7 +42,7 @@ FFTW 3 should be either installed or built. This can be found at http://www.fftw
 
 $ ./configure --enable-float
 
-Finally you will need PortAudio V19. This is still in beta, and has been for years, and can be found at http://www.portaudio.com and download the latest release of the V19 branch. Build this and install it as per its instrucions.
+Finally you will need PortAudio V19. This is still in beta, and has been for years, and can be found at http://www.portaudio.com and download the latest release of the V19 branch. Build this and install it as per its instrucions. Note that you will probably have to load the ALSA development package otherwise portaudio will only use OSS otherwise.
 
 Once all of these packages are installed, you can build the UWSDR software. From the command line type:
 
@@ -54,7 +54,7 @@ Then logged on as root, type:
 
 $ make install
 
-Which will put the executables in /usr/bin and the icons and other files into /usr/share/uwsdr. These locations can be changed from the top level Makefile.
+Which will put the executables in /usr/bin and the icons and other files into /usr/share/uwsdr. These locations can be changed from the top level Makefile. If you do change these, you will also have to change the .desktop files in the meta directory as these also contain paths to the executables.
 
 If none of the programs within the UWSDR don't run and complains about being unable to find the wxGTK library then you probably have a problem with the configuration of library path. Thankfully the solution is simple. You need to log in as the super user and edit a configuration file, On Ubuntu/Debian and SuSE it's /etc/ld.so.conf and on Fedora Core it's /etc/ld.so.conf.d/mypath.conf. In those files you should add the path to your new libraries which will probably be /usr/local/lib.
 

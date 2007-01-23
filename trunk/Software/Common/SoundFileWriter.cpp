@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2002-2004,2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2002-2004,2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,8 +22,14 @@
 #include <wx/log.h>
 
 
-void CSoundFileWriter::purge()
+void CSoundFileWriter::enable(bool enable)
 {
+	m_enabled = enable;
+}
+
+void CSoundFileWriter::disable()
+{
+	enable(false);
 }
 
 #if defined(__WINDOWS__)
@@ -33,11 +39,12 @@ m_fileName(fileName),
 m_channels(channels),
 m_sampleWidth(sampleWidth),
 m_blockSize(0),
+m_buffer8(NULL),
+m_buffer16(NULL),
+m_enabled(false),
 m_handle(NULL),
 m_parent(),
-m_child(),
-m_buffer8(NULL),
-m_buffer16(NULL)
+m_child()
 {
 	wxASSERT(channels == 1 || channels == 2);
 	wxASSERT(sampleWidth == 8 || sampleWidth == 16);
@@ -50,6 +57,7 @@ CSoundFileWriter::~CSoundFileWriter()
 bool CSoundFileWriter::open(float sampleRate, unsigned int blockSize)
 {
 	m_blockSize = blockSize;
+	m_enabled   = false;
 
 	m_handle = ::mmioOpen((CHAR *)m_fileName.c_str(), 0, MMIO_WRITE | MMIO_CREATE | MMIO_ALLOCBUF);
 	if (m_handle == NULL) {
@@ -115,6 +123,9 @@ void CSoundFileWriter::write(const float* buffer, unsigned int length)
 	wxASSERT(buffer != NULL);
 	wxASSERT(length > 0 && length <= m_blockSize);
 
+	if (!m_enabled)
+		return;
+
 	if (m_sampleWidth == 8) {
 		for (unsigned int i = 0; i < (length * m_channels); i++)
 			m_buffer8[i] = uint8(buffer[i] * 128.0 + 127.0);
@@ -149,6 +160,7 @@ void CSoundFileWriter::close()
 	delete[] m_buffer8;
 	delete[] m_buffer16;
 
+	m_enabled  = false;
 	m_buffer8  = NULL;
 	m_buffer16 = NULL;
 }
@@ -162,6 +174,7 @@ m_sampleWidth(sampleWidth),
 m_blockSize(0),
 m_buffer8(NULL),
 m_buffer16(NULL),
+m_enabled(false),
 m_file(NULL),
 m_offset1(0),
 m_offset2(0),
@@ -179,6 +192,7 @@ bool CSoundFileWriter::open(float sampleRate, unsigned int blockSize)
 {
 	m_blockSize = blockSize;
 	m_length    = 0;
+	m_enabled   = false;
 
 	m_file = new wxFFile(m_fileName, "wb");
 
@@ -245,6 +259,9 @@ void CSoundFileWriter::write(const float* buffer, unsigned int length)
 	wxASSERT(buffer != NULL);
 	wxASSERT(length > 0 && length <= m_blockSize);
 
+	if (!m_enabled)
+		return;
+
 	if (m_sampleWidth == 8) {
 		for (unsigned int i = 0; i < (length * m_channels); i++)
 			m_buffer8[i] = uint8(buffer[i] * 128.0 + 127.0);
@@ -296,6 +313,7 @@ void CSoundFileWriter::close()
 	delete[] m_buffer8;
 	delete[] m_buffer16;
 
+	m_enabled  = false;
 	m_buffer8  = NULL;
 	m_buffer16 = NULL;
 }

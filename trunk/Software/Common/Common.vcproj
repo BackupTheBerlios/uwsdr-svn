@@ -427,6 +427,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\SoundCardReaderWriter.cpp"
+				>
+			</File>
+			<File
 				RelativePath="SoundCardWriter.cpp"
 				>
 				<FileConfiguration
@@ -623,6 +627,10 @@
 			</File>
 			<File
 				RelativePath="SoundCardReader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SoundCardReaderWriter.h"
 				>
 			</File>
 			<File

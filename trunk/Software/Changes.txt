@@ -302,3 +302,5 @@ Open up the GUI to use the full sample rate = tuning range, I/Q sampling allows 
 GUI under Ubuntu looks almost as good as the Windows version :-)
 
 Muted transmit audio when on receive, this is an issue for the SoftRock TXRX.
+
+Added special driver for when the same audio device is used for reading and writing, this is needed for ALSA.

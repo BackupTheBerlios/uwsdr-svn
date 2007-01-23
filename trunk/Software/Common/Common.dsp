@@ -139,6 +139,10 @@ SOURCE=.\SoundCardReader.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\SoundCardReaderWriter.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\SoundCardWriter.cpp
 # End Source File
 # Begin Source File
@@ -244,6 +248,10 @@ SOURCE=.\SoundCardInfo.h
 # Begin Source File
 
 SOURCE=.\SoundCardReader.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SoundCardReaderWriter.h
 # End Source File
 # Begin Source File
 

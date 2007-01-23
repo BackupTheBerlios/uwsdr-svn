@@ -43,7 +43,8 @@ m_overruns(0),
 m_packets(0),
 MAX_SAMPLES(maxSamples),
 DELAY(delay),
-m_packetRequests(0)
+m_packetRequests(0),
+m_enabled(false)
 {
 }
 
@@ -53,6 +54,8 @@ CSDREmulatorWriter::~CSDREmulatorWriter()
 
 bool CSDREmulatorWriter::open(float sampleRate, unsigned int blockSize)
 {
+	m_enabled = false;
+
 #if defined(__WINDOWS__)
 	WSAData data;
 
@@ -127,6 +130,9 @@ void CSDREmulatorWriter::write(const float* buffer, unsigned int nSamples)
 {
 	wxASSERT(buffer != NULL);
 	wxASSERT(nSamples > 0);
+
+	if (!m_enabled)
+		return;
 
 	unsigned int n = m_buffer->addData(buffer, nSamples);
 
@@ -235,10 +241,12 @@ void CSDREmulatorWriter::writePacket()
 
 void CSDREmulatorWriter::close()
 {
+	m_enabled = false;
+
 	Delete();
 }
 
-void CSDREmulatorWriter::purge()
+void CSDREmulatorWriter::enable(bool enable)
 {
 	m_buffer->clear();
 
@@ -247,4 +255,11 @@ void CSDREmulatorWriter::purge()
 		m_waiting.Wait();
 		status = m_waiting.TryWait();
 	}
+
+	m_enabled = enable;
+}
+
+void CSDREmulatorWriter::disable()
+{
+	enable(false);
 }

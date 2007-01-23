@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -49,7 +49,8 @@ class CSDRDataWriter : public wxThread, public IDataWriter {
 
 	virtual void close();
 
-	virtual void purge();
+	virtual void enable(bool enable = true);
+	virtual void disable();
 
     private:
 	wxString           m_address;
@@ -69,6 +70,7 @@ class CSDRDataWriter : public wxThread, public IDataWriter {
 	unsigned int       MAX_SAMPLES;
 	bool               DELAY;
 	unsigned int       m_packetRequests;
+	bool               m_enabled;
 
 	void writePacket();
 };

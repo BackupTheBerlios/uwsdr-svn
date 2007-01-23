@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@
 #include "SoundCardWriter.h"
 #include "SoundFileReader.h"
 #include "SoundFileWriter.h"
+#include "SoundCardReaderWriter.h"
 
 #if defined(__WXGTK__) || defined(__WXMAC__)
 #include "UWSDR.xpm"
@@ -283,17 +284,44 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			// TX is disabled, RX is from audio card for signal input and audio output
 			m_dsp->setTXReader(new CNullReader());
 			m_dsp->setTXWriter(new CNullWriter());
-			m_dsp->setRXReader(new CSoundCardReader(m_parameters->m_sdrAudioAPI, m_parameters->m_sdrAudioInDev));
-			// m_dsp->setRXReader(new CSignalReader(1000.5F, 0.0003F, 0.0004F, new CSoundCardReader(m_parameters->m_sdrAudioAPI, m_parameters->m_sdrAudioInDev)));
-			m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_userAudioAPI, m_parameters->m_userAudioOutDev));
+
+			// If the same API and device is used for both, then use the shared sound card input/output
+			// driver. This is for ALSA.
+			if (m_parameters->m_sdrAudioAPI == m_parameters->m_userAudioAPI && m_parameters->m_sdrAudioInDev == m_parameters->m_userAudioOutDev) {
+				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_sdrAudioAPI, m_parameters->m_sdrAudioInDev);
+
+				m_dsp->setRXReader(scrw);
+				m_dsp->setRXWriter(scrw);
+			} else {
+				m_dsp->setRXReader(new CSoundCardReader(m_parameters->m_sdrAudioAPI, m_parameters->m_sdrAudioInDev));
+				m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_userAudioAPI, m_parameters->m_userAudioOutDev));
+			}
 			break;
 
 		case TYPE_AUDIOTXRX:
 			// TX and RX are from audio cards for signal input and audio output, also simple TX/RX control
-			m_dsp->setTXReader(new CSoundCardReader(m_parameters->m_userAudioAPI, m_parameters->m_userAudioInDev));
-			m_dsp->setTXWriter(new CSoundCardWriter(m_parameters->m_sdrAudioAPI, m_parameters->m_sdrAudioOutDev));
-			m_dsp->setRXReader(new CSoundCardReader(m_parameters->m_sdrAudioAPI, m_parameters->m_sdrAudioInDev));
-			m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_userAudioAPI, m_parameters->m_userAudioOutDev));
+
+			// If the same device is used for both, then use the shared sound card input/output
+			// driver. This is for ALSA.
+			if (m_parameters->m_sdrAudioInDev == m_parameters->m_sdrAudioOutDev) {
+				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_sdrAudioAPI, m_parameters->m_sdrAudioInDev);
+
+				m_dsp->setRXReader(scrw);
+				m_dsp->setTXWriter(scrw);
+			} else {
+				m_dsp->setRXReader(new CSoundCardReader(m_parameters->m_sdrAudioAPI, m_parameters->m_sdrAudioInDev));
+				m_dsp->setTXWriter(new CSoundCardWriter(m_parameters->m_sdrAudioAPI, m_parameters->m_sdrAudioOutDev));
+			}
+
+			if (m_parameters->m_userAudioInDev == m_parameters->m_userAudioOutDev) {
+				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_userAudioAPI, m_parameters->m_userAudioInDev);
+
+				m_dsp->setTXReader(scrw);
+				m_dsp->setRXWriter(scrw);
+			} else {
+				m_dsp->setTXReader(new CSoundCardReader(m_parameters->m_userAudioAPI, m_parameters->m_userAudioInDev));
+				m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_userAudioAPI, m_parameters->m_userAudioOutDev));
+			}
 			break;
 
 		case TYPE_DEMO:
@@ -307,10 +335,21 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 		case TYPE_UWSDR1:
 			// The standard configuration, UDP in/out and sound card for the user
-			m_dsp->setTXReader(new CSoundCardReader(m_parameters->m_userAudioAPI, m_parameters->m_userAudioInDev));
+
+			// If the same API and device is used for both, then use the shared sound card input/output
+			// driver. This is for ALSA.
+			if (m_parameters->m_userAudioInDev == m_parameters->m_userAudioOutDev) {
+				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_userAudioAPI, m_parameters->m_userAudioInDev);
+
+				m_dsp->setTXReader(scrw);
+				m_dsp->setRXWriter(scrw);
+			} else {
+				m_dsp->setTXReader(new CSoundCardReader(m_parameters->m_userAudioAPI, m_parameters->m_userAudioInDev));
+				m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_userAudioAPI, m_parameters->m_userAudioOutDev));
+			}
+
 			m_dsp->setTXWriter(new CSDRDataWriter(m_parameters->m_ipAddress, m_parameters->m_dataPort, 1));
 			m_dsp->setRXReader(new CSDRDataReader(m_parameters->m_ipAddress, m_parameters->m_dataPort, 1));
-			m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_userAudioAPI, m_parameters->m_userAudioOutDev));
 			break;
 	}
 #endif

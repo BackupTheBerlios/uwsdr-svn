@@ -49,7 +49,8 @@ class CSDREmulatorWriter : public wxThread, public IDataWriter {
 
 	virtual void close();
 
-	virtual void purge();
+	virtual void enable(bool enable = true);
+	virtual void disable();
 
     private:
 	wxString           m_address;
@@ -69,6 +70,7 @@ class CSDREmulatorWriter : public wxThread, public IDataWriter {
 	unsigned int       MAX_SAMPLES;
 	bool               DELAY;
 	unsigned int       m_packetRequests;
+	bool               m_enabled;
 
 	void writePacket();
 };
