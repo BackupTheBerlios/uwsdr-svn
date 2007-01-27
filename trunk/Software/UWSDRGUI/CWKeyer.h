@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -21,22 +21,19 @@
 
 #include <wx/wx.h>
 
-#include "DataReader.h"
+#include "ThreadReader.h"
 #include "RingBuffer.h"
 
-class CCWKeyer : public IDataReader {
+class CCWKeyer : public CThreadReader {
 
     public:
     CCWKeyer();
-	virtual ~CCWKeyer();
 
 	virtual bool open(float sampleRate, unsigned int blockSize);
+
+	virtual bool create();
+
 	virtual void close();
-
-	virtual void purge();
-
-	virtual bool hasClock();
-	virtual void clock();
 
 	virtual bool isActive() const;
 
@@ -44,6 +41,9 @@ class CCWKeyer : public IDataReader {
 
 	virtual void send(unsigned int speed, const wxString& text);
 	virtual void abort();
+
+    protected:
+	virtual ~CCWKeyer();
 
     private:
 	float          m_sampleRate;

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2002-2004,2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2002-2004,2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -39,26 +39,23 @@ enum {
 	FORMAT_32BIT
 };
 
-#include "DataReader.h"
+#include "ThreadReader.h"
 
-class CSoundFileReader : public IDataReader {
+class CSoundFileReader : public CThreadReader {
 
     public:
-    CSoundFileReader(const wxString& fileName);
-	virtual ~CSoundFileReader();
+    CSoundFileReader(const wxString& fileName, IDataReader* reader = NULL);
 
 	virtual void setCallback(IDataCallback* callback, int id);
 
 	virtual bool open(float sampleRate, unsigned int blockSize);
 
-	virtual void purge();
-
-	virtual bool hasClock();
-	virtual void close();
-
-	virtual void clock();
+	virtual bool create();
 
 	virtual void rewind();
+
+    protected:
+	virtual ~CSoundFileReader();
 
     private:
 	wxString       m_fileName;

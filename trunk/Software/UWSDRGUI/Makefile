@@ -2,7 +2,7 @@ all:		UWSDR
 
 CFLAGS		:= -I../Common $(CFLAGS)
 
-LIBS		:= -lportaudio -lfftw3f -lfftw3 $(LIBS)
+LIBS		:= -lportaudio -lfftw3f $(LIBS)
 
 OBJS :=		CWKeyboard.o CWKeyer.o DSPControl.o DTTSPControl.o FreqDial.o FreqDisplay.o FreqKeypad.o InfoBox.o \
 		SDRParameters.o SMeter.o SpectrumDisplay.o UWSDRApp.o UWSDRFrame.o UWSDRPreferences.o \
@@ -14,7 +14,7 @@ UWSDR:		$(OBJS)
 CWKeyboard.o:	CWKeyboard.cpp CWKeyboard.h UWSDRApp.h UWSDRDefs.h
 		$(CC) $(CFLAGS) -c CWKeyboard.cpp
 
-CWKeyer.o:	CWKeyer.cpp CWKeyer.h ../Common/DataReader.h UWSDRApp.h ../Common/RingBuffer.h
+CWKeyer.o:	CWKeyer.cpp CWKeyer.h ../Common/ThreadReader.h UWSDRApp.h ../Common/RingBuffer.h
 		$(CC) $(CFLAGS) -c CWKeyer.cpp
 
 DSPControl.o:	DSPControl.cpp DSPControl.h CWKeyer.h ../Common/DataCallback.h ../Common/DataReader.h \

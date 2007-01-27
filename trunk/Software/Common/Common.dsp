@@ -159,6 +159,10 @@ SOURCE=.\SRTXRXController.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ThreadReader.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\ThreeToneReader.cpp
 # End Source File
 # Begin Source File
@@ -268,6 +272,10 @@ SOURCE=.\SoundFileWriter.h
 # Begin Source File
 
 SOURCE=.\SRTXRXController.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ThreadReader.h
 # End Source File
 # Begin Source File
 

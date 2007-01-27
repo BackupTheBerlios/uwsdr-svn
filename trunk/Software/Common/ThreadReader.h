@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,48 +16,42 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	VoiceKeyer_H
-#define	VoiceKeyer_H
+#ifndef	ThreadReader_H
+#define	ThreadReader_H
 
 #include <wx/wx.h>
 
 #include "DataReader.h"
 #include "DataCallback.h"
-#include "SoundFileReader.h"
 
 
-class CVoiceKeyer : public IDataReader, public IDataCallback {
+class CThreadReader : public wxThread, public IDataReader, public IDataCallback {
 
     public:
-    CVoiceKeyer();
+    CThreadReader(IDataReader* reader = NULL);
 
-	virtual void callback(float* buffer, unsigned int nSamples, int id);
+	virtual bool  open(float sampleRate, unsigned int blockSize);
 
-	virtual bool open(float sampleRate, unsigned int blockSize);
-	virtual void close();
+	virtual bool  create() = 0;
 
-	virtual void purge();
+	virtual void  close();
 
-	virtual bool hasClock();
-	virtual void clock();
+	virtual void* Entry();
 
-	virtual bool isActive() const;
+	virtual void  purge();
 
-	virtual void setCallback(IDataCallback* callback, int id);
+	virtual bool  hasClock();
+	virtual void  clock();
 
-	virtual void send(const wxString& fileName, int state);
-	virtual void abort();
+	virtual void  callback(float* buffer, unsigned int nSamples, int id);
 
     protected:
-	virtual ~CVoiceKeyer();
+	virtual ~CThreadReader();
 
     private:
-	float             m_sampleRate;
-	unsigned int      m_blockSize;
-	IDataCallback*    m_callback;
-	int               m_id;
-	int               m_status;
-	CSoundFileReader* m_file;
+	IDataReader* m_reader;
+	wxSemaphore  m_run;
+	bool         m_exit;
 };
 
 #endif

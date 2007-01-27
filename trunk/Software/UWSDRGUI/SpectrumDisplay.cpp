@@ -512,7 +512,7 @@ void CSpectrumDisplay::onLeftMouse(wxMouseEvent& event)
    float x     = float(event.GetX() - 2);
    float width = float(m_width - 5);
 
-   m_pick = m_bandwidth * x / width - m_bandwidth / 2.0F;
+   m_pick = m_bandwidth / 2.0F - m_bandwidth * x / width;
 
    if (m_pick < -m_bandwidth / 2.0F)
       m_pick = 0.0F;

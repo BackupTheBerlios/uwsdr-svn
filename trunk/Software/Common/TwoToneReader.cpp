@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -23,10 +23,10 @@
 
 
 CTwoToneReader::CTwoToneReader(float frequency1, float frequency2, float amplitude, IDataReader* reader) :
+CThreadReader(reader),
 m_frequency1(frequency1),
 m_frequency2(frequency2),
 m_amplitude(amplitude),
-m_reader(reader),
 m_blockSize(0),
 m_callback(NULL),
 m_id(0),
@@ -47,7 +47,7 @@ m_sinDelta2(0.0F)
 
 CTwoToneReader::~CTwoToneReader()
 {
-	delete m_reader;
+	delete[] m_buffer;
 }
 
 void CTwoToneReader::setCallback(IDataCallback* callback, int id)
@@ -60,14 +60,6 @@ bool CTwoToneReader::open(float sampleRate, unsigned int blockSize)
 {
 	wxASSERT(m_frequency1 < (sampleRate + 0.5F) / 2.0F);
 	wxASSERT(m_frequency2 < (sampleRate + 0.5F) / 2.0F);
-
-	if (m_reader != NULL) {
-		m_reader->setCallback(this, 0);
-
-		bool ret = m_reader->open(sampleRate, blockSize);
-		if (!ret)
-			return false;
-	}
 
 	m_blockSize = blockSize;
 
@@ -84,27 +76,10 @@ bool CTwoToneReader::open(float sampleRate, unsigned int blockSize)
 	m_cosDelta2 = ::cos(delta);
 	m_sinDelta2 = ::sin(delta);
 
-	return true;
+	return CThreadReader::open(sampleRate, blockSize);
 }
 
-void CTwoToneReader::close()
-{
-	if (m_reader != NULL)
-		m_reader->close();
-
-	delete[] m_buffer;
-}
-
-void CTwoToneReader::purge()
-{
-}
-
-bool CTwoToneReader::hasClock()
-{
-	return m_reader != NULL;
-}
-
-void CTwoToneReader::clock()
+bool CTwoToneReader::create()
 {
 	wxASSERT(m_callback != NULL);
 
@@ -122,11 +97,6 @@ void CTwoToneReader::clock()
 	}
 
 	m_callback->callback(m_buffer, m_blockSize, m_id);
-}
 
-void CTwoToneReader::callback(float* buffer, unsigned int nSamples, int id)
-{
-	::memset(buffer, 0x00, nSamples * 2 * sizeof(float));
-
-	clock();
+	return true;
 }

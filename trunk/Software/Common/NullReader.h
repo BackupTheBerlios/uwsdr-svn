@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -21,31 +21,24 @@
 
 #include <wx/wx.h>
 
-#include "DataReader.h"
-#include "DataCallback.h"
+#include "ThreadReader.h"
 
 
-class CNullReader : public IDataReader, public IDataCallback {
+class CNullReader : public CThreadReader {
 
     public:
     CNullReader(IDataReader* reader = NULL);
-	virtual ~CNullReader();
 
 	virtual void setCallback(IDataCallback* callback, int id);
 
 	virtual bool open(float sampleRate, unsigned int blockSize);
 
-	virtual void close();
+	virtual bool create();
 
-	virtual void purge();
-
-	virtual bool hasClock();
-	virtual void clock();
-
-	virtual void callback(float* buffer, unsigned int nSamples, int id);
+    protected:
+	virtual ~CNullReader();
 
     private:
-	IDataReader*   m_reader;
 	unsigned int   m_blockSize;
 	float*         m_buffer;
 	IDataCallback* m_callback;

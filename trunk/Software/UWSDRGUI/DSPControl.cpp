@@ -84,8 +84,6 @@ CDSPControl::~CDSPControl()
 	delete[] m_txBuffer;
 	delete[] m_rxBuffer;
 	delete[] m_outBuffer;
-	delete   m_cwKeyer;
-	delete   m_voiceKeyer;
 }
 
 void CDSPControl::setTXReader(IDataReader* reader)
@@ -249,19 +247,17 @@ void CDSPControl::closeIO()
 {
 	setRecord(false);
 
-	m_rxWriter->close();
-	m_txReader->close();
 	m_rxReader->close();
+	m_txReader->close();
+	m_rxWriter->close();
 	m_txWriter->close();
 
 	m_dttsp->close();
 	m_cwKeyer->close();
 	m_voiceKeyer->close();
 
-	if (m_record != NULL) {
+	if (m_record != NULL)
 		m_record->close();
-		delete m_record;
-	}
 }
 
 void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
@@ -553,7 +549,6 @@ bool CDSPControl::setRecord(bool record)
 		bool ret = sdfw->open(m_sampleRate, BLOCK_SIZE);
 		if (!ret) {
 			::wxLogError(wxT("Cannot open file %s for recording"), fileName.c_str());
-			delete sdfw;
 			return false;
 		}
 
@@ -565,7 +560,6 @@ bool CDSPControl::setRecord(bool record)
 		m_record = NULL;
 
 		sdfw->close();
-		delete sdfw;
 
 		::wxLogMessage(wxT("Closed sound file"));
 	}

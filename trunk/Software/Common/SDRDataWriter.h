@@ -39,7 +39,6 @@ class CSDRDataWriter : public wxThread, public IDataWriter {
 
     public:
 	CSDRDataWriter(const wxString& address, int port, unsigned int version, unsigned int maxSamples = 2048, bool delay = false);
-	virtual ~CSDRDataWriter();
 
 	virtual bool open(float sampleRate, unsigned int blockSize);
 
@@ -51,6 +50,9 @@ class CSDRDataWriter : public wxThread, public IDataWriter {
 
 	virtual void enable(bool enable = true);
 	virtual void disable();
+
+    protected:
+	virtual ~CSDRDataWriter();
 
     private:
 	wxString           m_address;

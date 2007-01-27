@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -35,7 +35,6 @@ extern "C" {
 class CSoundCardWriter : public IDataWriter {
     public:
 	CSoundCardWriter(int api, int dev);
-	virtual ~CSoundCardWriter();
 
 	virtual bool open(float sampleRate, unsigned int blockSize);
 	virtual void write(const float* buffer, unsigned int nSamples);
@@ -45,6 +44,9 @@ class CSoundCardWriter : public IDataWriter {
 	virtual void disable();
 
 	virtual int  callback(void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags);
+
+    protected:
+	virtual ~CSoundCardWriter();
 
     private:
 	int          m_api;

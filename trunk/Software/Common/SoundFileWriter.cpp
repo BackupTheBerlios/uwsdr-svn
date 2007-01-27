@@ -160,9 +160,7 @@ void CSoundFileWriter::close()
 	delete[] m_buffer8;
 	delete[] m_buffer16;
 
-	m_enabled  = false;
-	m_buffer8  = NULL;
-	m_buffer16 = NULL;
+	delete this;
 }
 
 #else
@@ -313,9 +311,7 @@ void CSoundFileWriter::close()
 	delete[] m_buffer8;
 	delete[] m_buffer16;
 
-	m_enabled  = false;
-	m_buffer8  = NULL;
-	m_buffer16 = NULL;
+	delete this;
 }
 
 #endif

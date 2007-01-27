@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -21,34 +21,27 @@
 
 #include <wx/wx.h>
 
-#include "DataReader.h"
-#include "DataCallback.h"
+#include "ThreadReader.h"
 
 
-class CSignalReader : public IDataReader, public IDataCallback {
+class CSignalReader : public CThreadReader {
 
     public:
     CSignalReader(float frequency, float noiseAmplitude, float signalAmplitude, IDataReader* reader = NULL);
-	virtual ~CSignalReader();
 
 	virtual void setCallback(IDataCallback* callback, int id);
 
 	virtual bool open(float sampleRate, unsigned int blockSize);
 
-	virtual void close();
+	virtual bool create();
 
-	virtual void purge();
-
-	virtual bool hasClock();
-	virtual void clock();
-
-	virtual void callback(float* buffer, unsigned int nSamples, int id);
+    protected:
+	virtual ~CSignalReader();
 
     private:
 	float          m_frequency;
 	float          m_noiseAmplitude;
 	float          m_signalAmplitude;
-	IDataReader*   m_reader;
 	unsigned int   m_blockSize;
 	IDataCallback* m_callback;
 	int            m_id;

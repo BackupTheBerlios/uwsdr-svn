@@ -23,11 +23,11 @@
 
 
 CThreeToneReader::CThreeToneReader(float frequency1, float frequency2, float frequency3, float amplitude, IDataReader* reader) :
+CThreadReader(reader),
 m_frequency1(frequency1),
 m_frequency2(frequency2),
 m_frequency3(frequency3),
 m_amplitude(amplitude),
-m_reader(reader),
 m_blockSize(0),
 m_callback(NULL),
 m_id(0),
@@ -53,7 +53,7 @@ m_sinDelta3(0.0F)
 
 CThreeToneReader::~CThreeToneReader()
 {
-	delete m_reader;
+	delete[] m_buffer;
 }
 
 void CThreeToneReader::setCallback(IDataCallback* callback, int id)
@@ -67,14 +67,6 @@ bool CThreeToneReader::open(float sampleRate, unsigned int blockSize)
 	wxASSERT(m_frequency1 < (sampleRate + 0.5F) / 2.0F);
 	wxASSERT(m_frequency2 < (sampleRate + 0.5F) / 2.0F);
 	wxASSERT(m_frequency3 < (sampleRate + 0.5F) / 2.0F);
-
-	if (m_reader != NULL) {
-		m_reader->setCallback(this, 0);
-
-		bool ret = m_reader->open(sampleRate, blockSize);
-		if (!ret)
-			return false;
-	}
 
 	m_blockSize = blockSize;
 
@@ -95,27 +87,10 @@ bool CThreeToneReader::open(float sampleRate, unsigned int blockSize)
 	m_cosDelta3 = ::cos(delta);
 	m_sinDelta3 = ::sin(delta);
 
-	return true;
+	return CThreadReader::open(sampleRate, blockSize);
 }
 
-void CThreeToneReader::close()
-{
-	if (m_reader != NULL)
-		m_reader->close();
-
-	delete[] m_buffer;
-}
-
-void CThreeToneReader::purge()
-{
-}
-
-bool CThreeToneReader::hasClock()
-{
-	return m_reader != NULL;
-}
-
-void CThreeToneReader::clock()
+bool CThreeToneReader::create()
 {
 	wxASSERT(m_callback != NULL);
 
@@ -137,11 +112,6 @@ void CThreeToneReader::clock()
 	}
 
 	m_callback->callback(m_buffer, m_blockSize, m_id);
-}
 
-void CThreeToneReader::callback(float* buffer, unsigned int nSamples, int id)
-{
-	::memset(buffer, 0x00, nSamples * 2 * sizeof(float));
-
-	clock();
+	return true;
 }

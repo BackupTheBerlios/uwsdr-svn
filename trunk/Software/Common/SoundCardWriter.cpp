@@ -45,6 +45,8 @@ m_enabled(false)
 
 CSoundCardWriter::~CSoundCardWriter()
 {
+	delete   m_buffer;
+	delete[] m_lastBuffer;
 }
 
 bool CSoundCardWriter::open(float sampleRate, unsigned int blockSize)
@@ -133,28 +135,21 @@ int CSoundCardWriter::callback(void* output, unsigned long nSamples, const PaStr
 
 void CSoundCardWriter::close()
 {
-	if (m_stream != NULL) {
-		PaError error = ::Pa_AbortStream(m_stream);
-		if (error != paNoError)
-			::wxLogError(wxT("Received %d:%s from Pa_AbortStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
+	PaError error = ::Pa_AbortStream(m_stream);
+	if (error != paNoError)
+		::wxLogError(wxT("Received %d:%s from Pa_AbortStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
 
-		error = ::Pa_CloseStream(m_stream);
-		if (error != paNoError)
-			::wxLogError(wxT("Received %d:%s from Pa_CloseStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
+	error = ::Pa_CloseStream(m_stream);
+	if (error != paNoError)
+		::wxLogError(wxT("Received %d:%s from Pa_CloseStream() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
 
-		error = ::Pa_Terminate();
-		if (error != paNoError)
-			::wxLogError(wxT("Received %d:%s from Pa_Terminate() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
-
-		m_stream = NULL;
-	}
-
-	delete   m_buffer;
-	delete[] m_lastBuffer;
-
-	m_enabled = false;
+	error = ::Pa_Terminate();
+	if (error != paNoError)
+		::wxLogError(wxT("Received %d:%s from Pa_Terminate() in SoundCardWriter"), error, ::Pa_GetErrorText(error));
 
 	::wxLogMessage(wxT("SoundCardWriter: %u underruns and %u overruns from %u requests"), m_underruns, m_overruns, m_requests);
+
+	delete this;
 }
 
 void CSoundCardWriter::enable(bool enable)

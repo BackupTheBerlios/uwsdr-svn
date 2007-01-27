@@ -26,7 +26,6 @@
 class CNullWriter : public IDataWriter {
     public:
 	CNullWriter();
-	virtual ~CNullWriter();
 
 	virtual bool open(float sampleRate, unsigned int blockSize);
 	virtual void write(const float* buffer, unsigned int nSamples);
@@ -34,6 +33,9 @@ class CNullWriter : public IDataWriter {
 
 	virtual void enable(bool enable = true);
 	virtual void disable();
+
+    protected:
+	virtual ~CNullWriter();
 
     private:
 };

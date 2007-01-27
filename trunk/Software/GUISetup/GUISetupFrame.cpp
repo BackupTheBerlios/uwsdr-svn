@@ -23,7 +23,6 @@
 #include "EthernetDialog.h"
 #include "SoundCardDialog.h"
 
-#include <wx/file.h>
 #include <wx/config.h>
 #include <wx/filename.h>
 #include <wx/dir.h>
@@ -37,6 +36,8 @@ const wxString XDG_DATA_HOME_ENV = wxT("XDG_DATA_HOME");
 const wxString HOME_ENV          = wxT("HOME");
 const wxString DEFAULT_DIR       = wxT("/.local/share");
 const wxString APPLICATION_DIR   = wxT("/applications");
+const wxString UWSDR_FILE        = wxT("UWSDR.desktop");
+const wxString NAME_TOKEN        = wxT("@NAME@");
 #endif
 
 #if defined(__WINDOWS__)
@@ -215,7 +216,28 @@ void CGUISetupFrame::onName(wxCommandEvent& event)
 
 void CGUISetupFrame::onBrowse(wxCommandEvent& event)
 {
-	wxFileDialog files(this, _("Choose an SDR Configuration File"), wxEmptyString, wxEmptyString, _("SDR files (*.sdr)|*.sdr"), wxFD_FILE_MUST_EXIST);
+	// Pre-load the directory where the .sdr files are located
+#if defined(__WXMSW__)
+	wxConfig* config = new wxConfig(wxT("UWSDR"));
+
+	wxString instDirKey = wxT("/InstPath");
+
+	wxString sdrDir;
+	bool found = config->Read(instDirKey, &sdrDir);
+
+	delete config;
+
+	if (!found) {
+		::wxMessageBox(_("Cannot find the registry key for the\ninstallation directory."), _("GUISetup Error"), wxICON_ERROR);
+		return;
+	}
+
+	sdrDir.Append(wxT("\\SDR Files"));
+#elif defined(__WXGTK__)
+	wxString sdrDir = DATA_DIR;
+#endif
+
+	wxFileDialog files(this, _("Choose an SDR Configuration File"), sdrDir, wxEmptyString, _("SDR files (*.sdr)|*.sdr"), wxFD_FILE_MUST_EXIST);
 	int ret = files.ShowModal();
 
 	if (ret == wxID_OK) {
@@ -762,29 +784,44 @@ void CGUISetupFrame::writeDeskTop(const wxString& name, const wxString& dir)
 void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 {
 	wxString fileName;
-	fileName.Printf(wxT("%s/%s.desktop"), dir.c_str(), name.c_str());
+	fileName.Printf(wxT("%s/%s"), DATA_DIR, UWSDR_FILE.c_str());
 
-	wxFile file;
-	bool ret = file.Open(fileName, wxFile::write);
+	// Open the .desktop template file
+	wxTextFile inFile;
+	bool ret = inFile.Open(fileName);
 	if (!ret) {
-		::wxMessageBox(_("Cannot open file: ") + fileName, _("GUISetup Error"), wxICON_ERROR);
+		::wxMessageBox(_("Cannot read file: ") + fileName, _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
-	file.Write(wxT("[Desktop Entry]\n"));
-	file.Write(wxT("Type=Application\n"));
-	file.Write(wxT("Version=1.0\n"));
-	file.Write(wxT("Name=") + name + wxT("\n"));
-	file.Write(wxT("Name[de_DE]=") + name + wxT("\n"));
-	file.Write(wxT("Categories=Network;HamRadio\n"));
-	file.Write(wxT("Comment=UWSDR for ") + name + wxT("\n"));
-	file.Write(wxT("Comment[de_DE]=UWSDR fuer ") + name + wxT("\n"));
-	file.Write(wxT("Icon=UWSDR.png\n"));
-	file.Write(wxT("Exec=") + wxString(BIN_DIR) + wxT("/UWSDR ") + name + wxT("\n"));
-	file.Write(wxT("Terminal=false\n"));
+	fileName.Printf(wxT("%s/%s.desktop"), dir.c_str(), name.c_str());
 
-	file.Flush();
-	file.Close();
+	// Remove the old file so that Create will work below
+	if (::wxFileExists(fileName))
+		::wxRemoveFile(fileName);
+
+	wxTextFile outFile;
+	bool ret = outFile.Create(fileName);
+	if (!ret) {
+		::wxMessageBox(_("Cannot create file: ") + fileName, _("GUISetup Error"), wxICON_ERROR);
+		inFile.Close();
+		return;
+	}
+
+	wxString line = inFile.GetFirstLine();
+
+	while (!inFile.Eof()) {
+		line.Replace(NAME_TOKEN, name, true);
+
+		outFile.AddLine(line);
+
+		line = inFile.GetNextLine();
+	}
+
+	outFile.Write();
+	outFile.Close();
+
+	inFile.Close();
 }
 
 bool CGUISetupFrame::getDesktopDir(wxString& dir) const

@@ -3,7 +3,7 @@ all:		Common.a
 OBJS := 	Frequency.o Log.o NullController.o NullReader.o NullWriter.o RingBuffer.o SDRDataReader.o \
 		SDRDataWriter.o SDRDescrFile.o SerialControl.o SignalReader.o SoundCardInfo.o SoundCardReader.o \
 		SoundCardReaderWriter.o SoundCardWriter.o SoundFileReader.o SoundFileWriter.o SRTXRXController.o \
-		ThreeToneReader.o TwoToneReader.o UWSDRController.o
+		ThreadReader.o ThreeToneReader.o TwoToneReader.o UWSDRController.o
 
 Common.a:	$(OBJS)
 		ar rcs Common.a $(OBJS)
@@ -17,7 +17,7 @@ Log.o:		Log.cpp Log.h
 NullController.o:	NullController.cpp NullController.h ControlInterface.h Frequency.h SDRController.h
 		$(CC) $(CFLAGS) -c NullController.cpp
 
-NullReader.o:	NullReader.cpp NullReader.h DataReader.h DataCallback.h
+NullReader.o:	NullReader.cpp NullReader.h ThreadReader.h
 		$(CC) $(CFLAGS) -c NullReader.cpp
 
 NullWriter.o:	NullWriter.cpp NullWriter.h DataWriter.h
@@ -38,7 +38,7 @@ SDRDescrFile.o:	SDRDescrFile.cpp SDRDescrFile.h Frequency.h
 SerialControl.o:	SerialControl.cpp SerialControl.h PortControl.h
 		$(CC) $(CFLAGS) -c SerialControl.cpp
 
-SignalReader.o:	SignalReader.cpp SignalReader.h DataReader.h DataCallback.h
+SignalReader.o:	SignalReader.cpp SignalReader.h ThreadReader.h
 		$(CC) $(CFLAGS) -c SignalReader.cpp
 
 SoundCardInfo.o: SoundCardInfo.cpp SoundCardInfo.h
@@ -53,7 +53,7 @@ SoundCardReaderWriter.o: SoundCardReaderWriter.cpp SoundCardReaderWriter.h DataC
 SoundCardWriter.o: SoundCardWriter.cpp SoundCardWriter.h DataWriter.h RingBuffer.h
 		$(CC) $(CFLAGS) -c SoundCardWriter.cpp
 
-SoundFileReader.o: SoundFileReader.cpp SoundFileReader.h DataReader.h
+SoundFileReader.o: SoundFileReader.cpp SoundFileReader.h ThreadReader.h
 		$(CC) $(CFLAGS) -c SoundFileReader.cpp
 
 SoundFileWriter.o: SoundFileWriter.cpp SoundFileWriter.h DataWriter.h
@@ -63,10 +63,13 @@ SRTXRXController.o:	SRTXRXController.cpp SRTXRXController.h ControlInterface.h F
 			PortControl.h
 		$(CC) $(CFLAGS) -c SRTXRXController.cpp
 
-ThreeToneReader.o:	ThreeToneReader.cpp ThreeToneReader.h DataReader.h DataCallback.h
+ThreadReader.o:	ThreadReader.cpp ThreadReader.h DataReader.h DataCallback.h
+		$(CC) $(CFLAGS) -c ThreadReader.cpp
+
+ThreeToneReader.o:	ThreeToneReader.cpp ThreeToneReader.h ThreadReader.h
 		$(CC) $(CFLAGS) -c ThreeToneReader.cpp
 
-TwoToneReader.o:	TwoToneReader.cpp TwoToneReader.h DataReader.h DataCallback.h
+TwoToneReader.o:	TwoToneReader.cpp TwoToneReader.h ThreadReader.h
 		$(CC) $(CFLAGS) -c TwoToneReader.cpp
 
 UWSDRController.o:	UWSDRController.cpp UWSDRController.h ControlInterface.h Frequency.h SDRController.h

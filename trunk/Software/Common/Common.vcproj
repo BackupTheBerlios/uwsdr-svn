@@ -501,6 +501,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ThreadReader.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ThreeToneReader.cpp"
 				>
 			</File>
@@ -647,6 +651,10 @@
 			</File>
 			<File
 				RelativePath=".\SRTXRXController.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ThreadReader.h"
 				>
 			</File>
 			<File

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2002-2004,2006,7 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2002-2004,2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -29,20 +29,12 @@ void CSoundFileReader::setCallback(IDataCallback* callback, int id)
 	m_id       = id;
 }
 
-void CSoundFileReader::purge()
-{
-}
-
-bool CSoundFileReader::hasClock()
-{
-	return false;
-}
-
 #if defined(__WINDOWS__)
 
 const int WAVE_FORMAT_IEEE_FLOAT = 3;
 
-CSoundFileReader::CSoundFileReader(const wxString& fileName) :
+CSoundFileReader::CSoundFileReader(const wxString& fileName, IDataReader* reader) :
+CThreadReader(reader),
 m_fileName(fileName),
 m_blockSize(0),
 m_callback(NULL),
@@ -61,6 +53,13 @@ m_offset(0L)
 
 CSoundFileReader::~CSoundFileReader()
 {
+	if (m_handle != NULL)
+		::mmioClose(m_handle, 0);
+
+	delete[] m_buffer;
+	delete[] m_buffer8;
+	delete[] m_buffer16;
+	delete[] m_buffer32;
 }
 
 bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
@@ -162,10 +161,10 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 
 	m_buffer = new float[m_blockSize * 2];
 
-	return true;
+	return CThreadReader::open(sampleRate, blockSize);
 }
 
-void CSoundFileReader::clock()
+bool CSoundFileReader::create()
 {
 	wxASSERT(m_callback != NULL);
 	wxASSERT(m_handle != NULL);
@@ -179,7 +178,7 @@ void CSoundFileReader::clock()
 
 			if (n <= 0) {
 				m_callback->callback(m_buffer, 0, m_id);
-				return;
+				return false;
 			}
 
 			n /= sizeof(uint8);
@@ -193,7 +192,7 @@ void CSoundFileReader::clock()
 
 			if (n <= 0) {
 				m_callback->callback(m_buffer, 0, m_id);
-				return;
+				return false;
 			}
 
 			n /= sizeof(sint16);
@@ -207,7 +206,7 @@ void CSoundFileReader::clock()
 
 			if (n <= 0) {
 				m_callback->callback(m_buffer, 0, m_id);
-				return;
+				return false;
 			}
 
 			n /= sizeof(float32);
@@ -224,6 +223,8 @@ void CSoundFileReader::clock()
 	}
 
 	m_callback->callback(m_buffer, n / 2, m_id);
+
+	return true;
 }
 
 void CSoundFileReader::rewind()
@@ -233,25 +234,13 @@ void CSoundFileReader::rewind()
 	::mmioSeek(m_handle, m_offset, SEEK_SET);
 }
 
-void CSoundFileReader::close()
-{
-	if (m_handle != NULL) {
-		::mmioClose(m_handle, 0);
-		m_handle = NULL;
-	}
-
-	delete[] m_buffer;
-	delete[] m_buffer8;
-	delete[] m_buffer16;
-	delete[] m_buffer32;
-}
-
 #else
 
 const int WAVE_FORMAT_PCM        = 1;
 const int WAVE_FORMAT_IEEE_FLOAT = 3;
 
-CSoundFileReader::CSoundFileReader(const wxString& fileName) :
+CSoundFileReader::CSoundFileReader(const wxString& fileName, IDataReader* reader) :
+CThreadReader(reader),
 m_fileName(fileName),
 m_blockSize(0),
 m_callback(NULL),
@@ -270,6 +259,15 @@ m_read(0)
 
 CSoundFileReader::~CSoundFileReader()
 {
+	if (m_file != NULL) {
+		m_file->Close();
+		delete m_file;
+	}
+
+	delete[] m_buffer;
+	delete[] m_buffer8;
+	delete[] m_buffer16;
+	delete[] m_buffer32;
 }
 
 bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
@@ -420,10 +418,10 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 
 	m_buffer = new float[m_blockSize * 2];
 
-	return true;
+	return CThreadReader::open(sampleRate, blockSize);
 }
 
-void CSoundFileReader::clock()
+bool CSoundFileReader::create()
 {
 	wxASSERT(m_callback != NULL);
 	wxASSERT(m_file != NULL);
@@ -443,7 +441,7 @@ void CSoundFileReader::clock()
 
 			if (n <= 0) {
 				m_callback->callback(m_buffer, 0, m_id);
-				return;
+				return false;
 			}
 
 			m_read += n;
@@ -464,7 +462,7 @@ void CSoundFileReader::clock()
 
 			if (n <= 0) {
 				m_callback->callback(m_buffer, 0, m_id);
-				return;
+				return false;
 			}
 
 			m_read += n;
@@ -485,7 +483,7 @@ void CSoundFileReader::clock()
 
 			if (n <= 0) {
 				m_callback->callback(m_buffer, 0, m_id);
-				return;
+				return false;
 			}
 
 			m_read += n;
@@ -504,6 +502,8 @@ void CSoundFileReader::clock()
 	}
 
 	m_callback->callback(m_buffer, n / 2, m_id);
+
+	return true;
 }
 
 void CSoundFileReader::rewind()
@@ -513,20 +513,6 @@ void CSoundFileReader::rewind()
 	m_file->Seek(m_offset);
 
 	m_read = 0;
-}
-
-void CSoundFileReader::close()
-{
-	if (m_file != NULL) {
-		m_file->Close();
-		delete m_file;
-		m_file = NULL;
-	}
-
-	delete[] m_buffer;
-	delete[] m_buffer8;
-	delete[] m_buffer16;
-	delete[] m_buffer32;
 }
 
 #endif

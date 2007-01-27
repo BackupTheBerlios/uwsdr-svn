@@ -133,18 +133,14 @@ void CDataControl::close()
 
 bool CDataControl::setSoundFileReader(const wxString& fileName)
 {
-	if (m_soundFileReader != NULL) {
+	if (m_soundFileReader != NULL)
 		m_soundFileReader->close();
-		delete m_soundFileReader;
-		m_soundFileReader = NULL;
-	}
 
 	m_soundFileReader = new CSoundFileReader(fileName);
 
 	m_soundFileReader->setCallback(this, SOUNDFILE_READER);
 	bool ret = m_soundFileReader->open(m_sampleRate, BLOCK_SIZE);
 	if (!ret) {
-		delete m_soundFileReader;
 		m_soundFileReader = NULL;
 		return false;
 	}
@@ -403,7 +399,6 @@ void CDataControl::setSource(int source)
 {
 	if (m_source == SOURCE_SOUNDFILE) {
 		m_soundFileReader->close();
-		delete m_soundFileReader;
 		m_soundFileReader = NULL;
 	}
 

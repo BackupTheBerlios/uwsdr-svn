@@ -1,15 +1,13 @@
 export BINDIR  := "/usr/bin"
 export DATADIR := "/usr/share/uwsdr"
 export DESKTOPDIR := "/usr/share/applications"
-export PNGDIR := "/usr/local/pixmaps"
+export PNGDIR := "/usr/share/pixmaps"
 
 export CC := $(shell wx-config --cxx)
 
-# export LDFLAGS := $(shell wx-config --ldflags)
+export LIBS := $(shell wx-config --libs adv,core,html,net)
 
-export LIBS := $(shell wx-config --libs)
-
-export CFLAGS := -O2 -Wall -march=pentium -DDATA_DIR='$(DATADIR)' -DBIN_DIR='$(BINDIR)' $(shell wx-config --cxxflags)
+export CFLAGS := -O2 -Wall -Wno-non-virtual-dtor -Wno-strict-aliasing -march=pentium -DDATA_DIR='$(DATADIR)' -DBIN_DIR='$(BINDIR)' $(shell wx-config --cxxflags)
 
 all:		GUISetup/GUISetup SDREmulator/SDREmulator SDRHelp/SDRHelp SDRSetup/SDRSetup UWSDRGUI/UWSDR
 

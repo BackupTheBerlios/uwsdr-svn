@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -34,7 +34,6 @@ extern "C" {
 class CSoundCardReader : public IDataReader {
     public:
 	CSoundCardReader(int api, int dev);
-	virtual ~CSoundCardReader();
 
 	virtual void setCallback(IDataCallback* callback, int id);
 
@@ -47,6 +46,9 @@ class CSoundCardReader : public IDataReader {
 
 	virtual bool hasClock();
 	virtual void clock();
+
+    protected:
+	virtual ~CSoundCardReader();
 
     private:
 	int            m_api;

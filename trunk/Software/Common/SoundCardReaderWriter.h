@@ -37,7 +37,6 @@ extern "C" {
 class CSoundCardReaderWriter : public IDataWriter, public IDataReader {
     public:
 	CSoundCardReaderWriter(int api, int dev);
-	virtual ~CSoundCardReaderWriter();
 
 	virtual void setCallback(IDataCallback* callback, int id);
 
@@ -54,6 +53,9 @@ class CSoundCardReaderWriter : public IDataWriter, public IDataReader {
 
 	virtual bool hasClock();
 	virtual void clock();
+
+    protected:
+	virtual ~CSoundCardReaderWriter();
 
     private:
 	int            m_api;

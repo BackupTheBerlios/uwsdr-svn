@@ -2,10 +2,10 @@
 Type=Application
 Version=1.0
 Name=SDR Setup
-Name[de_DE]=SDR Setup
+Name[de]=SDR Setup
 Categories=Network;HamRadio
 Comment=Configure the UWSDR hardware
-Comment[de_DE]=Konfigurieren der UWSDR hardware
+Comment[de]=Konfigurieren der UWSDR hardware
 Icon=SDRSetup.png
 Exec=/usr/bin/SDRSetup
 Terminal=false

@@ -31,32 +31,41 @@ The configuration file for NSIS is to be found in the meta directory. You will p
 The Help files are not built by default, these have to be done manually. Go to the Help sub-directory and then go into each of the GUISetup, SDRSetip and UWSDR sub-directories and simply zip up all of the files in those directories, but do not include any path information. On Windows XP and later you can do this by selecting the required files and then clicking the right hand mouse button and selecting "Send To" and then "Compressed (zipped) Folder", you'll probably have to rename the resulting zip files, the same name as the diretory plus .zip.
 
 
-Linux/Unix
-----------
+Linux
+-----
 
-Before building the software you need to ensure that you have the pre-requisites installed, either as packages or built from source.
+The build platform used is Ubuntu 6.10, although the comments apply equally well to Ubuntu 6.06. Generally the comments below will apply to most other Linux distributions, particularly Debian which Ubuntu is based on.
+
+Before building the software you need to ensure that you have the pre-requisites installed, either as packages or built from source. Note that in all cases I installed the libraries in /usr/lib rather than the default /usr/local/lib. To do this add the "--prefix=/usr" to the configure command line, however this is not shown in the examples below.
 
 wxWidgets 2.8.0 or later should be built and installed. This can be found at http://www.wxwidgets.org and will take some time to build. If you install it as a package then ensure that the devel part is installed as well.
 
 FFTW 3 should be either installed or built. This can be found at http://www.fftw.org and if building it yourself, you have to configure it as:
 
-$ ./configure --enable-float
+$ ./configure --enable-single --enable-shared
 
-Finally you will need PortAudio V19. This is still in beta, and has been for years, and can be found at http://www.portaudio.com and download the latest release of the V19 branch. Build this and install it as per its instrucions. Note that you will probably have to load the ALSA development package otherwise portaudio will only use OSS otherwise.
+Finally you will need PortAudio V19. This is still in beta, and has been for years, and can be found at http://www.portaudio.com and download the latest release of the V19 branch. Build this and install it as per its instrucions. Note that you will have to load the libasound2 development package otherwise portaudio will only use OSS otherwise.
 
 Once all of these packages are installed, you can build the UWSDR software. From the command line type:
 
 $ make
 
-Which should build all of the programs without errors.
+Which should build all of the programs without errors, there will be a few warnings, but only a few.
 
 Then logged on as root, type:
 
 $ make install
 
-Which will put the executables in /usr/bin and the icons and other files into /usr/share/uwsdr. These locations can be changed from the top level Makefile. If you do change these, you will also have to change the .desktop files in the meta directory as these also contain paths to the executables.
+Which will put the executables in /usr/bin and the other files into /usr/share/uwsdr. These locations can be changed from the top level Makefile. If you do change these, you will also have to change the .desktop files in the meta directory as these also contain paths to the executables.
 
-If none of the programs within the UWSDR don't run and complains about being unable to find the wxGTK library then you probably have a problem with the configuration of library path. Thankfully the solution is simple. You need to log in as the super user and edit a configuration file, On Ubuntu/Debian and SuSE it's /etc/ld.so.conf and on Fedora Core it's /etc/ld.so.conf.d/mypath.conf. In those files you should add the path to your new libraries which will probably be /usr/local/lib.
+If none of the programs within the UWSDR package run and complain about being unable to find the wxGTK library then you probably have a problem with the configuration of the library path. Thankfully the solution is simple. You need to log in as the super user and edit a configuration file, On Ubuntu/Debian and SuSE it's /etc/ld.so.conf and on Fedora Core it's /etc/ld.so.conf.d/mypath.conf. In those files you should add the path to your new libraries which will probably be /usr/local/lib unless you override this when configuring the packages as explained at the beginning.
+
+In order to allow GUISetup to create menu entries for new UWSDR configurations you will have to set the environment variable $XDG_DATA_HOME for the system. This can be done by editing the file /etc/environment as the super-user. The line to add is:
+
+XDG_DATA_HOME=/home/USER/.local/share
+
+where USER is your user name. As yourself (not as super-user), go to your home directory and create the directory .local and then the directory share within that, and then applications within that. I'm sorry for this long-winded and not very good way of doing things, but it's the only option for now. It would be better if $HOME could be embedded in /etc/environment but that doesn't work.
+
 
 Mac OS X
 --------

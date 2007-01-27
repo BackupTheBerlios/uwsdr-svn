@@ -48,19 +48,16 @@ bool CVoiceKeyer::open(float sampleRate, unsigned int blockSize)
 
 void CVoiceKeyer::close()
 {
-	if (m_file != NULL) {
+	if (m_file != NULL)
 		m_file->close();
-		delete m_file;
-	}
 
-	m_status = VOICE_STOPPED;
+	delete this;
 }
 
 void CVoiceKeyer::abort()
 {
 	if (m_file != NULL) {
 		m_file->close();
-		delete m_file;
 		m_file = NULL;
 	}
 
@@ -101,7 +98,6 @@ void CVoiceKeyer::send(const wxString& fileName, int status)
 	bool ret = m_file->open(m_sampleRate, m_blockSize);
 	if (!ret) {
 		::wxLogError(wxT("Unable to open sound file %s"), fileName.c_str());
-		delete m_file;
 		m_file = NULL;
 		return;
 	}

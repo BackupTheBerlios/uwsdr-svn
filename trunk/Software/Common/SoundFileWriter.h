@@ -38,7 +38,6 @@ class CSoundFileWriter : public IDataWriter {
 
     public:
     CSoundFileWriter(const wxString& fileName, unsigned int channels = 2, unsigned int sampleWidth = 16);
-	virtual ~CSoundFileWriter();
 
 	virtual bool open(float sampleRate, unsigned int blockSize);
 
@@ -48,6 +47,9 @@ class CSoundFileWriter : public IDataWriter {
 
 	virtual void enable(bool enable = true);
 	virtual void disable();
+
+    protected:
+	virtual ~CSoundFileWriter();
 
     private:
 	wxString     m_fileName;

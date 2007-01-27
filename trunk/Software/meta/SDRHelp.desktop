@@ -2,10 +2,10 @@
 Type=Application
 Version=1.0
 Name=SDR Help
-Name[de_DE]=SDR Help
+Name[de]=SDR Help
 Categories=Network;HamRadio
 Comment=The UWSDR Help program
-Comment[de_DE]=UWSDR Hilfe
+Comment[de]=UWSDR Hilfe
 Icon=SDRHelp.png
 Exec=/usr/bin/SDRHelp
 Terminal=false

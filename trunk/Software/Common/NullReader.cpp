@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 
 
 CNullReader::CNullReader(IDataReader* reader) :
-m_reader(reader),
+CThreadReader(reader),
 m_blockSize(0),
 m_buffer(NULL),
 m_callback(NULL),
@@ -33,7 +33,7 @@ m_id(0)
 
 CNullReader::~CNullReader()
 {
-	delete m_reader;
+	delete[] m_buffer;
 }
 
 void CNullReader::setCallback(IDataCallback* callback, int id)
@@ -44,14 +44,6 @@ void CNullReader::setCallback(IDataCallback* callback, int id)
 
 bool CNullReader::open(float sampleRate, unsigned int blockSize)
 {
-	if (m_reader != NULL) {
-		m_reader->setCallback(this, 0);
-
-		bool ret = m_reader->open(sampleRate, blockSize);
-		if (!ret)
-			return false;
-	}
-
 	m_blockSize = blockSize;
 
 	m_buffer = new float[m_blockSize * 2];
@@ -59,37 +51,14 @@ bool CNullReader::open(float sampleRate, unsigned int blockSize)
 	for (unsigned int i = 0; i < m_blockSize * 2; i++)
 		m_buffer[i] = 0.0F;
 
-	return true;
+	return CThreadReader::open(sampleRate, blockSize);
 }
 
-void CNullReader::close()
-{
-	if (m_reader != NULL)
-		m_reader->close();
-
-	delete[] m_buffer;
-}
-
-void CNullReader::purge()
-{
-}
-
-bool CNullReader::hasClock()
-{
-	return m_reader != NULL;
-}
-
-void CNullReader::clock()
+bool  CNullReader::create()
 {
 	wxASSERT(m_callback != NULL);
-	wxASSERT(m_buffer != NULL);
 
 	m_callback->callback(m_buffer, m_blockSize, m_id);
-}
 
-void CNullReader::callback(float* buffer, unsigned int nSamples, int id)
-{
-	::memset(buffer, 0x00, nSamples * 2 * sizeof(float));
-
-	clock();
+	return true;
 }

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -29,7 +29,6 @@ class CSDREmulatorReader : public wxThread, public IDataReader {
 
     public:
 	CSDREmulatorReader(const wxString& address, int port, unsigned int version);
-	virtual ~CSDREmulatorReader();
 
 	virtual void setCallback(IDataCallback* callback, int id);
 
@@ -43,6 +42,9 @@ class CSDREmulatorReader : public wxThread, public IDataReader {
 
 	virtual bool hasClock();
 	virtual void clock();
+
+    protected:
+	virtual ~CSDREmulatorReader();
 
     private:
 	wxString       m_address;

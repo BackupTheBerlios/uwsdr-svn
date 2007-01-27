@@ -304,3 +304,13 @@ GUI under Ubuntu looks almost as good as the Windows version :-)
 Muted transmit audio when on receive, this is an issue for the SoftRock TXRX.
 
 Added special driver for when the same audio device is used for reading and writing, this is needed for ALSA.
+
+Pre-load the .sdr files directory in the file selector dialog in GUISetup.
+
+Changed the Linux paths and defaults to match Ubuntu 6.10.
+
+Got local entries in the Gnome menus to work, sort of. See Build.txt.
+
+The internal clocking should now be more efficient as it now uses seperate threads.
+
+The UWSDR.desktop file in /usr/share/uwsdr is used as a template for the local .desktop files.
