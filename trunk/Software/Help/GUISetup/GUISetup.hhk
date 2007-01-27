@@ -46,8 +46,13 @@
               </object>
 
          <li> <object type="text/sitemap">
-                  <param name="Name" value="Desktop Icon">
+                  <param name="Name" value="Create Desktop Icon">
                   <param name="Local" value="CreateDesktopIcon.htm">
+              </object>
+
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="Create Menu Entry">
+                  <param name="Local" value="CreateMenuEntry.htm">
               </object>
 
          <li> <object type="text/sitemap">
@@ -103,11 +108,6 @@
          <li> <object type="text/sitemap">
                   <param name="Name" value="SDR IP Address">
                   <param name="Local" value="SDRIPAddress.htm">
-              </object>
-
-         <li> <object type="text/sitemap">
-                  <param name="Name" value="Start Menu Entry">
-                  <param name="Local" value="CreateStartMenu.htm">
               </object>
 
          <li> <object type="text/sitemap">

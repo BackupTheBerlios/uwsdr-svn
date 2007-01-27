@@ -21,6 +21,8 @@ Internationalisation
 
 Shading of the receive bandwidth on the spectrum display
 
+Include using LSB for CW, for use on the LF bands.
+
 
 Future
 ------

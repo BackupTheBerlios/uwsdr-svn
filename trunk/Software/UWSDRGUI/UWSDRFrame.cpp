@@ -1073,7 +1073,7 @@ void CUWSDRFrame::normaliseFreq()
 
 	// Adjust the display ONLY frequency
 	if (m_parameters->m_mode == MODE_CWW || m_parameters->m_mode == MODE_CWN)
-		dispFreq -= CW_OFFSET;
+		dispFreq += CW_OFFSET;
 
 	if (m_parameters->m_freqOffset != 0.0)
 		dispFreq += m_parameters->m_freqOffset;

@@ -100,9 +100,9 @@
          </ul>
 
          <li> <object type="text/sitemap">
-                  <param name="Name" value="Create Start Menu entry">
+                  <param name="Name" value="Create Menu entry">
                   <param name="ID" value=10>
-                  <param name="Local" value="CreateStartMenu.htm">
+                  <param name="Local" value="CreateMenuEntry.htm">
               </object>
          <li> <object type="text/sitemap">
                   <param name="Name" value="Create Desktop icon">

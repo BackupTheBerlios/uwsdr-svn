@@ -163,7 +163,7 @@ m_controlPin(-1)
 	wxString dir;
 	if (getDesktopDir(dir)) {
 #endif
-		wxStaticText* label7 = new wxStaticText(panel, -1, _("Create Start Menu entry:"));
+		wxStaticText* label7 = new wxStaticText(panel, -1, _("Create Menu entry:"));
 		panelSizer->Add(label7, 0, wxALL, BORDER_SIZE);
 
 		m_startMenu = new wxCheckBox(panel, -1, wxEmptyString);
@@ -237,7 +237,9 @@ void CGUISetupFrame::onBrowse(wxCommandEvent& event)
 	wxString sdrDir = DATA_DIR;
 #endif
 
-	wxFileDialog files(this, _("Choose an SDR Configuration File"), sdrDir, wxEmptyString, _("SDR files (*.sdr)|*.sdr"), wxFD_FILE_MUST_EXIST);
+	wxFileDialog files(this, _("Choose an SDR Configuration File"), wxEmptyString, wxEmptyString, _("SDR files (*.sdr)|*.sdr"), wxFD_FILE_MUST_EXIST);
+	files.SetDirectory(sdrDir);
+
 	int ret = files.ShowModal();
 
 	if (ret == wxID_OK) {
@@ -801,7 +803,7 @@ void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 		::wxRemoveFile(fileName);
 
 	wxTextFile outFile;
-	bool ret = outFile.Create(fileName);
+	ret = outFile.Create(fileName);
 	if (!ret) {
 		::wxMessageBox(_("Cannot create file: ") + fileName, _("GUISetup Error"), wxICON_ERROR);
 		inFile.Close();

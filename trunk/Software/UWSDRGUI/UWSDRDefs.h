@@ -250,7 +250,7 @@ const int CWKEYBOARD_COUNT    = 6;
 
 const int VOICEKEYER_COUNT    = 20;
 
-const int CW_OFFSET           = 800;
+const float CW_OFFSET            = 800.0F;
 
 const double FREQ_VERY_FAST_STEP = 500.0;
 const double FREQ_FAST_STEP      = 300.0;

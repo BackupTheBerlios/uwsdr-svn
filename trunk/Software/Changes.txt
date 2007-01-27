@@ -278,8 +278,8 @@ Added higher tuning rates to the tuning dial menu.
 Changed back to Visual C++ 6.0 for building Windows binaries.
 
 
-Version 0.7.3 - 2007
-=================================
+Version 0.7.3 - 27 January 2007
+===============================
 
 Removed the GRANT_TX build option.
 

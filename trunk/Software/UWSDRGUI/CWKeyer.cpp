@@ -167,7 +167,7 @@ void CCWKeyer::createSymbol(float* buffer, unsigned int len)
 {
 	wxASSERT(buffer != NULL);
 
-	float delta = float(CW_OFFSET) / m_sampleRate * 2.0 * M_PI;
+	float delta = CW_OFFSET / m_sampleRate * 2.0 * M_PI;
 
 	float cosVal = 1.0F;
 	float sinVal = 0.0F;
