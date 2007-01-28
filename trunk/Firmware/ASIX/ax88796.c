@@ -272,33 +272,6 @@ void ax88796Init(void)
 }
 
 
-//
-//void ax88796SetupPorts(void)
-//{
-//#if NIC_CONNECTION == GENERAL_IO
-//	// set address port to output
-//    AX88796_ADDRESS_DDR = AX88796_ADDRESS_MASK;
-//    
-//	// set data port to input with pull-ups
-//    AX88796_DATA_DDR = 0x00;
-//    AX88796_DATA_PORT = 0xFF;
-//
-//	// initialize the control port read and write pins to de-asserted
-//    AX88796_CONTROL_PORT |= _BV(AX88796_CONTROL_READPIN);
-//    AX88796_CONTROL_PORT |= _BV(AX88796_CONTROL_WRITEPIN);    
-//    // set the read and write pins to output
-//    AX88796_CONTROL_DDR |= _BV(AX88796_CONTROL_READPIN);
-//    AX88796_CONTROL_DDR |= _BV(AX88796_CONTROL_WRITEPIN);    
-//
-//#else
-//  	// enable external SRAM interface - no wait states
-//    MCUCR |= _BV(SRE);
-//#endif    
-//	// set reset pin to output
-//    AX88796_RESET_DDR |= _BV(AX88796_RESET_PIN);
-//}
-
-
 void ax88796BeginPacketSend(unsigned int packetLength)
 {
 	unsigned int sendPacketLength;
@@ -358,7 +331,7 @@ unsigned int ax88796BeginPacketRetreive(void)
 	
   // check for and handle an overflow
   ax88796ProcessInterrupt();
-  
+
   // read CURR from page 1
   ax88796Write(CR,(PS0|RD2|STOP));
   writePagePtr = ax88796Read(CURR);
@@ -373,15 +346,15 @@ unsigned int ax88796BeginPacketRetreive(void)
     readPagePtr = RXSTART_INIT;
 
   // clear the packet received interrupt flag
-  ax88796Write(ISR, PRX);
+  //ax88796Write(ISR, PRX);
   
   // return if there is no packet in the buffer
   if( readPagePtr == writePagePtr ) {
+    // clear the packet received interrupt flag
+    ax88796Write(ISR, PRX);
     return 0;
   }
   
-  // clear the packet received interrupt flag
-  ax88796Write(ISR, PRX);
   
   // if the boundary pointer is invalid,
   // reset the contents of the buffer and exit
@@ -420,6 +393,10 @@ unsigned int ax88796BeginPacketRetreive(void)
   currentRetreiveAddress = (readPagePtr<<8) + 4;
   
   // if the nextPage pointer is invalid, the packet is not ready yet - exit
+
+  // clear the packet received interrupt flag
+  ax88796Write(ISR, PRX);
+
   if( (nextPage >= RXSTOP_INIT) || (nextPage < RXSTART_INIT) ) {
     return 0;
   }
@@ -539,29 +516,29 @@ void ax88796Overrun(void)
 #define clr_mdo		ax88796Write(MEMR,ax88796Read(MEMR)&0xF7)
 
 #define mii_write	clr_mdo;  	 			  \
-					mii_clk;				  \
-					set_mdo;				  \
-					mii_clk;				  \
-					clr_mdo;  	 			  \
-					mii_clk;				  \
-					set_mdo;				  \
-					mii_clk;				  
+					mii_clk;		  \
+					set_mdo;		  \
+					mii_clk;      \
+					clr_mdo;      \
+					mii_clk;      \
+					set_mdo;	 \
+					mii_clk;	  
 					
-#define mii_read	clr_mdo;  	 			  \
-					mii_clk;				  \
-					set_mdo;				  \
-					mii_clk;				  \
-					set_mdo;  	 			  \
-					mii_clk;				  \
-					clr_mdo;				  \
+#define mii_read	clr_mdo;  	 		 \
+					mii_clk;	  \
+					set_mdo;	  \
+					mii_clk;	  \
+					set_mdo;  	  \
+					mii_clk;	  \
+					clr_mdo;	  \
 					mii_clk;				  
 
 #define mii_r_ta    mii_clk;				  \
 								  
 					
-#define mii_w_ta    set_mdo;				  \
-					mii_clk;				  \
-					clr_mdo;				  \
+#define mii_w_ta    set_mdo;				\
+					mii_clk;	\
+					clr_mdo;	\
 					mii_clk;				  
 			
 void ax88796WriteMii(unsigned char phyad,unsigned char regad,unsigned int mii_data)
@@ -655,13 +632,18 @@ unsigned int ax88796ReadMii(unsigned char phyad,unsigned char regad)
 }
 
 
-void ax88796ProcessInterrupt(void)
+int ax88796ProcessInterrupt(void)
 {
-	unsigned char byte = ax88796Read(ISR);
-	
-	if( byte & OVW )
-		ax88796Overrun();
-
+  unsigned char byte = ax88796Read(ISR);
+  
+  if( byte & OVW ) {
+    ax88796Overrun();
+    return -1;
+  }
+  if( byte & PRX ) {
+    return -2;
+  }
+  return 0;
 }
 
 //**************************************************************************
@@ -746,11 +728,11 @@ void LAN_ISR(void) //__irq
   //u32 packetLength;
   DBG_LED1_ON();
 
-  //__disable_interrupt(); 
+  __disable_interrupt(); 
   //EXTINT = EINT2;		/* clear interrupt */
   ax88796_process_irq();
   //VICVectAddr = 0;		/* Acknowledge Interrupt */
-  //__enable_interrupt();
+  __enable_interrupt();
 
   DBG_LED1_OFF();
 }
