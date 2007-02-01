@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GR /GX /O2 /Ob0 /I "C:\wxWidgets-2.8.0\lib\vc_dll\msw" /I "..\Common" /I "C:\wxWidgets-2.8.0\include" /I "..\PA19" /D "WIN32" /D "__WXMSW__" /D "WXUSINGDLL" /D "_WINDOWS" /D "NOPCH" /FD /c
+# ADD CPP /nologo /MD /W3 /GR /GX /O2 /Ob2 /I "C:\wxWidgets-2.8.0\lib\vc_dll\msw" /I "..\Common" /I "C:\wxWidgets-2.8.0\include" /I "..\PA19" /D "WIN32" /D "__WXMSW__" /D "WXUSINGDLL" /D "_WINDOWS" /D "NOPCH" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32

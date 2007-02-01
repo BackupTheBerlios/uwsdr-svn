@@ -93,7 +93,7 @@ void CFilterOVSV::setFilter(float lowFreq, float highFreq)
 {
 	ASSERT(::fabs(lowFreq) < 0.5 * m_samprate);
 	ASSERT(::fabs(highFreq) < 0.5 * m_samprate);
-	ASSERT((lowFreq + 10.0F) < highFreq);
+	ASSERT(::fabs(highFreq - lowFreq) >= 10.0F);
 
 	unsigned int fftLen = 2 * m_bufLen;
 	unsigned int ncoef  =  m_bufLen + 1;

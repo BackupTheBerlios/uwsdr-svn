@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -82,11 +82,15 @@ bool CSoundCardInfo::enumerateDevs(const CSoundCardAPI& api)
 		wxString name = device->name;
 
 #if defined(__WINDOWS__)
-		// Map the seperate names for the sound mapper under Windows to one name
+		// Map the seperate names for the sound mapper under Windows MME to one name
 		if (name.IsSameAs(wxT("Microsoft Sound Mapper - Input")))
 			name = wxT("Microsoft Sound Mapper");
 		if (name.IsSameAs(wxT("Microsoft Sound Mapper - Output")))
 			name = wxT("Microsoft Sound Mapper");
+
+		// Map the seperate names for the sound mapper under Windows DirectAudio to one name
+		if (name.IsSameAs(wxT("Primary Sound Capture Driver")))
+			name = wxT("Primary Sound Driver");
 #endif
 
 		if (device->maxInputChannels > 0 && device->hostApi == api.getAPI()) {
@@ -97,7 +101,7 @@ bool CSoundCardInfo::enumerateDevs(const CSoundCardAPI& api)
 				m_devs.push_back(dev);
 			}
 
-			dev->setIn(i, i == api.getInDefault());
+			dev->setIn(i, i == api.getInDefault(), device->maxInputChannels);
 		}
 
 		if (device->maxOutputChannels > 0 && device->hostApi == api.getAPI()) {
@@ -108,7 +112,7 @@ bool CSoundCardInfo::enumerateDevs(const CSoundCardAPI& api)
 				m_devs.push_back(dev);
 			}
 
-			dev->setOut(i, i == api.getOutDefault());
+			dev->setOut(i, i == api.getOutDefault(), device->maxOutputChannels);
 		}
 	}
 

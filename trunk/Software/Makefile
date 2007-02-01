@@ -33,6 +33,14 @@ Common/Common.a:
 		make -C Common
 
 install:
+		install -g bin -o root -m 0755 -d $(DATADIR)
+		install -g bin -o root -m 0664 Build.txt    $(DATADIR)
+		install -g bin -o root -m 0664 Changes.txt  $(DATADIR)
+		install -g bin -o root -m 0664 Copying.txt  $(DATADIR)
+		install -g bin -o root -m 0664 Install.txt  $(DATADIR)
+		install -g bin -o root -m 0664 Jobs.txt     $(DATADIR)
+		install -g bin -o root -m 0664 SoftRock.txt $(DATADIR)
+
 		make -C GUISetup install
 		make -C SDREmulator install
 		make -C SDRFiles install

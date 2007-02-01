@@ -62,31 +62,31 @@ const int VOICEKEYB_WIDTH  = 350;
 #elif defined(__WXMAC__)
 const int BUTTON_HEIGHT    = -1;
 
-const int FREQDIAL_WIDTH   = 150;
-const int FREQDIAL_HEIGHT  = 150;
+const int FREQDIAL_WIDTH   = 240;
+const int FREQDIAL_HEIGHT  = 240;
 
-const int VOLSQL_WIDTH     = 75;
-const int VOLSQL_HEIGHT    = 75;
+const int VOLSQL_WIDTH     = 90;
+const int VOLSQL_HEIGHT    = 90;
 
 const int TXBUTTON_WIDTH   = 90;
-const int TXBUTTON_HEIGHT  = 75;
+const int TXBUTTON_HEIGHT  = 90;
 
-const int SPECTRUM_WIDTH   = 480;
-const int SPECTRUM_HEIGHT  = 100;
+const int SPECTRUM_WIDTH   = 540;
+const int SPECTRUM_HEIGHT  = 130;
 
 const int FREQPAD_WIDTH    = 60;
 const int FREQPAD_HEIGHT   = 30;
 
-const int INFO_WIDTH       = 80;
-const int INFO_HEIGHT      = 70;
+const int INFO_WIDTH       = 100;
+const int INFO_HEIGHT      = 85;
 
-const int FREQUENCY_WIDTH  = 400;
-const int FREQUENCY_HEIGHT = 70;
+const int FREQUENCY_WIDTH  = 440;
+const int FREQUENCY_HEIGHT = 85;
 
 const int CONTROL_WIDTH    = 100;
 
-const int SMETER_WIDTH     = 195;
-const int SMETER_HEIGHT    = 70;
+const int SMETER_WIDTH     = 145;
+const int SMETER_HEIGHT    = 85;
 
 const int CWTEXT_WIDTH     = 650;
 const int CWKEYB_WIDTH     = 750;
@@ -157,10 +157,12 @@ enum {
 };
 
 enum {
-	MODE_CWN,
-	MODE_CWW,
+	MODE_CWUN,
+	MODE_CWUW,
 	MODE_USB,
 	MODE_LSB,
+	MODE_CWLN,
+	MODE_CWLW,
 	MODE_AM,
 	MODE_FMN,
 	MODE_FMW

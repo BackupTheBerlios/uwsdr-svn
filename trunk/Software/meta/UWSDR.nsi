@@ -13,8 +13,8 @@
 ;Configuration
 
   ;General
-  Name "UWSDR 0.7.3"
-  OutFile "UWSDR-0.7.3.exe"
+  Name "UWSDR 0.7.4"
+  OutFile "UWSDR-0.7.4.exe"
 
   ;Folder selection page
   InstallDir "$PROGRAMFILES\UWSDR"
@@ -69,6 +69,7 @@ Section "UWSDR Program Files" SecProgram
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Changes.txt"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Install.txt"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Jobs.txt"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SoftRock.txt"
 
   SetOutPath "$INSTDIR\SDR Files"
 
@@ -93,6 +94,7 @@ Section "UWSDR Program Files" SecProgram
   CreateShortCut "$SMPROGRAMS\UWSDR\Changes.lnk"   "$INSTDIR\Changes.txt"
   CreateShortCut "$SMPROGRAMS\UWSDR\Install.lnk"   "$INSTDIR\Install.txt"
   CreateShortCut "$SMPROGRAMS\UWSDR\TODO.lnk"      "$INSTDIR\Jobs.txt"
+  CreateShortCut "$SMPROGRAMS\UWSDR\SoftRock.lnk"  "$INSTDIR\SoftRock.txt"
   CreateShortCut "$SMPROGRAMS\UWSDR\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
 
   ;Store install folder

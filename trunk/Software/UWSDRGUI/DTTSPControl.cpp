@@ -118,9 +118,13 @@ void CDTTSPControl::setMode(int mode)
 		case MODE_LSB:
 			::SetMode(LSB);
 			break;
-		case MODE_CWW:
-		case MODE_CWN:
+		case MODE_CWUW:
+		case MODE_CWUN:
 			::SetMode(CWU);
+			break;
+		case MODE_CWLW:
+		case MODE_CWLN:
+			::SetMode(CWL);
 			break;
 		default:
 			::wxLogError(wxT("Unknown mode value = %d"), mode);
@@ -501,13 +505,16 @@ void CDTTSPControl::normaliseFilter()
 	double rxLow = 0.0, rxHigh = 0.0;
 	double txLow = 0.0, txHigh = 0.0;
 	switch (m_mode) {
+
 		case MODE_FMW:
 		case MODE_FMN:
 		case MODE_AM:
 			txHigh = rxHigh =  width / 2.0;
 			txLow  = rxLow  = -width / 2.0;
 			break;
+
 		case MODE_USB:
+		case MODE_LSB:
 			switch (m_filter) {
 				case FILTER_20000:
 				case FILTER_15000:
@@ -545,46 +552,11 @@ void CDTTSPControl::normaliseFilter()
 					break;
 			}
 			break;
-		case MODE_LSB:
-			switch (m_filter) {
-				case FILTER_20000:
-				case FILTER_15000:
-				case FILTER_10000:
-				case FILTER_6000:
-				case FILTER_4000:
-					txHigh = rxHigh = -100.0;
-					txLow  = rxLow  = -width - 100.0;
-					break;
-				case FILTER_2600:
-				case FILTER_2100:
-				case FILTER_1000:
-					txHigh = rxHigh = -200.0;
-					txLow  = rxLow  = -width - 200.0;
-					break;
-				case FILTER_500:
-					txHigh = rxHigh = -350.0;
-					txLow  = rxLow  = -850.0;
-					break;
-				case FILTER_250:
-					txHigh = rxHigh = -475.0;
-					txLow  = rxLow  = -725.0;
-					break;
-				case FILTER_100:
-					txHigh = rxHigh = -550.0;
-					txLow  = rxLow  = -650.0;
-					break;
-				case FILTER_50:
-					txHigh = rxHigh = -575.0;
-					txLow  = rxLow  = -625.0;
-					break;
-				case FILTER_25:
-					txHigh = rxHigh = -587.0;
-					txLow  = rxLow  = -613.0;
-					break;
-			}
-			break;
-		case MODE_CWW:
-		case MODE_CWN:
+
+		case MODE_CWUW:
+		case MODE_CWUN:
+		case MODE_CWLW:
+		case MODE_CWLN:
 			switch (m_filter) {
 				case FILTER_20000:
 				case FILTER_15000:
@@ -636,9 +608,23 @@ void CDTTSPControl::normaliseFilter()
 					break;
 			}
 			break;
+
 		default:
 			::wxLogError(wxT("Unknown mode value = %d"), m_mode);
 			return;
+	}
+
+	// Swap the filter values over
+	if (m_mode == MODE_LSB || m_mode == MODE_CWLN || m_mode == MODE_CWLW) {
+		double swap;
+
+		swap   = rxLow;
+		rxLow  = -rxHigh;
+		rxHigh = -swap;
+
+		swap   = txLow;
+		txLow  = -txHigh;
+		txHigh = -swap;
 	}
 
 	::SetFilter(rxLow, rxHigh, m_blockSize, RX);

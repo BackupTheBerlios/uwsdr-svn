@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -81,7 +81,9 @@ class CSoundCardDev {
 	m_inDev(-1L),
 	m_outDev(-1L),
 	m_inDef(false),
-	m_outDef(false)
+	m_outDef(false),
+	m_inChannels(0),
+	m_outChannels(0)
 	{
 	}
 
@@ -114,16 +116,28 @@ class CSoundCardDev {
 		return m_outDef;
 	}
 
-	void setIn(long inDev, bool inDef)
+	int getInChannels() const
 	{
-		m_inDev = inDev;
-		m_inDef = inDef;
+		return m_inChannels;
 	}
 
-	void setOut(long outDev, bool outDef)
+	int getOutChannels() const
 	{
-		m_outDev = outDev;
-		m_outDef = outDef;
+		return m_outChannels;
+	}
+
+	void setIn(long dev, bool def, int channels)
+	{
+		m_inDev      = dev;
+		m_inDef      = def;
+		m_inChannels = channels;
+	}
+
+	void setOut(long dev, bool def, int channels)
+	{
+		m_outDev      = dev;
+		m_outDef      = def;
+		m_outChannels = channels;
 	}
 
     private:
@@ -132,6 +146,8 @@ class CSoundCardDev {
 	long     m_outDev;
 	bool     m_inDef;
 	bool     m_outDef;
+	int      m_inChannels;
+	int      m_outChannels;
 };
 
 class CSoundCardInfo {

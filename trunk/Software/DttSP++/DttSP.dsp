@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GR /GX /O2 /Ob0 /I "C:\wxWidgets-2.8.0\lib\vc_dll\msw" /I "..\Common" /I "..\FFTW" /I "C:\wxWidgets-2.8.0\include" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D "__WXMSW__" /D "WXUSINGDLL" /FD /c
+# ADD CPP /nologo /MD /W3 /GR /GX /O2 /Ob2 /I "C:\wxWidgets-2.8.0\lib\vc_dll\msw" /I "..\Common" /I "..\FFTW" /I "C:\wxWidgets-2.8.0\include" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D "__WXMSW__" /D "WXUSINGDLL" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"

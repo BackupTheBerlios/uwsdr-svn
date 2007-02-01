@@ -87,8 +87,10 @@ void CFreqDial::drawDial()
 		bgColour = wxColour(0xEC, 0xE9, 0xD8);		// Windows XP and newer
 	else
 		bgColour = wxColour(0xD4, 0xD0, 0xC8);		// Windows 2000 and earlier
-#elif defined(__WXGTK__) || defined(__WXMAC__)
+#elif defined(__WXGTK__)
 	wxColour bgColour(0xED, 0xE9, 0xE3);
+#elif defined(__WXMAC__)
+	wxColour bgColour(0xF0, 0xF0, 0xF0);
 #else
 #error "Unknown platform"
 #endif

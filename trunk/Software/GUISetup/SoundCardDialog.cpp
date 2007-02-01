@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -69,20 +69,6 @@ m_outDev(outDev)
 	mainSizer->SetSizeHints(this);
 
 	enumerateAPI();
-
-	if (api != -1)
-		m_apiChoice->SetSelection(api);
-
-	if (api != -1 && outDev != -1L) {
-		CSoundCardAPI* sapi = m_info.getAPIs().at(api);
-		enumerateAudio(*sapi);
-
-		vector<CSoundCardDev*>& devs = m_info.getDevs();
-
-		for (unsigned int i = 0; i < devs.size(); i++)
-			if (devs.at(i)->getOutDev() == outDev)
-				m_devChoice->SetSelection(i);
-	}
 }
 
 CSoundCardDialog::~CSoundCardDialog()
@@ -99,7 +85,13 @@ void CSoundCardDialog::onAPI(wxCommandEvent& event)
 
 	CSoundCardAPI* api = m_info.getAPIs().at(audioAPI);
 
-	enumerateAudio(*api);
+	if (m_api != api->getAPI()) {
+		m_api    = api->getAPI();
+		m_inDev  = api->getInDefault();
+		m_outDev = api->getOutDefault();
+
+		enumerateAudio(*api);
+	}
 }
 
 void CSoundCardDialog::onOK(wxCommandEvent& event)
@@ -139,21 +131,27 @@ void CSoundCardDialog::enumerateAPI()
 	}
 
 	vector<CSoundCardAPI*>& apis = m_info.getAPIs();
-	CSoundCardAPI* defAPI = NULL;
+	CSoundCardAPI* chosen = NULL;
 
 	for (unsigned int i = 0; i < apis.size(); i++) {
 		CSoundCardAPI* api = apis.at(i);
 
 		m_apiChoice->Append(api->getName());
 
-		if (api->getDefault()) {
+		if (m_api != -1 && m_api == api->getAPI()) {
 			m_apiChoice->SetSelection(i);
-			defAPI = api;
+			chosen = api;
+		}
+
+		if (m_api == -1 && api->getDefault()) {
+			m_apiChoice->SetSelection(i);
+			m_api = api->getAPI();
+			chosen = api;
 		}
 	}
 
-	if (defAPI != NULL)
-		enumerateAudio(*defAPI);
+	if (chosen != NULL)
+		enumerateAudio(*chosen);
 }
 
 void CSoundCardDialog::enumerateAudio(const CSoundCardAPI& api)
@@ -172,10 +170,20 @@ void CSoundCardDialog::enumerateAudio(const CSoundCardAPI& api)
 	for (unsigned int  i = 0; i < devs.size(); i++) {
 		CSoundCardDev* dev = devs.at(i);
 
-		m_devChoice->Append(dev->getName());
+		if (dev->getInChannels() >= 2 && dev->getOutChannels() >= 2) {
+			m_devChoice->Append(dev->getName());
 
-		if (dev->getInDefault())
-			m_devChoice->SetSelection(i);
+			if (m_inDev != -1L && m_inDev == dev->getInDev()) {
+				m_devChoice->SetSelection(i);
+				m_outDev = dev->getOutDev();
+			}
+
+			if (m_inDev == -1L && dev->getInDefault()) {
+				m_devChoice->SetSelection(i);
+				m_inDev  = dev->getInDev();
+				m_outDev = dev->getOutDev();
+			}
+		}
 	}
 }
 

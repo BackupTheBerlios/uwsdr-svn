@@ -551,10 +551,12 @@ wxSizer* CUWSDRFrame::createModeChoice(wxWindow* window)
 
 	m_mode = new wxChoice(window, MODE_CHOICE, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
 
-	m_mode->Append(_("CW Narrow"));
-	m_mode->Append(_("CW Wide"));
+	m_mode->Append(_("CW (U) Narrow"));
+	m_mode->Append(_("CW (U) Wide"));
 	m_mode->Append(_("USB"));
 	m_mode->Append(_("LSB"));
+	m_mode->Append(_("CW (L) Narrow"));
+	m_mode->Append(_("CW (L) Wide"));
 	m_mode->Append(_("AM"));
 	m_mode->Append(_("FM Narrow"));
 	m_mode->Append(_("FM Wide"));
@@ -928,7 +930,7 @@ void CUWSDRFrame::onMuteButton(wxCommandEvent& event)
 void CUWSDRFrame::onTXButton(wxCommandEvent& event)
 {
 	// If we're not in CW mode, go to TX/RX
-	if (m_parameters->m_mode != MODE_CWW && m_parameters->m_mode != MODE_CWN) {
+	if (m_parameters->m_mode != MODE_CWUW && m_parameters->m_mode != MODE_CWUN && m_parameters->m_mode != MODE_CWLW && m_parameters->m_mode != MODE_CWLN) {
 		setTransmit();
 	} else {
 		// Else is in CW mode we can use the main Transmit button to abort a CW
@@ -1072,7 +1074,9 @@ void CUWSDRFrame::normaliseFreq()
 	CFrequency dispFreq = freq;
 
 	// Adjust the display ONLY frequency
-	if (m_parameters->m_mode == MODE_CWW || m_parameters->m_mode == MODE_CWN)
+	if (m_parameters->m_mode == MODE_CWUW || m_parameters->m_mode == MODE_CWUN)
+		dispFreq -= CW_OFFSET;
+	if (m_parameters->m_mode == MODE_CWLW || m_parameters->m_mode == MODE_CWLN)
 		dispFreq += CW_OFFSET;
 
 	if (m_parameters->m_freqOffset != 0.0)
@@ -1154,13 +1158,15 @@ void CUWSDRFrame::normaliseMode()
 			m_dsp->setAGC(m_parameters->m_agcSSB);
 			speed = m_parameters->m_vfoSpeedSSB;
 			break;
-		case MODE_CWW:
+		case MODE_CWUW:
+		case MODE_CWLW:
 			if (filter == FILTER_AUTO)
 				filter = m_parameters->m_filterCWW;
 			m_dsp->setAGC(m_parameters->m_agcCW);
 			speed = m_parameters->m_vfoSpeedCWW;
 			break;
-		case MODE_CWN:
+		case MODE_CWUN:
+		case MODE_CWLN:
 			if (filter == FILTER_AUTO)
 				filter = m_parameters->m_filterCWN;
 			m_dsp->setAGC(m_parameters->m_agcCW);
@@ -1474,7 +1480,7 @@ void CUWSDRFrame::onClose(wxCloseEvent& event)
 void CUWSDRFrame::sendCW(unsigned int speed, const wxString& text)
 {
 	// If we're not in CW mode; show an error
-	if (m_parameters->m_mode != MODE_CWW && m_parameters->m_mode != MODE_CWN) {
+	if (m_parameters->m_mode != MODE_CWUW && m_parameters->m_mode != MODE_CWUN && m_parameters->m_mode != MODE_CWLW && m_parameters->m_mode != MODE_CWLN) {
 		::wxMessageBox(_("Not in a CW mode!"), _("uWave SDR Error"), wxICON_ERROR);
 		return;
 	}
@@ -1501,7 +1507,7 @@ void CUWSDRFrame::sendCW(unsigned int speed, const wxString& text)
 void CUWSDRFrame::sendAudio(const wxString& fileName, int state)
 {
 	// If we're in CW mode; show an error
-	if (m_parameters->m_mode == MODE_CWW || m_parameters->m_mode == MODE_CWN) {
+	if (m_parameters->m_mode == MODE_CWUW || m_parameters->m_mode == MODE_CWUN || m_parameters->m_mode == MODE_CWLW || m_parameters->m_mode == MODE_CWLN) {
 		::wxMessageBox(_("Not in a voice mode!"), _("uWave SDR Error"), wxICON_ERROR);
 		return;
 	}

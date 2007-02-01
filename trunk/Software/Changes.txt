@@ -314,3 +314,21 @@ Got local entries in the Gnome menus to work, sort of. See Build.txt.
 The internal clocking should now be more efficient as it now uses seperate threads.
 
 The UWSDR.desktop file in /usr/share/uwsdr is used as a template for the local .desktop files.
+
+
+Version 0.7.4 - February 2007
+================================
+
+Added SoftRock.txt to explain how to use the GUI with them.
+
+Install the text files into /usr/share/uwsdr.
+
+Hopefully sort out the bizarre behaviour of GUISetup with sound cards.
+
+Match the dimensions and colours for Mac OS X.
+
+Add a set of LSB based CW modes to the mode selection.
+
+Fixed frequency offsets for the display on CW.
+
+Fixed the LSB based filter bandwidths, they are now the mirror image of the USB ones.

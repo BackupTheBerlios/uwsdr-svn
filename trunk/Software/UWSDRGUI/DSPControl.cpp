@@ -275,10 +275,10 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 			if (id != TX_READER)
 				m_txReader->clock();
 
-			if (m_cwKeyer->isActive() && (m_mode == MODE_CWN || m_mode == MODE_CWW))
+			if (m_cwKeyer->isActive() && (m_mode == MODE_CWUN || m_mode == MODE_CWUW || m_mode == MODE_CWLN || m_mode == MODE_CWLW))
 				m_cwKeyer->clock();
 
-			if (m_voiceKeyer->isActive() && m_mode != MODE_CWN && m_mode != MODE_CWW)
+			if (m_voiceKeyer->isActive() && m_mode != MODE_CWUN && m_mode != MODE_CWUW && m_mode != MODE_CWLN && m_mode != MODE_CWLW)
 				m_voiceKeyer->clock();
 		} else {
 			if (id != RX_READER)
@@ -309,9 +309,9 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 					return;
 
 				// If the voice or CW keyer are active, exit
-				if (m_voiceKeyer->isActive() && m_mode != MODE_CWN && m_mode != MODE_CWW)
+				if (m_voiceKeyer->isActive() && m_mode != MODE_CWUN && m_mode != MODE_CWUW && m_mode != MODE_CWLN && m_mode != MODE_CWLW)
 					return;
-				if (m_cwKeyer->isActive() && (m_mode == MODE_CWN || m_mode == MODE_CWW))
+				if (m_cwKeyer->isActive() && (m_mode == MODE_CWUN || m_mode == MODE_CWUW || m_mode == MODE_CWLN || m_mode == MODE_CWLW))
 					return;
 
 				scaleBuffer(inBuffer, nSamples, m_micGain);
@@ -331,7 +331,7 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 				if (!m_transmit)
 					return;
 
-				if (m_mode == MODE_CWN || m_mode == MODE_CWW)
+				if (m_mode == MODE_CWUN || m_mode == MODE_CWUW || m_mode == MODE_CWLN || m_mode == MODE_CWLW)
 					return;				
 
 				scaleBuffer(inBuffer, nSamples, m_micGain);
@@ -351,7 +351,7 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 				if (!m_transmit)
 					return;
 
-				if (m_mode != MODE_CWN && m_mode != MODE_CWW)
+				if (m_mode != MODE_CWUN && m_mode != MODE_CWUW && m_mode != MODE_CWLN && m_mode != MODE_CWLW)
 					return;
 
 				scaleBuffer(inBuffer, nSamples, 0.9F);
