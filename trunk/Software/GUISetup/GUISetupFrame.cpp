@@ -46,6 +46,20 @@ const wxString NAME_TOKEN        = wxT("@NAME@");
 #include <shlobj.h>
 #endif
 
+const struct {
+	bool userAudioButton;
+	bool sdrAudioButton;
+	bool ethernetButton;
+	bool portButton;
+	bool txOutData;
+	bool audioCheck;
+} featureList[] = {
+	{true, true,  false, false, false, false},	// TYPE_AUDIORX
+	{true, true,  false, true,  true,  true},	// TYPE_AUDIOTXRX
+	{true, false, false, true,  false, false},	// TYPE_DEMO
+	{true, false, true,  true,  false, false}	// TYPE_UWSDR1
+};
+
 const int CREATE_BUTTON     = 27543;
 const int BROWSE_BUTTON     = 27544;
 const int USER_AUDIO_BUTTON = 27545;
@@ -249,51 +263,37 @@ void CGUISetupFrame::onBrowse(wxCommandEvent& event)
 
 	int ret = files.ShowModal();
 
-	if (ret == wxID_OK) {
-		m_filename = files.GetPath();
+	if (ret != wxID_OK)
+		return;
 
-		wxFileName filePath(m_filename);
+	m_filename = files.GetPath();
 
-		m_filenameText->SetValue(filePath.GetFullName());
+	wxFileName filePath(m_filename);
 
-		// Clear everything
-		m_userAudio->Disable();
-		m_sdrAudio->Disable();
-		m_ethernet->Disable();
-		m_port->Disable();
+	m_filenameText->SetValue(filePath.GetFullName());
 
-		CSDRDescrFile file(m_filename);
-		if (!file.isValid()) {
-			::wxMessageBox(_("Cannot open the SDR File"), _("GUISetup Error"), wxICON_ERROR);
-			return;
-		}
+	// Clear everything
+	m_userAudio->Disable();
+	m_sdrAudio->Disable();
+	m_ethernet->Disable();
+	m_port->Disable();
 
-		m_sdrType = file.getType();
-
-		switch (m_sdrType) {
-			case TYPE_AUDIORX:
-				m_userAudio->Enable();
-				m_sdrAudio->Enable();
-				break;
-
-			case TYPE_AUDIOTXRX:
-				m_userAudio->Enable();
-				m_sdrAudio->Enable();
-				m_port->Enable();
-				break;
-
-			case TYPE_DEMO:
-				m_userAudio->Enable();
-				m_port->Enable();
-				break;
-
-			case TYPE_UWSDR1:
-				m_userAudio->Enable();
-				m_ethernet->Enable();
-				m_port->Enable();
-				break;
-		}
+	CSDRDescrFile file(m_filename);
+	if (!file.isValid()) {
+		::wxMessageBox(_("Cannot open the SDR File"), _("GUISetup Error"), wxICON_ERROR);
+		return;
 	}
+
+	m_sdrType = file.getType();
+
+	if (featureList[m_sdrType].userAudioButton)
+		m_userAudio->Enable();
+	if (featureList[m_sdrType].sdrAudioButton)
+		m_sdrAudio->Enable();
+	if (featureList[m_sdrType].ethernetButton)
+		m_ethernet->Enable();
+	if (featureList[m_sdrType].portButton)
+		m_port->Enable();
 }
 
 void CGUISetupFrame::onCreate(wxCommandEvent& event)
@@ -325,40 +325,39 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 
 	m_sdrType = file.getType();
 
-	if (m_userAudioAPI == -1 || m_userAudioInDev == -1L || m_userAudioOutDev == -1L) {
-		::wxMessageBox(_("The User Audio has not been set"), _("GUISetup Error"), wxICON_ERROR);
-		return;
+	if (featureList[m_sdrType].userAudioButton) {
+		if (m_userAudioAPI == -1 || m_userAudioInDev == -1L || m_userAudioOutDev == -1L) {
+			::wxMessageBox(_("The User Audio has not been set"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
 	}
 
-	switch (m_sdrType) {
-		case TYPE_AUDIORX:
-			if (m_sdrAudioAPI == -1 || m_sdrAudioInDev == -1L || m_sdrAudioOutDev == -1L) {
-				::wxMessageBox(_("The SDR Audio has not been set"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-			break;
-		case TYPE_AUDIOTXRX:
-			if (m_sdrAudioAPI == -1 || m_sdrAudioInDev == -1L || m_sdrAudioOutDev == -1L) {
-				::wxMessageBox(_("The SDR Audio has not been set"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-			if (m_txOutDev.IsEmpty() || m_txOutPin == -1) {
-				::wxMessageBox(_("The Transmit Out Port has not been set"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-			if (m_sdrAudioAPI == m_userAudioAPI && (m_sdrAudioInDev == m_userAudioInDev || m_sdrAudioOutDev == m_userAudioOutDev)) {
-				::wxMessageBox(_("The SDR Audio cannot be the same as the User Audio"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-			break;
-		case TYPE_UWSDR1:
-			if (m_ipAddress.IsEmpty() || m_controlPort == -1L || m_dataPort == -1L) {
-				::wxMessageBox(_("The Ethernet has not been set"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-			break;
-		default:
-			break;
+	if (featureList[m_sdrType].sdrAudioButton) {
+		if (m_sdrAudioAPI == -1 || m_sdrAudioInDev == -1L || m_sdrAudioOutDev == -1L) {
+			::wxMessageBox(_("The SDR Audio has not been set"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
+	}
+
+	if (featureList[m_sdrType].audioCheck) {
+		if (m_sdrAudioAPI == m_userAudioAPI && (m_sdrAudioInDev == m_userAudioInDev || m_sdrAudioOutDev == m_userAudioOutDev)) {
+			::wxMessageBox(_("The SDR Audio cannot be the same as the User Audio"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
+	}
+
+	if (featureList[m_sdrType].ethernetButton) {
+		if (m_ipAddress.IsEmpty() || m_controlPort == -1L || m_dataPort == -1L) {
+			::wxMessageBox(_("The Ethernet has not been set"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
+	}
+
+	if (featureList[m_sdrType].txOutData) {
+		if (m_txOutDev.IsEmpty() || m_txOutPin == -1) {
+			::wxMessageBox(_("The Transmit Out Port has not been set"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
 	}
 
 	wxConfig* config = new wxConfig(wxT("UWSDR"));
@@ -395,101 +394,105 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 		return;
 	}
 
-	ret = config->Write(userAudioAPIKey, m_userAudioAPI);
-	if (!ret) {
-		::wxMessageBox(_("Unable to write configuration data - UserAudioAPI"), _("GUISetup Error"), wxICON_ERROR);
-		return;
+	if (featureList[m_sdrType].userAudioButton) {
+		bool ret = config->Write(userAudioAPIKey, m_userAudioAPI);
+		if (!ret) {
+			::wxMessageBox(_("Unable to write configuration data - UserAudioAPI"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
+
+		ret = config->Write(userAudioOutDevKey, m_userAudioOutDev);
+		if (!ret) {
+			::wxMessageBox(_("Unable to write configuration data - UserAudioOutDev"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
+
+		ret = config->Write(userAudioInDevKey, m_userAudioInDev);
+		if (!ret) {
+			::wxMessageBox(_("Unable to write configuration data - UserAudioInDev"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
 	}
 
-	ret = config->Write(userAudioOutDevKey, m_userAudioOutDev);
-	if (!ret) {
-		::wxMessageBox(_("Unable to write configuration data - UserAudioOutDev"), _("GUISetup Error"), wxICON_ERROR);
-		return;
+	if (featureList[m_sdrType].sdrAudioButton) {
+		bool ret = config->Write(sdrAudioAPIKey, m_sdrAudioAPI);
+		if (!ret) {
+			::wxMessageBox(_("Unable to write configuration data - SDRAudioAPI"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
+
+		ret = config->Write(sdrAudioOutDevKey, m_sdrAudioOutDev);
+		if (!ret) {
+			::wxMessageBox(_("Unable to write configuration data - SDRAudioOutDev"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
+
+		ret = config->Write(sdrAudioInDevKey, m_sdrAudioInDev);
+		if (!ret) {
+			::wxMessageBox(_("Unable to write configuration data - SDRAudioInDev"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
 	}
 
-	ret = config->Write(userAudioInDevKey, m_userAudioInDev);
-	if (!ret) {
-		::wxMessageBox(_("Unable to write configuration data - UserAudioInDev"), _("GUISetup Error"), wxICON_ERROR);
-		return;
+	if (featureList[m_sdrType].ethernetButton) {
+		bool ret = config->Write(ipAddressKey, m_ipAddress);
+		if (!ret) {
+			::wxMessageBox(_("Unable to write configuration data - IPAddress"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
+
+		ret = config->Write(controlPortKey, m_controlPort);
+		if (!ret) {
+			::wxMessageBox(_("Unable to write configuration data - ControlPort"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
+
+		ret = config->Write(dataPortKey, m_dataPort);
+		if (!ret) {
+			::wxMessageBox(_("Unable to write configuration data - DataPort"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
 	}
 
-	switch (m_sdrType) {
-		case TYPE_AUDIORX:
-			ret = config->Write(sdrAudioAPIKey, m_sdrAudioAPI);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - SDRAudioAPI"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
+	if (featureList[m_sdrType].portButton) {
+		bool ret = config->Write(txInEnableKey, m_txInEnable);
+		if (!ret) {
+			::wxMessageBox(_("Unable to write configuration data - TXInEnable"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
 
-			ret = config->Write(sdrAudioOutDevKey, m_sdrAudioOutDev);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - SDRAudioOutDev"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
+		ret = config->Write(txInDevKey, m_txInDev);
+		if (!ret) {
+			::wxMessageBox(_("Unable to write configuration data - TXInDev"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
 
-			ret = config->Write(sdrAudioInDevKey, m_sdrAudioInDev);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - SDRAudioInDev"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-			break;
+		ret = config->Write(txInPinKey, m_txInPin);
+		if (!ret) {
+			::wxMessageBox(_("Unable to write configuration data - TXInPin"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
 
-		case TYPE_AUDIOTXRX:
-			ret = config->Write(sdrAudioAPIKey, m_sdrAudioAPI);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - SDRAudioAPI"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
+		ret = config->Write(keyInEnableKey, m_keyInEnable);
+		if (!ret) {
+			::wxMessageBox(_("Unable to write configuration data - KeyInEnable"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
 
-			ret = config->Write(sdrAudioOutDevKey, m_sdrAudioOutDev);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - SDRAudioOutDev"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
+		ret = config->Write(keyInDevKey, m_keyInDev);
+		if (!ret) {
+			::wxMessageBox(_("Unable to write configuration data - KeyInDev"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
 
-			ret = config->Write(sdrAudioInDevKey, m_sdrAudioInDev);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - SDRAudioInDev"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
+		ret = config->Write(keyInPinKey, m_keyInPin);
+		if (!ret) {
+			::wxMessageBox(_("Unable to write configuration data - KeyInPin"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
 
-			ret = config->Write(txInEnableKey, m_txInEnable);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - TXInEnable"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-
-			ret = config->Write(txInDevKey, m_txInDev);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - TXInDev"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-
-			ret = config->Write(txInPinKey, m_txInPin);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - TXInPin"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-
-			ret = config->Write(keyInEnableKey, m_keyInEnable);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - KeyInEnable"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-
-			ret = config->Write(keyInDevKey, m_keyInDev);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - KeyInDev"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-
-			ret = config->Write(keyInPinKey, m_keyInPin);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - KeyInPin"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-
-			ret = config->Write(txOutDevKey, m_txOutDev);
+		if (featureList[m_sdrType].txOutData) {
+			bool ret = config->Write(txOutDevKey, m_txOutDev);
 			if (!ret) {
 				::wxMessageBox(_("Unable to write configuration data - TXOutDev"), _("GUISetup Error"), wxICON_ERROR);
 				return;
@@ -500,104 +503,7 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 				::wxMessageBox(_("Unable to write configuration data - TXOutPin"), _("GUISetup Error"), wxICON_ERROR);
 				return;
 			}
-			break;
-
-		case TYPE_DEMO:
-			ret = config->Write(txInEnableKey, m_txInEnable);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - TXInEnable"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-
-			ret = config->Write(txInDevKey, m_txInDev);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - TXInDev"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-
-			ret = config->Write(txInPinKey, m_txInPin);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - TXInPin"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-
-			ret = config->Write(keyInEnableKey, m_keyInEnable);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - KeyInEnable"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-
-			ret = config->Write(keyInDevKey, m_keyInDev);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - KeyInDev"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-
-			ret = config->Write(keyInPinKey, m_keyInPin);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - KeyInPin"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-			break;
-
-		case TYPE_UWSDR1:
-			ret = config->Write(ipAddressKey, m_ipAddress);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - IPAddress"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-
-			ret = config->Write(controlPortKey, m_controlPort);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - ControlPort"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-
-			ret = config->Write(dataPortKey, m_dataPort);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - DataPort"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-
-			ret = config->Write(txInEnableKey, m_txInEnable);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - TXInEnable"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-
-			ret = config->Write(txInDevKey, m_txInDev);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - TXInDev"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-
-			ret = config->Write(txInPinKey, m_txInPin);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - TXInPin"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-
-			ret = config->Write(keyInEnableKey, m_keyInEnable);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - KeyInEnable"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-
-			ret = config->Write(keyInDevKey, m_keyInDev);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - KeyInDev"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-
-			ret = config->Write(keyInPinKey, m_keyInPin);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - KeyInPin"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-			break;
-
-		default:
-			break;
+		}
 	}
 
 	config->Flush();
@@ -728,29 +634,14 @@ void CGUISetupFrame::readConfig(const wxString& name)
 
 	m_sdrType = file.getType();
 
-	switch (m_sdrType) {
-		case TYPE_AUDIORX:
-			m_userAudio->Enable();
-			m_sdrAudio->Enable();
-			break;
-
-		case TYPE_AUDIOTXRX:
-			m_userAudio->Enable();
-			m_sdrAudio->Enable();
-			m_port->Enable();
-			break;
-
-		case TYPE_DEMO:
-			m_userAudio->Enable();
-			m_port->Enable();
-			break;
-
-		case TYPE_UWSDR1:
-			m_userAudio->Enable();
-			m_ethernet->Enable();
-			m_port->Enable();
-			break;
-	}
+	if (featureList[m_sdrType].userAudioButton)
+		m_userAudio->Enable();
+	if (featureList[m_sdrType].sdrAudioButton)
+		m_sdrAudio->Enable();
+	if (featureList[m_sdrType].ethernetButton)
+		m_ethernet->Enable();
+	if (featureList[m_sdrType].portButton)
+		m_port->Enable();
 }
 
 void CGUISetupFrame::onUserAudio(wxCommandEvent& event)
@@ -791,9 +682,7 @@ void CGUISetupFrame::onEthernet(wxCommandEvent& event)
 
 void CGUISetupFrame::onPort(wxCommandEvent& event)
 {
-	bool showTXOut = m_sdrType == TYPE_AUDIOTXRX;
-
-	CPortDialog dialog(this, _("Control Port Setup"), showTXOut);
+	CPortDialog dialog(this, _("Control Port Setup"), featureList[m_sdrType].txOutData);
 
 	dialog.setTXInEnable(m_txInEnable);
 	dialog.setTXInDev(m_txInDev);
@@ -807,18 +696,19 @@ void CGUISetupFrame::onPort(wxCommandEvent& event)
 	dialog.setTXOutPin(m_txOutPin);
 
 	int ret = dialog.ShowModal();
-	if (ret == wxID_OK) {
-		m_txInEnable = dialog.getTXInEnable();
-		m_txInDev    = dialog.getTXInDev();
-		m_txInPin    = dialog.getTXInPin();
+	if (ret != wxID_OK)
+		return;
 
-		m_keyInEnable = dialog.getKeyInEnable();
-		m_keyInDev    = dialog.getKeyInDev();
-		m_keyInPin    = dialog.getKeyInPin();
+	m_txInEnable = dialog.getTXInEnable();
+	m_txInDev    = dialog.getTXInDev();
+	m_txInPin    = dialog.getTXInPin();
 
-		m_txOutDev = dialog.getTXOutDev();
-		m_txOutPin = dialog.getTXOutPin();
-	}
+	m_keyInEnable = dialog.getKeyInEnable();
+	m_keyInDev    = dialog.getKeyInDev();
+	m_keyInPin    = dialog.getKeyInPin();
+
+	m_txOutDev = dialog.getTXOutDev();
+	m_txOutPin = dialog.getTXOutPin();
 }
 
 #if defined(__WXMSW__)

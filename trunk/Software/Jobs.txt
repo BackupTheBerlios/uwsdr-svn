@@ -11,8 +11,6 @@ TODO
 
 Upgrade GUISetup for Mac OS X icons and menu entries
 
-Create a Linux DEB for Ubuntu
-
 Set of screenshots for all platforms
 
 Sort out building with Visual C++ Express
@@ -20,8 +18,6 @@ Sort out building with Visual C++ Express
 Internationalisation
 
 Shading of the receive bandwidth on the spectrum display
-
-Include using LSB for CW, for use on the LF bands.
 
 
 Future
