@@ -332,3 +332,5 @@ Add a set of LSB based CW modes to the mode selection.
 Fixed frequency offsets for the display on CW.
 
 Fixed the LSB based filter bandwidths, they are now the mirror image of the USB ones.
+
+Added serial port input ports for an external key and transmit control.

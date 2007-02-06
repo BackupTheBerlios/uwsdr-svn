@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -69,8 +69,14 @@ const wxString KEY_FILTER_CWN         = wxT("/FilterCWN");
 const wxString KEY_IP_ADDRESS         = wxT("/IPAddress");
 const wxString KEY_CONTROL_PORT       = wxT("/ControlPort");
 const wxString KEY_DATA_PORT          = wxT("/DataPort");
-const wxString KEY_CONTROL_DEVICE     = wxT("/ControlDevice");
-const wxString KEY_CONTROL_PIN        = wxT("/ControlPin");
+const wxString KEY_TX_IN_ENABLE       = wxT("/TXInEnable");
+const wxString KEY_TX_IN_DEV          = wxT("/TXInDev");
+const wxString KEY_TX_IN_PIN          = wxT("/TXInPin");
+const wxString KEY_KEY_IN_ENABLE      = wxT("/KeyInEnable");
+const wxString KEY_KEY_IN_DEV         = wxT("/KeyInDev");
+const wxString KEY_KEY_IN_PIN         = wxT("/KeyInPin");
+const wxString KEY_TX_OUT_DEV         = wxT("/TXOutDev");
+const wxString KEY_TX_OUT_PIN         = wxT("/TXOutPin");
 const wxString KEY_USER_AUDIO_API     = wxT("/UserAudioAPI");
 const wxString KEY_USER_AUDIO_IN_DEV  = wxT("/UserAudioInDev");
 const wxString KEY_USER_AUDIO_OUT_DEV = wxT("/UserAudioOutDev");
@@ -320,8 +326,14 @@ bool CUWSDRApp::readConfig()
 	wxString keyIpAddress       = wxT("/") + m_parameters->m_name + KEY_IP_ADDRESS;
 	wxString keyControlPort     = wxT("/") + m_parameters->m_name + KEY_CONTROL_PORT;
 	wxString keyDataPort        = wxT("/") + m_parameters->m_name + KEY_DATA_PORT;
-	wxString keyControlDevice   = wxT("/") + m_parameters->m_name + KEY_CONTROL_DEVICE;
-	wxString keyControlPin      = wxT("/") + m_parameters->m_name + KEY_CONTROL_PIN;
+	wxString keyTXInEnable      = wxT("/") + m_parameters->m_name + KEY_TX_IN_ENABLE;
+	wxString keyTXInDev         = wxT("/") + m_parameters->m_name + KEY_TX_IN_DEV;
+	wxString keyTXInPin         = wxT("/") + m_parameters->m_name + KEY_TX_IN_PIN;
+	wxString keyKeyInEnable     = wxT("/") + m_parameters->m_name + KEY_KEY_IN_ENABLE;
+	wxString keyKeyInDev        = wxT("/") + m_parameters->m_name + KEY_KEY_IN_DEV;
+	wxString keyKeyInPin        = wxT("/") + m_parameters->m_name + KEY_KEY_IN_PIN;
+	wxString keyTXOutDev        = wxT("/") + m_parameters->m_name + KEY_TX_OUT_DEV;
+	wxString keyTXOutPin        = wxT("/") + m_parameters->m_name + KEY_TX_OUT_PIN;
 	wxString keyUserAudioAPI    = wxT("/") + m_parameters->m_name + KEY_USER_AUDIO_API;
 	wxString keyUserAudioInDev  = wxT("/") + m_parameters->m_name + KEY_USER_AUDIO_IN_DEV;
 	wxString keyUserAudioOutDev = wxT("/") + m_parameters->m_name + KEY_USER_AUDIO_OUT_DEV;
@@ -467,8 +479,16 @@ bool CUWSDRApp::readConfig()
 	profile->Read(keyDataPort,         &num);
 	m_parameters->m_dataPort = num;
 
-	profile->Read(keyControlDevice,    &m_parameters->m_controlDevice);
-	profile->Read(keyControlPin,       &m_parameters->m_controlPin);
+	profile->Read(keyTXInEnable,       &m_parameters->m_txInEnable);
+	profile->Read(keyTXInDev,          &m_parameters->m_txInDev);
+	profile->Read(keyTXInPin,          &m_parameters->m_txInPin);
+
+	profile->Read(keyKeyInEnable,      &m_parameters->m_keyInEnable);
+	profile->Read(keyKeyInDev,         &m_parameters->m_keyInDev);
+	profile->Read(keyKeyInPin,         &m_parameters->m_keyInPin);
+
+	profile->Read(keyTXOutDev,         &m_parameters->m_txOutDev);
+	profile->Read(keyTXOutPin,         &m_parameters->m_txOutPin);
 
 	profile->Read(keyUserAudioAPI,     &m_parameters->m_userAudioAPI);
 	profile->Read(keyUserAudioInDev,   &m_parameters->m_userAudioInDev);

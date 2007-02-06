@@ -25,21 +25,51 @@
 class CPortDialog : public wxDialog {
 
     public:
-	CPortDialog(wxWindow* parent, const wxString& title, const wxString& device, int pin, int id = -1);
+	CPortDialog(wxWindow* parent, const wxString& title, bool setTXOut, int id = -1);
 	virtual ~CPortDialog();
 
-	void onDevice(wxCommandEvent& event);
+	void onTXInCheck(wxCommandEvent& event);
+	void onKeyInCheck(wxCommandEvent& event);
 	void onOK(wxCommandEvent& event);
 
-	virtual wxString getDevice() const;
-	virtual int      getPin() const;
+	virtual void     setTXInEnable(bool enable);
+	virtual void     setTXInDev(const wxString& dev);
+	virtual void     setTXInPin(int pin);
+	virtual bool     getTXInEnable() const;
+	virtual wxString getTXInDev() const;
+	virtual int      getTXInPin() const;
+
+	virtual void     setKeyInEnable(bool enable);
+	virtual void     setKeyInDev(const wxString& dev);
+	virtual void     setKeyInPin(int pin);
+	virtual bool     getKeyInEnable() const;
+	virtual wxString getKeyInDev() const;
+	virtual int      getKeyInPin() const;
+
+	virtual void     setTXOutDev(const wxString& dev);
+	virtual void     setTXOutPin(int pin);
+	virtual wxString getTXOutDev() const;
+	virtual int      getTXOutPin() const;
 
     private:
-	wxChoice* m_devChoice;
-	wxChoice* m_pinChoice;
+	wxCheckBox* m_txInSelect;
+	wxChoice*   m_txInDevChoice;
+	wxChoice*   m_txInPinChoice;
+	wxCheckBox* m_keyInSelect;
+	wxChoice*   m_keyInDevChoice;
+	wxChoice*   m_keyInPinChoice;
+	wxChoice*   m_txOutDevChoice;
+	wxChoice*   m_txOutPinChoice;
 
-	wxString  m_device;
-	int       m_pin;
+	bool      m_txInEnable;
+	wxString  m_txInDev;
+	int       m_txInPin;
+	bool      m_keyInEnable;
+	wxString  m_keyInDev;
+	int       m_keyInPin;
+	bool      m_txOutEnable;
+	wxString  m_txOutDev;
+	int       m_txOutPin;
 
 	DECLARE_EVENT_TABLE()
 };

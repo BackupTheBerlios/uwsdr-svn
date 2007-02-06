@@ -20,42 +20,114 @@
 
 #include "SerialControl.h"
 
+enum {
+	IN_RTS_CTS,
+	IN_RTS_DSR,
+	IN_DTR_DSR,
+	IN_DTR_CTS
+};
+
+enum {
+	OUT_RTS,
+	OUT_DTR
+};
 
 const int BORDER_SIZE     = 5;
-const int DATA_WIDTH      = 150;
+const int DATA_WIDTH      = 100;
 
+const int CHECK_TXIN  = 14286;
+const int CHECK_KEYIN = 14287;
 
 BEGIN_EVENT_TABLE(CPortDialog, wxDialog)
+	EVT_CHECKBOX(CHECK_TXIN,  CPortDialog::onTXInCheck)
+	EVT_CHECKBOX(CHECK_KEYIN, CPortDialog::onKeyInCheck)
 	EVT_BUTTON(wxID_OK, CPortDialog::onOK)
 END_EVENT_TABLE()
 
 
-CPortDialog::CPortDialog(wxWindow* parent, const wxString& title, const wxString& device, int pin, int id) :
+CPortDialog::CPortDialog(wxWindow* parent, const wxString& title, bool setTXOut, int id) :
 wxDialog(parent, id, title),
-m_devChoice(NULL),
-m_pinChoice(NULL),
-m_device(device),
-m_pin(pin)
+m_txInSelect(NULL),
+m_txInDevChoice(NULL),
+m_txInPinChoice(NULL),
+m_keyInSelect(NULL),
+m_keyInDevChoice(NULL),
+m_keyInPinChoice(NULL),
+m_txOutDevChoice(NULL),
+m_txOutPinChoice(NULL),
+m_txInEnable(true),
+m_txInDev(),
+m_txInPin(-1),
+m_keyInEnable(true),
+m_keyInDev(),
+m_keyInPin(-1),
+m_txOutEnable(setTXOut),
+m_txOutDev(),
+m_txOutPin(-1)
 {
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
 	wxPanel* panel = new wxPanel(this, -1);
 
-	wxFlexGridSizer* panelSizer = new wxFlexGridSizer(2);
+	wxFlexGridSizer* panelSizer = new wxFlexGridSizer(4);
 
-	wxStaticText* label1 = new wxStaticText(panel, -1, _("Device:"));
+	wxStaticText* dummy1 = new wxStaticText(panel, -1, wxEmptyString);
+	panelSizer->Add(dummy1, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* dummy2 = new wxStaticText(panel, -1, wxEmptyString);
+	panelSizer->Add(dummy2, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* label1 = new wxStaticText(panel, -1, _("Device"));
 	panelSizer->Add(label1, 0, wxALL, BORDER_SIZE);
 
-	m_devChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
-	panelSizer->Add(m_devChoice, 0, wxALL, BORDER_SIZE);
-
-	wxStaticText* label2 = new wxStaticText(panel, -1, _("Pin:"));
+	wxStaticText* label2 = new wxStaticText(panel, -1, _("Pin(s)"));
 	panelSizer->Add(label2, 0, wxALL, BORDER_SIZE);
 
-	m_pinChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
-	m_pinChoice->Append(wxT("RTS"));
-	m_pinChoice->Append(wxT("DTR"));
-	panelSizer->Add(m_pinChoice, 0, wxALL, BORDER_SIZE);
+	wxStaticText* label3 = new wxStaticText(panel, -1, _("Transmit In"));
+	panelSizer->Add(label3, 0, wxALL, BORDER_SIZE);
+
+	m_txInSelect = new wxCheckBox(panel, CHECK_TXIN, wxEmptyString);
+	panelSizer->Add(m_txInSelect, 0, wxALL, BORDER_SIZE);
+
+	m_txInDevChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	panelSizer->Add(m_txInDevChoice, 0, wxALL, BORDER_SIZE);
+
+	m_txInPinChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	m_txInPinChoice->Append(wxT("RTS + CTS"));
+	m_txInPinChoice->Append(wxT("RTS + DSR"));
+	m_txInPinChoice->Append(wxT("DTR + DSR"));
+	m_txInPinChoice->Append(wxT("DTR + CTS"));
+	panelSizer->Add(m_txInPinChoice, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* label4 = new wxStaticText(panel, -1, _("Key In"));
+	panelSizer->Add(label4, 0, wxALL, BORDER_SIZE);
+
+	m_keyInSelect = new wxCheckBox(panel, CHECK_KEYIN, wxEmptyString);
+	panelSizer->Add(m_keyInSelect, 0, wxALL, BORDER_SIZE);
+
+	m_keyInDevChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	panelSizer->Add(m_keyInDevChoice, 0, wxALL, BORDER_SIZE);
+
+	m_keyInPinChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	m_keyInPinChoice->Append(wxT("RTS + CTS"));
+	m_keyInPinChoice->Append(wxT("RTS + DSR"));
+	m_keyInPinChoice->Append(wxT("DTR + DSR"));
+	m_keyInPinChoice->Append(wxT("DTR + CTS"));
+	panelSizer->Add(m_keyInPinChoice, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* label5 = new wxStaticText(panel, -1, _("Transmit Out"));
+	panelSizer->Add(label5, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* dummy3 = new wxStaticText(panel, -1, wxEmptyString);
+	panelSizer->Add(dummy3, 0, wxALL, BORDER_SIZE);
+
+	m_txOutDevChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	panelSizer->Add(m_txOutDevChoice, 0, wxALL, BORDER_SIZE);
+
+	m_txOutPinChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	m_txOutPinChoice->Append(wxT("RTS"));
+	m_txOutPinChoice->Append(wxT("DTR"));
+	panelSizer->Add(m_txOutPinChoice, 0, wxALL, BORDER_SIZE);
 
 	panel->SetSizer(panelSizer);
 
@@ -67,27 +139,62 @@ m_pin(pin)
 
 	mainSizer->SetSizeHints(this);
 
-	wxArrayString devs = CSerialControl::getDevices();
+	m_txOutDevChoice->Enable(setTXOut);
+	m_txOutPinChoice->Enable(setTXOut);
+
+	wxArrayString devs = CSerialControl::getDevs();
 
 	for (unsigned int i = 0; i < devs.GetCount(); i++) {
 		wxString dev = devs.Item(i);
 
-		m_devChoice->Append(dev);
+		m_txInDevChoice->Append(dev);
+		m_keyInDevChoice->Append(dev);
+		m_txOutDevChoice->Append(dev);
 
-		if (!m_device.IsEmpty() && dev.IsSameAs(m_device))
-			m_devChoice->SetSelection(i);
+		if (!m_txInDev.IsEmpty() && dev.IsSameAs(m_txInDev))
+			m_txInDevChoice->SetSelection(i);
+
+		if (!m_keyInDev.IsEmpty() && dev.IsSameAs(m_keyInDev))
+			m_keyInDevChoice->SetSelection(i);
+
+		if (!m_txOutDev.IsEmpty() && dev.IsSameAs(m_txOutDev))
+			m_txOutDevChoice->SetSelection(i);
 	}
 
-	if (m_device.IsEmpty()) {
-		m_devChoice->SetSelection(0);
-		m_device = m_devChoice->GetStringSelection();
+	if (m_txInDev.IsEmpty()) {
+		m_txInDevChoice->SetSelection(0);
+		m_txInDev = m_txInDevChoice->GetStringSelection();
 	}
 
-	if (m_pin == -1) {
-		m_pinChoice->SetSelection(0);
-		m_pin = 0;
+	if (m_keyInDev.IsEmpty()) {
+		m_keyInDevChoice->SetSelection(0);
+		m_keyInDev = m_keyInDevChoice->GetStringSelection();
+	}
+
+	if (m_txOutDev.IsEmpty()) {
+		m_txOutDevChoice->SetSelection(0);
+		m_txOutDev = m_txOutDevChoice->GetStringSelection();
+	}
+
+	if (m_txInPin == -1) {
+		m_txInPinChoice->SetSelection(0);
+		m_txInPin = 0;
 	} else {
-		m_pinChoice->SetSelection(m_pin);
+		m_txInPinChoice->SetSelection(m_txInPin);
+	}
+
+	if (m_keyInPin == -1) {
+		m_keyInPinChoice->SetSelection(0);
+		m_keyInPin = 0;
+	} else {
+		m_keyInPinChoice->SetSelection(m_keyInPin);
+	}
+
+	if (m_txOutPin == -1) {
+		m_txOutPinChoice->SetSelection(0);
+		m_txOutPin = 0;
+	} else {
+		m_txOutPinChoice->SetSelection(m_txOutPin);
 	}
 }
 
@@ -95,22 +202,135 @@ CPortDialog::~CPortDialog()
 {
 }
 
+void CPortDialog::onTXInCheck(wxCommandEvent& event)
+{
+	bool enable = event.IsChecked();
+
+	m_txInDevChoice->Enable(enable);
+	m_txInPinChoice->Enable(enable);
+}
+
+void CPortDialog::onKeyInCheck(wxCommandEvent& event)
+{
+	bool enable = event.IsChecked();
+
+	m_keyInDevChoice->Enable(enable);
+	m_keyInPinChoice->Enable(enable);
+}
+
 void CPortDialog::onOK(wxCommandEvent& event)
 {
-	long dev = m_devChoice->GetSelection();
-	if (dev == wxNOT_FOUND) {
-		::wxMessageBox(_("The Device is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
-		return;
+	m_txInEnable = m_txInSelect->GetValue();
+
+	if (m_txInEnable) {
+		long dev = m_txInDevChoice->GetSelection();
+		if (dev == wxNOT_FOUND) {
+			::wxMessageBox(_("The Transmit In Device is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
+
+		long pin = m_txInPinChoice->GetSelection();
+		if (pin == wxNOT_FOUND) {
+			::wxMessageBox(_("The Transmit In Pin is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
 	}
 
-	long pin = m_pinChoice->GetSelection();
-	if (pin == wxNOT_FOUND) {
-		::wxMessageBox(_("The Pin is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
-		return;
+	m_keyInEnable = m_keyInSelect->GetValue();
+
+	if (m_keyInEnable) {
+		long dev = m_keyInDevChoice->GetSelection();
+		if (dev == wxNOT_FOUND) {
+			::wxMessageBox(_("The Key In Device is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
+
+		long pin = m_keyInPinChoice->GetSelection();
+		if (pin == wxNOT_FOUND) {
+			::wxMessageBox(_("The Key In Pin is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
 	}
 
-	m_device = m_devChoice->GetStringSelection();
-	m_pin    = m_pinChoice->GetSelection();
+	if (m_txOutEnable) {
+		long dev = m_txOutDevChoice->GetSelection();
+		if (dev == wxNOT_FOUND) {
+			::wxMessageBox(_("The Transmit Out Device is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
+
+		long pin = m_txOutPinChoice->GetSelection();
+		if (pin == wxNOT_FOUND) {
+			::wxMessageBox(_("The Transmit Out Pin is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
+			return;
+		}
+	}
+
+	if (m_txInEnable && m_keyInEnable) {
+		wxString  txInDev = m_txInDevChoice->GetStringSelection();
+		int       txInPin = m_txInPinChoice->GetSelection();
+		wxString keyInDev = m_keyInDevChoice->GetStringSelection();
+		int      keyInPin = m_keyInPinChoice->GetSelection();
+
+		if (txInDev.IsSameAs(keyInDev)) {
+			if (txInPin == IN_RTS_CTS && keyInPin == IN_RTS_CTS ||
+				txInPin == IN_RTS_CTS && keyInPin == IN_DTR_CTS ||
+				txInPin == IN_RTS_DSR && keyInPin == IN_RTS_DSR ||
+				txInPin == IN_RTS_DSR && keyInPin == IN_DTR_DSR ||
+			    txInPin == IN_DTR_DSR && keyInPin == IN_RTS_DSR ||
+				txInPin == IN_DTR_DSR && keyInPin == IN_DTR_DSR ||
+				txInPin == IN_DTR_CTS && keyInPin == IN_RTS_CTS ||
+				txInPin == IN_DTR_CTS && keyInPin == IN_DTR_CTS) {
+				::wxMessageBox(_("The Transmit In and Key In may not conflict"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+		}
+	}
+
+	if (m_txInEnable && m_txOutEnable) {
+		wxString  txInDev = m_txInDevChoice->GetStringSelection();
+		int       txInPin = m_txInPinChoice->GetSelection();
+		wxString txOutDev = m_txOutDevChoice->GetStringSelection();
+		int      txOutPin = m_txOutPinChoice->GetSelection();
+
+		if (txInDev.IsSameAs(txOutDev)) {
+			if ((txInPin == IN_RTS_CTS || txInPin == IN_RTS_DSR) && txOutPin == OUT_RTS ||
+				(txInPin == IN_DTR_CTS || txInPin == IN_DTR_DSR) && txOutPin == OUT_DTR) {
+				::wxMessageBox(_("The Transmit In and Transmit Out may not conflict"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+		}
+	}
+
+	if (m_keyInEnable && m_txOutEnable) {
+		wxString keyInDev = m_keyInDevChoice->GetStringSelection();
+		int      keyInPin = m_keyInPinChoice->GetSelection();
+		wxString txOutDev = m_txOutDevChoice->GetStringSelection();
+		int      txOutPin = m_txOutPinChoice->GetSelection();
+
+		if (keyInDev.IsSameAs(txOutDev)) {
+			if ((keyInPin == IN_RTS_CTS || keyInPin == IN_RTS_DSR) && txOutPin == OUT_RTS ||
+				(keyInPin == IN_DTR_CTS || keyInPin == IN_DTR_DSR) && txOutPin == OUT_DTR) {
+				::wxMessageBox(_("The Key In and Transmit Out may not conflict"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+		}
+	}
+
+	if (m_txInEnable) {
+		m_txInDev = m_txInDevChoice->GetStringSelection();
+		m_txInPin = m_txInPinChoice->GetSelection();
+	}
+
+	if (m_keyInEnable) {
+		m_keyInDev = m_keyInDevChoice->GetStringSelection();
+		m_keyInPin = m_keyInPinChoice->GetSelection();
+	}
+
+	if (m_txOutEnable) {
+		m_txOutDev = m_txOutDevChoice->GetStringSelection();
+		m_txOutPin = m_txOutPinChoice->GetSelection();
+	}
 
 	if (IsModal()) {
 		EndModal(wxID_OK);
@@ -120,12 +340,90 @@ void CPortDialog::onOK(wxCommandEvent& event)
 	}
 }
 
-wxString CPortDialog::getDevice() const
+void CPortDialog::setTXInEnable(bool enable)
 {
-	return m_device;
+	m_txInEnable = enable;
+
+	m_txInSelect->SetValue(enable);
+	m_txInDevChoice->Enable(enable);
+	m_txInPinChoice->Enable(enable);
 }
 
-int CPortDialog::getPin() const
+void CPortDialog::setTXInDev(const wxString& dev)
 {
-	return m_pin;
+	m_txInDev = dev;
+}
+
+void CPortDialog::setTXInPin(int pin)
+{
+	m_txInPin = pin;
+}
+
+bool CPortDialog::getTXInEnable() const
+{
+	return m_txInEnable;
+}
+
+wxString CPortDialog::getTXInDev() const
+{
+	return m_txInDev;
+}
+
+int CPortDialog::getTXInPin() const
+{
+	return m_txInPin;
+}
+
+void CPortDialog::setKeyInEnable(bool enable)
+{
+	m_keyInEnable = enable;
+
+	m_keyInSelect->SetValue(enable);
+	m_keyInDevChoice->Enable(enable);
+	m_keyInPinChoice->Enable(enable);
+}
+
+void CPortDialog::setKeyInDev(const wxString& dev)
+{
+	m_keyInDev = dev;
+}
+
+void CPortDialog::setKeyInPin(int pin)
+{
+	m_keyInPin = pin;
+}
+
+bool CPortDialog::getKeyInEnable() const
+{
+	return m_keyInEnable;
+}
+
+wxString CPortDialog::getKeyInDev() const
+{
+	return m_keyInDev;
+}
+
+int CPortDialog::getKeyInPin() const
+{
+	return m_keyInPin;
+}
+
+void CPortDialog::setTXOutDev(const wxString& dev)
+{
+	m_txOutDev = dev;
+}
+
+void CPortDialog::setTXOutPin(int pin)
+{
+	m_txOutPin = pin;
+}
+
+wxString CPortDialog::getTXOutDev() const
+{
+	return m_txOutDev;
+}
+
+int CPortDialog::getTXOutPin() const
+{
+	return m_txOutPin;
 }

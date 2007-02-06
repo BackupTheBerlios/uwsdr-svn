@@ -27,17 +27,7 @@
 
          <li> <object type="text/sitemap">
                   <param name="Name" value="Control Port Setup">
-                  <param name="Local" value="Port.htm">
-              </object>
-
-         <li> <object type="text/sitemap">
-                  <param name="Name" value="Control Device">
-                  <param name="Local" value="ControlDevice.htm">
-              </object>
-
-         <li> <object type="text/sitemap">
-                  <param name="Name" value="Control Pin">
-                  <param name="Local" value="ControlPin.htm">
+                  <param name="Local" value="ControlPort.htm">
               </object>
 
          <li> <object type="text/sitemap">
@@ -63,6 +53,11 @@
          <li> <object type="text/sitemap">
                   <param name="Name" value="GUI">
                   <param name="Local" value="GUI.htm">
+              </object>
+
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="Key In">
+                  <param name="Local" value="KeyIn.htm">
               </object>
 
          <li> <object type="text/sitemap">
@@ -108,6 +103,16 @@
          <li> <object type="text/sitemap">
                   <param name="Name" value="SDR IP Address">
                   <param name="Local" value="SDRIPAddress.htm">
+              </object>
+
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="Transmit In">
+                  <param name="Local" value="TXIn.htm">
+              </object>
+
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="Transmit Out">
+                  <param name="Local" value="TXOut.htm">
               </object>
 
          <li> <object type="text/sitemap">

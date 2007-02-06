@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -90,8 +90,16 @@ class CSDRParameters {
 	unsigned int m_controlPort;
 	unsigned int m_dataPort;
 
-	wxString     m_controlDevice;
-	int          m_controlPin;
+	bool         m_txInEnable;
+	wxString     m_txInDev;
+	int          m_txInPin;
+
+	bool         m_keyInEnable;
+	wxString     m_keyInDev;
+	int          m_keyInPin;
+
+	wxString     m_txOutDev;
+	int          m_txOutPin;
 
 	int          m_userAudioAPI;
 	int          m_userAudioInDev;

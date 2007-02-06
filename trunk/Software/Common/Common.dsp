@@ -215,10 +215,6 @@ SOURCE=.\NullWriter.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\PortControl.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\RingBuffer.h
 # End Source File
 # Begin Source File

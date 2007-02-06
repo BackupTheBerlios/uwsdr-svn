@@ -240,7 +240,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			m_sdr = new CUWSDRController(m_parameters->m_ipAddress, m_parameters->m_controlPort, 1);
 			break;
 		case TYPE_AUDIOTXRX:
-			m_sdr = new CSRTXRXController(m_parameters->m_controlDevice, m_parameters->m_controlPin);
+			m_sdr = new CSRTXRXController(m_parameters->m_txOutDev, m_parameters->m_txOutPin);
 			break;
 		default:
 			m_sdr = new CNullController();
@@ -929,13 +929,15 @@ void CUWSDRFrame::onMuteButton(wxCommandEvent& event)
 
 void CUWSDRFrame::onTXButton(wxCommandEvent& event)
 {
-	// If we're not in CW mode, go to TX/RX
+	// If we're not in CW mode, go straight to TX/RX
 	if (m_parameters->m_mode != MODE_CWUW && m_parameters->m_mode != MODE_CWUN && m_parameters->m_mode != MODE_CWLW && m_parameters->m_mode != MODE_CWLN) {
 		setTransmit();
 	} else {
 		// Else is in CW mode we can use the main Transmit button to abort a CW
-		// transmission, but not start one.
-		if (m_txOn)
+		// transmission, but not start one unless external keying is enabled
+		if (!m_txOn && m_parameters->m_keyInEnable)
+			setTransmit();
+		else if (m_txOn)
 			::wxGetApp().sendCW(0, wxEmptyString);
 	}
 

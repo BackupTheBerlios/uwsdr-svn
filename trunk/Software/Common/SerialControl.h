@@ -20,39 +20,58 @@
 #ifndef SerialControl_H
 #define	SerialControl_H
 
-#include "PortControl.h"
-
 #include <wx/wx.h>
 
 #if defined(__WINDOWS__)
 #include <windows.h>
 #endif
 
-enum {
-	PIN_RTS,
-	PIN_DTR
+class CSerialControl;
+
+struct SSerialList {
+	wxChar*         name;
+	CSerialControl* ptr;
 };
 
-class CSerialControl : public IPortControl {
+class CSerialControl {
 
     public:
-	CSerialControl(const wxString& device, int pin);
-	virtual ~CSerialControl();
+    static CSerialControl* getInstance(const wxString& dev);
 
 	virtual bool open();
-	virtual bool keyTX();
-	virtual bool unkeyTX();
+
+	virtual void setRTS(bool set);
+	virtual void setDTR(bool set);
+
+	virtual bool getCTS() const;
+	virtual bool getDSR() const;
+
 	virtual void close();
 
-	static wxArrayString getDevices();
+	virtual void clock();
+
+	static wxArrayString getDevs();
+
+    protected:
+	CSerialControl(const wxString& device);
+	virtual ~CSerialControl();
 
     private:
-	wxString m_device;
-	int      m_pin;
+	static SSerialList s_serialList[];
+	static wxMutex     s_mutex;
+
+	wxString     m_dev;
+	unsigned int m_count;
+	bool         m_rts;
+	bool         m_dtr;
+	bool         m_cts;
+	bool         m_dsr;
+	bool         m_lastRTS;
+	bool         m_lastDTR;
 #if defined(__WINDOWS__)
-	HANDLE   m_handle;
+	HANDLE       m_handle;
 #else
-	int      m_fd;
+	int          m_fd;
 #endif
 };
 

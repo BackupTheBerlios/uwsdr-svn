@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -81,6 +81,7 @@ m_sdrAudio(NULL),
 m_ethernet(NULL),
 m_port(NULL),
 m_filename(),
+m_sdrType(-1),
 m_userAudioAPI(-1),
 m_userAudioInDev(-1L),
 m_userAudioOutDev(-1L),
@@ -90,8 +91,14 @@ m_sdrAudioOutDev(-1L),
 m_ipAddress(),
 m_controlPort(-1L),
 m_dataPort(-1L),
-m_controlDevice(),
-m_controlPin(-1)
+m_txInEnable(true),
+m_txInDev(),
+m_txInPin(-1),
+m_keyInEnable(true),
+m_keyInDev(),
+m_keyInPin(-1),
+m_txOutDev(),
+m_txOutPin(-1)
 {
 	SetIcon(wxICON(GUISetup));
 
@@ -261,9 +268,9 @@ void CGUISetupFrame::onBrowse(wxCommandEvent& event)
 			return;
 		}
 
-		int type = file.getType();
+		m_sdrType = file.getType();
 
-		switch (type) {
+		switch (m_sdrType) {
 			case TYPE_AUDIORX:
 				m_userAudio->Enable();
 				m_sdrAudio->Enable();
@@ -277,11 +284,13 @@ void CGUISetupFrame::onBrowse(wxCommandEvent& event)
 
 			case TYPE_DEMO:
 				m_userAudio->Enable();
+				m_port->Enable();
 				break;
 
 			case TYPE_UWSDR1:
 				m_userAudio->Enable();
 				m_ethernet->Enable();
+				m_port->Enable();
 				break;
 		}
 	}
@@ -314,14 +323,14 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 		return;
 	}
 
-	int type = file.getType();
+	m_sdrType = file.getType();
 
 	if (m_userAudioAPI == -1 || m_userAudioInDev == -1L || m_userAudioOutDev == -1L) {
 		::wxMessageBox(_("The User Audio has not been set"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
-	switch (type) {
+	switch (m_sdrType) {
 		case TYPE_AUDIORX:
 			if (m_sdrAudioAPI == -1 || m_sdrAudioInDev == -1L || m_sdrAudioOutDev == -1L) {
 				::wxMessageBox(_("The SDR Audio has not been set"), _("GUISetup Error"), wxICON_ERROR);
@@ -333,8 +342,8 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 				::wxMessageBox(_("The SDR Audio has not been set"), _("GUISetup Error"), wxICON_ERROR);
 				return;
 			}
-			if (m_controlDevice.IsEmpty() || m_controlPin == -1) {
-				::wxMessageBox(_("The Control Port has not been set"), _("GUISetup Error"), wxICON_ERROR);
+			if (m_txOutDev.IsEmpty() || m_txOutPin == -1) {
+				::wxMessageBox(_("The Transmit Out Port has not been set"), _("GUISetup Error"), wxICON_ERROR);
 				return;
 			}
 			if (m_sdrAudioAPI == m_userAudioAPI && (m_sdrAudioInDev == m_userAudioInDev || m_sdrAudioOutDev == m_userAudioOutDev)) {
@@ -364,8 +373,14 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 	wxString ipAddressKey       = wxT("/") + name + wxT("/IPAddress");
 	wxString controlPortKey     = wxT("/") + name + wxT("/ControlPort");
 	wxString dataPortKey        = wxT("/") + name + wxT("/DataPort");
-	wxString controlDeviceKey   = wxT("/") + name + wxT("/ControlDevice");
-	wxString controlPinKey      = wxT("/") + name + wxT("/ControlPin");
+	wxString txInEnableKey      = wxT("/") + name + wxT("/TXInEnable");
+	wxString txInDevKey         = wxT("/") + name + wxT("/TXInDev");
+	wxString txInPinKey         = wxT("/") + name + wxT("/TXInPin");
+	wxString keyInEnableKey     = wxT("/") + name + wxT("/KeyInEnable");
+	wxString keyInDevKey        = wxT("/") + name + wxT("/KeyInDev");
+	wxString keyInPinKey        = wxT("/") + name + wxT("/KeyInPin");
+	wxString txOutDevKey        = wxT("/") + name + wxT("/TXOutDev");
+	wxString txOutPinKey        = wxT("/") + name + wxT("/TXOutPin");
 
 	wxString test;
 	if (config->Read(fileNameKey, &test)) {
@@ -398,7 +413,7 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 		return;
 	}
 
-	switch (type) {
+	switch (m_sdrType) {
 		case TYPE_AUDIORX:
 			ret = config->Write(sdrAudioAPIKey, m_sdrAudioAPI);
 			if (!ret) {
@@ -438,15 +453,89 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 				return;
 			}
 
-			ret = config->Write(controlDeviceKey, m_controlDevice);
+			ret = config->Write(txInEnableKey, m_txInEnable);
 			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - ControlDevice"), _("GUISetup Error"), wxICON_ERROR);
+				::wxMessageBox(_("Unable to write configuration data - TXInEnable"), _("GUISetup Error"), wxICON_ERROR);
 				return;
 			}
 
-			ret = config->Write(controlPinKey, m_controlPin);
+			ret = config->Write(txInDevKey, m_txInDev);
 			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - ControlPin"), _("GUISetup Error"), wxICON_ERROR);
+				::wxMessageBox(_("Unable to write configuration data - TXInDev"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+
+			ret = config->Write(txInPinKey, m_txInPin);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - TXInPin"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+
+			ret = config->Write(keyInEnableKey, m_keyInEnable);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - KeyInEnable"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+
+			ret = config->Write(keyInDevKey, m_keyInDev);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - KeyInDev"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+
+			ret = config->Write(keyInPinKey, m_keyInPin);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - KeyInPin"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+
+			ret = config->Write(txOutDevKey, m_txOutDev);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - TXOutDev"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+
+			ret = config->Write(txOutPinKey, m_txOutPin);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - TXOutPin"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+			break;
+
+		case TYPE_DEMO:
+			ret = config->Write(txInEnableKey, m_txInEnable);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - TXInEnable"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+
+			ret = config->Write(txInDevKey, m_txInDev);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - TXInDev"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+
+			ret = config->Write(txInPinKey, m_txInPin);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - TXInPin"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+
+			ret = config->Write(keyInEnableKey, m_keyInEnable);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - KeyInEnable"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+
+			ret = config->Write(keyInDevKey, m_keyInDev);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - KeyInDev"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+
+			ret = config->Write(keyInPinKey, m_keyInPin);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - KeyInPin"), _("GUISetup Error"), wxICON_ERROR);
 				return;
 			}
 			break;
@@ -467,6 +556,42 @@ void CGUISetupFrame::onCreate(wxCommandEvent& event)
 			ret = config->Write(dataPortKey, m_dataPort);
 			if (!ret) {
 				::wxMessageBox(_("Unable to write configuration data - DataPort"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+
+			ret = config->Write(txInEnableKey, m_txInEnable);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - TXInEnable"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+
+			ret = config->Write(txInDevKey, m_txInDev);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - TXInDev"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+
+			ret = config->Write(txInPinKey, m_txInPin);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - TXInPin"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+
+			ret = config->Write(keyInEnableKey, m_keyInEnable);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - KeyInEnable"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+
+			ret = config->Write(keyInDevKey, m_keyInDev);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - KeyInDev"), _("GUISetup Error"), wxICON_ERROR);
+				return;
+			}
+
+			ret = config->Write(keyInPinKey, m_keyInPin);
+			if (!ret) {
+				::wxMessageBox(_("Unable to write configuration data - KeyInPin"), _("GUISetup Error"), wxICON_ERROR);
 				return;
 			}
 			break;
@@ -554,8 +679,14 @@ void CGUISetupFrame::readConfig(const wxString& name)
 	wxString ipAddressKey       = wxT("/") + name + wxT("/IPAddress");
 	wxString controlPortKey     = wxT("/") + name + wxT("/ControlPort");
 	wxString dataPortKey        = wxT("/") + name + wxT("/DataPort");
-	wxString controlDeviceKey   = wxT("/") + name + wxT("/ControlDevice");
-	wxString controlPinKey      = wxT("/") + name + wxT("/ControlPin");
+	wxString txInEnableKey      = wxT("/") + name + wxT("/TXInEnable");
+	wxString txInDevKey         = wxT("/") + name + wxT("/TXInDev");
+	wxString txInPinKey         = wxT("/") + name + wxT("/TXInPin");
+	wxString keyInEnableKey     = wxT("/") + name + wxT("/KeyInEnable");
+	wxString keyInDevKey        = wxT("/") + name + wxT("/KeyInDev");
+	wxString keyInPinKey        = wxT("/") + name + wxT("/KeyInPin");
+	wxString txOutDevKey        = wxT("/") + name + wxT("/TXOutDev");
+	wxString txOutPinKey        = wxT("/") + name + wxT("/TXOutPin");
 
 	bool ret = config->Read(fileNameKey, &m_filename);
 	if (!ret)
@@ -582,14 +713,22 @@ void CGUISetupFrame::readConfig(const wxString& name)
 	config->Read(controlPortKey, &m_controlPort);
 	config->Read(dataPortKey,    &m_dataPort);
 
-	config->Read(controlDeviceKey, &m_controlDevice);
-	config->Read(controlPinKey,    &m_controlPin);
+	config->Read(txInEnableKey, &m_txInEnable);
+	config->Read(txInDevKey,    &m_txInDev);
+	config->Read(txInPinKey,    &m_txInPin);
+
+	config->Read(keyInEnableKey, &m_keyInEnable);
+	config->Read(keyInDevKey,    &m_keyInDev);
+	config->Read(keyInPinKey,    &m_keyInPin);
+
+	config->Read(txOutDevKey, &m_txOutDev);
+	config->Read(txOutPinKey, &m_txOutPin);
 
 	delete config;
 
-	int type = file.getType();
+	m_sdrType = file.getType();
 
-	switch (type) {
+	switch (m_sdrType) {
 		case TYPE_AUDIORX:
 			m_userAudio->Enable();
 			m_sdrAudio->Enable();
@@ -603,11 +742,13 @@ void CGUISetupFrame::readConfig(const wxString& name)
 
 		case TYPE_DEMO:
 			m_userAudio->Enable();
+			m_port->Enable();
 			break;
 
 		case TYPE_UWSDR1:
 			m_userAudio->Enable();
 			m_ethernet->Enable();
+			m_port->Enable();
 			break;
 	}
 }
@@ -650,12 +791,33 @@ void CGUISetupFrame::onEthernet(wxCommandEvent& event)
 
 void CGUISetupFrame::onPort(wxCommandEvent& event)
 {
-	CPortDialog dialog(this, _("Control Port Setup"), m_controlDevice, m_controlPin);
+	bool showTXOut = m_sdrType == TYPE_AUDIOTXRX;
+
+	CPortDialog dialog(this, _("Control Port Setup"), showTXOut);
+
+	dialog.setTXInEnable(m_txInEnable);
+	dialog.setTXInDev(m_txInDev);
+	dialog.setTXInPin(m_txInPin);
+
+	dialog.setKeyInEnable(m_keyInEnable);
+	dialog.setKeyInDev(m_keyInDev);
+	dialog.setKeyInPin(m_keyInPin);
+
+	dialog.setTXOutDev(m_txOutDev);
+	dialog.setTXOutPin(m_txOutPin);
 
 	int ret = dialog.ShowModal();
 	if (ret == wxID_OK) {
-		m_controlDevice = dialog.getDevice();
-		m_controlPin    = dialog.getPin();
+		m_txInEnable = dialog.getTXInEnable();
+		m_txInDev    = dialog.getTXInDev();
+		m_txInPin    = dialog.getTXInPin();
+
+		m_keyInEnable = dialog.getKeyInEnable();
+		m_keyInDev    = dialog.getKeyInDev();
+		m_keyInPin    = dialog.getKeyInPin();
+
+		m_txOutDev = dialog.getTXOutDev();
+		m_txOutPin = dialog.getTXOutPin();
 	}
 }
 

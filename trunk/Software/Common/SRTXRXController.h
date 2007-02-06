@@ -24,7 +24,7 @@
 #include "SDRController.h"
 #include "Frequency.h"
 #include "ControlInterface.h"
-#include "PortControl.h"
+#include "SerialControl.h"
 
 
 class CSRTXRXController : public ISDRController {
@@ -44,8 +44,9 @@ class CSRTXRXController : public ISDRController {
 	virtual void close();
 
     private:
-	bool          m_txEnable;
-	IPortControl* m_port;
+	int             m_pin;
+	bool            m_txEnable;
+	CSerialControl* m_port;
 };
 
 #endif

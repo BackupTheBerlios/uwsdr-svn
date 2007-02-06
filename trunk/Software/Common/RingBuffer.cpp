@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -47,7 +47,8 @@ m_step(step),
 m_buffer(NULL),
 m_iPtr(0),
 m_oPtr(0),
-m_state(STATE_EMPTY)
+m_state(STATE_EMPTY),
+m_mutex()
 {
 	ASSERT(length > 0);
 	ASSERT(step > 0);
@@ -64,6 +65,8 @@ CRingBuffer::~CRingBuffer()
 
 unsigned int CRingBuffer::addData(const float* buffer, unsigned int nSamples)
 {
+	wxMutexLocker lock(m_mutex);
+
 	unsigned int space = freeSpace();
 
 	if (nSamples >= space) {
@@ -85,6 +88,8 @@ unsigned int CRingBuffer::addData(const float* buffer, unsigned int nSamples)
 
 unsigned int CRingBuffer::getData(float* buffer, unsigned int nSamples)
 {
+	wxMutexLocker lock(m_mutex);
+
 	unsigned int space = dataSpace();
 
 	if (nSamples >= space) {
@@ -106,6 +111,8 @@ unsigned int CRingBuffer::getData(float* buffer, unsigned int nSamples)
 
 void CRingBuffer::clear()
 {
+	wxMutexLocker lock(m_mutex);
+
 	m_iPtr  = 0;
 	m_oPtr  = 0;
 	m_state = STATE_EMPTY;

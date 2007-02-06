@@ -17,28 +17,32 @@
  */
 #include "SRTXRXController.h"
 
-#include "SerialControl.h"
-
+enum {
+	RTS,
+	DTR
+};
 
 CSRTXRXController::CSRTXRXController(const wxString& device, int pin) :
+m_pin(pin),
 m_txEnable(false),
 m_port(NULL)
 {
-	switch (pin) {
-		case PIN_RTS:
-		case PIN_DTR:
-			m_port = new CSerialControl(device, pin);
-			break;
+	wxASSERT(pin == RTS || pin == DTR);
 
-		default:
-			::wxLogError(wxT("Unknown control port %s"), device.c_str());
+	m_port = CSerialControl::getInstance(device);
+
+	switch (pin) {
+		case RTS:
+			m_port->setRTS(false);
+			break;
+		case DTR:
+			m_port->setDTR(false);
 			break;
 	}
 }
 
 CSRTXRXController::~CSRTXRXController()
 {
-	delete m_port;
 }
 
 void CSRTXRXController::setCallback(IControlInterface* callback, int id)
@@ -67,10 +71,14 @@ void CSRTXRXController::setTXAndFreq(bool transmit, const CFrequency& freq)
 	if (transmit && !m_txEnable)
 		return;
 
-	if (transmit)
-		m_port->keyTX();
-	else
-		m_port->unkeyTX();
+	switch (m_pin) {
+		case RTS:
+			m_port->setRTS(transmit);
+			break;
+		case DTR:
+			m_port->setDTR(transmit);
+			break;
+	}
 }
 
 void CSRTXRXController::sendCommand(const char* command)
@@ -83,6 +91,14 @@ void CSRTXRXController::setClockTune(unsigned int clock)
 
 void CSRTXRXController::close()
 {
-	m_port->unkeyTX();
+	switch (m_pin) {
+		case RTS:
+			m_port->setRTS(false);
+			break;
+		case DTR:
+			m_port->setDTR(false);
+			break;
+	}
+
 	m_port->close();
 }

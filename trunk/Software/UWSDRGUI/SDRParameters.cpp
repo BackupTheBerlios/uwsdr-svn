@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -69,8 +69,14 @@ m_filterCWN(0),
 m_ipAddress(),
 m_controlPort(0),
 m_dataPort(0),
-m_controlDevice(),
-m_controlPin(0),
+m_txInEnable(false),
+m_txInDev(),
+m_txInPin(0),
+m_keyInEnable(false),
+m_keyInDev(),
+m_keyInPin(0),
+m_txOutDev(),
+m_txOutPin(0),
 m_userAudioAPI(-1),
 m_userAudioInDev(-1),
 m_userAudioOutDev(-1),

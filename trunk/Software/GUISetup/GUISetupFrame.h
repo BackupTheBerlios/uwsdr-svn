@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@ class CGUISetupFrame : public wxFrame {
 	wxCheckBox*    m_deskTop;
 #endif
 	wxString       m_filename;
+	int            m_sdrType;
 	int            m_userAudioAPI;
 	long           m_userAudioInDev;
 	long           m_userAudioOutDev;
@@ -56,8 +57,14 @@ class CGUISetupFrame : public wxFrame {
 	wxString       m_ipAddress;
 	long           m_controlPort;
 	long           m_dataPort;
-	wxString       m_controlDevice;
-	int            m_controlPin;
+	bool           m_txInEnable;
+	wxString       m_txInDev;
+	int            m_txInPin;
+	bool           m_keyInEnable;
+	wxString       m_keyInDev;
+	int            m_keyInPin;
+	wxString       m_txOutDev;
+	int            m_txOutPin;
 
 	DECLARE_EVENT_TABLE()
 

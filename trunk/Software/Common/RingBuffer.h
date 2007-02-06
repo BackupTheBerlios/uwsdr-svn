@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -49,6 +49,7 @@ class CRingBuffer {
 	unsigned int m_iPtr;
 	unsigned int m_oPtr;
 	int          m_state;
+	wxMutex      m_mutex;
 };
 
 #endif

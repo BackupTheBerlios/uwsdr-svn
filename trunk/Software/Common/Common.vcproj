@@ -594,10 +594,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\PortControl.h"
-				>
-			</File>
-			<File
 				RelativePath="RingBuffer.h"
 				>
 			</File>
