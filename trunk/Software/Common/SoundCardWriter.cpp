@@ -72,12 +72,14 @@ bool CSoundCardWriter::open(float sampleRate, unsigned int blockSize)
 		return false;
 	}
 
+	const PaDeviceInfo* info = ::Pa_GetDeviceInfo(dev);
+
 	PaStreamParameters params;
 	params.device                    = dev;
 	params.channelCount              = 2;
 	params.sampleFormat              = paFloat32;
 	params.hostApiSpecificStreamInfo = NULL;
-	params.suggestedLatency          = PaTime(0);
+	params.suggestedLatency          = info->defaultLowOutputLatency;
 
 	error = ::Pa_OpenStream(&m_stream, NULL, &params, sampleRate, blockSize, paNoFlag, &scwCallback, this);
 	if (error != paNoError) {

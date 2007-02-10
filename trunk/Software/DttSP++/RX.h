@@ -3,6 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
+Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -55,51 +56,51 @@ Bridgewater, NJ 08807
 class CRX {
     public:
 	CRX(unsigned int bufLen, unsigned int bits, float sampleRate, CMeter* meter, CSpectrum* spectrum);
-	virtual ~CRX();
+	~CRX();
 
-	virtual void process();
+	void process();
 
-	virtual CXB* getIBuf();
-	virtual CXB* getOBuf();
+	CXB* getIBuf();
+	CXB* getOBuf();
 
-	virtual void setMode(SDRMODE mode);
+	void setMode(SDRMODE mode);
 
-	virtual void setZeroIF(bool flag);
+	void setZeroIF(bool flag);
 
-	virtual void setFilter(double lowFreq, double highFreq);
+	void setFilter(double lowFreq, double highFreq);
 
-	virtual void setFrequency(double freq);
+	void setFrequency(double freq);
 
-	virtual void setSquelchFlag(bool flag);
-	virtual void setSquelchThreshold(float threshold);
+	void setSquelchFlag(bool flag);
+	void setSquelchThreshold(float threshold);
 
-	virtual void setFMDeviation(float deviation);
+	void setFMDeviation(float deviation);
 
-	virtual void setIQ(float phase, float gain);
+	void setIQ(float phase, float gain);
 
-	virtual void setANFFlag(bool flag);
-	virtual void setBANRFlag(bool flag);
-	virtual void setANFValues(unsigned int adaptiveFilterSize, unsigned int delay, float adaptationRate, float leakage);
+	void setANFFlag(bool flag);
+	void setBANRFlag(bool flag);
+	void setANFValues(unsigned int adaptiveFilterSize, unsigned int delay, float adaptationRate, float leakage);
 
-	virtual void setANRFlag(bool flag);
-	virtual void setBANFFlag(bool flag);
-	virtual void setANRValues(unsigned int adaptiveFilterSize, unsigned int delay, float adaptationRate, float leakage);
+	void setANRFlag(bool flag);
+	void setBANFFlag(bool flag);
+	void setANRValues(unsigned int adaptiveFilterSize, unsigned int delay, float adaptationRate, float leakage);
 
-	virtual void setNBFlag(bool flag);
-	virtual void setNBThreshold(float threshold);
+	void setNBFlag(bool flag);
+	void setNBThreshold(float threshold);
 
-	virtual void setNBSDROMFlag(bool flag);
-	virtual void setNBSDROMThreshold(float threshold);
+	void setNBSDROMFlag(bool flag);
+	void setNBSDROMThreshold(float threshold);
 
-	virtual void setBinauralFlag(bool flag);
+	void setBinauralFlag(bool flag);
 
-	virtual void setAGCMode(AGCMODE mode);
+	void setAGCMode(AGCMODE mode);
 
-	virtual void setAzim(float azim);
+	void setAzim(float azim);
 
-	virtual void setSpectrumType(SPECTRUMtype type);
+	void setSpectrumType(SPECTRUMtype type);
 
-	virtual float getOffset() const;
+	float getOffset() const;
 
     private:
 	float          m_sampleRate;

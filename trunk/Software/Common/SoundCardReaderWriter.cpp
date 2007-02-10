@@ -29,9 +29,10 @@ int scrwCallback(const void* input, void* output, unsigned long nSamples, const 
 }
 
 
-CSoundCardReaderWriter::CSoundCardReaderWriter(int api, int dev) :
+CSoundCardReaderWriter::CSoundCardReaderWriter(int api, int inDev, int outDev) :
 m_api(api),
-m_dev(dev),
+m_inDev(inDev),
+m_outDev(outDev),
 m_blockSize(0),
 m_callback(NULL),
 m_id(0),
@@ -42,7 +43,8 @@ m_requests(0),
 m_underruns(0),
 m_overruns(0),
 m_enabled(false),
-m_opened(0)
+m_opened(0),
+m_active(false)
 {
 }
 
@@ -81,21 +83,38 @@ bool CSoundCardReaderWriter::open(float sampleRate, unsigned int blockSize)
 		return false;
 	}
 
-	PaDeviceIndex dev = ::Pa_HostApiDeviceIndexToDeviceIndex(m_api, m_dev);
-	if (dev < 0) {
+	PaDeviceIndex inDev = ::Pa_HostApiDeviceIndexToDeviceIndex(m_api, m_inDev);
+	if (inDev < 0) {
 		::Pa_Terminate();
-		::wxLogError(wxT("Received %d:%s from Pa_HostApiDeviceIndexToDeviceIndex() in SoundCardReaderWriter for API:%d Dev:%d"), error, ::Pa_GetErrorText(dev), m_api, m_dev);
+		::wxLogError(wxT("Received %d:%s from Pa_HostApiDeviceIndexToDeviceIndex() in SoundCardReaderWriter for API:%d Dev:%d"), error, ::Pa_GetErrorText(inDev), m_api, m_inDev);
 		return false;
 	}
 
-	PaStreamParameters params;
-	params.device                    = dev;
-	params.channelCount              = 2;
-	params.sampleFormat              = paFloat32;
-	params.hostApiSpecificStreamInfo = NULL;
-	params.suggestedLatency          = PaTime(0);
+	PaDeviceIndex outDev = ::Pa_HostApiDeviceIndexToDeviceIndex(m_api, m_outDev);
+	if (outDev < 0) {
+		::Pa_Terminate();
+		::wxLogError(wxT("Received %d:%s from Pa_HostApiDeviceIndexToDeviceIndex() in SoundCardReaderWriter for API:%d Dev:%d"), error, ::Pa_GetErrorText(outDev), m_api, m_outDev);
+		return false;
+	}
 
-	error = ::Pa_OpenStream(&m_stream, &params, &params, sampleRate, blockSize, paNoFlag, &scrwCallback, this);
+	const PaDeviceInfo* inInfo  = ::Pa_GetDeviceInfo(inDev);
+	const PaDeviceInfo* outInfo = ::Pa_GetDeviceInfo(outDev);
+
+	PaStreamParameters paramsIn;
+	paramsIn.device                    = inDev;
+	paramsIn.channelCount              = 2;
+	paramsIn.sampleFormat              = paFloat32;
+	paramsIn.hostApiSpecificStreamInfo = NULL;
+	paramsIn.suggestedLatency          = inInfo->defaultLowInputLatency;
+
+	PaStreamParameters paramsOut;
+	paramsOut.device                    = outDev;
+	paramsOut.channelCount              = 2;
+	paramsOut.sampleFormat              = paFloat32;
+	paramsOut.hostApiSpecificStreamInfo = NULL;
+	paramsOut.suggestedLatency          = outInfo->defaultLowOutputLatency;
+
+	error = ::Pa_OpenStream(&m_stream, &paramsIn, &paramsOut, sampleRate, blockSize, paNoFlag, &scrwCallback, this);
 	if (error != paNoError) {
 		::Pa_Terminate();
 		::wxLogError(wxT("Received %d:%s from Pa_OpenStream() in SoundCardReaderWriter"), error, ::Pa_GetErrorText(error));
@@ -113,6 +132,7 @@ bool CSoundCardReaderWriter::open(float sampleRate, unsigned int blockSize)
 	}
 
 	m_opened++;
+	m_active = true;
 
 	return true;
 }
@@ -155,12 +175,24 @@ int CSoundCardReaderWriter::callback(const void* input, void* output, unsigned l
 	return paContinue;
 }
 
+/*
+ * Close the sound card on the first call to close() all later ones are NOPs until the last one which also
+ * delete's the object.
+ */
 void CSoundCardReaderWriter::close()
 {
-	if (m_opened > 1) {
+	if (!m_active) {
+		if (m_opened == 0) {
+			delete this;
+			return;
+		}
+
 		m_opened--;
 		return;
 	}
+
+	m_opened--;
+	m_active = false;
 
 	PaError error = ::Pa_AbortStream(m_stream);
 	if (error != paNoError)
@@ -175,8 +207,6 @@ void CSoundCardReaderWriter::close()
 		::wxLogError(wxT("Received %d:%s from Pa_Terminate() in SoundCardReaderWriter"), error, ::Pa_GetErrorText(error));
 
 	::wxLogMessage(wxT("SoundCardReaderWriter: %u underruns and %u overruns from %u requests"), m_underruns, m_overruns, m_requests);
-
-	delete this;
 }
 
 void CSoundCardReaderWriter::enable(bool enable)

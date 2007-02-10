@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006,7 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -246,6 +246,18 @@ enum {
 	VOICE_STOPPED,
 	VOICE_SINGLE,
 	VOICE_CONTINUOUS
+};
+
+enum {
+	IN_RTS_CTS,
+	IN_RTS_DSR,
+	IN_DTR_DSR,
+	IN_DTR_CTS
+};
+
+enum {
+	OUT_RTS,
+	OUT_DTR
 };
 
 const int CWKEYBOARD_COUNT    = 6;

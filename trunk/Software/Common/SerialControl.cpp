@@ -55,14 +55,21 @@ CSerialControl* CSerialControl::getInstance(const wxString& dev)
 	return p->ptr;
 }
 
-void CSerialControl::setRTS(bool set)
+void CSerialControl::clock()
 {
-	m_rts = set;
+	m_run.Post();
 }
 
-void CSerialControl::setDTR(bool set)
+void CSerialControl::close()
 {
-	m_dtr = set;
+	if (m_count > 1) {
+		m_count--;
+		return;
+	}
+
+	m_exit = true;
+
+	m_run.Post();
 }
 
 bool CSerialControl::getCTS() const
@@ -92,14 +99,16 @@ SSerialList CSerialControl::s_serialList[] = {
 #include <winioctl.h>
 
 CSerialControl::CSerialControl(const wxString& dev) :
+wxThread(),
 m_dev(dev),
 m_count(0),
 m_rts(false),
 m_dtr(false),
 m_cts(false),
 m_dsr(false),
-m_lastRTS(false),
-m_lastDTR(false),
+m_mutex(),
+m_run(),
+m_exit(false),
 m_handle(INVALID_HANDLE_VALUE)
 {
 }
@@ -128,60 +137,71 @@ bool CSerialControl::open()
 		return false;
 	}
 
-	clock();
-
 	m_count++;
+
+	Create();
+	Run();
 
 	return true;
 }
 
-void CSerialControl::clock()
+void* CSerialControl::Entry()
 {
-	wxASSERT(m_handle != INVALID_HANDLE_VALUE);
+	m_run.Wait();
 
-	DWORD status;
-	if (::GetCommModemStatus(m_handle, &status) == 0) {
-		::wxLogError(wxT("Cannot get the serial port status - 0x%lX"), ::GetLastError());
-		return;
-	}
+	while (!m_exit) {
+		m_mutex.Lock();
 
-	m_cts = bool(status & MS_CTS_ON);
-
-	m_dsr = bool(status & MS_DSR_ON);
-
-	if (m_lastRTS != m_rts) {
-		int rts = (m_rts) ? SETRTS : CLRRTS;
-
-		if (::EscapeCommFunction(m_handle, rts) == 0) {
-			::wxLogError(wxT("Cannot set RTS - 0x%lX"), ::GetLastError());
-			return;
+		DWORD status;
+		if (::GetCommModemStatus(m_handle, &status) == 0) {
+			::wxLogError(wxT("Cannot get the serial port status - 0x%lX"), ::GetLastError());
+		} else {
+			m_cts = status & MS_CTS_ON;
+			m_dsr = status & MS_DSR_ON;
 		}
 
-		m_lastRTS = m_rts;
-	}
+		m_mutex.Unlock();
 
-	if (m_lastDTR != m_dtr) {
-		int dtr = (m_dtr) ? SETDTR : CLRDTR;
-
-		if (::EscapeCommFunction(m_handle, dtr) == 0) {
-			::wxLogError(wxT("Cannot set DTR - 0x%lX"), ::GetLastError());
-			return;
-		}
-
-		m_lastDTR = m_dtr;
-	}
-}
-
-void CSerialControl::close()
-{
-	if (m_count > 1) {
-		m_count--;
-		return;
+		m_run.Wait();
 	}
 
 	::CloseHandle(m_handle);
 
-	delete this;
+	return (void*)0;
+}
+
+void CSerialControl::setRTS(bool set)
+{
+	wxMutexLocker lock(m_mutex);
+
+	if (set == m_rts)
+		return;
+
+	int rts = (set) ? SETRTS : CLRRTS;
+
+	if (::EscapeCommFunction(m_handle, rts) == 0) {
+		::wxLogError(wxT("Cannot set RTS - 0x%lX"), ::GetLastError());
+		return;
+	}
+
+	m_rts = set;
+}
+
+void CSerialControl::setDTR(bool set)
+{
+	wxMutexLocker lock(m_mutex);
+
+	if (set == m_dtr)
+		return;
+
+	int dtr = (set) ? SETDTR : CLRDTR;
+
+	if (::EscapeCommFunction(m_handle, dtr) == 0) {
+		::wxLogError(wxT("Cannot set DTR - 0x%lX"), ::GetLastError());
+		return;
+	}
+
+	m_dtr = set;
 }
 
 #else
@@ -206,14 +226,16 @@ SSerialList CSerialControl::s_serialList[] = {
 };
 
 CSerialControl::CSerialControl(const wxString& dev) :
+wxThread(),
 m_dev(dev),
 m_count(0),
 m_rts(false),
 m_dtr(false),
 m_cts(false),
 m_dsr(false),
-m_lastRTS(false),
-m_lastDTR(false),
+m_mutex(),
+m_run(),
+m_exit(false),
 m_fd(-1)
 {
 }
@@ -241,16 +263,43 @@ bool CSerialControl::open()
 		return false;
 	}
 
-	clock();
-
 	m_count++;
+
+	Create();
+	Run();
 
 	return true;
 }
 
-void CSerialControl::clock()
+void* CSerialControl::Entry()
 {
-	wxASSERT(m_fd != -1);
+	m_run.Wait();
+
+	while (!m_exit) {
+		m_mutex.Lock();
+
+		unsigned int y;
+		if (::ioctl(m_fd, TIOCMGET, &y) < 0) {
+			::wxLogError(wxT("Cannot get the serial port status - %d, %s"), errno, strerror(errno));
+		} else {
+			m_cts = y & TIOCM_CTS;
+			m_dsr = y & TIOCM_DSR;
+		}
+
+		m_mutex.Unlock();
+
+		m_run.Wait();
+	}
+
+	return (void*)0;
+}
+
+void CSerialControl::setRTS(bool set)
+{
+	wxMutexLocker lock(m_mutex);
+
+	if (set == m_rts)
+		return;
 
 	unsigned int y;
 	if (::ioctl(m_fd, TIOCMGET, &y) < 0) {
@@ -258,19 +307,33 @@ void CSerialControl::clock()
 		return;
 	}
 
-	m_cts = y & TIOCM_CTS;
-
-	m_dsr = y & TIOCM_DSR;
-
-	if (m_rts == m_lastRTS && m_dtr == m_lastDTR)
-		return;
-
-	if (m_rts)
+	if (set)
 		y |= TIOCM_RTS;
 	else
 		y &= ~TIOCM_RTS;
 
-	if (m_dtr)
+	if (::ioctl(m_fd, TIOCMSET, &y) < 0) {
+		::wxLogError(wxT("Cannot set the serial port status - %d, %s"), errno, strerror(errno));
+		return;
+	}
+
+	m_rts = set;
+}
+
+void CSerialControl::setDTR(bool set)
+{
+	wxMutexLocker lock(m_mutex);
+
+	if (set == m_dtr)
+		return;
+
+	unsigned int y;
+	if (::ioctl(m_fd, TIOCMGET, &y) < 0) {
+		::wxLogError(wxT("Cannot get the serial port status - %d, %s"), errno, strerror(errno));
+		return;
+	}
+
+	if (set)
 		y |= TIOCM_DTR;
 	else
 		y &= ~TIOCM_DTR;
@@ -280,20 +343,7 @@ void CSerialControl::clock()
 		return;
 	}
 
-	m_lastRTS = m_rts;
-	m_lastDTR = m_dtr;
-}
-
-void CSerialControl::close()
-{
-	if (m_count > 1) {
-		m_count--;
-		return;
-	}
-
-	::close(m_fd);
-
-	delete this;
+	m_dtr = set;
 }
 
 #endif

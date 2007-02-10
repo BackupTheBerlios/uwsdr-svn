@@ -3,6 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
+Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -73,19 +74,15 @@ m_fastHang(0)			//wa6ahl:  added to structure
 
 	m_mask = 2 * CXBsize(buff);
 
-	m_attack     = float(1.0 - ::exp(-1000.0 / (attack * samprate)));
-	m_oneMAttack = (float)::exp(-1000.0 / (attack * samprate));
+	setAttack(attack);
 
-	m_decay     = float(1.0 - ::exp(-1000.0 / (decay * samprate)));
-	m_oneMDecay = (float)::exp(-1000.0 / (decay * samprate));
+	setDecay(decay);
 
 	m_fastAttack     = float(1.0 - ::exp(-1000.0 / (0.2 * samprate)));
 	m_oneMFastAttack = (float)::exp(-1000.0 / (0.2 * samprate));
 
 	m_fastDecay     = float(1.0 - ::exp(-1000.0 / (3.0 * samprate)));
 	m_oneMFastDecay = (float)::exp(-1000.0 / (3.0 * samprate));
-
-	m_sndex = (unsigned int)(samprate * attack * 0.003F);
 
 	m_circ = new COMPLEX[m_mask];
 	::memset(m_circ, 0x00, m_mask * sizeof(COMPLEX));

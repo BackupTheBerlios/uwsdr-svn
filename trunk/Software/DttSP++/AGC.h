@@ -3,6 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
+Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -53,19 +54,19 @@ class CAGC {
 	CAGC(AGCMODE mode, CXB* buff, float limit, float attack,
 	     float decay, float slope, float hangtime, float samprate, float maxGain,
 		 float minGain, float curgain);
-	virtual ~CAGC();
+	~CAGC();
 
-	virtual void process();
+	void process();
 
-	virtual float getGain() const;
+	float getGain() const;
 
-	virtual void setMode(AGCMODE mode);
-	virtual void setGain(float gain);
-	virtual void setHangTime(float time);
-	virtual void setGainTop(float gain);
-	virtual void setGainBottom(float gain);
-	virtual void setAttack(float attack);
-	virtual void setDecay(float decay);
+	void setMode(AGCMODE mode);
+	void setGain(float gain);
+	void setHangTime(float time);
+	void setGainTop(float gain);
+	void setGainBottom(float gain);
+	void setAttack(float attack);
+	void setDecay(float decay);
 
     private:
 	AGCMODE      m_mode;

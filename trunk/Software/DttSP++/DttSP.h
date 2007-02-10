@@ -3,6 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
+Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -52,70 +53,70 @@ typedef enum {
 class CDttSP {
     public:
 	CDttSP(float sampleRate, unsigned int audioSize);
-	virtual ~CDttSP();
+	~CDttSP();
 
-	virtual void  releaseUpdate();
-	virtual void  ringBufferReset();
+	void  releaseUpdate();
+	void  ringBufferReset();
 
-	virtual void  setMode(SDRMODE m);
-	virtual void  setZeroIF(bool flag);
-	virtual void  setDCBlockFlag(bool flag);
-	virtual void  setRXFilter(double lowFreq, double highFreq);
-	virtual void  setTXFilter(double lowFreq, double highFreq);
-	virtual void  setRXFrequency(double freq);
-	virtual void  setTXFrequency(double freq);
-	virtual void  setANRFlag(bool flag);
-	virtual void  setBANRFlag(bool flag);
-	virtual void  setANRValues(unsigned int taps, unsigned int delay, float gain, float leak);
-	virtual void  setRXSquelchFlag(bool flag);
-	virtual void  setRXSquelchThreshold(float threshold);
-	virtual void  setANFFlag(bool flag);
-	virtual void  setBANFFlag(bool flag);
-	virtual void  setANFValues(unsigned int taps, unsigned int delay, float gain, float leak);
-	virtual void  setNBFlag(bool flag);
-	virtual void  setNBThreshold(float threshold);
-	virtual void  setNBSDROMFlag(bool flag);
-	virtual void  setNBSDROMThreshold(float threshold);
-	virtual void  setBinauralFlag(bool flag);
-	virtual void  setAGCMode(AGCMODE mode);
-	virtual void  setALCAttack(float attack);
-	virtual void  setCarrierLevel(float level);
-	virtual void  setALCDecay(float decay);
-	virtual void  setALCGainBottom(float gain);
-	virtual void  setALCHangTime(float hang);
-	virtual void  setRXCorrectIQ(float phase, float gain);
-	virtual void  setTXCorrectIQ(float phase, float gain);
-	virtual void  setSpectrumType(SPECTRUMtype type);
-	virtual void  setSpectrumWindowType(Windowtype window);
-	virtual void  setSpectrumPolyphaseFlag(bool flag);
-	virtual void  setCompressionFlag(bool flag);
-	virtual void  setCompressionLevel(float level);
-	virtual void  setTRX(TRXMODE trx);
-	virtual void  setALCGainTop(float gain);
-	virtual void  getSpectrum(float *results);
-	virtual void  getPhase(float* results, unsigned int numpoints);
-	virtual void  getScope(float* results, unsigned int numpoints);
-	virtual float getMeter(METERTYPE mt);
-	virtual void  setDeviation(float value);
-	virtual void  setRXPan(float pos);
+	void  setMode(SDRMODE m);
+	void  setZeroIF(bool flag);
+	void  setDCBlockFlag(bool flag);
+	void  setRXFilter(double lowFreq, double highFreq);
+	void  setTXFilter(double lowFreq, double highFreq);
+	void  setRXFrequency(double freq);
+	void  setTXFrequency(double freq);
+	void  setANRFlag(bool flag);
+	void  setBANRFlag(bool flag);
+	void  setANRValues(unsigned int taps, unsigned int delay, float gain, float leak);
+	void  setRXSquelchFlag(bool flag);
+	void  setRXSquelchThreshold(float threshold);
+	void  setANFFlag(bool flag);
+	void  setBANFFlag(bool flag);
+	void  setANFValues(unsigned int taps, unsigned int delay, float gain, float leak);
+	void  setNBFlag(bool flag);
+	void  setNBThreshold(float threshold);
+	void  setNBSDROMFlag(bool flag);
+	void  setNBSDROMThreshold(float threshold);
+	void  setBinauralFlag(bool flag);
+	void  setAGCMode(AGCMODE mode);
+	void  setALCAttack(float attack);
+	void  setCarrierLevel(float level);
+	void  setALCDecay(float decay);
+	void  setALCGainBottom(float gain);
+	void  setALCHangTime(float hang);
+	void  setRXCorrectIQ(float phase, float gain);
+	void  setTXCorrectIQ(float phase, float gain);
+	void  setSpectrumType(SPECTRUMtype type);
+	void  setSpectrumWindowType(Windowtype window);
+	void  setSpectrumPolyphaseFlag(bool flag);
+	void  setCompressionFlag(bool flag);
+	void  setCompressionLevel(float level);
+	void  setTRX(TRXMODE trx);
+	void  setALCGainTop(float gain);
+	void  getSpectrum(float *results);
+	void  getPhase(float* results, unsigned int numpoints);
+	void  getScope(float* results, unsigned int numpoints);
+	float getMeter(METERTYPE mt);
+	void  setDeviation(float value);
+	void  setRXPan(float pos);
 
-	virtual float getTXOffset() const;
-	virtual float getRXOffset() const;
+	float getTXOffset() const;
+	float getRXOffset() const;
 
-	virtual void  audioEntry(float* input_i, float* input_q, float* output_i, float* output_q, unsigned int nframes);
-	virtual void  audioEntry(float* input, float* output, unsigned int nframes);
+	void  audioEntry(float* input_i, float* input_q, float* output_i, float* output_q, unsigned int nframes);
+	void  audioEntry(float* input, float* output, unsigned int nframes);
 
-	virtual void  process();
+	void  process();
 
 
     protected:
-	virtual void runMute();
-	virtual void runPass();
-	virtual void runPlay();
-	virtual void runSwitch();
-	virtual void processSamples(float* bufi, float* bufq, unsigned int n);
-	virtual void getHold();
-	virtual bool canHold();
+	void runMute();
+	void runPass();
+	void runPlay();
+	void runSwitch();
+	void processSamples(float* bufi, float* bufq, unsigned int n);
+	void getHold();
+	bool canHold();
 
 
     private:

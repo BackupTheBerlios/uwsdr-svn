@@ -3,6 +3,7 @@
   This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
+Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -41,11 +42,11 @@ Bridgewater, NJ 08807
 class CSpeechProc {
     public:
 	CSpeechProc(float k, float maxCompression, CXB* spdat);
-	virtual ~CSpeechProc();
+	~CSpeechProc();
 
-	virtual void setCompression(float compression);
+	void setCompression(float compression);
 
-	virtual void process();
+	void process();
 
     private:
 	float* m_CG;

@@ -3,6 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
+Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -35,11 +36,6 @@ Bridgewater, NJ 08807
 #include "FromSys.h"
 
 
-// NB may have to ramify this a little
-// for other sampling rates; maybe not  
-
-// f == 0.002083 == 100 Hz at 48k
-
 CDCBlock::CDCBlock(DCBMode mode, float sampleRate, CXB* buf) :
 m_mode(mode),
 m_sampleRate(sampleRate),
@@ -68,11 +64,11 @@ void CDCBlock::block()
 			for (i = 0; i < n; i++) {
 				float x = CXBreal(m_buf, i);
 				float y = 0.0F;
-				if (m_sampleRate == 11025.0F)
+				if (m_sampleRate <= 30000.0F)
 					y = butterworthHighpass_100_2_11025(x);
-				else if (m_sampleRate == 48000.0F)
+				else if (m_sampleRate <= 72000.0F)
 					y = butterworthHighpass_100_2_48000(x);
-				else if (m_sampleRate == 96000.0F)
+				else
 					y = butterworthHighpass_100_2_96000(x);
 				CXBdata(m_buf, i) = Cmplx(y, 0.0);
 			}
@@ -82,11 +78,11 @@ void CDCBlock::block()
 			for (i = 0; i < n; i++) {
 				float x = CXBreal(m_buf, i);
 				float y = 0.0F;
-				if (m_sampleRate == 11025.0F)
+				if (m_sampleRate <= 30000.0F)
 					y = butterworthHighpass_100_4_11025(x);
-				else if (m_sampleRate == 48000.0F)
+				else if (m_sampleRate <= 72000.0F)
 					y = butterworthHighpass_100_4_48000(x);
-				else if (m_sampleRate == 96000.0F)
+				else
 					y = butterworthHighpass_100_4_96000(x);
 				CXBdata(m_buf, i) = Cmplx(y, 0.0);
 			}
@@ -96,11 +92,11 @@ void CDCBlock::block()
 			for (i = 0; i < n; i++) {
 				float x = CXBreal(m_buf, i);
 				float y = 0.0F;
-				if (m_sampleRate == 11025.0F)
+				if (m_sampleRate <= 30000.0F)
 					y = butterworthHighpass_100_6_11025(x);
-				else if (m_sampleRate == 48000.0F)
+				else if (m_sampleRate <= 72000.0F)
 					y = butterworthHighpass_100_6_48000(x);
-				else if (m_sampleRate == 96000.0F)
+				else
 					y = butterworthHighpass_100_6_96000(x);
 				CXBdata(m_buf, i) = Cmplx(y, 0.0);
 			}
@@ -110,11 +106,11 @@ void CDCBlock::block()
 			for (i = 0; i < n; i++) {
 				float x = CXBreal(m_buf, i);
 				float y = 0.0F;
-				if (m_sampleRate == 11025.0F)
+				if (m_sampleRate <= 30000.0F)
 					y = butterworthHighpass_100_8_11025(x);
-				else if (m_sampleRate == 48000.0F)
+				else if (m_sampleRate <= 72000.0F)
 					y = butterworthHighpass_100_8_48000(x);
-				else if (m_sampleRate == 96000.0F)
+				else
 					y = butterworthHighpass_100_8_96000(x);
 				CXBdata(m_buf, i) = Cmplx(y, 0.0);
 			}

@@ -3,6 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
+Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -40,25 +41,23 @@ Bridgewater, NJ 08807
 
 class COscillator {
     public:
-	COscillator(CXB* buf, float sampleRate, double frequency = 0.0, double phase = 0.0);
-	virtual ~COscillator();
+	COscillator(CXB* buf, float sampleRate, double frequency = 0.0);
+	~COscillator();
 
-	virtual double getPhase() const;
-	virtual void   setPhase(double phase);
+	void setFrequency(double frequency);
 
-	virtual double getFrequency() const;
-	virtual void   setFrequency(double frequency);
+	void oscillate();
 
-	virtual void oscillate();
-
-	virtual void mix();
+	void mix();
 
     private:
 	CXB*   m_buf;
 	double m_frequency;
 	float  m_sampleRate;
-	double m_phase;
-	double m_delta;
+	float  m_cosVal;
+	float  m_sinVal;
+	float  m_cosDelta;
+	float  m_sinDelta;
 };
 
 #endif

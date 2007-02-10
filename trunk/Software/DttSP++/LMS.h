@@ -3,6 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
+Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -48,17 +49,17 @@ enum {
 class CLMS {
     public:
 	CLMS(CXB* signal, unsigned int delay, float adaptationRate, float leakage, unsigned int adaptiveFilterSize, unsigned int filterType);
-	virtual ~CLMS();
+	~CLMS();
 
-	virtual void setAdaptationRate(float adaptationRate);
-	virtual void setAdaptiveFilterSize(unsigned int adaptiveFilterSize);
-	virtual void setDelay(unsigned int delay);
-	virtual void setLeakage(float leakage);
+	void setAdaptationRate(float adaptationRate);
+	void setAdaptiveFilterSize(unsigned int adaptiveFilterSize);
+	void setDelay(unsigned int delay);
+	void setLeakage(float leakage);
 
-	virtual void process();
+	void process();
 
-	virtual void processInterference();
-	virtual void processNoise();
+	void processInterference();
+	void processNoise();
 
     private:
 	CXB*         m_signal;				/* Signal Buffer */

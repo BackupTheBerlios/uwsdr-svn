@@ -3,6 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
+Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -40,18 +41,18 @@ Bridgewater, NJ 08807
 class CSquelch {
     public:
 	CSquelch(CXB* buf, float threshold, float offset, unsigned int num);
-	virtual ~CSquelch();
+	~CSquelch();
 
-	virtual bool isSquelch();
+	bool isSquelch();
 
-	virtual void doSquelch();
+	void doSquelch();
 
-	virtual void noSquelch();
+	void noSquelch();
 
-	virtual bool isSet() const;
+	bool isSet() const;
 
-	virtual void setFlag(bool flag);
-	virtual void setThreshold(float threshold);
+	void setFlag(bool flag);
+	void setThreshold(float threshold);
 
     private:
 	CXB*         m_buf;

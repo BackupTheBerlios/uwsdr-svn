@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -67,12 +67,14 @@ bool CSoundCardReader::open(float sampleRate, unsigned int blockSize)
 		return false;
 	}
 
+	const PaDeviceInfo* info = ::Pa_GetDeviceInfo(dev);
+
 	PaStreamParameters params;
 	params.device                    = dev;
 	params.channelCount              = 2;
 	params.sampleFormat              = paFloat32;
 	params.hostApiSpecificStreamInfo = NULL;
-	params.suggestedLatency          = PaTime(0);
+	params.suggestedLatency          = info->defaultLowInputLatency;
 
 	error = ::Pa_OpenStream(&m_stream, &params, NULL, sampleRate, blockSize, paNoFlag, &scrCallback, this);
 	if (error != paNoError) {

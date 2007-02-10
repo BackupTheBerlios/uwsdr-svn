@@ -33,7 +33,7 @@ struct SSerialList {
 	CSerialControl* ptr;
 };
 
-class CSerialControl {
+class CSerialControl : public wxThread {
 
     public:
     static CSerialControl* getInstance(const wxString& dev);
@@ -47,6 +47,8 @@ class CSerialControl {
 	virtual bool getDSR() const;
 
 	virtual void close();
+
+	virtual void* Entry();
 
 	virtual void clock();
 
@@ -66,8 +68,9 @@ class CSerialControl {
 	bool         m_dtr;
 	bool         m_cts;
 	bool         m_dsr;
-	bool         m_lastRTS;
-	bool         m_lastDTR;
+	wxMutex      m_mutex;
+	wxSemaphore  m_run;
+	bool         m_exit;
 #if defined(__WINDOWS__)
 	HANDLE       m_handle;
 #else

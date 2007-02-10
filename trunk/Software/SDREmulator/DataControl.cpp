@@ -152,17 +152,9 @@ bool CDataControl::setSoundFileReader(const wxString& fileName)
 
 bool CDataControl::openIO()
 {
-	// If the same device is used for both, then use the shared sound card input/output
-	// driver. This is for ALSA.
-	if (m_inDev == m_outDev) {
-		CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_api, m_inDev);
-
-		m_soundCardReader = scrw;
-		m_soundCardWriter = scrw;
-	} else {
-		m_soundCardReader = new CSoundCardReader(m_api, m_inDev);
-		m_soundCardWriter = new CSoundCardWriter(m_api, m_outDev);
-	}
+	CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_api, m_inDev, m_outDev);
+	m_soundCardReader = scrw;
+	m_soundCardWriter = scrw;
 
 	m_internal1Reader = new CSignalReader(m_sampleRate / 4.0F + 1000.5F, 0.0003F, 0.0004F);
 	m_internal2Reader = new CSignalReader(m_sampleRate / 4.0F, 0.0F, 0.001F);

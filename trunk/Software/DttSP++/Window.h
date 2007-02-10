@@ -3,6 +3,8 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
+Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
+
 Implemented from code by Bill Schottstaedt of Snd Editor at CCRMA
 
 This program is free software; you can redistribute it and/or modify

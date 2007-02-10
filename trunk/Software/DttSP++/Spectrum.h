@@ -3,6 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
+Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -56,27 +57,24 @@ typedef enum {
 class CSpectrum {
     public:
 	CSpectrum(unsigned int size, unsigned int planbits, SPECTRUMscale scale);
-	virtual ~CSpectrum();
+	~CSpectrum();
 
-	virtual SPECTRUMscale getScale() const;
-	virtual void setScale(SPECTRUMscale scale);
+	void setScale(SPECTRUMscale scale);
 
-	virtual Windowtype getWindowType() const;
-	virtual void setWindowType(Windowtype type);
+	void setWindowType(Windowtype type);
 
-	virtual bool getPolyphaseFlag() const;
-	virtual void setPolyphaseFlag(bool setit);
+	void setPolyphaseFlag(bool setit);
 
-	virtual void setData(CXB* buf);
+	void setData(CXB* buf);
 
-	virtual void reinitSpectrum();
+	void reinitSpectrum();
 
-	virtual void snapSpectrum();
-	virtual void computeSpectrum(float* spectrum);
+	void snapSpectrum();
+	void computeSpectrum(float* spectrum);
 
-	virtual void snapScope();
-	virtual void computeScopeReal(float* results, unsigned int numpoints);
-	virtual void computeScopeComplex(float* results, unsigned int numpoints);
+	void snapScope();
+	void computeScopeReal(float* results, unsigned int numpoints);
+	void computeScopeComplex(float* results, unsigned int numpoints);
 
     private:
 	CXB*          m_accum;

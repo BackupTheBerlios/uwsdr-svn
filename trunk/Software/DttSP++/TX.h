@@ -3,6 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
+Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -54,41 +55,41 @@ Bridgewater, NJ 08807
 class CTX {
     public:
 	CTX(unsigned int bufLen, unsigned int bits, float sampleRate, CMeter* meter, CSpectrum* spectrum);
-	virtual ~CTX();
+	~CTX();
 
-	virtual void process();
+	void process();
 
-	virtual CXB* getIBuf();
-	virtual CXB* getOBuf();
+	CXB* getIBuf();
+	CXB* getOBuf();
 
-	virtual SDRMODE getMode() const;
+	SDRMODE getMode() const;
 
-	virtual void setMode(SDRMODE mode);
+	void setMode(SDRMODE mode);
 
-	virtual void setZeroIF(bool flag);
+	void setZeroIF(bool flag);
 
-	virtual void setDCBlockFlag(bool flag);
+	void setDCBlockFlag(bool flag);
 
-	virtual void setFilter(double lowFreq, double highFreq);
+	void setFilter(double lowFreq, double highFreq);
 
-	virtual void setFrequency(double freq);
+	void setFrequency(double freq);
 
-	virtual void setAMCarrierLevel(float level);
+	void setAMCarrierLevel(float level);
 
-	virtual void setFMDeviation(float deviation);
+	void setFMDeviation(float deviation);
 
-	virtual void setIQ(float phase, float gain);
+	void setIQ(float phase, float gain);
 
-	virtual void setALCAttack(float attack);
-	virtual void setALCDecay(float decay);
-	virtual void setALCGainBottom(float bottom);
-	virtual void setALCGainTop(float top);
-	virtual void setALCHangTime(float hang);
+	void setALCAttack(float attack);
+	void setALCDecay(float decay);
+	void setALCGainBottom(float bottom);
+	void setALCGainTop(float top);
+	void setALCHangTime(float hang);
 
-	virtual void setCompressionFlag(bool flag);
-	virtual void setCompressionLevel(float level);
+	void setCompressionFlag(bool flag);
+	void setCompressionLevel(float level);
 
-	virtual float getOffset() const;
+	float getOffset() const;
 
     private:
 	float         m_sampleRate;

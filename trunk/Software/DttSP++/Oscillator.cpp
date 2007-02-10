@@ -5,6 +5,7 @@ This routine implements a common fixed-frequency oscillator
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
+Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -37,14 +38,14 @@ Bridgewater, NJ 08807
 #include "FromSys.h"
 
 
-const double HUGE_PHASE = 1256637061.43593;
-
-COscillator::COscillator(CXB* buf, float sampleRate, double frequency, double phase) :
+COscillator::COscillator(CXB* buf, float sampleRate, double frequency) :
 m_buf(buf),
-m_frequency(0.0),
+m_frequency(frequency),
 m_sampleRate(sampleRate),
-m_phase(phase),
-m_delta(0.0)
+m_cosVal(1.0F),
+m_sinVal(0.0F),
+m_cosDelta(0.0F),
+m_sinDelta(0.0F)
 {
 	ASSERT(buf != NULL);
 	ASSERT(sampleRate > 0.0F);
@@ -56,25 +57,13 @@ COscillator::~COscillator()
 {
 }
 
-void COscillator::setPhase(double phase)
-{
-	m_phase = phase;
-}
-
-double COscillator::getPhase() const
-{
-	return m_phase;
-}
-
 void COscillator::setFrequency(double frequency)
 {
-	m_frequency = frequency;
-	m_delta     = TWOPI * frequency / m_sampleRate;
-}
+	float delta = frequency / m_sampleRate * TWOPI;
 
-double COscillator::getFrequency() const
-{
-	return m_frequency;
+	m_frequency = frequency;
+	m_cosDelta  = ::cos(delta);
+	m_sinDelta  = ::sin(delta);
 }
 
 void COscillator::oscillate()
@@ -84,16 +73,12 @@ void COscillator::oscillate()
 	if (m_frequency == 0.0 || len == 0)
 		return;
 
-	if (m_phase > HUGE_PHASE)
-		m_phase -= HUGE_PHASE;
-
-	COMPLEX z     = Cmplx((float)::cos(m_phase), (float)::sin(m_phase));
-	COMPLEX delta = Cmplx((float)::cos(m_delta), (float)::sin(m_delta));
-
 	for (unsigned int i = 0; i < len; i++) {
-		CXBdata(m_buf, i) = z = Cmul(z, delta);
+		float tmpVal = m_cosVal * m_cosDelta - m_sinVal * m_sinDelta;
+		m_sinVal = m_cosVal * m_sinDelta + m_sinVal * m_cosDelta;
+		m_cosVal = tmpVal;
 
-		m_phase += m_delta;
+		CXBdata(m_buf, i) = Cmplx(m_cosVal, m_sinVal);
 	}
 }
 
@@ -104,18 +89,12 @@ void COscillator::mix()
 	if (m_frequency == 0.0 || len == 0)
 		return;
 
-	if (m_phase > HUGE_PHASE)
-		m_phase -= HUGE_PHASE;
-
-	COMPLEX z     = Cmplx((float)::cos(m_phase), (float)::sin(m_phase));
-	COMPLEX delta = Cmplx((float)::cos(m_delta), (float)::sin(m_delta));
-
 	for (unsigned int i = 0; i < len; i++) {
-		z = Cmul(z, delta);
+		float tmpVal = m_cosVal * m_cosDelta - m_sinVal * m_sinDelta;
+		m_sinVal = m_cosVal * m_sinDelta + m_sinVal * m_cosDelta;
+		m_cosVal = tmpVal;
 
-		CXBdata(m_buf, i) = Cmul(CXBdata(m_buf, i), z);
-
-		m_phase += m_delta;
+		CXBdata(m_buf, i) = Cmul(CXBdata(m_buf, i), Cmplx(m_cosVal, m_sinVal));
 	}
 }
 

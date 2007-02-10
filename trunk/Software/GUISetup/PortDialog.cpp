@@ -150,51 +150,6 @@ m_txOutPin(-1)
 		m_txInDevChoice->Append(dev);
 		m_keyInDevChoice->Append(dev);
 		m_txOutDevChoice->Append(dev);
-
-		if (!m_txInDev.IsEmpty() && dev.IsSameAs(m_txInDev))
-			m_txInDevChoice->SetSelection(i);
-
-		if (!m_keyInDev.IsEmpty() && dev.IsSameAs(m_keyInDev))
-			m_keyInDevChoice->SetSelection(i);
-
-		if (!m_txOutDev.IsEmpty() && dev.IsSameAs(m_txOutDev))
-			m_txOutDevChoice->SetSelection(i);
-	}
-
-	if (m_txInDev.IsEmpty()) {
-		m_txInDevChoice->SetSelection(0);
-		m_txInDev = m_txInDevChoice->GetStringSelection();
-	}
-
-	if (m_keyInDev.IsEmpty()) {
-		m_keyInDevChoice->SetSelection(0);
-		m_keyInDev = m_keyInDevChoice->GetStringSelection();
-	}
-
-	if (m_txOutDev.IsEmpty()) {
-		m_txOutDevChoice->SetSelection(0);
-		m_txOutDev = m_txOutDevChoice->GetStringSelection();
-	}
-
-	if (m_txInPin == -1) {
-		m_txInPinChoice->SetSelection(0);
-		m_txInPin = 0;
-	} else {
-		m_txInPinChoice->SetSelection(m_txInPin);
-	}
-
-	if (m_keyInPin == -1) {
-		m_keyInPinChoice->SetSelection(0);
-		m_keyInPin = 0;
-	} else {
-		m_keyInPinChoice->SetSelection(m_keyInPin);
-	}
-
-	if (m_txOutPin == -1) {
-		m_txOutPinChoice->SetSelection(0);
-		m_txOutPin = 0;
-	} else {
-		m_txOutPinChoice->SetSelection(m_txOutPin);
 	}
 }
 
@@ -352,11 +307,25 @@ void CPortDialog::setTXInEnable(bool enable)
 void CPortDialog::setTXInDev(const wxString& dev)
 {
 	m_txInDev = dev;
+
+	if (m_txInDev.IsEmpty()) {
+		m_txInDevChoice->SetSelection(0);
+		m_txInDev = m_txInDevChoice->GetStringSelection();
+	} else {
+		m_txInDevChoice->SetStringSelection(dev);
+	}
 }
 
 void CPortDialog::setTXInPin(int pin)
 {
 	m_txInPin = pin;
+
+	if (m_txInPin == -1) {
+		m_txInPinChoice->SetSelection(0);
+		m_txInPin = 0;
+	} else {
+		m_txInPinChoice->SetSelection(m_txInPin);
+	}
 }
 
 bool CPortDialog::getTXInEnable() const
@@ -386,11 +355,25 @@ void CPortDialog::setKeyInEnable(bool enable)
 void CPortDialog::setKeyInDev(const wxString& dev)
 {
 	m_keyInDev = dev;
+
+	if (m_keyInDev.IsEmpty()) {
+		m_keyInDevChoice->SetSelection(0);
+		m_keyInDev = m_keyInDevChoice->GetStringSelection();
+	} else {
+		m_keyInDevChoice->SetStringSelection(dev);
+	}
 }
 
 void CPortDialog::setKeyInPin(int pin)
 {
 	m_keyInPin = pin;
+
+	if (m_keyInPin == -1) {
+		m_keyInPinChoice->SetSelection(0);
+		m_keyInPin = 0;
+	} else {
+		m_keyInPinChoice->SetSelection(m_keyInPin);
+	}
 }
 
 bool CPortDialog::getKeyInEnable() const
@@ -411,11 +394,25 @@ int CPortDialog::getKeyInPin() const
 void CPortDialog::setTXOutDev(const wxString& dev)
 {
 	m_txOutDev = dev;
+
+	if (m_txOutDev.IsEmpty()) {
+		m_txOutDevChoice->SetSelection(0);
+		m_txOutDev = m_txOutDevChoice->GetStringSelection();
+	} else {
+		m_txOutDevChoice->SetStringSelection(dev);
+	}
 }
 
 void CPortDialog::setTXOutPin(int pin)
 {
 	m_txOutPin = pin;
+
+	if (m_txOutPin == -1) {
+		m_txOutPinChoice->SetSelection(0);
+		m_txOutPin = 0;
+	} else {
+		m_txOutPinChoice->SetSelection(m_txOutPin);
+	}
 }
 
 wxString CPortDialog::getTXOutDev() const

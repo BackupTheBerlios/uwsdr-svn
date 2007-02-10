@@ -3,6 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
+Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -91,19 +92,9 @@ CSpectrum::~CSpectrum()
 	::fftwf_destroy_plan(m_plan);
 }
 
-SPECTRUMscale CSpectrum::getScale() const
-{
-	return m_scale;
-}
-
 void CSpectrum::setScale(SPECTRUMscale scale)
 {
 	m_scale = scale;
-}
-
-Windowtype CSpectrum::getWindowType() const
-{
-	return m_winType;
 }
 
 void CSpectrum::setWindowType(Windowtype type)
@@ -112,11 +103,6 @@ void CSpectrum::setWindowType(Windowtype type)
 		CWindow::create(type, m_size, m_window);
 
 	m_winType = type;
-}
-
-bool CSpectrum::getPolyphaseFlag() const
-{
-	return m_polyphase;
 }
 
 void CSpectrum::setPolyphaseFlag(bool setit)

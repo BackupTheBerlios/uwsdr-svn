@@ -3,6 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
+Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -41,21 +42,21 @@ Bridgewater, NJ 08807
 class CFilterOVSV {
     public:
 	CFilterOVSV(unsigned int bufLen, unsigned int pbits, float sampleRate, float lowFreq, float highFreq);
-	virtual ~CFilterOVSV();
+	~CFilterOVSV();
 
-	virtual COMPLEX* fetchPoint();
-	virtual COMPLEX* storePoint();
+	COMPLEX* fetchPoint();
+	COMPLEX* storePoint();
 
-	virtual unsigned int fetchSize();
-	virtual unsigned int storeSize();
+	unsigned int fetchSize();
+	unsigned int storeSize();
 
-	virtual COMPLEX* getZFvec();
+	COMPLEX* getZFvec();
 
-	virtual void reset();
+	void reset();
 
-	virtual void setFilter(float lowFreq, float highFreq);
+	void setFilter(float lowFreq, float highFreq);
 
-	virtual void filter();
+	void filter();
 
     private:
 	unsigned int m_pbits;
