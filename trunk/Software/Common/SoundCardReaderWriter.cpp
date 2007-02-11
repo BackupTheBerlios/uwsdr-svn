@@ -29,8 +29,7 @@ int scrwCallback(const void* input, void* output, unsigned long nSamples, const 
 }
 
 
-CSoundCardReaderWriter::CSoundCardReaderWriter(int api, int inDev, int outDev) :
-m_api(api),
+CSoundCardReaderWriter::CSoundCardReaderWriter(int inDev, int outDev) :
 m_inDev(inDev),
 m_outDev(outDev),
 m_blockSize(0),
@@ -83,32 +82,18 @@ bool CSoundCardReaderWriter::open(float sampleRate, unsigned int blockSize)
 		return false;
 	}
 
-	PaDeviceIndex inDev = ::Pa_HostApiDeviceIndexToDeviceIndex(m_api, m_inDev);
-	if (inDev < 0) {
-		::Pa_Terminate();
-		::wxLogError(wxT("Received %d:%s from Pa_HostApiDeviceIndexToDeviceIndex() in SoundCardReaderWriter for API:%d Dev:%d"), error, ::Pa_GetErrorText(inDev), m_api, m_inDev);
-		return false;
-	}
-
-	PaDeviceIndex outDev = ::Pa_HostApiDeviceIndexToDeviceIndex(m_api, m_outDev);
-	if (outDev < 0) {
-		::Pa_Terminate();
-		::wxLogError(wxT("Received %d:%s from Pa_HostApiDeviceIndexToDeviceIndex() in SoundCardReaderWriter for API:%d Dev:%d"), error, ::Pa_GetErrorText(outDev), m_api, m_outDev);
-		return false;
-	}
-
-	const PaDeviceInfo* inInfo  = ::Pa_GetDeviceInfo(inDev);
-	const PaDeviceInfo* outInfo = ::Pa_GetDeviceInfo(outDev);
+	const PaDeviceInfo* inInfo  = ::Pa_GetDeviceInfo(m_inDev);
+	const PaDeviceInfo* outInfo = ::Pa_GetDeviceInfo(m_outDev);
 
 	PaStreamParameters paramsIn;
-	paramsIn.device                    = inDev;
+	paramsIn.device                    = m_inDev;
 	paramsIn.channelCount              = 2;
 	paramsIn.sampleFormat              = paFloat32;
 	paramsIn.hostApiSpecificStreamInfo = NULL;
 	paramsIn.suggestedLatency          = inInfo->defaultLowInputLatency;
 
 	PaStreamParameters paramsOut;
-	paramsOut.device                    = outDev;
+	paramsOut.device                    = m_outDev;
 	paramsOut.channelCount              = 2;
 	paramsOut.sampleFormat              = paFloat32;
 	paramsOut.hostApiSpecificStreamInfo = NULL;

@@ -78,10 +78,9 @@ class CSoundCardDev {
     public:
 	CSoundCardDev(const wxString& name) :
 	m_name(name),
+	m_api(-1),
 	m_inDev(-1L),
 	m_outDev(-1L),
-	m_inDef(false),
-	m_outDef(false),
 	m_inChannels(0),
 	m_outChannels(0)
 	{
@@ -96,6 +95,11 @@ class CSoundCardDev {
 		return m_name;
 	}
 
+	int getAPI() const
+	{
+		return m_api;
+	}
+
 	long getInDev() const
 	{
 		return m_inDev;
@@ -104,16 +108,6 @@ class CSoundCardDev {
 	long getOutDev() const
 	{
 		return m_outDev;
-	}
-
-	bool getInDefault() const
-	{
-		return m_inDef;
-	}
-
-	bool getOutDefault() const
-	{
-		return m_outDef;
 	}
 
 	int getInChannels() const
@@ -126,26 +120,25 @@ class CSoundCardDev {
 		return m_outChannels;
 	}
 
-	void setIn(long dev, bool def, int channels)
+	void setIn(int api, long dev, int channels)
 	{
+		m_api        = api;
 		m_inDev      = dev;
-		m_inDef      = def;
 		m_inChannels = channels;
 	}
 
-	void setOut(long dev, bool def, int channels)
+	void setOut(int api, long dev, int channels)
 	{
+		m_api         = api;
 		m_outDev      = dev;
-		m_outDef      = def;
 		m_outChannels = channels;
 	}
 
     private:
 	wxString m_name;
+	int      m_api;
 	long     m_inDev;
 	long     m_outDev;
-	bool     m_inDef;
-	bool     m_outDef;
 	int      m_inChannels;
 	int      m_outChannels;
 };
@@ -156,7 +149,7 @@ class CSoundCardInfo {
 	virtual ~CSoundCardInfo();
 
 	bool enumerateAPIs();
-	bool enumerateDevs(const CSoundCardAPI& api);
+	bool enumerateDevs();
 
 	vector<CSoundCardAPI*>& getAPIs();
 	vector<CSoundCardDev*>& getDevs();

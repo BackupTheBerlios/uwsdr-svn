@@ -61,7 +61,7 @@ bool CSoundCardInfo::enumerateAPIs()
 	return true;
 }
 
-bool CSoundCardInfo::enumerateDevs(const CSoundCardAPI& api)
+bool CSoundCardInfo::enumerateDevs()
 {
 	freeDevs();
 
@@ -93,7 +93,7 @@ bool CSoundCardInfo::enumerateDevs(const CSoundCardAPI& api)
 			name = wxT("Primary Sound Driver");
 #endif
 
-		if (device->maxInputChannels > 0 && device->hostApi == api.getAPI()) {
+		if (device->maxInputChannels > 0) {
 			CSoundCardDev* dev = findDev(name);
 
 			if (dev == NULL) {
@@ -101,10 +101,10 @@ bool CSoundCardInfo::enumerateDevs(const CSoundCardAPI& api)
 				m_devs.push_back(dev);
 			}
 
-			dev->setIn(i, i == api.getInDefault(), device->maxInputChannels);
+			dev->setIn(device->hostApi, i, device->maxInputChannels);
 		}
 
-		if (device->maxOutputChannels > 0 && device->hostApi == api.getAPI()) {
+		if (device->maxOutputChannels > 0) {
 			CSoundCardDev* dev = findDev(name);
 
 			if (dev == NULL) {
@@ -112,7 +112,7 @@ bool CSoundCardInfo::enumerateDevs(const CSoundCardAPI& api)
 				m_devs.push_back(dev);
 			}
 
-			dev->setOut(i, i == api.getOutDefault(), device->maxOutputChannels);
+			dev->setOut(device->hostApi, i, device->maxOutputChannels);
 		}
 	}
 

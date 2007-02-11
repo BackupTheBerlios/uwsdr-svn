@@ -289,25 +289,24 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			m_dsp->setTXReader(new CNullReader());
 			m_dsp->setTXWriter(new CNullWriter());
 
-			// If the same API and device is used for both, then use the shared sound card input/output
-			// driver. This is for ALSA.
-			if (m_parameters->m_sdrAudioAPI == m_parameters->m_userAudioAPI && m_parameters->m_sdrAudioInDev == m_parameters->m_userAudioInDev) {
-				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_sdrAudioAPI, m_parameters->m_sdrAudioInDev, m_parameters->m_userAudioOutDev);
+			// If the same API and device is used for both, then use the shared sound card input/output driver.
+			if (m_parameters->m_sdrAudioInDev == m_parameters->m_userAudioInDev) {
+				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_sdrAudioInDev, m_parameters->m_userAudioOutDev);
 				m_dsp->setRXReader(scrw);
 				m_dsp->setRXWriter(scrw);
 			} else {
-				m_dsp->setRXReader(new CSoundCardReader(m_parameters->m_sdrAudioAPI, m_parameters->m_sdrAudioInDev));
-				m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_userAudioAPI, m_parameters->m_userAudioOutDev));
+				m_dsp->setRXReader(new CSoundCardReader(m_parameters->m_sdrAudioInDev));
+				m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_userAudioOutDev));
 			}
 			break;
 
 		case TYPE_AUDIOTXRX: {
 				// TX and RX are from audio cards for signal input and audio output, also simple TX/RX control
-				CSoundCardReaderWriter* scrw1 = new CSoundCardReaderWriter(m_parameters->m_sdrAudioAPI, m_parameters->m_sdrAudioInDev, m_parameters->m_sdrAudioOutDev);
+				CSoundCardReaderWriter* scrw1 = new CSoundCardReaderWriter(m_parameters->m_sdrAudioInDev, m_parameters->m_sdrAudioOutDev);
 				m_dsp->setRXReader(scrw1);
 				m_dsp->setTXWriter(scrw1);
 
-				CSoundCardReaderWriter* scrw2 = new CSoundCardReaderWriter(m_parameters->m_userAudioAPI, m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev);
+				CSoundCardReaderWriter* scrw2 = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev);
 				m_dsp->setTXReader(scrw2);
 				m_dsp->setRXWriter(scrw2);
 			}
@@ -315,7 +314,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 		case TYPE_DEMO: {
 				// A self contained variant for demo's and testing
-				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_userAudioAPI, m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev);
+				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev);
 
 				m_dsp->setTXReader(new CThreeToneReader(500.0F, 1500.0F, 2000.0F, 0.25F, scrw));
 				m_dsp->setRXWriter(scrw);
@@ -327,7 +326,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 		case TYPE_UWSDR1: {
 				// The standard configuration, UDP in/out and sound card for the user
-				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_userAudioAPI, m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev);
+				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev);
 
 				m_dsp->setTXReader(scrw);
 				m_dsp->setRXWriter(scrw);
@@ -919,10 +918,8 @@ void CUWSDRFrame::onTXButton(wxCommandEvent& event)
 		setTransmit();
 	} else {
 		// Else is in CW mode we can use the main Transmit button to abort a CW
-		// transmission, but not start one unless external keying is enabled
-		if (!m_txOn && m_parameters->m_keyInEnable)
-			setTransmit();
-		else if (m_txOn)
+	 	// transmission, but not start.
+		if (m_txOn)
 			::wxGetApp().sendCW(0, wxEmptyString);
 	}
 

@@ -33,7 +33,7 @@ extern "C" {
 
 class CSoundCardReader : public IDataReader {
     public:
-	CSoundCardReader(int api, int dev);
+	CSoundCardReader(int dev);
 
 	virtual void setCallback(IDataCallback* callback, int id);
 
@@ -51,7 +51,6 @@ class CSoundCardReader : public IDataReader {
 	virtual ~CSoundCardReader();
 
     private:
-	int            m_api;
 	int            m_dev;
 	IDataCallback* m_callback;
 	int            m_id;

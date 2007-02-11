@@ -29,8 +29,7 @@ int scrCallback(const void* input, void* output, unsigned long nSamples, const P
 }
 
 
-CSoundCardReader::CSoundCardReader(int api, int dev) :
-m_api(api),
+CSoundCardReader::CSoundCardReader(int dev) :
 m_dev(dev),
 m_callback(NULL),
 m_id(0),
@@ -60,17 +59,10 @@ bool CSoundCardReader::open(float sampleRate, unsigned int blockSize)
 		return false;
 	}
 
-	PaDeviceIndex dev = ::Pa_HostApiDeviceIndexToDeviceIndex(m_api, m_dev);
-	if (dev < 0) {
-		::Pa_Terminate();
-		::wxLogError(wxT("Received %d:%s from Pa_HostApiDeviceIndexToDeviceIndex() in SoundCardReader for API:%d Dev:%d"), error, ::Pa_GetErrorText(dev), m_api, m_dev);
-		return false;
-	}
-
-	const PaDeviceInfo* info = ::Pa_GetDeviceInfo(dev);
+	const PaDeviceInfo* info = ::Pa_GetDeviceInfo(m_dev);
 
 	PaStreamParameters params;
-	params.device                    = dev;
+	params.device                    = m_dev;
 	params.channelCount              = 2;
 	params.sampleFormat              = paFloat32;
 	params.hostApiSpecificStreamInfo = NULL;

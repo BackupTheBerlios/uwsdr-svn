@@ -101,11 +101,9 @@ class CSDRParameters {
 	wxString     m_txOutDev;
 	int          m_txOutPin;
 
-	int          m_userAudioAPI;
 	int          m_userAudioInDev;
 	int          m_userAudioOutDev;
 
-	int          m_sdrAudioAPI;
 	int          m_sdrAudioInDev;
 	int          m_sdrAudioOutDev;
 

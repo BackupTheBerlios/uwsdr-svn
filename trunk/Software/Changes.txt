@@ -316,14 +316,12 @@ The internal clocking should now be more efficient as it now uses seperate threa
 The UWSDR.desktop file in /usr/share/uwsdr is used as a template for the local .desktop files.
 
 
-Version 0.7.4 - February 2007
+Version 0.7.4 - 11 February 2007
 ================================
 
 Added SoftRock.txt to explain how to use the GUI with them.
 
 Install the text files into /usr/share/uwsdr.
-
-Hopefully sort out the bizarre behaviour of GUISetup with sound cards.
 
 Match the dimensions and colours for Mac OS X.
 
@@ -333,4 +331,4 @@ Fixed frequency offsets for the display on CW.
 
 Fixed the LSB based filter bandwidths, they are now the mirror image of the USB ones.
 
-Added serial port input ports for an external key and transmit control.
+Fixed the sound device problems in GUISetup and in the GUI.

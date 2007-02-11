@@ -33,12 +33,11 @@ const unsigned int RINGBUFFER_SIZE = 100001;
 const unsigned int BLOCK_SIZE      = 2048;		// XXXX
 
 
-CDataControl::CDataControl(float sampleRate, const wxString& address, int port, int api, long inDev, long outDev, unsigned int maxSamples, bool delay) :
+CDataControl::CDataControl(float sampleRate, const wxString& address, int port, long inDev, long outDev, unsigned int maxSamples, bool delay) :
 wxThread(),
 m_sampleRate(sampleRate),
 m_address(address),
 m_port(port),
-m_api(api),
 m_inDev(inDev),
 m_outDev(outDev),
 m_internal1Reader(NULL),
@@ -152,7 +151,7 @@ bool CDataControl::setSoundFileReader(const wxString& fileName)
 
 bool CDataControl::openIO()
 {
-	CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_api, m_inDev, m_outDev);
+	CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_inDev, m_outDev);
 	m_soundCardReader = scrw;
 	m_soundCardWriter = scrw;
 

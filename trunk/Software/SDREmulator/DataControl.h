@@ -42,7 +42,7 @@ enum {
 
 class CDataControl : public wxThread, public IDataCallback {
     public:
-	CDataControl(float sampleRate, const wxString& address, int port, int api, long inDev, long outDev, unsigned int maxSamples, bool delay);
+	CDataControl(float sampleRate, const wxString& address, int port, long inDev, long outDev, unsigned int maxSamples, bool delay);
 	virtual ~CDataControl();
 
 	virtual bool  setSoundFileReader(const wxString& fileName);
@@ -61,7 +61,6 @@ class CDataControl : public wxThread, public IDataCallback {
 	float          m_sampleRate;
 	wxString       m_address;
 	int            m_port;
-	int            m_api;
 	long           m_inDev;
 	long           m_outDev;
 

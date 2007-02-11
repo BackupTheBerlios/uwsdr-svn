@@ -36,7 +36,7 @@ extern "C" {
 
 class CSoundCardReaderWriter : public IDataWriter, public IDataReader {
     public:
-	CSoundCardReaderWriter(int api, int inDev, int outDev);
+	CSoundCardReaderWriter(int inDev, int outDev);
 
 	virtual void setCallback(IDataCallback* callback, int id);
 
@@ -58,7 +58,6 @@ class CSoundCardReaderWriter : public IDataWriter, public IDataReader {
 	virtual ~CSoundCardReaderWriter();
 
     private:
-	int            m_api;
 	int            m_inDev;
 	int            m_outDev;
 	unsigned int   m_blockSize;

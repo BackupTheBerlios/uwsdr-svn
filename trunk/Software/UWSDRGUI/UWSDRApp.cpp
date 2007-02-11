@@ -77,10 +77,8 @@ const wxString KEY_KEY_IN_DEV         = wxT("/KeyInDev");
 const wxString KEY_KEY_IN_PIN         = wxT("/KeyInPin");
 const wxString KEY_TX_OUT_DEV         = wxT("/TXOutDev");
 const wxString KEY_TX_OUT_PIN         = wxT("/TXOutPin");
-const wxString KEY_USER_AUDIO_API     = wxT("/UserAudioAPI");
 const wxString KEY_USER_AUDIO_IN_DEV  = wxT("/UserAudioInDev");
 const wxString KEY_USER_AUDIO_OUT_DEV = wxT("/UserAudioOutDev");
-const wxString KEY_SDR_AUDIO_API      = wxT("/SDRAudioAPI");
 const wxString KEY_SDR_AUDIO_IN_DEV   = wxT("/SDRAudioInDev");
 const wxString KEY_SDR_AUDIO_OUT_DEV  = wxT("/SDRAudioOutDev");
 const wxString KEY_RIT_CTRL           = wxT("/RitCtrl");
@@ -334,10 +332,8 @@ bool CUWSDRApp::readConfig()
 	wxString keyKeyInPin        = wxT("/") + m_parameters->m_name + KEY_KEY_IN_PIN;
 	wxString keyTXOutDev        = wxT("/") + m_parameters->m_name + KEY_TX_OUT_DEV;
 	wxString keyTXOutPin        = wxT("/") + m_parameters->m_name + KEY_TX_OUT_PIN;
-	wxString keyUserAudioAPI    = wxT("/") + m_parameters->m_name + KEY_USER_AUDIO_API;
 	wxString keyUserAudioInDev  = wxT("/") + m_parameters->m_name + KEY_USER_AUDIO_IN_DEV;
 	wxString keyUserAudioOutDev = wxT("/") + m_parameters->m_name + KEY_USER_AUDIO_OUT_DEV;
-	wxString keySDRAudioAPI     = wxT("/") + m_parameters->m_name + KEY_SDR_AUDIO_API;
 	wxString keySDRAudioInDev   = wxT("/") + m_parameters->m_name + KEY_SDR_AUDIO_IN_DEV;
 	wxString keySDRAudioOutDev  = wxT("/") + m_parameters->m_name + KEY_SDR_AUDIO_OUT_DEV;
 	wxString keyRitCtrl         = wxT("/") + m_parameters->m_name + KEY_RIT_CTRL;
@@ -490,11 +486,9 @@ bool CUWSDRApp::readConfig()
 	profile->Read(keyTXOutDev,         &m_parameters->m_txOutDev);
 	profile->Read(keyTXOutPin,         &m_parameters->m_txOutPin);
 
-	profile->Read(keyUserAudioAPI,     &m_parameters->m_userAudioAPI);
 	profile->Read(keyUserAudioInDev,   &m_parameters->m_userAudioInDev);
 	profile->Read(keyUserAudioOutDev,  &m_parameters->m_userAudioOutDev);
 
-	profile->Read(keySDRAudioAPI,      &m_parameters->m_sdrAudioAPI);
 	profile->Read(keySDRAudioInDev,    &m_parameters->m_sdrAudioInDev);
 	profile->Read(keySDRAudioOutDev,   &m_parameters->m_sdrAudioOutDev);
 

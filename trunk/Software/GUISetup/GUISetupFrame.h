@@ -48,10 +48,8 @@ class CGUISetupFrame : public wxFrame {
 #endif
 	wxString       m_filename;
 	int            m_sdrType;
-	int            m_userAudioAPI;
 	long           m_userAudioInDev;
 	long           m_userAudioOutDev;
-	int            m_sdrAudioAPI;
 	long           m_sdrAudioInDev;
 	long           m_sdrAudioOutDev;
 	wxString       m_ipAddress;

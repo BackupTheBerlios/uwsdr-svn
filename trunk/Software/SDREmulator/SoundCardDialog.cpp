@@ -36,7 +36,6 @@ wxDialog(parent, id, wxString(wxT("Sound Card Choice"))),
 m_apiChoice(NULL),
 m_devChoice(NULL),
 m_info(),
-m_api(-1),
 m_inDev(-1),
 m_outDev(-1)
 {
@@ -68,6 +67,20 @@ m_outDev(-1)
 
 	mainSizer->SetSizeHints(this);
 
+	bool ret = m_info.enumerateAPIs();
+
+	if (!ret) {
+		::wxMessageBox(wxT("Cannot access the sound access system."));
+		return;
+	}
+
+	ret = m_info.enumerateDevs();
+
+	if (!ret) {
+		::wxMessageBox(wxT("Cannot access the sound access system."));
+		return;
+	}
+
 	enumerateAPI();
 }
 
@@ -77,35 +90,32 @@ CSoundCardDialog::~CSoundCardDialog()
 
 void CSoundCardDialog::onAPI(wxCommandEvent& event)
 {
-	long audioAPI = m_apiChoice->GetSelection();
-	if (audioAPI == wxNOT_FOUND) {
+	long apiChoice = m_apiChoice->GetSelection();
+	if (apiChoice == wxNOT_FOUND) {
 		::wxMessageBox(wxT("The Audio API is not allowed to be empty"));
 		return;
 	}
 
-	CSoundCardAPI* api = m_info.getAPIs().at(audioAPI);
+	CSoundCardAPI* api = (CSoundCardAPI*)m_apiChoice->GetClientData(apiChoice);
+
+	m_inDev  = api->getInDefault();
+	m_outDev = api->getOutDefault();
 
 	enumerateAudio(*api);
 }
 
 void CSoundCardDialog::onOK(wxCommandEvent& event)
 {
-	long audioAPI = m_apiChoice->GetSelection();
-	if (audioAPI == wxNOT_FOUND) {
-		::wxMessageBox(wxT("The Audio API is not allowed to be empty"));
-		return;
-	}
-
-	m_api = m_info.getAPIs().at(audioAPI)->getAPI();
-
 	int devChoice = m_devChoice->GetSelection();
 	if (devChoice == wxNOT_FOUND) {
 		::wxMessageBox(wxT("The Audio Device is not allowed to be empty"));
 		return;
 	}
 
-	m_inDev  = m_info.getDevs().at(devChoice)->getInDev();
-	m_outDev = m_info.getDevs().at(devChoice)->getOutDev();
+	CSoundCardDev* dev = (CSoundCardDev*)m_devChoice->GetClientData(devChoice);
+
+	m_inDev  = dev->getInDev();
+	m_outDev = dev->getOutDev();
 
 	if (IsModal()) {
 		EndModal(wxID_OK);
@@ -117,20 +127,13 @@ void CSoundCardDialog::onOK(wxCommandEvent& event)
 
 void CSoundCardDialog::enumerateAPI()
 {
-	bool ret = m_info.enumerateAPIs();
-
-	if (!ret) {
-		::wxMessageBox(wxT("Cannot access the sound access system."));
-		return;
-	}
-
 	vector<CSoundCardAPI*>& apis = m_info.getAPIs();
 	CSoundCardAPI* defAPI = NULL;
 
 	for (unsigned int i = 0; i < apis.size(); i++) {
 		CSoundCardAPI* api = apis.at(i);
 
-		m_apiChoice->Append(api->getName());
+		m_apiChoice->Append(api->getName(), api);
 
 		if (api->getDefault()) {
 			m_apiChoice->SetSelection(i);
@@ -144,13 +147,6 @@ void CSoundCardDialog::enumerateAPI()
 
 void CSoundCardDialog::enumerateAudio(const CSoundCardAPI& api)
 {
-	bool ret = m_info.enumerateDevs(api);
-
-	if (!ret) {
-		::wxMessageBox(wxT("Cannot access the sound access system."));
-		return;
-	}
-
 	m_devChoice->Clear();
 
 	vector<CSoundCardDev*>& devs = m_info.getDevs();
@@ -158,16 +154,11 @@ void CSoundCardDialog::enumerateAudio(const CSoundCardAPI& api)
 	for (unsigned int  i = 0; i < devs.size(); i++) {
 		CSoundCardDev* dev = devs.at(i);
 
-		m_devChoice->Append(dev->getName());
+		m_devChoice->Append(dev->getName(), dev);
 
-		if (dev->getInDefault())
+		if (dev->getInDev() == api.getInDefault())
 			m_devChoice->SetSelection(i);
 	}
-}
-
-int CSoundCardDialog::getAPI() const
-{
-	return m_api;
 }
 
 long CSoundCardDialog::getInDev() const
