@@ -130,7 +130,7 @@ wxString CVoiceKeyboard::getFile(unsigned int n) const
 	return m_filename->GetString(n);
 }
 
-void CVoiceKeyboard::onBrowse(wxCommandEvent& event)
+void CVoiceKeyboard::onBrowse(wxCommandEvent& WXUNUSED(event))
 {
 	wxFileDialog files(this, _("Choose a Wave File"), m_dir, wxEmptyString, _("WAV files (*.WAV)|*.wav;*.WAV"), wxFD_FILE_MUST_EXIST);
 	int ret = files.ShowModal();
@@ -145,12 +145,12 @@ void CVoiceKeyboard::onBrowse(wxCommandEvent& event)
 	m_filename->SetValue(fileName);
 }
 
-void CVoiceKeyboard::onHelp(wxCommandEvent& event)
+void CVoiceKeyboard::onHelp(wxCommandEvent& WXUNUSED(event))
 {
 	::wxGetApp().showHelp(103);
 }
 
-void CVoiceKeyboard::onTransmit(wxCommandEvent& event)
+void CVoiceKeyboard::onTransmit(wxCommandEvent& WXUNUSED(event))
 {
 	wxString fileName = m_filename->GetValue();
 	if (fileName.IsEmpty()) {
@@ -172,11 +172,12 @@ void CVoiceKeyboard::onTransmit(wxCommandEvent& event)
 
 	if (m_single->GetValue())
 		::wxGetApp().sendAudio(fileName, VOICE_SINGLE);
+
 	if (m_continuous->GetValue())
 		::wxGetApp().sendAudio(fileName, VOICE_CONTINUOUS);
 }
 
-void CVoiceKeyboard::onAbort(wxCommandEvent& event)
+void CVoiceKeyboard::onAbort(wxCommandEvent& WXUNUSED(event))
 {
 	::wxGetApp().sendAudio(wxEmptyString, VOICE_STOPPED);
 }

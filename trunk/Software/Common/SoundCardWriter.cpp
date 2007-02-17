@@ -19,7 +19,7 @@
 #include "SoundCardWriter.h"
 
 
-int scwCallback(const void* input, void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void* userData)
+int scwCallback(const void* WXUNUSED(input), void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void* userData)
 {
 	wxASSERT(userData != NULL);
 
@@ -65,6 +65,10 @@ bool CSoundCardWriter::open(float sampleRate, unsigned int blockSize)
 	}
 
 	const PaDeviceInfo* info = ::Pa_GetDeviceInfo(m_dev);
+	if (info == NULL) {
+		::wxLogError(wxT("Received NULL from Pa_GetDeviceInfo() in SoundCardWriter"));
+		return false;
+	}
 
 	PaStreamParameters params;
 	params.device                    = m_dev;
@@ -109,7 +113,7 @@ void CSoundCardWriter::write(const float* buffer, unsigned int nSamples)
 		m_overruns++;
 }
 
-int CSoundCardWriter::callback(void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags)
+int CSoundCardWriter::callback(void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* WXUNUSED(timeInfo), PaStreamCallbackFlags WXUNUSED(statusFlags))
 {
 	wxASSERT(output != NULL);
 

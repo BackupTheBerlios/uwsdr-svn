@@ -18,21 +18,20 @@
 
 #include "DTTSPControl.h"
 
-#include "UWSDRDefs.h"
 #include "DTTSPExports.h"
 
 CDTTSPControl::CDTTSPControl() :
 wxThread(),
 m_sampleRate(0.0F),
 m_blockSize(0),
-m_filter(-1),
-m_mode(-1),
+m_filter(FILTER_2100),
+m_mode(MODE_USB),
 m_zeroIF(true),
 m_rxFreq(99999.9F),
 m_txFreq(99999.9F),
 m_transmit(false),
-m_deviation(-1),
-m_agc(-1),
+m_deviation(DEVIATION_5000),
+m_agc(AGC_MEDIUM),
 m_nb(false),
 m_nbValue(0),
 m_nb2(false),
@@ -90,14 +89,14 @@ void* CDTTSPControl::Entry()
 }
 
 
-void CDTTSPControl::setFilter(int filter)
+void CDTTSPControl::setFilter(FILTERWIDTH filter)
 {
 	m_filter = filter;
 
 	normaliseFilter();
 }
 
-void CDTTSPControl::setMode(int mode)
+void CDTTSPControl::setMode(UWSDRMODE mode)
 {
 	if (mode == m_mode)
 		return;
@@ -126,9 +125,6 @@ void CDTTSPControl::setMode(int mode)
 		case MODE_CWLN:
 			::SetMode(CWL);
 			break;
-		default:
-			::wxLogError(wxT("Unknown mode value = %d"), mode);
-			return;
 	}
 
 	m_mode = mode;
@@ -169,7 +165,7 @@ void CDTTSPControl::setTXAndFreq(bool transmit, float freq)
 	}
 }
 
-void CDTTSPControl::setAGC(int agc)
+void CDTTSPControl::setAGC(AGCSPEED agc)
 {
 	if (agc == m_agc)
 		return;
@@ -187,15 +183,12 @@ void CDTTSPControl::setAGC(int agc)
 		case AGC_NONE:
 			::SetRXAGC(agcOFF);
 			break;
-		default:
-			::wxLogError(wxT("Unknown AGC value = %d"), agc);
-			return;
 	}
 
 	m_agc = agc;
 }
 
-void CDTTSPControl::setDeviation(int dev)
+void CDTTSPControl::setDeviation(FMDEVIATION dev)
 {
 	if (dev == m_deviation)
 		return;
@@ -216,9 +209,6 @@ void CDTTSPControl::setDeviation(int dev)
 		case DEVIATION_2000:
 			::SetDeviation(2000.0F);
 			break;
-		default:
-			::wxLogError(wxT("Unknown Deviation value = %d"), dev);
-			return;
 	}
 
 	m_deviation = dev;
@@ -353,7 +343,7 @@ float CDTTSPControl::getRXOffset()
 	return ::GetRXOffset();
 }
 
-float CDTTSPControl::getMeter(int type)
+float CDTTSPControl::getMeter(METERPOS type)
 {
 	if (!m_started)
 		return -200.0F;
@@ -405,15 +395,12 @@ float CDTTSPControl::getMeter(int type)
 				val /= 2.0F;
 			}
 			break;
-		default:
-			::wxLogError(wxT("Unknown meter type = %d"), type);
-			break;
 	}
 
 	return val;
 }
 
-void CDTTSPControl::getSpectrum(float* spectrum, int pos)
+void CDTTSPControl::getSpectrum(float* spectrum, SPECTRUMPOS pos)
 {
 	wxASSERT(spectrum != NULL);
 
@@ -422,17 +409,14 @@ void CDTTSPControl::getSpectrum(float* spectrum, int pos)
 
 	if (!m_transmit) {
 		switch (pos) {
-			case SPECTRUM_PRE_FILT:
+			case SPECTRUM_PRE_FILTER:
 				::Process_Panadapter(spectrum);
 				break;
-			case SPECTRUM_POST_FILT:
+			case SPECTRUM_POST_FILTER:
 				::Process_Spectrum(spectrum);
 				break;
 			case SPECTRUM_POST_AGC:
 				::Process_Scope(spectrum, SPECTRUM_SIZE);
-				break;
-			default:
-				::wxLogError(wxT("Unknown spectrum position = %d"), pos);
 				break;
 		}
 	} else {
@@ -497,9 +481,6 @@ void CDTTSPControl::normaliseFilter()
 		case FILTER_25:
 			width = 25.0;
 			break;
-		default:
-			::wxLogError(wxT("Unknown filter value = %d"), m_filter);
-			return;
 	}
 
 	double rxLow = 0.0, rxHigh = 0.0;
@@ -608,10 +589,6 @@ void CDTTSPControl::normaliseFilter()
 					break;
 			}
 			break;
-
-		default:
-			::wxLogError(wxT("Unknown mode value = %d"), m_mode);
-			return;
 	}
 
 	// Swap the filter values over

@@ -26,7 +26,7 @@ CNullWriter::~CNullWriter()
 {
 }
 
-bool CNullWriter::open(float sampleRate, unsigned int blockSize)
+bool CNullWriter::open(float WXUNUSED(sampleRate), unsigned int WXUNUSED(blockSize))
 {
 	return true;
 }
@@ -42,7 +42,7 @@ void CNullWriter::close()
 	delete this;
 }
 
-void CNullWriter::enable(bool enable)
+void CNullWriter::enable(bool WXUNUSED(enable))
 {
 }
 

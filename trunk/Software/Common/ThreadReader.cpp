@@ -95,7 +95,7 @@ void CThreadReader::clock()
 	m_run.Post();
 }
 
-void CThreadReader::callback(float* buffer, unsigned int nSamples, int id)
+void CThreadReader::callback(float* buffer, unsigned int nSamples, int WXUNUSED(id))
 {
 	::memset(buffer, 0x00, nSamples * 2 * sizeof(float));
 

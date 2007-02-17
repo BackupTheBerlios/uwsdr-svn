@@ -18,8 +18,6 @@
 
 #include "DSPControl.h"
 
-#include "UWSDRDefs.h"
-
 #include <wx/datetime.h>
 
 
@@ -379,7 +377,7 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 	}
 }
 
-void CDSPControl::setMode(int mode)
+void CDSPControl::setMode(UWSDRMODE mode)
 {
 	// We need a copy too ...
 	m_mode = mode;
@@ -397,17 +395,17 @@ void CDSPControl::swapIQ(bool swap)
 	m_swap = swap;
 }
 
-void CDSPControl::setFilter(int filter)
+void CDSPControl::setFilter(FILTERWIDTH filter)
 {
 	m_dttsp->setFilter(filter);
 }
 
-void CDSPControl::setAGC(int agc)
+void CDSPControl::setAGC(AGCSPEED agc)
 {
 	m_dttsp->setAGC(agc);
 }
 
-void CDSPControl::setDeviation(int dev)
+void CDSPControl::setDeviation(FMDEVIATION dev)
 {
 	m_dttsp->setDeviation(dev);
 }
@@ -493,7 +491,7 @@ void CDSPControl::setTXIAndQ(int phase, int gain)
 	m_dttsp->setTXIAndQ(phase, gain);
 }
 
-float CDSPControl::getMeter(int type)
+float CDSPControl::getMeter(METERPOS type)
 {
 	return m_dttsp->getMeter(type);
 }
@@ -508,7 +506,7 @@ float CDSPControl::getRXOffset()
 	return m_dttsp->getRXOffset();
 }
 
-void CDSPControl::getSpectrum(float* spectrum, int pos)
+void CDSPControl::getSpectrum(float* spectrum, SPECTRUMPOS pos)
 {
 	m_dttsp->getSpectrum(spectrum, pos);
 }

@@ -40,7 +40,7 @@ Bridgewater, NJ 08807
 #include "FromSys.h"
 
 
-typedef enum {
+enum Windowtype {
 	RECTANGULAR_WINDOW,
 	HANN_WINDOW,
 	WELCH_WINDOW,
@@ -54,7 +54,7 @@ typedef enum {
 	RIEMANN_WINDOW,
 	BLACKMANHARRIS_WINDOW,
 	NUTTALL_WINDOW,
-} Windowtype;
+};
 
 
 class CWindow {

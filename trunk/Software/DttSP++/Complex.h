@@ -35,9 +35,9 @@ Bridgewater, NJ 08807
 #ifndef _complex_h
 #define _complex_h
 
-typedef struct {
+struct COMPLEX {
 	float re;
 	float im;
-} COMPLEX;
+};
 
 #endif

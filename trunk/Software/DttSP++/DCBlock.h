@@ -39,12 +39,12 @@ Bridgewater, NJ 08807
 #include "CXB.h"
 
 
-typedef enum {
+enum DCBMode {
 	DCB_LOW,
 	DCB_MED,
 	DCB_HIGH,
 	DCB_SUPER
-} DCBMode;
+};
 
 const int BLKMEM = 9;
 

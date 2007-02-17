@@ -65,7 +65,7 @@ void CSDRDataReader::setCallback(IDataCallback* callback, int id)
 	m_id       = id;
 }
 
-bool CSDRDataReader::open(float sampleRate, unsigned int blockSize)
+bool CSDRDataReader::open(float WXUNUSED(sampleRate), unsigned int blockSize)
 {
 	m_blockSize = blockSize;
 

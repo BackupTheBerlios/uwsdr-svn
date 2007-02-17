@@ -18,8 +18,6 @@
 
 #include "SpectrumDisplay.h"
 
-#include "UWSDRDefs.h"
-
 #include <wx/image.h>
 
 enum {
@@ -82,9 +80,9 @@ m_speedMenu(NULL),
 m_posMenu(NULL),
 m_typeMenu(NULL),
 m_dbMenu(NULL),
-m_type(SPECTRUM_NONE),
-m_speed(0),
-m_position(0),
+m_type(SPECTRUM_PANADAPTER1),
+m_speed(SPECTRUM_100MS),
+m_position(SPECTRUM_PRE_FILTER),
 m_db(SPECTRUM_40DB),
 m_factor(1),
 m_ticks(0),
@@ -188,7 +186,7 @@ void CSpectrumDisplay::showSpectrum(const float* spectrum, float bottom, float o
 	m_ticks++;
 }
 
-void CSpectrumDisplay::onPaint(wxPaintEvent& event)
+void CSpectrumDisplay::onPaint(wxPaintEvent& WXUNUSED(event))
 {
 	wxPaintDC dc(this);
 
@@ -538,10 +536,10 @@ void CSpectrumDisplay::onRightMouse(wxMouseEvent& event)
 	}
 
 	switch (m_position) {
-		case SPECTRUM_PRE_FILT:
+		case SPECTRUM_PRE_FILTER:
 			m_posMenu->Check(MENU_PRE_FILT, true);
 			break;
-		case SPECTRUM_POST_FILT:
+		case SPECTRUM_POST_FILTER:
 			m_posMenu->Check(MENU_POST_FILT, true);
 			break;
 		case SPECTRUM_POST_AGC:
@@ -619,10 +617,10 @@ void CSpectrumDisplay::onMenu(wxCommandEvent& event)
 			setType(SPECTRUM_WATERFALL);
 			break;
 		case MENU_PRE_FILT:
-			setPosition(SPECTRUM_PRE_FILT);
+			setPosition(SPECTRUM_PRE_FILTER);
 			break;
 		case MENU_POST_FILT:
-			setPosition(SPECTRUM_POST_FILT);
+			setPosition(SPECTRUM_POST_FILTER);
 			break;
 		case MENU_POST_AGC:
 			setPosition(SPECTRUM_POST_AGC);
@@ -669,7 +667,7 @@ void CSpectrumDisplay::onMenu(wxCommandEvent& event)
 	}
 }
 
-void CSpectrumDisplay::setType(int type)
+void CSpectrumDisplay::setType(SPECTRUMTYPE type)
 {
 	if (type == m_type)
 		return;
@@ -682,9 +680,6 @@ void CSpectrumDisplay::setType(int type)
 		case SPECTRUM_WATERFALL:
 			createWaterfall();
 			break;
-		default:
-			::wxLogError(wxT("Unknown spectrum type = %d"), type);
-			break;
 	}
 
 	m_type = type;
@@ -693,7 +688,7 @@ void CSpectrumDisplay::setType(int type)
 	show(clientDC);
 }
 
-void CSpectrumDisplay::setSpeed(int speed)
+void CSpectrumDisplay::setSpeed(SPECTRUMSPEED speed)
 {
 	if (speed == m_speed)
 		return;
@@ -717,15 +712,12 @@ void CSpectrumDisplay::setSpeed(int speed)
 		case SPECTRUM_1000MS:
 			m_factor = 10;
 			break;
-		default:
-			::wxLogError(wxT("Unknown spectrum speed = %d"), speed);
-			break;
 	}
 
 	m_speed = speed;
 }
 
-void CSpectrumDisplay::setDB(int db)
+void CSpectrumDisplay::setDB(SPECTRUMRANGE db)
 {
 	if (db == m_db)
 		return;
@@ -749,9 +741,6 @@ void CSpectrumDisplay::setDB(int db)
 		case SPECTRUM_60DB:
 			m_dbScale = 60.0F;
 			break;
-		default:
-			::wxLogError(wxT("Unknown db range = %d"), db);
-			break;
 	}
 
 	m_db = db;
@@ -769,27 +758,27 @@ void CSpectrumDisplay::setDB(int db)
 	show(clientDC);
 }
 
-void CSpectrumDisplay::setPosition(int position)
+void CSpectrumDisplay::setPosition(SPECTRUMPOS position)
 {
 	m_position = position;
 }
 
-int CSpectrumDisplay::getType() const
+SPECTRUMTYPE CSpectrumDisplay::getType() const
 {
 	return m_type;
 }
 
-int CSpectrumDisplay::getSpeed() const
+SPECTRUMSPEED CSpectrumDisplay::getSpeed() const
 {
 	return m_speed;
 }
 
-int CSpectrumDisplay::getPosition() const
+SPECTRUMPOS CSpectrumDisplay::getPosition() const
 {
 	return m_position;
 }
 
-int CSpectrumDisplay::getDB() const
+SPECTRUMRANGE CSpectrumDisplay::getDB() const
 {
 	return m_db;
 }

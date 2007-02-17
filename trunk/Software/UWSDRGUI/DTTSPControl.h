@@ -21,6 +21,9 @@
 
 #include <wx/wx.h>
 
+#include "UWSDRDefs.h"
+
+
 class CDTTSPControl : public wxThread {
 
     public:
@@ -31,12 +34,12 @@ class CDTTSPControl : public wxThread {
 
 	virtual void* Entry();
 
-	virtual void setFilter(int filter);
-	virtual void setMode(int mode);
+	virtual void setFilter(FILTERWIDTH filter);
+	virtual void setMode(UWSDRMODE mode);
 	virtual void setZeroIF(bool onOff);
 	virtual void setTXAndFreq(bool transmit, float freq);
-	virtual void setAGC(int agc);
-	virtual void setDeviation(int value);
+	virtual void setAGC(AGCSPEED agc);
+	virtual void setDeviation(FMDEVIATION value);
 	virtual void setSquelch(unsigned int value);
 
 	virtual void setNB(bool onOff);
@@ -54,8 +57,8 @@ class CDTTSPControl : public wxThread {
 	virtual void setRXIAndQ(int phase, int gain);
 	virtual void setTXIAndQ(int phase, int gain);
 
-	virtual float getMeter(int type);
-	virtual void  getSpectrum(float* spectrum, int pos);
+	virtual float getMeter(METERPOS type);
+	virtual void  getSpectrum(float* spectrum, SPECTRUMPOS pos);
 
 	virtual float getTXOffset();
 	virtual float getRXOffset();
@@ -67,14 +70,14 @@ class CDTTSPControl : public wxThread {
     private:
 	float        m_sampleRate;
 	unsigned int m_blockSize;
-	int          m_filter;
-	int          m_mode;
+	FILTERWIDTH  m_filter;
+	UWSDRMODE    m_mode;
 	bool         m_zeroIF;
 	float        m_rxFreq;
 	float        m_txFreq;
 	bool         m_transmit;
-	int          m_deviation;
-	int          m_agc;
+	FMDEVIATION  m_deviation;
+	AGCSPEED     m_agc;
 	bool         m_nb;
 	unsigned int m_nbValue;
 	bool         m_nb2;

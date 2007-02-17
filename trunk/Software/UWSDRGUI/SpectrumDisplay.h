@@ -21,6 +21,9 @@
 
 #include <wx/wx.h>
 
+#include "UWSDRDefs.h"
+
+
 class CSpectrumDisplay : public wxPanel {
 
     public:
@@ -32,15 +35,15 @@ class CSpectrumDisplay : public wxPanel {
 
 	virtual void showSpectrum(const float* spectrum, float bottom = 0.0F, float offset = 0.0F);
 
-	virtual void setType(int type);
-	virtual void setPosition(int pos);
-	virtual void setSpeed(int speed);
-	virtual void setDB(int db);
+	virtual void setPosition(SPECTRUMPOS pos);
+	virtual void setType(SPECTRUMTYPE type);
+	virtual void setSpeed(SPECTRUMSPEED speed);
+	virtual void setDB(SPECTRUMRANGE db);
 
-	virtual int  getType() const;
-	virtual int  getPosition() const;
-	virtual int  getSpeed() const;
-	virtual int  getDB() const;
+	virtual SPECTRUMPOS   getPosition() const;
+	virtual SPECTRUMTYPE  getType() const;
+	virtual SPECTRUMSPEED getSpeed() const;
+	virtual SPECTRUMRANGE getDB() const;
 
 	virtual float getFreqPick();
 
@@ -50,26 +53,26 @@ class CSpectrumDisplay : public wxPanel {
 	void onMenu(wxCommandEvent& event);
 
     private:
-	int          m_width;
-	int          m_height;
-	float        m_dbScale;
-	wxBitmap*    m_background;
-	wxBitmap*    m_bitmap;
-	float        m_sampleRate;
-	float        m_bandwidth;
-	wxMenu*      m_menu;
-	wxMenu*      m_speedMenu;
-	wxMenu*      m_posMenu;
-	wxMenu*      m_typeMenu;
-	wxMenu*      m_dbMenu;
-	int          m_type;
-	int          m_speed;
-	int          m_position;
-	int          m_db;
-	int          m_factor;
-	unsigned int m_ticks;
-	float        m_pick;
-	float        m_offset;
+	int           m_width;
+	int           m_height;
+	float         m_dbScale;
+	wxBitmap*     m_background;
+	wxBitmap*     m_bitmap;
+	float         m_sampleRate;
+	float         m_bandwidth;
+	wxMenu*       m_menu;
+	wxMenu*       m_speedMenu;
+	wxMenu*       m_posMenu;
+	wxMenu*       m_typeMenu;
+	wxMenu*       m_dbMenu;
+	SPECTRUMTYPE  m_type;
+	SPECTRUMSPEED m_speed;
+	SPECTRUMPOS   m_position;
+	SPECTRUMRANGE m_db;
+	int           m_factor;
+	unsigned int  m_ticks;
+	float         m_pick;
+	float         m_offset;
 
 	DECLARE_EVENT_TABLE()
 

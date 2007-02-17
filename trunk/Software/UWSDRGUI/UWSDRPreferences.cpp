@@ -234,7 +234,7 @@ CUWSDRPreferences::~CUWSDRPreferences()
 {
 }
 
-void CUWSDRPreferences::onOK(wxCommandEvent& event)
+void CUWSDRPreferences::onOK(wxCommandEvent& WXUNUSED(event))
 {
 	wxString text = m_minRXFreq->GetValue();
 
@@ -450,25 +450,25 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 	m_parameters->m_freqShift  = shift * 1000;
 	m_parameters->m_freqOffset = offset;
 
-	m_parameters->m_deviationFMW = m_deviationFMW->GetSelection();
-	m_parameters->m_deviationFMN = m_deviationFMN->GetSelection();
+	m_parameters->m_deviationFMW = FMDEVIATION(m_deviationFMW->GetSelection());
+	m_parameters->m_deviationFMN = FMDEVIATION(m_deviationFMN->GetSelection());
 
-	m_parameters->m_agcAM  = m_agcAM->GetSelection();
-	m_parameters->m_agcSSB = m_agcSSB->GetSelection();
-	m_parameters->m_agcCW  = m_agcCW->GetSelection();
+	m_parameters->m_agcAM  = AGCSPEED(m_agcAM->GetSelection());
+	m_parameters->m_agcSSB = AGCSPEED(m_agcSSB->GetSelection());
+	m_parameters->m_agcCW  = AGCSPEED(m_agcCW->GetSelection());
 
-	m_parameters->m_filterFMW = m_filterFMW->GetSelection();
-	m_parameters->m_filterFMN = m_filterFMN->GetSelection();
-	m_parameters->m_filterAM  = m_filterAM->GetSelection();
-	m_parameters->m_filterSSB = m_filterSSB->GetSelection();
-	m_parameters->m_filterCWW = m_filterCWW->GetSelection();
-	m_parameters->m_filterCWN = m_filterCWN->GetSelection();
+	m_parameters->m_filterFMW = FILTERWIDTH(m_filterFMW->GetSelection());
+	m_parameters->m_filterFMN = FILTERWIDTH(m_filterFMN->GetSelection());
+	m_parameters->m_filterAM  = FILTERWIDTH(m_filterAM->GetSelection());
+	m_parameters->m_filterSSB = FILTERWIDTH(m_filterSSB->GetSelection());
+	m_parameters->m_filterCWW = FILTERWIDTH(m_filterCWW->GetSelection());
+	m_parameters->m_filterCWN = FILTERWIDTH(m_filterCWN->GetSelection());
 
-	m_parameters->m_vfoSpeedFM  = m_tuningFM->GetSelection();
-	m_parameters->m_vfoSpeedAM  = m_tuningAM->GetSelection();
-	m_parameters->m_vfoSpeedSSB = m_tuningSSB->GetSelection();
-	m_parameters->m_vfoSpeedCWW = m_tuningCWW->GetSelection();
-	m_parameters->m_vfoSpeedCWN = m_tuningCWN->GetSelection();
+	m_parameters->m_vfoSpeedFM  = VFOSPEED(m_tuningFM->GetSelection());
+	m_parameters->m_vfoSpeedAM  = VFOSPEED(m_tuningAM->GetSelection());
+	m_parameters->m_vfoSpeedSSB = VFOSPEED(m_tuningSSB->GetSelection());
+	m_parameters->m_vfoSpeedCWW = VFOSPEED(m_tuningCWW->GetSelection());
+	m_parameters->m_vfoSpeedCWN = VFOSPEED(m_tuningCWN->GetSelection());
 
 	m_parameters->m_stepVeryFast = stepVeryFast;
 	m_parameters->m_stepFast     = stepFast;
@@ -512,7 +512,7 @@ void CUWSDRPreferences::onOK(wxCommandEvent& event)
 	}
 }
 
-void CUWSDRPreferences::onHelp(wxCommandEvent& event)
+void CUWSDRPreferences::onHelp(wxCommandEvent& WXUNUSED(event))
 {
 	int page = m_noteBook->GetSelection();
 	if (page == -1)
@@ -1021,7 +1021,7 @@ void CUWSDRPreferences::onIQChanged(wxSpinEvent& event)
 	}
 }
 
-void CUWSDRPreferences::onRFGainChanged(wxScrollEvent& event)
+void CUWSDRPreferences::onRFGainChanged(wxScrollEvent& WXUNUSED(event))
 {
 	double gainDb = double(m_rfValue->GetValue());
 

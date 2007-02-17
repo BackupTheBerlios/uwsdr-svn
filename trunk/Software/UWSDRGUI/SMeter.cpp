@@ -18,8 +18,6 @@
 
 #include "SMeter.h"
 
-#include "UWSDRDefs.h"
-
 #include <cmath>
 
 enum {
@@ -57,8 +55,8 @@ m_bitmap(NULL),
 m_menu(NULL),
 m_rxMenu(NULL),
 m_txMenu(NULL),
-m_rxMeter(-1),
-m_txMeter(-1),
+m_rxMeter(METER_SIGNAL),
+m_txMeter(METER_POWER),
 m_lastLevel(999.9F)
 {
 	m_bitmap     = new wxBitmap(m_width, m_height);
@@ -144,7 +142,7 @@ void CSMeter::setLevel(float level)
 	m_lastLevel = level;
 }
 
-void CSMeter::onPaint(wxPaintEvent& event)
+void CSMeter::onPaint(wxPaintEvent& WXUNUSED(event))
 {
 	wxPaintDC dc(this);
 
@@ -294,28 +292,25 @@ void CSMeter::onMenu(wxCommandEvent& event)
 		case MENU_ALC:
 			setTXMeter(METER_ALC);
 			break;
-		default:
-			::wxLogError(wxT("Unknown meter type = %d"), event.GetId());
-			break;
 	}
 }
 
-void CSMeter::setRXMeter(int meter)
+void CSMeter::setRXMeter(METERPOS meter)
 {
 	m_rxMeter = meter;
 }
 
-void CSMeter::setTXMeter(int meter)
+void CSMeter::setTXMeter(METERPOS meter)
 {
 	m_txMeter = meter;
 }
 
-int CSMeter::getRXMeter() const
+METERPOS CSMeter::getRXMeter() const
 {
 	return m_rxMeter;
 }
 
-int CSMeter::getTXMeter() const
+METERPOS CSMeter::getTXMeter() const
 {
 	return m_txMeter;
 }

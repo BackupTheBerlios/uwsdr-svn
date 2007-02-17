@@ -38,6 +38,7 @@
 #include "VoiceKeyboard.h"
 #include "CWKeyboard.h"
 
+
 class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterface {
     public:
 	CUWSDRFrame(const wxString& title);
@@ -55,6 +56,8 @@ class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterf
 	void onMouseWheel(wxMouseEvent& event);
 	void onTimer(wxTimerEvent& event);
 	void onClose(wxCloseEvent& event);
+	void onTransmitOn(wxEvent& event);
+	void onTransmitOff(wxEvent& event);
 
 	virtual void            setParameters(CSDRParameters* parameters);
 	virtual CSDRParameters* getParameters();
@@ -67,13 +70,15 @@ class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterf
 	virtual void sendCW(unsigned int speed, const wxString& text);
 	virtual void sendAudio(const wxString& fileName, int state);
 
+	virtual void setTransmit(bool txOn);
+
     private:
 	wxTimer           m_timer;
 	CSDRParameters*   m_parameters;
 	CDSPControl*      m_dsp;
 	ISDRController*   m_sdr;
 	bool              m_rxOn;
-	bool              m_txOn;
+	unsigned int      m_txOn;
 	double            m_stepSize;
 	bool              m_record;
 
@@ -130,7 +135,7 @@ class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterf
 	void normaliseFreq();
 	void normaliseMode();
 
-	bool setTransmit();
+	bool normaliseTransmit(bool txOn);
 };
 
 #endif

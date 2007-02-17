@@ -41,12 +41,12 @@ Bridgewater, NJ 08807
 #include "CXOps.h"
 
 
-typedef struct {
+struct CXB {
 	COMPLEX*     data;
 	unsigned int size;
 	unsigned int have;
 	bool         mine;
-} CXB;
+};
 
 /* all these should be OK rhs or lhs */
 

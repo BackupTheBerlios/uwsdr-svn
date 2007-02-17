@@ -89,7 +89,7 @@ CEthernetDialog::~CEthernetDialog()
 {
 }
 
-void CEthernetDialog::onOK(wxCommandEvent& event)
+void CEthernetDialog::onOK(wxCommandEvent& WXUNUSED(event))
 {
 	m_ipAddress = m_address->GetValue();
 	if (m_ipAddress.IsEmpty()) {

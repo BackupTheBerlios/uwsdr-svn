@@ -83,7 +83,16 @@ bool CSoundCardReaderWriter::open(float sampleRate, unsigned int blockSize)
 	}
 
 	const PaDeviceInfo* inInfo  = ::Pa_GetDeviceInfo(m_inDev);
+	if (inInfo == NULL) {
+		::wxLogError(wxT("Received NULL from Pa_GetDeviceInfo() in SoundCardReaderWriter"));
+		return false;
+	}
+
 	const PaDeviceInfo* outInfo = ::Pa_GetDeviceInfo(m_outDev);
+	if (outInfo == NULL) {
+		::wxLogError(wxT("Received NULL from Pa_GetDeviceInfo() in SoundCardReaderWriter"));
+		return false;
+	}
 
 	PaStreamParameters paramsIn;
 	paramsIn.device                    = m_inDev;
@@ -138,7 +147,7 @@ void CSoundCardReaderWriter::write(const float* buffer, unsigned int nSamples)
 		m_overruns++;
 }
 
-int CSoundCardReaderWriter::callback(const void* input, void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags)
+int CSoundCardReaderWriter::callback(const void* input, void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* WXUNUSED(timeInfo), PaStreamCallbackFlags WXUNUSED(statusFlags))
 {
 	wxASSERT(input != NULL);
 	wxASSERT(output != NULL);

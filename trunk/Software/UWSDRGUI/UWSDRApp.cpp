@@ -424,28 +424,40 @@ bool CUWSDRApp::readConfig()
 	profile->Read(keyVfoD,             &freq, wxT("0.0"));
 	m_parameters->m_vfoD.setFrequency(freq);
 
-	int num;
-	profile->Read(keyFreqShift,        &num, 0);
+	long num;
+	profile->Read(keyFreqShift,        &num, 0L);
 	m_parameters->m_freqShift = num;
 
 	profile->Read(keyFreqOffset,       &m_parameters->m_freqOffset, 0.0);
 
-	profile->Read(keyVfoChoice,        &m_parameters->m_vfoChoice, VFO_A);
+	profile->Read(keyVfoChoice,        &num, VFO_A);
+	m_parameters->m_vfoChoice = VFOCHOICE(num);
 
-	profile->Read(keyVfoSplitShift,    &m_parameters->m_vfoSplitShift, VFO_NONE);
+	profile->Read(keyVfoSplitShift,    &num, VFO_NONE);
+	m_parameters->m_vfoSplitShift = VFOMODE(num);
 
-	profile->Read(keyVfoSpeedFM,       &m_parameters->m_vfoSpeedFM,  SPEED_VERYFAST);
-	profile->Read(keyVfoSpeedAM,       &m_parameters->m_vfoSpeedAM,  SPEED_MEDIUM);
-	profile->Read(keyVfoSpeedSSB,      &m_parameters->m_vfoSpeedSSB, SPEED_SLOW);
-	profile->Read(keyVfoSpeedCWW,      &m_parameters->m_vfoSpeedCWW, SPEED_SLOW);
-	profile->Read(keyVfoSpeedCWN,      &m_parameters->m_vfoSpeedCWN, SPEED_VERYSLOW);
+	profile->Read(keyVfoSpeedFM,       &num, SPEED_VERYFAST);
+	m_parameters->m_vfoSpeedFM =  VFOSPEED(num);
+	profile->Read(keyVfoSpeedAM,       &num, SPEED_MEDIUM);
+	m_parameters->m_vfoSpeedAM =  VFOSPEED(num);
+	profile->Read(keyVfoSpeedSSB,      &num, SPEED_SLOW);
+	m_parameters->m_vfoSpeedSSB = VFOSPEED(num);
+	profile->Read(keyVfoSpeedCWW,      &num, SPEED_SLOW);
+	m_parameters->m_vfoSpeedCWW = VFOSPEED(num);
+	profile->Read(keyVfoSpeedCWN,      &num, SPEED_VERYSLOW);
+	m_parameters->m_vfoSpeedCWN = VFOSPEED(num);
 
-	profile->Read(keyDevFMW,           &m_parameters->m_deviationFMW, DEVIATION_5000);
-	profile->Read(keyDevFMN,           &m_parameters->m_deviationFMN, DEVIATION_2500);
+	profile->Read(keyDevFMW,           &num, DEVIATION_5000);
+	m_parameters->m_deviationFMW = FMDEVIATION(num);
+	profile->Read(keyDevFMN,           &num, DEVIATION_2500);
+	m_parameters->m_deviationFMN = FMDEVIATION(num);
 
-	profile->Read(keyAgcAM,            &m_parameters->m_agcAM,  AGC_SLOW);
-	profile->Read(keyAgcSSB,           &m_parameters->m_agcSSB, AGC_SLOW);
-	profile->Read(keyAgcCW,            &m_parameters->m_agcCW,  AGC_FAST);
+	profile->Read(keyAgcAM,            &num, AGC_SLOW);
+	m_parameters->m_agcAM =  AGCSPEED(num);
+	profile->Read(keyAgcSSB,           &num, AGC_SLOW);
+	m_parameters->m_agcSSB = AGCSPEED(num);
+	profile->Read(keyAgcCW,            &num, AGC_FAST);
+	m_parameters->m_agcCW =  AGCSPEED(num);
 
 	profile->Read(keyStepVeryFast,     &m_parameters->m_stepVeryFast, FREQ_VERY_FAST_STEP);
 	profile->Read(keyStepFast,         &m_parameters->m_stepFast,     FREQ_FAST_STEP);
@@ -453,19 +465,28 @@ bool CUWSDRApp::readConfig()
 	profile->Read(keyStepSlow,         &m_parameters->m_stepSlow,     FREQ_SLOW_STEP);
 	profile->Read(keyStepVerySlow,     &m_parameters->m_stepVerySlow, FREQ_VERY_SLOW_STEP);
 
-	profile->Read(keyMode,             &m_parameters->m_mode, MODE_USB);
+	profile->Read(keyMode,             &num, MODE_USB);
+	m_parameters->m_mode = UWSDRMODE(num);
+
 	profile->Read(keyZeroIF,           &m_parameters->m_zeroIF, true);
 	profile->Read(keySwapIQ,           &m_parameters->m_swapIQ, false);
 	profile->Read(keyClockTune,        &num, 0L);
 	m_parameters->m_clockTune = num;
 
-	profile->Read(keyFilter,           &m_parameters->m_filter,    FILTER_AUTO);
-	profile->Read(keyFilterFMW,        &m_parameters->m_filterFMW, FILTER_20000);
-	profile->Read(keyFilterFMN,        &m_parameters->m_filterFMN, FILTER_10000);
-	profile->Read(keyFilterAM,         &m_parameters->m_filterAM,  FILTER_6000);
-	profile->Read(keyFilterSSB,        &m_parameters->m_filterSSB, FILTER_2100);
-	profile->Read(keyFilterCWW,        &m_parameters->m_filterCWW, FILTER_2100);
-	profile->Read(keyFilterCWN,        &m_parameters->m_filterCWN, FILTER_500);
+	profile->Read(keyFilter,           &num, FILTER_AUTO);
+	m_parameters->m_filter =    FILTERWIDTH(num);
+	profile->Read(keyFilterFMW,        &num, FILTER_20000);
+	m_parameters->m_filterFMW = FILTERWIDTH(num);
+	profile->Read(keyFilterFMN,        &num, FILTER_10000);
+	m_parameters->m_filterFMN = FILTERWIDTH(num);
+	profile->Read(keyFilterAM,         &num, FILTER_6000);
+	m_parameters->m_filterAM =  FILTERWIDTH(num);
+	profile->Read(keyFilterSSB,        &num, FILTER_2100);
+	m_parameters->m_filterSSB = FILTERWIDTH(num);
+	profile->Read(keyFilterCWW,        &num, FILTER_2100);
+	m_parameters->m_filterCWW = FILTERWIDTH(num);
+	profile->Read(keyFilterCWN,        &num, FILTER_500);
+	m_parameters->m_filterCWN = FILTERWIDTH(num);
 
 	profile->Read(keyIpAddress,        &m_parameters->m_ipAddress);
 
@@ -477,14 +498,17 @@ bool CUWSDRApp::readConfig()
 
 	profile->Read(keyTXInEnable,       &m_parameters->m_txInEnable);
 	profile->Read(keyTXInDev,          &m_parameters->m_txInDev);
-	profile->Read(keyTXInPin,          &m_parameters->m_txInPin);
+	profile->Read(keyTXInPin,          &num);
+	m_parameters->m_txInPin = INPIN(num);
 
 	profile->Read(keyKeyInEnable,      &m_parameters->m_keyInEnable);
 	profile->Read(keyKeyInDev,         &m_parameters->m_keyInDev);
-	profile->Read(keyKeyInPin,         &m_parameters->m_keyInPin);
+	profile->Read(keyKeyInPin,         &num);
+	m_parameters->m_keyInPin = INPIN(num);
 
 	profile->Read(keyTXOutDev,         &m_parameters->m_txOutDev);
-	profile->Read(keyTXOutPin,         &m_parameters->m_txOutPin);
+	profile->Read(keyTXOutPin,         &num);
+	m_parameters->m_txOutPin = OUTPIN(num);
 
 	profile->Read(keyUserAudioInDev,   &m_parameters->m_userAudioInDev);
 	profile->Read(keyUserAudioOutDev,  &m_parameters->m_userAudioOutDev);
@@ -519,13 +543,19 @@ bool CUWSDRApp::readConfig()
 	profile->Read(keyAlcHang,          &num, 500);
 	m_parameters->m_alcHang = num;
 
-	profile->Read(keyRxMeter,          &m_parameters->m_rxMeter, METER_SIGNAL);
-	profile->Read(keyTxMeter,          &m_parameters->m_txMeter, METER_POWER);
+	profile->Read(keyRxMeter,          &num, METER_SIGNAL);
+	m_parameters->m_rxMeter = METERPOS(num);
+	profile->Read(keyTxMeter,          &num, METER_POWER);
+	m_parameters->m_txMeter = METERPOS(num);
 
-	profile->Read(keySpectrumPos,      &m_parameters->m_spectrumPos,   SPECTRUM_PRE_FILT);
-	profile->Read(keySpectrumType,     &m_parameters->m_spectrumType,  SPECTRUM_PANADAPTER1);
-	profile->Read(keySpectrumSpeed,    &m_parameters->m_spectrumSpeed, SPECTRUM_100MS);
-	profile->Read(keySpectrumDB,       &m_parameters->m_spectrumDB,    SPECTRUM_40DB);
+	profile->Read(keySpectrumPos,      &num, SPECTRUM_PRE_FILTER);
+	m_parameters->m_spectrumPos =   SPECTRUMPOS(num);
+	profile->Read(keySpectrumType,     &num, SPECTRUM_PANADAPTER1);
+	m_parameters->m_spectrumType =  SPECTRUMTYPE(num);
+	profile->Read(keySpectrumSpeed,    &num, SPECTRUM_100MS);
+	m_parameters->m_spectrumSpeed = SPECTRUMSPEED(num);
+	profile->Read(keySpectrumDB,       &num, SPECTRUM_40DB);
+	m_parameters->m_spectrumDB =    SPECTRUMRANGE(num);
 
 	profile->Read(keyRxIqPhase,        &m_parameters->m_rxIQphase, 0);
 	profile->Read(keyRxIqGain,         &m_parameters->m_rxIQgain,  0);
@@ -765,6 +795,11 @@ void CUWSDRApp::sendCW(unsigned int speed, const wxString& text)
 void CUWSDRApp::sendAudio(const wxString& fileName, int state)
 {
 	m_frame->sendAudio(fileName, state);
+}
+
+void CUWSDRApp::setTransmit(bool txOn)
+{
+	m_frame->setTransmit(txOn);
 }
 
 wxString CUWSDRApp::getHelpDir()

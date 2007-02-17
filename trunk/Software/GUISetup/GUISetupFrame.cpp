@@ -18,8 +18,6 @@
 
 #include "GUISetupFrame.h"
 
-#include "SDRDescrFile.h"
-#include "PortDialog.h"
 #include "EthernetDialog.h"
 #include "SoundCardDialog.h"
 
@@ -95,7 +93,7 @@ m_sdrAudio(NULL),
 m_ethernet(NULL),
 m_port(NULL),
 m_filename(),
-m_sdrType(-1),
+m_sdrType(TYPE_UWSDR1),
 m_userAudioInDev(-1L),
 m_userAudioOutDev(-1L),
 m_sdrAudioInDev(-1L),
@@ -105,12 +103,12 @@ m_controlPort(-1L),
 m_dataPort(-1L),
 m_txInEnable(true),
 m_txInDev(),
-m_txInPin(-1),
+m_txInPin(IN_NONE),
 m_keyInEnable(true),
 m_keyInDev(),
-m_keyInPin(-1),
+m_keyInPin(IN_NONE),
 m_txOutDev(),
-m_txOutPin(-1)
+m_txOutPin(OUT_NONE)
 {
 	SetIcon(wxICON(GUISetup));
 
@@ -226,14 +224,14 @@ CGUISetupFrame::~CGUISetupFrame()
 {
 }
 
-void CGUISetupFrame::onName(wxCommandEvent& event)
+void CGUISetupFrame::onName(wxCommandEvent& WXUNUSED(event))
 {
 	wxString name = m_name->GetValue();
 
 	readConfig(name);
 }
 
-void CGUISetupFrame::onBrowse(wxCommandEvent& event)
+void CGUISetupFrame::onBrowse(wxCommandEvent& WXUNUSED(event))
 {
 	// Pre-load the directory where the .sdr files are located
 #if defined(__WXMSW__)
@@ -294,7 +292,7 @@ void CGUISetupFrame::onBrowse(wxCommandEvent& event)
 		m_port->Enable();
 }
 
-void CGUISetupFrame::onCreate(wxCommandEvent& event)
+void CGUISetupFrame::onCreate(wxCommandEvent& WXUNUSED(event))
 {
 	wxString name = m_name->GetValue();
 	if (name.IsEmpty()) {
@@ -599,16 +597,16 @@ void CGUISetupFrame::readConfig(const wxString& name)
 	config->Read(controlPortKey, &m_controlPort);
 	config->Read(dataPortKey,    &m_dataPort);
 
-	config->Read(txInEnableKey, &m_txInEnable);
-	config->Read(txInDevKey,    &m_txInDev);
-	config->Read(txInPinKey,    &m_txInPin);
+	config->Read(txInEnableKey,  &m_txInEnable);
+	config->Read(txInDevKey,     &m_txInDev);
+	config->Read(txInPinKey,     (long*)&m_txInPin);
 
 	config->Read(keyInEnableKey, &m_keyInEnable);
 	config->Read(keyInDevKey,    &m_keyInDev);
-	config->Read(keyInPinKey,    &m_keyInPin);
+	config->Read(keyInPinKey,    (long*)&m_keyInPin);
 
-	config->Read(txOutDevKey, &m_txOutDev);
-	config->Read(txOutPinKey, &m_txOutPin);
+	config->Read(txOutDevKey,    &m_txOutDev);
+	config->Read(txOutPinKey,    (long*)&m_txOutPin);
 
 	delete config;
 
@@ -624,7 +622,7 @@ void CGUISetupFrame::readConfig(const wxString& name)
 		m_port->Enable();
 }
 
-void CGUISetupFrame::onUserAudio(wxCommandEvent& event)
+void CGUISetupFrame::onUserAudio(wxCommandEvent& WXUNUSED(event))
 {
 	CSoundCardDialog dialog(this, _("User Audio Setup"), m_userAudioInDev, m_userAudioOutDev);
 
@@ -635,7 +633,7 @@ void CGUISetupFrame::onUserAudio(wxCommandEvent& event)
 	}
 }
 
-void CGUISetupFrame::onSDRAudio(wxCommandEvent& event)
+void CGUISetupFrame::onSDRAudio(wxCommandEvent& WXUNUSED(event))
 {
 	CSoundCardDialog dialog(this, _("SDR Audio Setup"), m_sdrAudioInDev, m_sdrAudioOutDev);
 
@@ -646,7 +644,7 @@ void CGUISetupFrame::onSDRAudio(wxCommandEvent& event)
 	}
 }
 
-void CGUISetupFrame::onEthernet(wxCommandEvent& event)
+void CGUISetupFrame::onEthernet(wxCommandEvent& WXUNUSED(event))
 {
 	CEthernetDialog dialog(this, _("Ethernet Setup"), m_ipAddress, m_controlPort, m_dataPort);
 
@@ -658,7 +656,7 @@ void CGUISetupFrame::onEthernet(wxCommandEvent& event)
 	}
 }
 
-void CGUISetupFrame::onPort(wxCommandEvent& event)
+void CGUISetupFrame::onPort(wxCommandEvent& WXUNUSED(event))
 {
 	CPortDialog dialog(this, _("Control Port Setup"), featureList[m_sdrType].txOutData);
 

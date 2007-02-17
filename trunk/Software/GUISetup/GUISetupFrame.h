@@ -21,6 +21,9 @@
 
 #include <wx/wx.h>
 
+#include "SDRDescrFile.h"
+#include "PortDialog.h"
+
 class CGUISetupFrame : public wxFrame {
 
     public:
@@ -47,7 +50,7 @@ class CGUISetupFrame : public wxFrame {
 	wxCheckBox*    m_deskTop;
 #endif
 	wxString       m_filename;
-	int            m_sdrType;
+	SDRTYPE        m_sdrType;
 	long           m_userAudioInDev;
 	long           m_userAudioOutDev;
 	long           m_sdrAudioInDev;
@@ -57,12 +60,12 @@ class CGUISetupFrame : public wxFrame {
 	long           m_dataPort;
 	bool           m_txInEnable;
 	wxString       m_txInDev;
-	int            m_txInPin;
+	INPIN          m_txInPin;
 	bool           m_keyInEnable;
 	wxString       m_keyInDev;
-	int            m_keyInPin;
+	INPIN          m_keyInPin;
 	wxString       m_txOutDev;
-	int            m_txOutPin;
+	OUTPIN         m_txOutPin;
 
 	DECLARE_EVENT_TABLE()
 

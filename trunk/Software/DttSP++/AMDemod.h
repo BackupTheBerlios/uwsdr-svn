@@ -41,10 +41,10 @@ Bridgewater, NJ 08807
 #include "CXB.h"
 
 
-typedef enum {
+enum AMMode {
 	AMdet,
 	SAMdet
-} AMMode;
+};
 
 class CAMDemod : public IDemod {
     public:

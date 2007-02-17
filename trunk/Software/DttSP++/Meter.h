@@ -41,7 +41,7 @@ Bridgewater, NJ 08807
 const int RXMETERPTS = 5;
 const int TXMETERPTS = 8;
 
-typedef enum {
+enum METERTYPE {
 	SIGNAL_STRENGTH,
 	AVG_SIGNAL_STRENGTH,
 	ADC_REAL,
@@ -55,23 +55,23 @@ typedef enum {
 	COMP,
 	ALC_G,
 	LVL_G
-} METERTYPE;
+};
 
-typedef enum {
+enum RXMETERTAP {
 	RXMETER_PRE_CONV,
 	RXMETER_POST_FILT,
 	RXMETER_POST_AGC
-} RXMETERTAP;
+};
 
-typedef enum {
+enum RXMETERTYPE {
 	RX_SIGNAL_STRENGTH,
 	RX_AVG_SIGNAL_STRENGTH,
 	RX_ADC_REAL,
 	RX_ADC_IMAG,
 	RX_AGC_GAIN
-} RXMETERTYPE;
+};
 
-typedef enum {
+enum TXMETERTYPE {
 	TX_MIC,
 	TX_PWR,
 	TX_ALC,
@@ -80,7 +80,7 @@ typedef enum {
 	TX_COMP,
 	TX_ALC_G,
 	TX_LVL_G
-} TXMETERTYPE;
+};
 
 
 class CMeter {

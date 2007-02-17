@@ -40,18 +40,18 @@ Bridgewater, NJ 08807
 #include "fftw3.h"
 
 
-typedef enum {
+enum SPECTRUMscale {
 	SPEC_MAG,
 	SPEC_PWR
-} SPECTRUMscale;
+};
 
 
-typedef enum {
+enum SPECTRUMtype {
 	SPEC_PRE_FILT,
 	SPEC_POST_FILT,
 	SPEC_POST_AGC,
 	SPEC_POST_DET
-} SPECTRUMtype;
+};
 
 
 class CSpectrum {

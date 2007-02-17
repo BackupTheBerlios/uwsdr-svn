@@ -21,6 +21,20 @@
 
 #include <wx/wx.h>
 
+enum INPIN {
+	IN_NONE = -1,
+	IN_RTS_CTS,
+	IN_RTS_DSR,
+	IN_DTR_DSR,
+	IN_DTR_CTS
+};
+
+enum OUTPIN {
+	OUT_NONE = -1,
+	OUT_RTS,
+	OUT_DTR
+};
+
 
 class CPortDialog : public wxDialog {
 
@@ -34,22 +48,22 @@ class CPortDialog : public wxDialog {
 
 	virtual void     setTXInEnable(bool enable);
 	virtual void     setTXInDev(const wxString& dev);
-	virtual void     setTXInPin(int pin);
+	virtual void     setTXInPin(INPIN pin);
 	virtual bool     getTXInEnable() const;
 	virtual wxString getTXInDev() const;
-	virtual int      getTXInPin() const;
+	virtual INPIN    getTXInPin() const;
 
 	virtual void     setKeyInEnable(bool enable);
 	virtual void     setKeyInDev(const wxString& dev);
-	virtual void     setKeyInPin(int pin);
+	virtual void     setKeyInPin(INPIN pin);
 	virtual bool     getKeyInEnable() const;
 	virtual wxString getKeyInDev() const;
-	virtual int      getKeyInPin() const;
+	virtual INPIN    getKeyInPin() const;
 
 	virtual void     setTXOutDev(const wxString& dev);
-	virtual void     setTXOutPin(int pin);
+	virtual void     setTXOutPin(OUTPIN pin);
 	virtual wxString getTXOutDev() const;
-	virtual int      getTXOutPin() const;
+	virtual OUTPIN   getTXOutPin() const;
 
     private:
 	wxCheckBox* m_txInSelect;
@@ -63,13 +77,13 @@ class CPortDialog : public wxDialog {
 
 	bool      m_txInEnable;
 	wxString  m_txInDev;
-	int       m_txInPin;
+	INPIN     m_txInPin;
 	bool      m_keyInEnable;
 	wxString  m_keyInDev;
-	int       m_keyInPin;
+	INPIN     m_keyInPin;
 	bool      m_txOutEnable;
 	wxString  m_txOutDev;
-	int       m_txOutPin;
+	OUTPIN    m_txOutPin;
 
 	DECLARE_EVENT_TABLE()
 };

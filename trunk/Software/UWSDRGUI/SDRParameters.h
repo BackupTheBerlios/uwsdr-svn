@@ -31,127 +31,127 @@ class CSDRParameters {
 	CSDRParameters();
 	~CSDRParameters();
 
-	wxString     m_hardwareName;
-	int			 m_hardwareType;
-	CFrequency   m_hardwareMaxFreq;
-	CFrequency   m_hardwareMinFreq;
-	float        m_hardwareStepSize;
-	float        m_hardwareSampleRate;
-	bool         m_hardwareReceiveOnly;
+	wxString      m_hardwareName;
+	SDRTYPE	      m_hardwareType;
+	CFrequency    m_hardwareMaxFreq;
+	CFrequency    m_hardwareMinFreq;
+	float         m_hardwareStepSize;
+	float         m_hardwareSampleRate;
+	bool          m_hardwareReceiveOnly;
 
-	wxString     m_fileName;
-	wxString     m_name;
-	CFrequency   m_maxReceiveFreq;
-	CFrequency   m_minReceiveFreq;
-	CFrequency   m_maxTransmitFreq;
-	CFrequency   m_minTransmitFreq;
+	wxString      m_fileName;
+	wxString      m_name;
+	CFrequency    m_maxReceiveFreq;
+	CFrequency    m_minReceiveFreq;
+	CFrequency    m_maxTransmitFreq;
+	CFrequency    m_minTransmitFreq;
 
-	CFrequency   m_vfoA;
-	CFrequency   m_vfoB;
-	CFrequency   m_vfoC;
-	CFrequency   m_vfoD;
-	unsigned int m_freqShift;
-	double       m_freqOffset;
-	int          m_vfoChoice;
-	int          m_vfoSplitShift;
+	CFrequency    m_vfoA;
+	CFrequency    m_vfoB;
+	CFrequency    m_vfoC;
+	CFrequency    m_vfoD;
+	unsigned int  m_freqShift;
+	double        m_freqOffset;
+	VFOCHOICE     m_vfoChoice;
+	VFOMODE       m_vfoSplitShift;
 
-	int          m_vfoSpeedFM;
-	int          m_vfoSpeedAM;
-	int          m_vfoSpeedSSB;
-	int          m_vfoSpeedCWW;
-	int          m_vfoSpeedCWN;
+	VFOSPEED      m_vfoSpeedFM;
+	VFOSPEED      m_vfoSpeedAM;
+	VFOSPEED      m_vfoSpeedSSB;
+	VFOSPEED      m_vfoSpeedCWW;
+	VFOSPEED      m_vfoSpeedCWN;
 
-	double       m_stepVeryFast;
-	double       m_stepFast;
-	double       m_stepMedium;
-	double       m_stepSlow;
-	double       m_stepVerySlow;
+	double        m_stepVeryFast;
+	double        m_stepFast;
+	double        m_stepMedium;
+	double        m_stepSlow;
+	double        m_stepVerySlow;
 
-	int          m_mode;
-	bool         m_zeroIF;
-	bool         m_swapIQ;
-	unsigned int m_clockTune;
+	UWSDRMODE     m_mode;
+	bool          m_zeroIF;
+	bool          m_swapIQ;
+	unsigned int  m_clockTune;
 
-	int          m_deviationFMW;
-	int          m_deviationFMN;
-	int          m_agcAM;
-	int          m_agcSSB;
-	int          m_agcCW;
+	FMDEVIATION   m_deviationFMW;
+	FMDEVIATION   m_deviationFMN;
+	AGCSPEED      m_agcAM;
+	AGCSPEED      m_agcSSB;
+	AGCSPEED      m_agcCW;
 
-	int          m_filter;
-	int          m_filterFMW;
-	int          m_filterFMN;
-	int          m_filterAM;
-	int          m_filterSSB;
-	int          m_filterCWW;
-	int          m_filterCWN;
+	FILTERWIDTH   m_filter;
+	FILTERWIDTH   m_filterFMW;
+	FILTERWIDTH   m_filterFMN;
+	FILTERWIDTH   m_filterAM;
+	FILTERWIDTH   m_filterSSB;
+	FILTERWIDTH   m_filterCWW;
+	FILTERWIDTH   m_filterCWN;
 
-	wxString     m_ipAddress;
-	unsigned int m_controlPort;
-	unsigned int m_dataPort;
+	wxString      m_ipAddress;
+	unsigned int  m_controlPort;
+	unsigned int  m_dataPort;
 
-	bool         m_txInEnable;
-	wxString     m_txInDev;
-	int          m_txInPin;
+	bool          m_txInEnable;
+	wxString      m_txInDev;
+	INPIN         m_txInPin;
 
-	bool         m_keyInEnable;
-	wxString     m_keyInDev;
-	int          m_keyInPin;
+	bool          m_keyInEnable;
+	wxString      m_keyInDev;
+	INPIN         m_keyInPin;
 
-	wxString     m_txOutDev;
-	int          m_txOutPin;
+	wxString      m_txOutDev;
+	OUTPIN        m_txOutPin;
 
-	int          m_userAudioInDev;
-	int          m_userAudioOutDev;
+	int           m_userAudioInDev;
+	int           m_userAudioOutDev;
 
-	int          m_sdrAudioInDev;
-	int          m_sdrAudioOutDev;
+	int           m_sdrAudioInDev;
+	int           m_sdrAudioOutDev;
 
-	bool         m_ritOn;
-	int          m_ritFreq;
+	bool          m_ritOn;
+	int           m_ritFreq;
 
-	bool         m_nbOn;
-	unsigned int m_nbValue;
-	bool         m_nb2On;
-	unsigned int m_nb2Value;
+	bool          m_nbOn;
+	unsigned int  m_nbValue;
+	bool          m_nb2On;
+	unsigned int  m_nb2Value;
 
-	bool         m_spOn;
-	unsigned int m_spValue;
-	unsigned int m_carrierLevel;
+	bool          m_spOn;
+	unsigned int  m_spValue;
+	unsigned int  m_carrierLevel;
 
-	unsigned int m_alcAttack;
-	unsigned int m_alcDecay;
-	unsigned int m_alcHang;
+	unsigned int  m_alcAttack;
+	unsigned int  m_alcDecay;
+	unsigned int  m_alcHang;
 
-	int          m_rxMeter;
-	int          m_txMeter;
+	METERPOS      m_rxMeter;
+	METERPOS      m_txMeter;
 
-	int          m_spectrumPos;
-	int          m_spectrumType;
-	int          m_spectrumSpeed;
-	int          m_spectrumDB;
+	SPECTRUMPOS   m_spectrumPos;
+	SPECTRUMTYPE  m_spectrumType;
+	SPECTRUMSPEED m_spectrumSpeed;
+	SPECTRUMRANGE m_spectrumDB;
 
-	int          m_rxIQphase;
-	int          m_rxIQgain;
-	int          m_txIQphase;
-	int          m_txIQgain;
+	int           m_rxIQphase;
+	int           m_rxIQgain;
+	int           m_txIQphase;
+	int           m_txIQgain;
 
-	unsigned int m_afGain;
-	unsigned int m_rfGain;
-	unsigned int m_squelch;
-	unsigned int m_micGain;
-	unsigned int m_power;
+	unsigned int  m_afGain;
+	unsigned int  m_rfGain;
+	unsigned int  m_squelch;
+	unsigned int  m_micGain;
+	unsigned int  m_power;
 
-	unsigned int m_cwSpeed;
-	wxString     m_cwLocal;
-	wxString     m_cwRemote;
-	wxString     m_cwLocator;
-	wxString     m_cwReport;
-	wxString     m_cwSerial;
-	wxString     m_cwMessage[CWKEYBOARD_COUNT];
+	unsigned int  m_cwSpeed;
+	wxString      m_cwLocal;
+	wxString      m_cwRemote;
+	wxString      m_cwLocator;
+	wxString      m_cwReport;
+	wxString      m_cwSerial;
+	wxString      m_cwMessage[CWKEYBOARD_COUNT];
 
-	wxString     m_voiceDir;
-	wxString     m_voiceFile[VOICEKEYER_COUNT];
+	wxString      m_voiceDir;
+	wxString      m_voiceFile[VOICEKEYER_COUNT];
 };
 
 #endif

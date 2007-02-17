@@ -20,18 +20,6 @@
 
 #include "SerialControl.h"
 
-enum {
-	IN_RTS_CTS,
-	IN_RTS_DSR,
-	IN_DTR_DSR,
-	IN_DTR_CTS
-};
-
-enum {
-	OUT_RTS,
-	OUT_DTR
-};
-
 const int BORDER_SIZE     = 5;
 const int DATA_WIDTH      = 100;
 
@@ -57,13 +45,13 @@ m_txOutDevChoice(NULL),
 m_txOutPinChoice(NULL),
 m_txInEnable(true),
 m_txInDev(),
-m_txInPin(-1),
+m_txInPin(IN_RTS_CTS),
 m_keyInEnable(true),
 m_keyInDev(),
-m_keyInPin(-1),
+m_keyInPin(IN_RTS_CTS),
 m_txOutEnable(setTXOut),
 m_txOutDev(),
-m_txOutPin(-1)
+m_txOutPin(OUT_RTS)
 {
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -173,7 +161,7 @@ void CPortDialog::onKeyInCheck(wxCommandEvent& event)
 	m_keyInPinChoice->Enable(enable);
 }
 
-void CPortDialog::onOK(wxCommandEvent& event)
+void CPortDialog::onOK(wxCommandEvent& WXUNUSED(event))
 {
 	m_txInEnable = m_txInSelect->GetValue();
 
@@ -223,9 +211,9 @@ void CPortDialog::onOK(wxCommandEvent& event)
 
 	if (m_txInEnable && m_keyInEnable) {
 		wxString  txInDev = m_txInDevChoice->GetStringSelection();
-		int       txInPin = m_txInPinChoice->GetSelection();
+		INPIN     txInPin = INPIN(m_txInPinChoice->GetSelection());
 		wxString keyInDev = m_keyInDevChoice->GetStringSelection();
-		int      keyInPin = m_keyInPinChoice->GetSelection();
+		INPIN    keyInPin = INPIN(m_keyInPinChoice->GetSelection());
 
 		if (txInDev.IsSameAs(keyInDev)) {
 			if (txInPin == IN_RTS_CTS && keyInPin == IN_RTS_CTS ||
@@ -244,9 +232,9 @@ void CPortDialog::onOK(wxCommandEvent& event)
 
 	if (m_txInEnable && m_txOutEnable) {
 		wxString  txInDev = m_txInDevChoice->GetStringSelection();
-		int       txInPin = m_txInPinChoice->GetSelection();
+		INPIN     txInPin = INPIN(m_txInPinChoice->GetSelection());
 		wxString txOutDev = m_txOutDevChoice->GetStringSelection();
-		int      txOutPin = m_txOutPinChoice->GetSelection();
+		OUTPIN   txOutPin = OUTPIN(m_txOutPinChoice->GetSelection());
 
 		if (txInDev.IsSameAs(txOutDev)) {
 			if ((txInPin == IN_RTS_CTS || txInPin == IN_RTS_DSR) && txOutPin == OUT_RTS ||
@@ -259,9 +247,9 @@ void CPortDialog::onOK(wxCommandEvent& event)
 
 	if (m_keyInEnable && m_txOutEnable) {
 		wxString keyInDev = m_keyInDevChoice->GetStringSelection();
-		int      keyInPin = m_keyInPinChoice->GetSelection();
+		INPIN    keyInPin = INPIN(m_keyInPinChoice->GetSelection());
 		wxString txOutDev = m_txOutDevChoice->GetStringSelection();
-		int      txOutPin = m_txOutPinChoice->GetSelection();
+		OUTPIN   txOutPin = OUTPIN(m_txOutPinChoice->GetSelection());
 
 		if (keyInDev.IsSameAs(txOutDev)) {
 			if ((keyInPin == IN_RTS_CTS || keyInPin == IN_RTS_DSR) && txOutPin == OUT_RTS ||
@@ -274,17 +262,17 @@ void CPortDialog::onOK(wxCommandEvent& event)
 
 	if (m_txInEnable) {
 		m_txInDev = m_txInDevChoice->GetStringSelection();
-		m_txInPin = m_txInPinChoice->GetSelection();
+		m_txInPin = INPIN(m_txInPinChoice->GetSelection());
 	}
 
 	if (m_keyInEnable) {
 		m_keyInDev = m_keyInDevChoice->GetStringSelection();
-		m_keyInPin = m_keyInPinChoice->GetSelection();
+		m_keyInPin = INPIN(m_keyInPinChoice->GetSelection());
 	}
 
 	if (m_txOutEnable) {
 		m_txOutDev = m_txOutDevChoice->GetStringSelection();
-		m_txOutPin = m_txOutPinChoice->GetSelection();
+		m_txOutPin = OUTPIN(m_txOutPinChoice->GetSelection());
 	}
 
 	if (IsModal()) {
@@ -316,16 +304,14 @@ void CPortDialog::setTXInDev(const wxString& dev)
 	}
 }
 
-void CPortDialog::setTXInPin(int pin)
+void CPortDialog::setTXInPin(INPIN pin)
 {
 	m_txInPin = pin;
 
-	if (m_txInPin == -1) {
-		m_txInPinChoice->SetSelection(0);
-		m_txInPin = 0;
-	} else {
-		m_txInPinChoice->SetSelection(m_txInPin);
-	}
+	if (m_txInPin == IN_NONE)
+		m_txInPin = IN_RTS_CTS;
+
+	m_txInPinChoice->SetSelection(m_txInPin);
 }
 
 bool CPortDialog::getTXInEnable() const
@@ -338,7 +324,7 @@ wxString CPortDialog::getTXInDev() const
 	return m_txInDev;
 }
 
-int CPortDialog::getTXInPin() const
+INPIN CPortDialog::getTXInPin() const
 {
 	return m_txInPin;
 }
@@ -364,16 +350,14 @@ void CPortDialog::setKeyInDev(const wxString& dev)
 	}
 }
 
-void CPortDialog::setKeyInPin(int pin)
+void CPortDialog::setKeyInPin(INPIN pin)
 {
 	m_keyInPin = pin;
 
-	if (m_keyInPin == -1) {
-		m_keyInPinChoice->SetSelection(0);
-		m_keyInPin = 0;
-	} else {
-		m_keyInPinChoice->SetSelection(m_keyInPin);
-	}
+	if (m_keyInPin == IN_NONE)
+		m_keyInPin = IN_RTS_CTS;
+
+	m_keyInPinChoice->SetSelection(m_keyInPin);
 }
 
 bool CPortDialog::getKeyInEnable() const
@@ -386,7 +370,7 @@ wxString CPortDialog::getKeyInDev() const
 	return m_keyInDev;
 }
 
-int CPortDialog::getKeyInPin() const
+INPIN CPortDialog::getKeyInPin() const
 {
 	return m_keyInPin;
 }
@@ -403,16 +387,14 @@ void CPortDialog::setTXOutDev(const wxString& dev)
 	}
 }
 
-void CPortDialog::setTXOutPin(int pin)
+void CPortDialog::setTXOutPin(OUTPIN pin)
 {
 	m_txOutPin = pin;
 
-	if (m_txOutPin == -1) {
-		m_txOutPinChoice->SetSelection(0);
-		m_txOutPin = 0;
-	} else {
-		m_txOutPinChoice->SetSelection(m_txOutPin);
-	}
+	if (m_txOutPin == OUT_NONE)
+		m_txOutPin = OUT_RTS;
+
+	m_txOutPinChoice->SetSelection(m_txOutPin);
 }
 
 wxString CPortDialog::getTXOutDev() const
@@ -420,7 +402,7 @@ wxString CPortDialog::getTXOutDev() const
 	return m_txOutDev;
 }
 
-int CPortDialog::getTXOutPin() const
+OUTPIN CPortDialog::getTXOutPin() const
 {
 	return m_txOutPin;
 }

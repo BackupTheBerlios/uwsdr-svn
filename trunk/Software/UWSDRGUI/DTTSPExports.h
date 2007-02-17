@@ -19,7 +19,7 @@
 #ifndef	DttSPExports_H
 #define	DttSPExports_H
 
-typedef enum {
+enum SDRMODE {
 	LSB,				//  0
 	USB,				//  1
 	CWL,				//  2
@@ -27,22 +27,22 @@ typedef enum {
 	FMN,				//  4
 	AM,					//  5
 	SAM					//  6
-} SDRMODE;
+};
 
-typedef enum {
+enum TRXMODE {
 	RX,
 	TX
-} TRXMODE;
+};
 
-typedef enum {
+enum AGCMODE {
 	agcOFF,
 	agcLONG,
 	agcSLOW,
 	agcMED,
 	agcFAST
-} AGCMODE;
+};
 
-typedef enum {
+enum METERTYPE {
 	SIGNAL_STRENGTH,
 	AVG_SIGNAL_STRENGTH,
 	ADC_REAL,
@@ -56,9 +56,9 @@ typedef enum {
 	COMP,
 	ALC_G,
 	LVL_G
-} METERTYPE;
+};
 
-typedef enum {
+enum Windowtype {
 	RECTANGULAR_WINDOW,
 	HANN_WINDOW,
 	WELCH_WINDOW,
@@ -72,14 +72,14 @@ typedef enum {
 	RIEMANN_WINDOW,
 	BLACKMANHARRIS_WINDOW,
 	NUTTALL_WINDOW,
-} Windowtype;
+};
 
-typedef enum {
+enum SPECTRUMtype {
 	SPEC_PRE_FILT,
 	SPEC_POST_FILT,
 	SPEC_POST_AGC,
 	SPEC_POST_DET
-} SPECTRUMtype;
+};
 
 extern void    Setup_SDR(float sampleRate, unsigned int audioSize);
 extern void    Destroy_SDR();

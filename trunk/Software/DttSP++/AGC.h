@@ -41,13 +41,13 @@ Bridgewater, NJ 08807
 
 const int FASTLEAD = 72;
 
-typedef enum {
+enum AGCMODE {
 	agcOFF,
 	agcLONG,
 	agcSLOW,
 	agcMED,
 	agcFAST
-} AGCMODE;
+};
 
 class CAGC {
     public:

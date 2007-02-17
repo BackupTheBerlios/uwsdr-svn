@@ -45,7 +45,7 @@ CSRTXRXController::~CSRTXRXController()
 {
 }
 
-void CSRTXRXController::setCallback(IControlInterface* callback, int id)
+void CSRTXRXController::setCallback(IControlInterface* WXUNUSED(callback), int WXUNUSED(id))
 {
 }
 
@@ -62,11 +62,11 @@ void CSRTXRXController::enableTX(bool on)
 	m_txEnable = on;
 }
 
-void CSRTXRXController::enableRX(bool on)
+void CSRTXRXController::enableRX(bool WXUNUSED(on))
 {
 }
 
-void CSRTXRXController::setTXAndFreq(bool transmit, const CFrequency& freq)
+void CSRTXRXController::setTXAndFreq(bool transmit, const CFrequency& WXUNUSED(freq))
 {
 	if (transmit && !m_txEnable)
 		return;
@@ -81,11 +81,11 @@ void CSRTXRXController::setTXAndFreq(bool transmit, const CFrequency& freq)
 	}
 }
 
-void CSRTXRXController::sendCommand(const char* command)
+void CSRTXRXController::sendCommand(const char* WXUNUSED(command))
 {
 }
 
-void CSRTXRXController::setClockTune(unsigned int clock)
+void CSRTXRXController::setClockTune(unsigned int WXUNUSED(clock))
 {
 }
 

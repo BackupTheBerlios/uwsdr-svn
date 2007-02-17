@@ -174,7 +174,7 @@ void CInfoBox::setTX(bool onOff)
 	show(clientDC);
 }
 
-void CInfoBox::onPaint(wxPaintEvent& event)
+void CInfoBox::onPaint(wxPaintEvent& WXUNUSED(event))
 {
 	wxPaintDC dc(this);
 

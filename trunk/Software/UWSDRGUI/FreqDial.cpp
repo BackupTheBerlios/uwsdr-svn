@@ -124,7 +124,7 @@ void CFreqDial::drawDial()
 	show(clientDC);
 }
 
-void CFreqDial::onPaint(wxPaintEvent& event)
+void CFreqDial::onPaint(wxPaintEvent& WXUNUSED(event))
 {
 	wxPaintDC dc(this);
 

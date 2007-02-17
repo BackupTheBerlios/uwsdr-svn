@@ -290,7 +290,7 @@ unsigned int CCWKeyboard::getSpeed() const
 	return m_speed->GetValue();
 }
 
-void CCWKeyboard::onHelp(wxCommandEvent& event)
+void CCWKeyboard::onHelp(wxCommandEvent& WXUNUSED(event))
 {
 	::wxGetApp().showHelp(500);
 }
@@ -299,7 +299,7 @@ void CCWKeyboard::onHelp(wxCommandEvent& event)
  * Convert the input string to the required dashes, dots, and spaces. This is where
  * substitutions are also done.
  */
-void CCWKeyboard::onTransmit(wxCommandEvent& event)
+void CCWKeyboard::onTransmit(wxCommandEvent& WXUNUSED(event))
 {
 	wxString text;
 
@@ -342,7 +342,7 @@ void CCWKeyboard::onTransmit(wxCommandEvent& event)
 /*
  * Tell the system to stop transmitting.
  */
-void CCWKeyboard::onAbort(wxCommandEvent& event)
+void CCWKeyboard::onAbort(wxCommandEvent& WXUNUSED(event))
 {
 	::wxGetApp().sendCW(0, wxEmptyString);
 }

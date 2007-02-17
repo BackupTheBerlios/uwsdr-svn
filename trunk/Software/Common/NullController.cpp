@@ -26,7 +26,7 @@ CNullController::~CNullController()
 {
 }
 
-void CNullController::setCallback(IControlInterface* callback, int id)
+void CNullController::setCallback(IControlInterface* WXUNUSED(callback), int WXUNUSED(id))
 {
 }
 
@@ -35,23 +35,23 @@ bool CNullController::open()
 	return true;
 }
 
-void CNullController::enableTX(bool on)
+void CNullController::enableTX(bool WXUNUSED(on))
 {
 }
 
-void CNullController::enableRX(bool on)
+void CNullController::enableRX(bool WXUNUSED(on))
 {
 }
 
-void CNullController::setTXAndFreq(bool transmit, const CFrequency& freq)
+void CNullController::setTXAndFreq(bool WXUNUSED(transmit), const CFrequency& WXUNUSED(freq))
 {
 }
 
-void CNullController::sendCommand(const char* command)
+void CNullController::sendCommand(const char* WXUNUSED(command))
 {
 }
 
-void CNullController::setClockTune(unsigned int clock)
+void CNullController::setClockTune(unsigned int WXUNUSED(clock))
 {
 }
 

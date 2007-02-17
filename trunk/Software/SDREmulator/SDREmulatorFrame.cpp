@@ -213,7 +213,7 @@ bool CSDREmulatorFrame::createDataThread(const wxString& address, unsigned int p
 	return true;
 }
 
-void CSDREmulatorFrame::onParentSocket(wxSocketEvent& event)
+void CSDREmulatorFrame::onParentSocket(wxSocketEvent& WXUNUSED(event))
 {
 	wxSocketBase* child = m_server->Accept();
 	if (child == NULL) {
@@ -430,7 +430,7 @@ void CSDREmulatorFrame::onClose(wxCloseEvent& event)
 	}
 }
 
-void CSDREmulatorFrame::onExit(wxCommandEvent& event)
+void CSDREmulatorFrame::onExit(wxCommandEvent& WXUNUSED(event))
 {
 	if (m_txOn)
 		return;
@@ -446,7 +446,7 @@ void CSDREmulatorFrame::onExit(wxCommandEvent& event)
 	}
 }
 
-void CSDREmulatorFrame::onInternal1(wxCommandEvent& event)
+void CSDREmulatorFrame::onInternal1(wxCommandEvent& WXUNUSED(event))
 {
 	m_menuBar->Check(MENU_INTERNAL_1, true);
 	m_menuBar->Check(MENU_INTERNAL_2, false);
@@ -458,7 +458,7 @@ void CSDREmulatorFrame::onInternal1(wxCommandEvent& event)
 	m_data->setSource(SOURCE_INTERNAL_1);
 }
 
-void CSDREmulatorFrame::onInternal2(wxCommandEvent& event)
+void CSDREmulatorFrame::onInternal2(wxCommandEvent& WXUNUSED(event))
 {
 	m_menuBar->Check(MENU_INTERNAL_1, false);
 	m_menuBar->Check(MENU_INTERNAL_2, true);
@@ -470,7 +470,7 @@ void CSDREmulatorFrame::onInternal2(wxCommandEvent& event)
 	m_data->setSource(SOURCE_INTERNAL_2);
 }
 
-void CSDREmulatorFrame::onSoundFile(wxCommandEvent& event)
+void CSDREmulatorFrame::onSoundFile(wxCommandEvent& WXUNUSED(event))
 {
 	wxFileDialog fileDialog(this, wxT("Select a Wave File"), wxEmptyString, wxEmptyString, wxT("WAV files (*.wav)|*.WAV;*.wav"), wxFD_OPEN);
 	int ret1 = fileDialog.ShowModal();
@@ -494,7 +494,7 @@ void CSDREmulatorFrame::onSoundFile(wxCommandEvent& event)
 	m_sourceLabel->SetLabel(wxT("Sound File"));
 }
 
-void CSDREmulatorFrame::onSoundCard(wxCommandEvent& event)
+void CSDREmulatorFrame::onSoundCard(wxCommandEvent& WXUNUSED(event))
 {
 	m_menuBar->Check(MENU_INTERNAL_1, false);
 	m_menuBar->Check(MENU_INTERNAL_2, false);

@@ -65,7 +65,7 @@ void CSDREmulatorReader::setCallback(IDataCallback* callback, int id)
 	m_id       = id;
 }
 
-bool CSDREmulatorReader::open(float sampleRate, unsigned int blockSize)
+bool CSDREmulatorReader::open(float WXUNUSED(sampleRate), unsigned int blockSize)
 {
 	m_blockSize = blockSize;
 

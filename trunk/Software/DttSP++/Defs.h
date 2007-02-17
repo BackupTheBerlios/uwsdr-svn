@@ -35,7 +35,7 @@ Bridgewater, NJ 08807
 #ifndef _defs_h
 #define _defs_h
 
-typedef enum {
+enum SDRMODE {
 	LSB,				//  0
 	USB,				//  1
 	CWL,				//  2
@@ -43,12 +43,12 @@ typedef enum {
 	FMN,				//  4
 	AM,					//  5
 	SAM					//  6
-} SDRMODE;
+};
 
-typedef enum {
+enum TRXMODE {
 	RX,
 	TX
-} TRXMODE;
+};
 
 const unsigned int RINGSIZE  = 4096;
 const SDRMODE      DEFMODE   = USB;

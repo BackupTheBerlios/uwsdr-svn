@@ -102,7 +102,7 @@ CSDRSetupFrame::~CSDRSetupFrame()
 {
 }
 
-void CSDRSetupFrame::onExecute(wxCommandEvent& event)
+void CSDRSetupFrame::onExecute(wxCommandEvent& WXUNUSED(event))
 {
 	wxIPV4address oldControl;
 	wxIPV4address newControl;

@@ -88,7 +88,7 @@ CSoundCardDialog::~CSoundCardDialog()
 {
 }
 
-void CSoundCardDialog::onAPI(wxCommandEvent& event)
+void CSoundCardDialog::onAPI(wxCommandEvent& WXUNUSED(event))
 {
 	long apiChoice = m_apiChoice->GetSelection();
 	if (apiChoice == wxNOT_FOUND) {
@@ -104,7 +104,7 @@ void CSoundCardDialog::onAPI(wxCommandEvent& event)
 	enumerateAudio(*api);
 }
 
-void CSoundCardDialog::onOK(wxCommandEvent& event)
+void CSoundCardDialog::onOK(wxCommandEvent& WXUNUSED(event))
 {
 	int devChoice = m_devChoice->GetSelection();
 	if (devChoice == wxNOT_FOUND) {

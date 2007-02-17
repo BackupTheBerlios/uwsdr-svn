@@ -64,7 +64,7 @@ void SetDCBlock(bool setit)
 	dttsp->setDCBlockFlag(setit);
 }
 
-void SetFilter(double low_frequency, double high_frequency, int taps, TRXMODE trx)
+void SetFilter(double low_frequency, double high_frequency, int WXUNUSED(taps), TRXMODE trx)
 {
 	switch (trx) {
 		case TX:

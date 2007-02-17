@@ -108,7 +108,7 @@ wxString CSDRDescrFile::getName() const
 	return m_name;
 }
 
-int CSDRDescrFile::getType() const
+SDRTYPE CSDRDescrFile::getType() const
 {
 	return m_type;
 }

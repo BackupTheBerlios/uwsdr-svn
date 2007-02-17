@@ -105,6 +105,7 @@ bool CCWKeyer::create()
 		m_callback->callback(m_buffer, m_blockSize, m_id);
 
 		m_stop = false;
+		::wxGetApp().setTransmit(false);
 		::wxGetApp().sendCW(0, wxEmptyString);
 
 		return true;

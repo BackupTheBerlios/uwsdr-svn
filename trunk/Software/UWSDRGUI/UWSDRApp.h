@@ -22,6 +22,7 @@
 #include <wx/wx.h>
 #include <wx/html/helpctrl.h>
 
+#include "UWSDRDefs.h"
 #include "UWSDRFrame.h"
 #include "SDRParameters.h"
 
@@ -44,6 +45,8 @@ class CUWSDRApp : public wxApp {
 
 	virtual void sendCW(unsigned int speed, const wxString& text);
 	virtual void sendAudio(const wxString& fileName, int state);
+
+	virtual void setTransmit(bool txOn);
 
 #if defined(__WXDEBUG__)
 	virtual void OnAssertFailure(const wxChar* file, int line, const wxChar* func, const wxChar* cond, const wxChar* msg);

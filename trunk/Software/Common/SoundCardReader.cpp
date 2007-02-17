@@ -19,7 +19,7 @@
 #include "SoundCardReader.h"
 
 
-int scrCallback(const void* input, void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void* userData)
+int scrCallback(const void* input, void* WXUNUSED(output), unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void* userData)
 {
 	wxASSERT(userData != NULL);
 
@@ -60,6 +60,10 @@ bool CSoundCardReader::open(float sampleRate, unsigned int blockSize)
 	}
 
 	const PaDeviceInfo* info = ::Pa_GetDeviceInfo(m_dev);
+	if (info == NULL) {
+		::wxLogError(wxT("Received NULL from Pa_GetDeviceInfo() in SoundCardReader"));
+		return false;
+	}
 
 	PaStreamParameters params;
 	params.device                    = m_dev;
@@ -88,7 +92,7 @@ bool CSoundCardReader::open(float sampleRate, unsigned int blockSize)
 	return true;
 }
 
-int CSoundCardReader::callback(const void* input, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags)
+int CSoundCardReader::callback(const void* input, unsigned long nSamples, const PaStreamCallbackTimeInfo* WXUNUSED(timeInfo), PaStreamCallbackFlags WXUNUSED(statusFlags))
 {
 	wxASSERT(m_callback != NULL);
 	wxASSERT(input != NULL);

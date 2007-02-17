@@ -102,8 +102,8 @@ CSerialControl::CSerialControl(const wxString& dev) :
 wxThread(),
 m_dev(dev),
 m_count(0),
-m_rts(false),
-m_dtr(false),
+m_rts(true),
+m_dtr(true),
 m_cts(false),
 m_dsr(false),
 m_mutex(),
@@ -126,16 +126,19 @@ bool CSerialControl::open()
 
 	m_handle = ::CreateFile(m_dev.mb_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
 	if (m_handle == INVALID_HANDLE_VALUE) {
-		::wxLogError(wxT("Cannot open the serial port - 0x%lX"), ::GetLastError());
+		::wxLogError(wxT("Cannot open the serial port - %ld"), ::GetLastError());
 		return false;
 	}
 
 	DCB dcb;
 	if (::GetCommState(m_handle, &dcb) == 0) {
-		close();
+		::CloseHandle(m_handle);
 		::wxLogError(wxT("%s is not a serial port"), m_dev.c_str());
 		return false;
 	}
+
+	setRTS(false);
+	setDTR(false);
 
 	m_count++;
 
@@ -154,10 +157,10 @@ void* CSerialControl::Entry()
 
 		DWORD status;
 		if (::GetCommModemStatus(m_handle, &status) == 0) {
-			::wxLogError(wxT("Cannot get the serial port status - 0x%lX"), ::GetLastError());
+			::wxLogError(wxT("Cannot get the serial port status - %ld"), ::GetLastError());
 		} else {
-			m_cts = status & MS_CTS_ON;
-			m_dsr = status & MS_DSR_ON;
+			m_cts = (status & MS_CTS_ON) == MS_CTS_ON;
+			m_dsr = (status & MS_DSR_ON) == MS_DSR_ON;
 		}
 
 		m_mutex.Unlock();
@@ -177,10 +180,10 @@ void CSerialControl::setRTS(bool set)
 	if (set == m_rts)
 		return;
 
-	int rts = (set) ? SETRTS : CLRRTS;
+	DWORD rts = (set) ? SETRTS : CLRRTS;
 
 	if (::EscapeCommFunction(m_handle, rts) == 0) {
-		::wxLogError(wxT("Cannot set RTS - 0x%lX"), ::GetLastError());
+		::wxLogError(wxT("Cannot set RTS - %ld"), ::GetLastError());
 		return;
 	}
 
@@ -194,10 +197,10 @@ void CSerialControl::setDTR(bool set)
 	if (set == m_dtr)
 		return;
 
-	int dtr = (set) ? SETDTR : CLRDTR;
+	DWORD dtr = (set) ? SETDTR : CLRDTR;
 
 	if (::EscapeCommFunction(m_handle, dtr) == 0) {
-		::wxLogError(wxT("Cannot set DTR - 0x%lX"), ::GetLastError());
+		::wxLogError(wxT("Cannot set DTR - %ld"), ::GetLastError());
 		return;
 	}
 
@@ -214,23 +217,23 @@ void CSerialControl::setDTR(bool set)
 #include <unistd.h>
 
 SSerialList CSerialControl::s_serialList[] = {
-	{wxT("/dev/ttyS0"), NULL},
-	{wxT("/dev/ttyS1"), NULL},
-	{wxT("/dev/ttyS2"), NULL},
-	{wxT("/dev/ttyS3"), NULL},
-	{wxT("/dev/ttyS4"), NULL},
-	{wxT("/dev/ttyS5"), NULL},
-	{wxT("/dev/ttyS6"), NULL},
-	{wxT("/dev/ttyS7"), NULL},
-	{NULL,              NULL}
+	{wxT("/dev/ttyS0"),   NULL},
+	{wxT("/dev/ttyS1"),   NULL},
+	{wxT("/dev/ttyS2"),   NULL},
+	{wxT("/dev/ttyS3"),   NULL},
+	{wxT("/dev/ttyUSB0"), NULL},
+	{wxT("/dev/ttyUSB1"), NULL},
+	{wxT("/dev/ttyUSB2"), NULL},
+	{wxT("/dev/ttyUSB3"), NULL},
+	{NULL,                NULL}
 };
 
 CSerialControl::CSerialControl(const wxString& dev) :
 wxThread(),
 m_dev(dev),
 m_count(0),
-m_rts(false),
-m_dtr(false),
+m_rts(true),
+m_dtr(true),
 m_cts(false),
 m_dsr(false),
 m_mutex(),
@@ -258,10 +261,13 @@ bool CSerialControl::open()
 	}
 
 	if (::isatty(m_fd) == 0) {
-		close();
+		::close(m_fd);
 		::wxLogError(wxT("%s is not a serial port"), m_dev.c_str());
 		return false;
 	}
+
+	setRTS(false);
+	setDTR(false);
 
 	m_count++;
 
@@ -282,8 +288,8 @@ void* CSerialControl::Entry()
 		if (::ioctl(m_fd, TIOCMGET, &y) < 0) {
 			::wxLogError(wxT("Cannot get the serial port status - %d, %s"), errno, strerror(errno));
 		} else {
-			m_cts = y & TIOCM_CTS;
-			m_dsr = y & TIOCM_DSR;
+			m_cts = (y & TIOCM_CTS) == TIOCM_CTS;
+			m_dsr = (y & TIOCM_DSR) == TIOCM_DSR;
 		}
 
 		m_mutex.Unlock();

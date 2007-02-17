@@ -23,7 +23,7 @@
 
 #include "Frequency.h"
 
-enum {
+enum SDRTYPE {
 	TYPE_AUDIORX,
 	TYPE_AUDIOTXRX,
 	TYPE_DEMO,
@@ -37,7 +37,7 @@ class CSDRDescrFile {
 	~CSDRDescrFile();
 
 	wxString   getName() const;
-	int        getType() const;
+	SDRTYPE    getType() const;
 	CFrequency getMaxFreq() const;
 	CFrequency getMinFreq() const;
 	float      getStepSize() const;
@@ -47,7 +47,7 @@ class CSDRDescrFile {
 
     private:
 	wxString     m_name;
-	int          m_type;
+	SDRTYPE      m_type;
 	CFrequency   m_maxFreq;
 	CFrequency   m_minFreq;
 	float        m_stepSize;

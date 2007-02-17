@@ -21,6 +21,9 @@
 
 #include <wx/wx.h>
 
+#include "UWSDRDefs.h"
+
+
 class CSMeter : public wxPanel {
 
     public:
@@ -31,11 +34,11 @@ class CSMeter : public wxPanel {
 
 	virtual void setLevel(float level);
 
-	virtual void setRXMeter(int meter);
-	virtual void setTXMeter(int meter);
+	virtual void setRXMeter(METERPOS meter);
+	virtual void setTXMeter(METERPOS meter);
 
-	virtual int  getRXMeter() const;
-	virtual int  getTXMeter() const;
+	virtual METERPOS getRXMeter() const;
+	virtual METERPOS getTXMeter() const;
 
 	void onPaint(wxPaintEvent& event);
 	void onMouse(wxMouseEvent& event);
@@ -49,8 +52,8 @@ class CSMeter : public wxPanel {
 	wxMenu*      m_menu;
 	wxMenu*      m_rxMenu;
 	wxMenu*      m_txMenu;
-	int          m_rxMeter;
-	int          m_txMeter;
+	METERPOS     m_rxMeter;
+	METERPOS     m_txMeter;
 	float        m_lastLevel;
 
 	DECLARE_EVENT_TABLE()

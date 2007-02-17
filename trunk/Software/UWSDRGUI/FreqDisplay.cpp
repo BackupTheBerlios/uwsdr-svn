@@ -121,7 +121,7 @@ void CFreqDisplay::setFrequency(const CFrequency& frequency)
 	m_lastFrequency = frequency;
 }
 
-void CFreqDisplay::onPaint(wxPaintEvent& event)
+void CFreqDisplay::onPaint(wxPaintEvent& WXUNUSED(event))
 {
 	wxPaintDC dc(this);
 

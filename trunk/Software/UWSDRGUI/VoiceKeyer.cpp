@@ -107,7 +107,7 @@ void CVoiceKeyer::send(const wxString& fileName, int status)
 	m_status = status;
 }
 
-void CVoiceKeyer::callback(float* buffer, unsigned int nSamples, int id)
+void CVoiceKeyer::callback(float* buffer, unsigned int nSamples, int WXUNUSED(id))
 {
 	wxASSERT(m_callback != NULL);
 

@@ -135,7 +135,7 @@ void CVolumeDial::drawDial()
 	show(clientDC);
 }
 
-void CVolumeDial::onPaint(wxPaintEvent& event)
+void CVolumeDial::onPaint(wxPaintEvent& WXUNUSED(event))
 {
 	wxPaintDC dc(this);
 

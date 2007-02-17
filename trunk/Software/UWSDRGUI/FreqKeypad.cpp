@@ -168,7 +168,7 @@ void CFreqKeypad::onButton(wxCommandEvent& event)
 	}
 }
 
-void CFreqKeypad::onOK(wxCommandEvent& event)
+void CFreqKeypad::onOK(wxCommandEvent& WXUNUSED(event))
 {
 	wxString text = m_text->GetValue();
 

@@ -21,6 +21,7 @@
 
 #include <wx/wx.h>
 
+#include "UWSDRDefs.h"
 #include "SoundFileWriter.h"
 #include "DTTSPControl.h"
 #include "CWKeyer.h"
@@ -51,12 +52,12 @@ class CDSPControl : public wxThread, public IDataCallback {
 	virtual void  callback(float* buffer, unsigned int nSamples, int id);
 
 	// Many of these are pass throughs to DTTSP
-	virtual void setMode(int mode);
+	virtual void setMode(UWSDRMODE mode);
 	virtual void setZeroIF(bool onOff);
 	virtual void swapIQ(bool swap);
-	virtual void setFilter(int filter);
-	virtual void setAGC(int agc);
-	virtual void setDeviation(int dev);
+	virtual void setFilter(FILTERWIDTH filter);
+	virtual void setAGC(AGCSPEED agc);
+	virtual void setDeviation(FMDEVIATION dev);
 	virtual void setTXAndFreq(bool transmit, float freq);
 
 	virtual void setNB(bool onOff);
@@ -82,8 +83,8 @@ class CDSPControl : public wxThread, public IDataCallback {
 	virtual void setPower(unsigned int value);
 	virtual void setSquelch(unsigned int value);
 
-	virtual float getMeter(int type);
-	virtual void  getSpectrum(float* spectrum, int pos);
+	virtual float getMeter(METERPOS type);
+	virtual void  getSpectrum(float* spectrum, SPECTRUMPOS pos);
 
 	virtual float getTXOffset();
 	virtual float getRXOffset();
@@ -118,7 +119,7 @@ class CDSPControl : public wxThread, public IDataCallback {
 	float          m_rfGain;
 	float          m_micGain;
 	float          m_power;
-	int            m_mode;
+	UWSDRMODE      m_mode;
 	bool           m_swap;
 
 	int            m_clockId;

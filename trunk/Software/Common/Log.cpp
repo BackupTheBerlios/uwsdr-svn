@@ -72,7 +72,7 @@ void CLog::DoLog(wxLogLevel level, const wxChar *msg, time_t timestamp)
 		::abort();
 }
 
-void CLog::DoLogString(const wxChar* msg, time_t timestamp)
+void CLog::DoLogString(const wxChar* msg, time_t WXUNUSED(timestamp))
 {
 	wxASSERT(m_file->IsOpened());
 	wxASSERT(msg != NULL);

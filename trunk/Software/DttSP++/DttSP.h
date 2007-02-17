@@ -41,12 +41,12 @@ Bridgewater, NJ 08807
 #include "Spectrum.h"
 #include "RingBuffer.h"
 
-typedef enum {
+enum RUNMODE {
    RUN_MUTE,
    RUN_PASS,
    RUN_PLAY,
    RUN_SWITCH
-} RUNMODE;
+};
 
 
 
