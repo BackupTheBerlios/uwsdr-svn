@@ -23,6 +23,7 @@ enum {
 };
 
 CSRTXRXController::CSRTXRXController(const wxString& device, int pin) :
+m_device(device),
 m_pin(pin),
 m_txEnable(false),
 m_port(NULL)
@@ -53,6 +54,8 @@ bool CSRTXRXController::open()
 {
 	if (m_port == NULL)
 		return false;
+
+	::wxLogMessage(wxT("SRXTXController: started on device %s"), m_device.c_str());
 
 	return m_port->open();
 }
@@ -91,14 +94,8 @@ void CSRTXRXController::setClockTune(unsigned int WXUNUSED(clock))
 
 void CSRTXRXController::close()
 {
-	switch (m_pin) {
-		case RTS:
-			m_port->setRTS(false);
-			break;
-		case DTR:
-			m_port->setDTR(false);
-			break;
-	}
+	m_port->setRTS(false);
+	m_port->setDTR(false);
 
 	m_port->close();
 }

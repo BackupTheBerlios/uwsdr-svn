@@ -142,6 +142,8 @@ bool CSDRDataReader::open(float WXUNUSED(sampleRate), unsigned int blockSize)
 	m_sockBuffer = new unsigned char[m_size];
 	m_sampBuffer = new float[m_blockSize * 2];
 
+	::wxLogMessage(wxT("SDRDataReader: started with address %s and port %d"), m_address.c_str(), m_port);
+
 	Create();
 	Run();
 

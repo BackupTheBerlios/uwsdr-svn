@@ -92,6 +92,8 @@ bool CSignalReader::open(float sampleRate, unsigned int blockSize)
 
 	m_awgnN = 0;
 
+	::wxLogMessage(wxT("SignalReader: started"));
+
 	return CThreadReader::open(sampleRate, blockSize);
 }
 

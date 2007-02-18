@@ -169,6 +169,8 @@ bool CUWSDRApp::OnInit()
 		return false;
 	}
 
+	::wxLogMessage(wxT("Using hardware configuration file: ") + m_parameters->m_fileName);
+
 	if (m_parameters->m_hardwareStepSize > 100.0F      ||
 	    m_parameters->m_hardwareType == TYPE_AUDIORX   ||
 	    m_parameters->m_hardwareType == TYPE_AUDIOTXRX ||

@@ -18,8 +18,8 @@ CWKeyer.o:	CWKeyer.cpp CWKeyer.h ../Common/ThreadReader.h UWSDRApp.h ../Common/R
 		$(CC) $(CFLAGS) -c CWKeyer.cpp
 
 DSPControl.o:	DSPControl.cpp DSPControl.h CWKeyer.h ../Common/DataCallback.h ../Common/DataReader.h \
-		../Common/DataWriter.h DTTSPControl.h ../Common/RingBuffer.h ../Common/SoundFileWriter.h \
-		UWSDRDefs.h VoiceKeyer.h
+		../Common/DataWriter.h DTTSPControl.h ../Common/RingBuffer.h ../Common/SerialControl.h \
+		../Common/SoundFileWriter.h UWSDRApp.h UWSDRDefs.h VoiceKeyer.h
 		$(CC) $(CFLAGS) -c DSPControl.cpp
 
 DTTSPControl.o:	DTTSPControl.cpp DTTSPControl.h DTTSPExports.h UWSDRDefs.h
@@ -52,9 +52,10 @@ UWSDRApp.o:	UWSDRApp.cpp UWSDRApp.h ../Common/Log.h SDRParameters.h UWSDRDefs.h 
 
 UWSDRFrame.o:	UWSDRFrame.cpp UWSDRFrame.h ../Common/ControlInterface.h CWKeyboard.h DialInterface.h DSPControl.h FreqDial.h \
 		FreqDisplay.h FreqKeypad.h ../Common/Frequency.h InfoBox.h ../Common/NullController.h ../Common/SDRDataReader.h \
-		../Common/SDRDataWriter.h SDRParameters.h SMeter.h ../Common/SoundCardReader.h ../Common/SoundCardReaderWriter.h \
-		../Common/SoundCardWriter.h ../Common/SoundFileWriter.h SpectrumDisplay.h ../Common/SRTXRXController.h UWSDRApp.h \
-		../Common/UWSDRController.h UWSDRDefs.h UWSDRPreferences.h UWSDR.xpm ../Common/Version.h VoiceKeyboard.h
+		../Common/SDRDataWriter.h SDRParameters.h ../Common/SerialControl.h SMeter.h ../Common/SoundCardReader.h \
+		../Common/SoundCardReaderWriter.h ../Common/SoundCardWriter.h ../Common/SoundFileWriter.h SpectrumDisplay.h \
+		../Common/SRTXRXController.h UWSDRApp.h ../Common/UWSDRController.h UWSDRDefs.h UWSDRPreferences.h UWSDR.xpm \
+		../Common/Version.h VoiceKeyboard.h
 		$(CC) $(CFLAGS) -c UWSDRFrame.cpp
 
 UWSDRPreferences.o: UWSDRPreferences.cpp UWSDRPreferences.h DSPControl.h SDRParameters.h UWSDRApp.h UWSDRDefs.h

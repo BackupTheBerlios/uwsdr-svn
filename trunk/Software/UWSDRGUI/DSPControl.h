@@ -26,6 +26,7 @@
 #include "DTTSPControl.h"
 #include "CWKeyer.h"
 #include "VoiceKeyer.h"
+#include "SerialControl.h"
 #include "DataReader.h"
 #include "DataWriter.h"
 #include "RingBuffer.h"
@@ -41,6 +42,9 @@ class CDSPControl : public wxThread, public IDataCallback {
 
 	virtual void  setRXReader(IDataReader* reader);
 	virtual void  setRXWriter(IDataWriter* writer);
+
+	virtual void  setTXInControl(CSerialControl* control, INPIN pin);
+	virtual void  setKeyInControl(CSerialControl* control, INPIN pin);
 
 	virtual bool  open();
 	virtual void* Entry();
@@ -93,41 +97,49 @@ class CDSPControl : public wxThread, public IDataCallback {
 	virtual void sendAudio(const wxString& fileName, int state);
 
     private:
-	CDTTSPControl* m_dttsp;
-	CCWKeyer*      m_cwKeyer;
-	CVoiceKeyer*   m_voiceKeyer;
+	CDTTSPControl*  m_dttsp;
+	CCWKeyer*       m_cwKeyer;
+	CVoiceKeyer*    m_voiceKeyer;
 
-	float          m_sampleRate;
+	float           m_sampleRate;
 
-	IDataReader*   m_txReader;
-	IDataWriter*   m_txWriter;
-	IDataReader*   m_rxReader;
-	IDataWriter*   m_rxWriter;
-	wxSemaphore    m_waiting;
+	IDataReader*    m_txReader;
+	IDataWriter*    m_txWriter;
+	IDataReader*    m_rxReader;
+	IDataWriter*    m_rxWriter;
 
-	CRingBuffer    m_txRingBuffer;
-	CRingBuffer    m_rxRingBuffer;
-	float*         m_txBuffer;
-	float*         m_rxBuffer;
-	float*         m_outBuffer;
+	CSerialControl* m_txInControl;
+	INPIN           m_txInPin;
+	CSerialControl* m_keyInControl;
+	INPIN           m_keyInPin;
+
+	wxSemaphore     m_waiting;
+
+	CRingBuffer     m_txRingBuffer;
+	CRingBuffer     m_rxRingBuffer;
+	float*          m_txBuffer;
+	float*          m_rxBuffer;
+	float*          m_outBuffer;
 
 	CSoundFileWriter* m_record;
 
-	bool           m_transmit;
-	bool           m_running;
-	float          m_afGain;
-	float          m_rfGain;
-	float          m_micGain;
-	float          m_power;
-	UWSDRMODE      m_mode;
-	bool           m_swap;
+	bool            m_transmit;
+	bool            m_running;
+	float           m_afGain;
+	float           m_rfGain;
+	float           m_micGain;
+	float           m_power;
+	UWSDRMODE       m_mode;
+	bool            m_swap;
 
-	int            m_clockId;
+	int             m_clockId;
 
-	unsigned int   m_rxUnderruns;
-	unsigned int   m_rxOverruns;
-	unsigned int   m_txUnderruns;
-	unsigned int   m_txOverruns;
+	bool            m_keyDown;
+
+	unsigned int    m_rxUnderruns;
+	unsigned int    m_rxOverruns;
+	unsigned int    m_txUnderruns;
+	unsigned int    m_txOverruns;
 
 	void scaleBuffer(float* buffer, unsigned int nSamples, float scale, bool swap = false);
 

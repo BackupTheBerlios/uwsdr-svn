@@ -117,6 +117,8 @@ bool CSDRDataWriter::open(float sampleRate, unsigned int blockSize)
 		::wxLogMessage(wxT("Delay is %lums"), m_delay);
 	}
 
+	::wxLogMessage(wxT("SDRDataWriter: started with address %s and port %d"), m_address.c_str(), m_port);
+
 	Create();
 	Run();
 

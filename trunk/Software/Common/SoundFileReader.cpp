@@ -69,7 +69,7 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 	m_handle = ::mmioOpen((CHAR *)m_fileName.c_str(), 0, MMIO_READ | MMIO_ALLOCBUF);
 
 	if (m_handle == NULL) {
-		::wxLogError(wxT("Could not open the WAV file %s."), m_fileName.c_str());
+		::wxLogError(wxT("SoundFileReader: could not open the WAV file %s."), m_fileName.c_str());
 		return false;
 	}
 
@@ -79,7 +79,7 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 	MMRESULT res = ::mmioDescend(m_handle, &parent, 0, MMIO_FINDRIFF);
 
 	if (res != MMSYSERR_NOERROR) {
-		::wxLogError(wxT("%s has no \"WAVE\" header."), m_fileName.c_str());
+		::wxLogError(wxT("SoundFileReader: %s has no \"WAVE\" header."), m_fileName.c_str());
 		return false;
 	}
 
@@ -89,7 +89,7 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 	res = ::mmioDescend(m_handle, &child, &parent, MMIO_FINDCHUNK);
 
 	if (res != MMSYSERR_NOERROR) {
-		::wxLogError(wxT("%s has no \"fmt \" chunk."), m_fileName.c_str());
+		::wxLogError(wxT("SoundFileReader: %s has no \"fmt \" chunk."), m_fileName.c_str());
 		return false;
 	}
 
@@ -98,22 +98,22 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 	LONG len = ::mmioRead(m_handle, (char *)&format, child.cksize);
 
 	if (len != LONG(child.cksize)) {
-		::wxLogError(wxT("%s is corrupt, cannot read the WAVEFORMATEX structure."), m_fileName.c_str());
+		::wxLogError(wxT("SoundFileReader: %s is corrupt, cannot read the WAVEFORMATEX structure."), m_fileName.c_str());
 		return false;
 	}
 	
 	if (format.wFormatTag != WAVE_FORMAT_PCM && format.wFormatTag != WAVE_FORMAT_IEEE_FLOAT) {
-		::wxLogError(wxT("%s is not PCM or IEEE Float format, is %u."), m_fileName.c_str(), format.wFormatTag);
+		::wxLogError(wxT("SoundFileReader: %s is not PCM or IEEE Float format, is %u."), m_fileName.c_str(), format.wFormatTag);
 		return false;
 	}
 
 	if (format.nSamplesPerSec != DWORD(sampleRate)) {
-		::wxLogError(wxT("%s has sample rate %lu, not %.0f"), m_fileName.c_str(), format.nSamplesPerSec, sampleRate);
+		::wxLogError(wxT("SoundFileReader: %s has sample rate %lu, not %.0f"), m_fileName.c_str(), format.nSamplesPerSec, sampleRate);
 		return false;
 	}
 
 	if (format.nChannels != 2) {
-		::wxLogError(wxT("%s has no of channels %u, not 2."), m_fileName.c_str(), format.nChannels);
+		::wxLogError(wxT("SoundFileReader: %s has no of channels %u, not 2."), m_fileName.c_str(), format.nChannels);
 		return false;
 	}
 
@@ -124,14 +124,14 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 	} else if (format.wBitsPerSample == 32 && format.wFormatTag == WAVE_FORMAT_IEEE_FLOAT) {
 		m_format = FORMAT_32BIT;
 	} else {
-		::wxLogError(wxT("%s has sample width %u and format %u."), m_fileName.c_str(), format.wBitsPerSample, format.wFormatTag);
+		::wxLogError(wxT("SoundFileReader: %s has sample width %u and format %u."), m_fileName.c_str(), format.wBitsPerSample, format.wFormatTag);
 		return false;
 	}
 
 	res = ::mmioAscend(m_handle, &child, 0);
 
 	if (res != MMSYSERR_NOERROR) {
-		::wxLogError(wxT("%s is corrupt, cannot ascend."), m_fileName.c_str());
+		::wxLogError(wxT("SoundFileReader: %s is corrupt, cannot ascend."), m_fileName.c_str());
 		return false;
 	}
 
@@ -140,7 +140,7 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 	res = ::mmioDescend(m_handle, &child, &parent, MMIO_FINDCHUNK);
 
 	if (res != MMSYSERR_NOERROR) {
-		::wxLogError(wxT("%s has no \"data\" chunk."), m_fileName.c_str());
+		::wxLogError(wxT("SoundFileReader: %s has no \"data\" chunk."), m_fileName.c_str());
 		return false;
 	}
 
@@ -279,7 +279,7 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 
 	bool ret = m_file->IsOpened();
 	if (!ret) {
-		::wxLogError(wxT("Could not open the WAV file %s."), m_fileName.c_str());
+		::wxLogError(wxT("SoundFileReader: could not open the WAV file %s."), m_fileName.c_str());
 
 		delete m_file;
 		m_file = NULL;
@@ -291,25 +291,25 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 
 	unsigned int n = m_file->Read(buffer, 4);
 	if (n != 4 || ::memcmp(buffer, "RIFF", 4) != 0) {
-		::wxLogError(wxT("%s has no \"RIFF\" signature."), m_fileName.c_str());
+		::wxLogError(wxT("SoundFileReader: %s has no \"RIFF\" signature."), m_fileName.c_str());
 		return false;
 	}
 
 	n = m_file->Read(buffer, 4);
 	if (n != 4) {
-		::wxLogError(wxT("%s is corrupt, cannot read the file length."), m_fileName.c_str());
+		::wxLogError(wxT("SoundFileReader: %s is corrupt, cannot read the file length."), m_fileName.c_str());
 		return false;
 	}
 
 	n = m_file->Read(buffer, 4);
 	if (n != 4 || ::memcmp(buffer, "WAVE", 4) != 0) {
-		::wxLogError(wxT("%s has no \"WAVE\" header."), m_fileName.c_str());
+		::wxLogError(wxT("SoundFileReader: %s has no \"WAVE\" header."), m_fileName.c_str());
 		return false;
 	}
 
 	n = m_file->Read(buffer, 4);
 	if (n != 4 || ::memcmp(buffer, "fmt ", 4) != 0) {
-		::wxLogError(wxT("%s has no \"fmt \" chunk."), m_fileName.c_str());
+		::wxLogError(wxT("SoundFileReader: %s has no \"fmt \" chunk."), m_fileName.c_str());
 		return false;
 	}
 
@@ -318,7 +318,7 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 
 	wxUint32 length = wxUINT32_SWAP_ON_BE(uint32);
 	if (n != sizeof(wxUint32) || length < 16) {
-		::wxLogError(wxT("%s is corrupt, cannot read the WAVEFORMATEX structure length."), m_fileName.c_str());
+		::wxLogError(wxT("SoundFileReader: %s is corrupt, cannot read the WAVEFORMATEX structure length."), m_fileName.c_str());
 		return false;
 	}
 
@@ -327,7 +327,7 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 
 	wxUint16 compCode = wxUINT16_SWAP_ON_BE(uint16);
 	if (n != sizeof(wxUint16) || (compCode != WAVE_FORMAT_PCM && compCode != WAVE_FORMAT_IEEE_FLOAT)) {
-		::wxLogError(wxT("%s is not PCM or IEEE Float format, is %u."), m_fileName.c_str(), compCode);
+		::wxLogError(wxT("SoundFileReader: %s is not PCM or IEEE Float format, is %u."), m_fileName.c_str(), compCode);
 		return false;
 	}
 
@@ -335,7 +335,7 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 
 	wxUint16 channels = wxUINT16_SWAP_ON_BE(uint16);
 	if (n != sizeof(wxUint16) || channels != 2) {
-		::wxLogError(wxT("%s has no of channels %u, not 2."), m_fileName.c_str(), channels);
+		::wxLogError(wxT("SoundFileReader: %s has no of channels %u, not 2."), m_fileName.c_str(), channels);
 		return false;
 	}
 
@@ -343,28 +343,28 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 
 	wxUint32 samplesPerSec = wxUINT32_SWAP_ON_BE(uint32);
 	if (n != sizeof(wxUint32) || samplesPerSec != sampleRate) {
-		::wxLogError(wxT("%s has sample rate %lu, not %.0f"), m_fileName.c_str(), (unsigned long)samplesPerSec, sampleRate);
+		::wxLogError(wxT("SoundFileReader: %s has sample rate %lu, not %.0f"), m_fileName.c_str(), (unsigned long)samplesPerSec, sampleRate);
 		return false;
 	}
 
 	n = m_file->Read(&uint32, sizeof(wxUint32));
 
 	if (n != sizeof(wxUint32)) {
-		::wxLogError(wxT("%s is corrupt, cannot read the average bytes per second"), m_fileName.c_str());
+		::wxLogError(wxT("SoundFileReader: %s is corrupt, cannot read the average bytes per second"), m_fileName.c_str());
 		return false;
 	}
 
 	n = m_file->Read(&uint16, sizeof(wxUint16));
 
 	if (n != sizeof(wxUint16)) {
-		::wxLogError(wxT("%s is corrupt, cannot read the block align."), m_fileName.c_str());
+		::wxLogError(wxT("SoundFileReader: %s is corrupt, cannot read the block align."), m_fileName.c_str());
 		return false;
 	}
 
 	n = m_file->Read(&uint16, sizeof(wxUint16));
 
 	if (n != sizeof(wxUint16)) {
-		::wxLogError(wxT("%s is corrupt, cannot read the bitsPerSample."), m_fileName.c_str());
+		::wxLogError(wxT("SoundFileReader: %s is corrupt, cannot read the bitsPerSample."), m_fileName.c_str());
 		return false;
 	}
 
@@ -377,7 +377,7 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 	} else if (bitsPerSample == 32 && compCode == WAVE_FORMAT_IEEE_FLOAT) {
 		m_format = FORMAT_32BIT;
 	} else {
-		::wxLogError(wxT("%s has sample width %u and format %u."), m_fileName.c_str(), bitsPerSample, compCode);
+		::wxLogError(wxT("SoundFileReader: %s has sample width %u and format %u."), m_fileName.c_str(), bitsPerSample, compCode);
 		return false;
 	}
 
@@ -388,14 +388,14 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 	n = m_file->Read(buffer, 4);
 
 	if (n != 4 || ::memcmp(buffer, "data", 4) != 0) {
-		::wxLogError(wxT("%s has no \"data\" chunk."), m_fileName.c_str());
+		::wxLogError(wxT("SoundFileReader: %s has no \"data\" chunk."), m_fileName.c_str());
 		return false;
 	}
 
 	n = m_file->Read(&uint32, sizeof(wxUint32));
 
 	if (n != sizeof(wxUint32)) {
-		::wxLogError(wxT("%s is corrupt, cannot read the \"data\" chunk size"), m_fileName.c_str());
+		::wxLogError(wxT("SoundFileReader: %s is corrupt, cannot read the \"data\" chunk size"), m_fileName.c_str());
 		return false;
 	}
 

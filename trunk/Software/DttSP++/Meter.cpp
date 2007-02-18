@@ -155,6 +155,8 @@ void CMeter::setTXMeter(TXMETERTYPE type, CXB* buf, float alcGain)
 
 		case TX_ALC_G:
 		case TX_LVL_G:
+		case TX_EQtap:
+		case TX_LEVELER:
 			break;
 	}
 }

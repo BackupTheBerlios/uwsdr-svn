@@ -20,8 +20,9 @@
 
 #include "SerialControl.h"
 
-const int BORDER_SIZE     = 5;
-const int DATA_WIDTH      = 100;
+const int BORDER_SIZE = 5;
+const int DEV_WIDTH   = 130;   
+const int PIN_WIDTH   = 110;
 
 const int CHECK_TXIN  = 14286;
 const int CHECK_KEYIN = 14287;
@@ -77,10 +78,10 @@ m_txOutPin(OUT_RTS)
 	m_txInSelect = new wxCheckBox(panel, CHECK_TXIN, wxEmptyString);
 	panelSizer->Add(m_txInSelect, 0, wxALL, BORDER_SIZE);
 
-	m_txInDevChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	m_txInDevChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DEV_WIDTH, -1));
 	panelSizer->Add(m_txInDevChoice, 0, wxALL, BORDER_SIZE);
 
-	m_txInPinChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	m_txInPinChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(PIN_WIDTH, -1));
 	m_txInPinChoice->Append(wxT("RTS + CTS"));
 	m_txInPinChoice->Append(wxT("RTS + DSR"));
 	m_txInPinChoice->Append(wxT("DTR + DSR"));
@@ -93,10 +94,10 @@ m_txOutPin(OUT_RTS)
 	m_keyInSelect = new wxCheckBox(panel, CHECK_KEYIN, wxEmptyString);
 	panelSizer->Add(m_keyInSelect, 0, wxALL, BORDER_SIZE);
 
-	m_keyInDevChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	m_keyInDevChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DEV_WIDTH, -1));
 	panelSizer->Add(m_keyInDevChoice, 0, wxALL, BORDER_SIZE);
 
-	m_keyInPinChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	m_keyInPinChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(PIN_WIDTH, -1));
 	m_keyInPinChoice->Append(wxT("RTS + CTS"));
 	m_keyInPinChoice->Append(wxT("RTS + DSR"));
 	m_keyInPinChoice->Append(wxT("DTR + DSR"));
@@ -109,10 +110,10 @@ m_txOutPin(OUT_RTS)
 	wxStaticText* dummy3 = new wxStaticText(panel, -1, wxEmptyString);
 	panelSizer->Add(dummy3, 0, wxALL, BORDER_SIZE);
 
-	m_txOutDevChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	m_txOutDevChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DEV_WIDTH, -1));
 	panelSizer->Add(m_txOutDevChoice, 0, wxALL, BORDER_SIZE);
 
-	m_txOutPinChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	m_txOutPinChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(PIN_WIDTH, -1));
 	m_txOutPinChoice->Append(wxT("RTS"));
 	m_txOutPinChoice->Append(wxT("DTR"));
 	panelSizer->Add(m_txOutPinChoice, 0, wxALL, BORDER_SIZE);

@@ -44,6 +44,7 @@ class CSRTXRXController : public ISDRController {
 	virtual void close();
 
     private:
+	wxString        m_device;
 	int             m_pin;
 	bool            m_txEnable;
 	CSerialControl* m_port;

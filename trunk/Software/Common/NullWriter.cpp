@@ -28,6 +28,8 @@ CNullWriter::~CNullWriter()
 
 bool CNullWriter::open(float WXUNUSED(sampleRate), unsigned int WXUNUSED(blockSize))
 {
+	::wxLogMessage(wxT("NullWriter: started"));
+
 	return true;
 }
 

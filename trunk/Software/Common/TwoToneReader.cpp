@@ -76,6 +76,8 @@ bool CTwoToneReader::open(float sampleRate, unsigned int blockSize)
 	m_cosDelta2 = ::cos(delta);
 	m_sinDelta2 = ::sin(delta);
 
+	::wxLogMessage(wxT("TwoToneReader: started"));
+
 	return CThreadReader::open(sampleRate, blockSize);
 }
 

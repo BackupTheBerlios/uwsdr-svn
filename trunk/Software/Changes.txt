@@ -338,3 +338,5 @@ Version 0.7.5 - February 2007
 =============================
 
 Added USB serial devices for Linux in GUISetup.
+
+More text in the log file at startup with details of devices opened.

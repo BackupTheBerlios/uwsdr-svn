@@ -17,6 +17,7 @@
  */
 
 #include "DSPControl.h"
+#include "UWSDRApp.h"
 
 #include <wx/datetime.h>
 
@@ -39,6 +40,10 @@ m_txReader(NULL),
 m_txWriter(NULL),
 m_rxReader(NULL),
 m_rxWriter(NULL),
+m_txInControl(NULL),
+m_txInPin(IN_NONE),
+m_keyInControl(NULL),
+m_keyInPin(IN_NONE),
 m_waiting(),
 m_txRingBuffer(RINGBUFFER_SIZE, 2),
 m_rxRingBuffer(RINGBUFFER_SIZE, 2),
@@ -55,6 +60,7 @@ m_power(0.0F),
 m_mode(MODE_USB),
 m_swap(false),
 m_clockId(-1),
+m_keyDown(false),
 m_rxUnderruns(0U),
 m_rxOverruns(0U),
 m_txUnderruns(0U),
@@ -113,6 +119,24 @@ void CDSPControl::setRXWriter(IDataWriter* writer)
 	wxASSERT(writer != NULL);
 
 	m_rxWriter = writer;
+}
+
+void CDSPControl::setTXInControl(CSerialControl* control, INPIN pin)
+{
+	wxASSERT(control != NULL);
+	wxASSERT(pin != IN_NONE);
+
+	m_txInControl = control;
+	m_txInPin     = pin;
+}
+
+void CDSPControl::setKeyInControl(CSerialControl* control, INPIN pin)
+{
+	wxASSERT(control != NULL);
+	wxASSERT(pin != IN_NONE);
+
+	m_keyInControl = control;
+	m_keyInPin     = pin;
 }
 
 bool CDSPControl::open()
@@ -226,6 +250,58 @@ bool CDSPControl::openIO()
 		return false;
 	}
 
+	// Open the TX In port and set the relevant output pin high to be shorted to the relevant input pin
+	if (m_txInControl != NULL) {
+		ret = m_txInControl->open();
+
+		if (!ret) {
+			m_dttsp->close();
+			m_cwKeyer->close();
+			m_voiceKeyer->close();
+
+			return false;
+		}
+
+		switch (m_txInPin) {
+			case IN_RTS_CTS:
+			case IN_RTS_DSR:
+				m_txInControl->setRTS(true);
+				break;
+			case IN_DTR_DSR:
+			case IN_DTR_CTS:
+				m_txInControl->setDTR(true);
+				break;
+			default:
+				break;
+		}
+	}
+
+	// Open the Key In port and set the relevant output pin high to be shorted to the relevant input pin
+	if (m_keyInControl != NULL) {
+		ret = m_keyInControl->open();
+
+		if (!ret) {
+			m_dttsp->close();
+			m_cwKeyer->close();
+			m_voiceKeyer->close();
+
+			return false;
+		}
+
+		switch (m_keyInPin) {
+			case IN_RTS_CTS:
+			case IN_RTS_DSR:
+				m_keyInControl->setRTS(true);
+				break;
+			case IN_DTR_DSR:
+			case IN_DTR_CTS:
+				m_keyInControl->setDTR(true);
+				break;
+			default:
+				break;
+		}
+	}
+
 	if (m_rxReader->hasClock())
 		m_clockId = RX_READER;
 
@@ -249,6 +325,20 @@ void CDSPControl::closeIO()
 	m_txReader->close();
 	m_rxWriter->close();
 	m_txWriter->close();
+
+	if (m_txInControl != NULL) {
+		m_txInControl->setRTS(false);
+		m_txInControl->setDTR(false);
+
+		m_txInControl->close();
+	}
+
+	if (m_keyInControl != NULL) {
+		m_keyInControl->setRTS(false);
+		m_keyInControl->setDTR(false);
+
+		m_keyInControl->close();
+	}
 
 	m_dttsp->close();
 	m_cwKeyer->close();
@@ -282,6 +372,12 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 			if (id != RX_READER)
 				m_rxReader->clock();
 		}
+
+		if (m_txInControl != NULL)
+			m_txInControl->clock();
+
+		if (m_keyInControl != NULL && m_keyInControl != m_txInControl)
+			m_keyInControl->clock();
 	}
 
 	switch (id) {
@@ -374,6 +470,50 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 		default:
 			::wxLogError(wxT("callback() from unknown source = %d"), id);
 			break;
+	}
+
+	if (m_txInControl != NULL) {
+		bool state;
+
+		switch (m_txInPin) {
+			case IN_RTS_CTS:
+			case IN_DTR_CTS:
+				state = m_txInControl->getCTS();
+				break;
+			case IN_DTR_DSR:
+			case IN_RTS_DSR:
+				state = m_txInControl->getDSR();
+				break;
+			default:
+				state = m_transmit;
+				break;
+		}
+
+		if (state != m_transmit)
+			;
+//			::wxGetApp().setTransmit(state);
+	}
+
+	if (m_keyInControl != NULL) {
+		bool state;
+
+		switch (m_keyInPin) {
+			case IN_RTS_CTS:
+			case IN_DTR_CTS:
+				state = m_keyInControl->getCTS();
+				break;
+			case IN_DTR_DSR:
+			case IN_RTS_DSR:
+				state = m_keyInControl->getDSR();
+				break;
+			default:
+				state = m_keyDown;
+				break;
+		}
+
+		if (state != m_keyDown) {
+			m_keyDown = state;
+		}
 	}
 }
 

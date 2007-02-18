@@ -40,8 +40,8 @@ class CSerialControl : public wxThread {
 
 	virtual bool open();
 
-	virtual void setRTS(bool set);
-	virtual void setDTR(bool set);
+	virtual bool setRTS(bool set);
+	virtual bool setDTR(bool set);
 
 	virtual bool getCTS() const;
 	virtual bool getDSR() const;

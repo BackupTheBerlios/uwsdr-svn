@@ -69,6 +69,8 @@ bool CUWSDRController::open()
 	m_socket->SetNotify(wxSOCKET_INPUT_FLAG | wxSOCKET_LOST_FLAG);
 	m_socket->Notify(true);
 
+	::wxLogMessage(wxT("UWSDRController: started on address %s and port %d"), m_address.c_str(), m_port);
+
 	return true;
 }
 

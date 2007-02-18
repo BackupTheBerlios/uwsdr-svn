@@ -32,6 +32,7 @@
 #include "ThreeToneReader.h"
 #include "SDRDataReader.h"
 #include "SDRDataWriter.h"
+#include "SerialControl.h"
 #include "SoundCardReader.h"
 #include "SoundCardWriter.h"
 #include "SoundFileReader.h"
@@ -239,12 +240,13 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_parameters = parameters;
 
-#if defined(TOBIAS)
-	m_sdr = new CNullController();
-#else
 	switch (m_parameters->m_hardwareType) {
 		case TYPE_UWSDR1:
+#if defined(TOBIAS)
+			m_sdr = new CNullController();
+#else
 			m_sdr = new CUWSDRController(m_parameters->m_ipAddress, m_parameters->m_controlPort, 1);
+#endif
 			break;
 		case TYPE_AUDIOTXRX:
 			m_sdr = new CSRTXRXController(m_parameters->m_txOutDev, m_parameters->m_txOutPin);
@@ -253,7 +255,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			m_sdr = new CNullController();
 			break;
 	}
-#endif
+
 	m_sdr->setCallback(this, -1);
 
 	bool ret = m_sdr->open();
@@ -279,16 +281,6 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_dsp = new CDSPControl(m_parameters->m_hardwareSampleRate);
 
-#if defined(TOBIAS)
-	// UDP in/out with audio on loudspeaker and two-tone audio on transmit
-	CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_userAudioAPI, m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev);
-
-	m_dsp->setTXReader(new CTwoToneReader(1000.0F, 1300.0F, 0.4F, scrw));
-	m_dsp->setRXWriter(scrw);
-
-	m_dsp->setTXWriter(new CSDRDataWriter(m_parameters->m_ipAddress, m_parameters->m_dataPort, 1));
-	m_dsp->setRXReader(new CSDRDataReader(m_parameters->m_ipAddress, m_parameters->m_dataPort, 1));
-#else
 	switch (m_parameters->m_hardwareType) {
 		case TYPE_AUDIORX:
 			// TX is disabled, RX is from audio card for signal input and audio output
@@ -331,18 +323,30 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			break;
 
 		case TYPE_UWSDR1: {
-				// The standard configuration, UDP in/out and sound card for the user
 				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev);
-
-				m_dsp->setTXReader(scrw);
 				m_dsp->setRXWriter(scrw);
-
+#if defined(TOBIAS)
+				// UDP in/out with audio on loudspeaker and two-tone audio on transmit
+				m_dsp->setTXReader(new CTwoToneReader(1000.0F, 1300.0F, 0.4F, scrw));
+#else
+				// The standard configuration, UDP in/out and sound card for the user
+				m_dsp->setTXReader(scrw);
+#endif
 				m_dsp->setTXWriter(new CSDRDataWriter(m_parameters->m_ipAddress, m_parameters->m_dataPort, 1));
 				m_dsp->setRXReader(new CSDRDataReader(m_parameters->m_ipAddress, m_parameters->m_dataPort, 1));
 			}
 			break;
 	}
-#endif
+
+	if (m_parameters->m_txInEnable) {
+		CSerialControl* control = CSerialControl::getInstance(m_parameters->m_txInDev);
+		m_dsp->setTXInControl(control, m_parameters->m_txInPin);
+	}
+
+	if (m_parameters->m_keyInEnable) {
+		CSerialControl* control = CSerialControl::getInstance(m_parameters->m_keyInDev);
+		m_dsp->setKeyInControl(control, m_parameters->m_keyInPin);
+	}
 
 	m_infoBox->setVFO(m_parameters->m_vfoChoice);
 	m_infoBox->setSplitShift(m_parameters->m_vfoSplitShift);

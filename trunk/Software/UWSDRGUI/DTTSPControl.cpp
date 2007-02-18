@@ -437,9 +437,6 @@ void CDTTSPControl::close()
 
 void CDTTSPControl::normaliseFilter()
 {
-	if (m_filter == -1)
-		return;
-
 	double width = 0.0;
 	switch (m_filter) {
 		case FILTER_20000:
@@ -481,6 +478,8 @@ void CDTTSPControl::normaliseFilter()
 		case FILTER_25:
 			width = 25.0;
 			break;
+		case FILTER_AUTO:
+			return;
 	}
 
 	double rxLow = 0.0, rxHigh = 0.0;
@@ -531,6 +530,8 @@ void CDTTSPControl::normaliseFilter()
 					txHigh = rxHigh = 613.0;
 					txLow  = rxLow  = 587.0;
 					break;
+				case FILTER_AUTO:
+					return;
 			}
 			break;
 
@@ -587,6 +588,8 @@ void CDTTSPControl::normaliseFilter()
 					txHigh = CW_OFFSET + 200.0;
 					txLow  = CW_OFFSET - 200.0;
 					break;
+				case FILTER_AUTO:
+					return;
 			}
 			break;
 	}

@@ -87,6 +87,8 @@ bool CThreeToneReader::open(float sampleRate, unsigned int blockSize)
 	m_cosDelta3 = ::cos(delta);
 	m_sinDelta3 = ::sin(delta);
 
+	::wxLogMessage(wxT("ThreeToneReader: started"));
+
 	return CThreadReader::open(sampleRate, blockSize);
 }
 
