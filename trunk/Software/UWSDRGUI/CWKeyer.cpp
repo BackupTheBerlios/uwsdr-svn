@@ -20,6 +20,7 @@
 
 #include "UWSDRApp.h"
 
+const int DEF_SPEED  = 14;
 
 const int DOT_LEN    = 1;
 const int DASH_LEN   = 3;
@@ -31,17 +32,25 @@ const int WORD_GAP   = 7;
 CCWKeyer::CCWKeyer() :
 CThreadReader(),
 m_sampleRate(0.0F),
-m_blockSize(0),
+m_blockSize(0U),
 m_callback(NULL),
 m_id(0),
-m_dotLen(0),
+m_dotLen(0U),
 m_text(),
+m_status(CW_STOPPED),
 m_stop(false),
+m_keyDown(false),
+m_lastKeyDown(false),
 m_buffer(NULL),
 m_dotBuffer(NULL),
 m_dashBuffer(NULL),
 m_silBuffer(NULL),
-m_cwBuffer(NULL)
+m_cwBuffer(NULL),
+m_defLen(0U),
+m_cosDelta(0.0F),
+m_sinDelta(0.0F),
+m_cosValue(1.0F),
+m_sinValue(0.0F)
 {
 }
 
@@ -61,14 +70,23 @@ bool CCWKeyer::open(float sampleRate, unsigned int blockSize)
 	m_sampleRate = sampleRate;
 	m_blockSize  = blockSize;
 
-	m_buffer = new float[m_blockSize * 2 * 2];
+	// Calculate the default speed for hand keying
+	unsigned int dotLen = calcDotLength(DEF_SPEED);
+	m_defLen = (dotLen * DOT_LEN) / 10;
+
+	float delta = CW_OFFSET / m_sampleRate * 2.0 * M_PI;
+
+	m_cosDelta = ::cos(delta);
+	m_sinDelta = ::sin(delta);
+
+	m_buffer = new float[m_blockSize * 2];
 
 	// Allocate buffers based on the slowest speed that we handle
-	unsigned int dotLen = calcDotLength(5);
+	dotLen = calcDotLength(5);
 
-	m_dotBuffer  = new float[dotLen * DOT_LEN];
-	m_dashBuffer = new float[dotLen * DASH_LEN];
-	m_silBuffer  = new float[dotLen * DOT_LEN];
+	m_dotBuffer   = new float[dotLen * DOT_LEN];
+	m_dashBuffer  = new float[dotLen * DASH_LEN];
+	m_silBuffer   = new float[dotLen * DOT_LEN];
 
 	::memset(m_silBuffer, 0x00, dotLen * DOT_LEN * sizeof(float));
 
@@ -79,14 +97,15 @@ bool CCWKeyer::open(float sampleRate, unsigned int blockSize)
 
 void CCWKeyer::close()
 {
-	m_stop = true;
+	m_status = CW_STOPPED;
 
 	CThreadReader::close();
 }
 
 void CCWKeyer::abort()
 {
-	m_stop = true;
+	if (m_status != CW_STOPPED)
+		m_stop = true;
 }
 
 /*
@@ -96,16 +115,20 @@ void CCWKeyer::abort()
 bool CCWKeyer::create()
 {
 	wxASSERT(m_callback != NULL);
-	wxASSERT(m_cwBuffer != NULL);
+
+	if (m_status != CW_RUNNING) {
+		processKey();
+		return true;
+	}
 
 	// Aborted or end of transmission
 	if (m_stop || (m_cwBuffer->dataSpace() == 0 && m_text.length() == 0)) {
-		for (unsigned int i = 0; i < m_blockSize * 2; i++)
-			m_buffer[i] = 0.0F;
+		::memset(m_buffer, 0x00, m_blockSize * 2 * sizeof(float));
 		m_callback->callback(m_buffer, m_blockSize, m_id);
 
-		m_stop = false;
-		::wxGetApp().setTransmit(false);
+		m_stop   = false;
+		m_status = CW_STOPPED;
+
 		::wxGetApp().sendCW(0, wxEmptyString);
 
 		return true;
@@ -144,7 +167,6 @@ void CCWKeyer::setCallback(IDataCallback* callback, int id)
 void CCWKeyer::send(unsigned int speed, const wxString& text)
 {
 	wxASSERT(speed >= 5 && speed <= 30);
-	wxASSERT(m_cwBuffer != NULL);
 
 	m_dotLen = calcDotLength(speed);
 
@@ -156,8 +178,9 @@ void CCWKeyer::send(unsigned int speed, const wxString& text)
 
 	m_cwBuffer->clear();
 
-	m_stop = false;
-	m_text = text;
+	m_status = CW_RUNNING;
+	m_stop   = false;
+	m_text   = text;
 }
 
 /*
@@ -168,18 +191,12 @@ void CCWKeyer::createSymbol(float* buffer, unsigned int len)
 {
 	wxASSERT(buffer != NULL);
 
-	float delta = CW_OFFSET / m_sampleRate * 2.0 * M_PI;
-
 	float cosVal = 1.0F;
 	float sinVal = 0.0F;
-	float tmpVal;
-
-	float cosDelta = ::cos(delta);
-	float sinDelta = ::sin(delta);
 
 	for (unsigned int i = 0; i < len; i++) {
-		tmpVal = cosVal * cosDelta - sinVal * sinDelta;
-		sinVal = cosVal * sinDelta + sinVal * cosDelta;
+		float tmpVal = cosVal * m_cosDelta - sinVal * m_sinDelta;
+		sinVal = cosVal * m_sinDelta + sinVal * m_cosDelta;
 		cosVal = tmpVal;
 
 		buffer[i] = sinVal;
@@ -198,8 +215,6 @@ void CCWKeyer::createSymbol(float* buffer, unsigned int len)
 
 void CCWKeyer::fillBuffer()
 {
-	wxASSERT(m_cwBuffer != NULL);
-
 	while (m_cwBuffer->freeSpace() > (m_dotLen * DASH_LEN * 3) && m_text.length() > 0) {
 		wxChar c = m_text.GetChar(0);
 
@@ -234,8 +249,72 @@ unsigned int CCWKeyer::calcDotLength(int speed)
 	return (unsigned int)(m_sampleRate * 1.2F / float(speed) + 0.5F);
 }
 
-// We are always active in CW mode
 bool CCWKeyer::isActive() const
 {
-	return true;
+	return m_status == CW_RUNNING;
+}
+
+void CCWKeyer::key(bool keyDown)
+{
+	m_keyDown = keyDown;
+}
+
+void CCWKeyer::processKey()
+{
+	// Generate silence
+	if (!m_keyDown && !m_lastKeyDown) {
+		::memset(m_buffer, 0x00, m_blockSize * 2 * sizeof(float));
+		m_callback->callback(m_buffer, m_blockSize, m_id);
+		return;
+	}
+
+	// Reset the phase if beginning a symbol
+	if (m_keyDown && !m_lastKeyDown) {
+		m_cosValue = 1.0F;
+		m_sinValue = 0.0F;
+	}
+
+	// Generate a continuous tone, phase contiguous with the previous one
+	for (unsigned int i = 0; i < m_blockSize; i++) {
+		float tmpValue = m_cosValue * m_cosDelta - m_sinValue * m_sinDelta;
+		m_sinValue = m_cosValue * m_sinDelta + m_sinValue * m_cosDelta;
+		m_cosValue = tmpValue;
+
+		m_buffer[i * 2 + 0] = m_sinValue;
+		m_buffer[i * 2 + 1] = m_sinValue;
+	}
+
+	// Continuous tone
+	if (m_keyDown && m_lastKeyDown) {
+		m_callback->callback(m_buffer, m_blockSize, m_id);
+		return;
+	}
+
+	// Start of a tone, shape the beginning
+	if (m_keyDown && !m_lastKeyDown) {
+		for (unsigned int i = 0; i < m_defLen; i++) {
+			float ampl = 0.5F * (1.0F + ::cos(M_PI + M_PI * (float(i) / float(m_defLen))));
+
+			m_buffer[i * 2 + 0] *= ampl;
+			m_buffer[i * 2 + 1] *= ampl;
+		}
+
+		m_callback->callback(m_buffer, m_blockSize, m_id);
+		m_lastKeyDown = m_keyDown;
+		return;
+	}
+
+	// The end of a tone, so we transmit just enough to shape it, and then silence
+	for (unsigned int j = 0; j < m_defLen; j++) {
+		float ampl = 0.5F * (1.0F + ::cos(M_PI * (float(j) / float(m_defLen))));
+
+		m_buffer[j * 2 + 0] *= ampl;
+		m_buffer[j * 2 + 1] *= ampl;
+	}
+
+	if (m_defLen < m_blockSize)
+		::memset(m_buffer + m_defLen * 2, 0x00, (m_blockSize - m_defLen) * 2 * sizeof(float));
+
+	m_callback->callback(m_buffer, m_blockSize, m_id);
+	m_lastKeyDown = m_keyDown;
 }

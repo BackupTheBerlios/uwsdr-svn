@@ -21,6 +21,7 @@
 
 #include <wx/wx.h>
 
+#include "UWSDRDefs.h"
 #include "DataReader.h"
 #include "DataCallback.h"
 #include "SoundFileReader.h"
@@ -45,7 +46,7 @@ class CVoiceKeyer : public IDataReader, public IDataCallback {
 
 	virtual void setCallback(IDataCallback* callback, int id);
 
-	virtual void send(const wxString& fileName, int state);
+	virtual void send(const wxString& fileName, VOICESTATUS state);
 	virtual void abort();
 
     protected:
@@ -56,7 +57,7 @@ class CVoiceKeyer : public IDataReader, public IDataCallback {
 	unsigned int      m_blockSize;
 	IDataCallback*    m_callback;
 	int               m_id;
-	int               m_status;
+	VOICESTATUS       m_status;
 	CSoundFileReader* m_file;
 };
 

@@ -14,7 +14,7 @@ UWSDR:		$(OBJS)
 CWKeyboard.o:	CWKeyboard.cpp CWKeyboard.h UWSDRApp.h UWSDRDefs.h
 		$(CC) $(CFLAGS) -c CWKeyboard.cpp
 
-CWKeyer.o:	CWKeyer.cpp CWKeyer.h ../Common/ThreadReader.h UWSDRApp.h ../Common/RingBuffer.h
+CWKeyer.o:	CWKeyer.cpp CWKeyer.h ../Common/ThreadReader.h UWSDRApp.h UWSDRDefs.h ../Common/RingBuffer.h
 		$(CC) $(CFLAGS) -c CWKeyer.cpp
 
 DSPControl.o:	DSPControl.cpp DSPControl.h CWKeyer.h ../Common/DataCallback.h ../Common/DataReader.h \

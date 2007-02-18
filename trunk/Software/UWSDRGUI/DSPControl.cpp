@@ -60,7 +60,6 @@ m_power(0.0F),
 m_mode(MODE_USB),
 m_swap(false),
 m_clockId(-1),
-m_keyDown(false),
 m_rxUnderruns(0U),
 m_rxOverruns(0U),
 m_txUnderruns(0U),
@@ -490,29 +489,29 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 		}
 
 		if (state != m_transmit)
-			;
-//			::wxGetApp().setTransmit(state);
+			::wxGetApp().setTransmit(state);
 	}
 
-	if (m_keyInControl != NULL) {
-		bool state;
+	// Only service the key input when in CW mode
+	if (m_mode == MODE_CWUN || m_mode == MODE_CWUW || m_mode == MODE_CWLN || m_mode == MODE_CWLW) {
+		if (m_keyInControl != NULL) {
+			bool state;
 
-		switch (m_keyInPin) {
-			case IN_RTS_CTS:
-			case IN_DTR_CTS:
-				state = m_keyInControl->getCTS();
-				break;
-			case IN_DTR_DSR:
-			case IN_RTS_DSR:
-				state = m_keyInControl->getDSR();
-				break;
-			default:
-				state = m_keyDown;
-				break;
-		}
-
-		if (state != m_keyDown) {
-			m_keyDown = state;
+			switch (m_keyInPin) {
+				case IN_RTS_CTS:
+				case IN_DTR_CTS:
+					state = m_keyInControl->getCTS();
+					break;
+				case IN_DTR_DSR:
+				case IN_RTS_DSR:
+					state = m_keyInControl->getDSR();
+					break;
+				default:
+					state = false;
+					break;
+			}
+	
+			m_cwKeyer->key(state);
 		}
 	}
 }
@@ -730,7 +729,7 @@ void CDSPControl::sendCW(unsigned int speed, const wxString& text)
 		m_cwKeyer->send(speed, text);
 }
 
-void CDSPControl::sendAudio(const wxString& fileName, int state)
+void CDSPControl::sendAudio(const wxString& fileName, VOICESTATUS state)
 {
 	if (state == VOICE_STOPPED)
 		m_voiceKeyer->abort();

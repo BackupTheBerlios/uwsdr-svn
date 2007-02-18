@@ -94,7 +94,7 @@ class CDSPControl : public wxThread, public IDataCallback {
 	virtual float getRXOffset();
 
 	virtual void sendCW(unsigned int speed, const wxString& text);
-	virtual void sendAudio(const wxString& fileName, int state);
+	virtual void sendAudio(const wxString& fileName, VOICESTATUS state);
 
     private:
 	CDTTSPControl*  m_dttsp;
@@ -133,8 +133,6 @@ class CDSPControl : public wxThread, public IDataCallback {
 	bool            m_swap;
 
 	int             m_clockId;
-
-	bool            m_keyDown;
 
 	unsigned int    m_rxUnderruns;
 	unsigned int    m_rxOverruns;

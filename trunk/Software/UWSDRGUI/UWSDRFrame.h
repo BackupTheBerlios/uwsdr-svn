@@ -68,7 +68,7 @@ class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterf
 	virtual void sdrConnectionLost(int id);
 
 	virtual void sendCW(unsigned int speed, const wxString& text);
-	virtual void sendAudio(const wxString& fileName, int state);
+	virtual void sendAudio(const wxString& fileName, VOICESTATUS state);
 
 	virtual void setTransmit(bool txOn);
 

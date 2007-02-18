@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
 #include "VoiceKeyer.h"
 
 #include "UWSDRApp.h"
-#include "UWSDRDefs.h"
 
 
 CVoiceKeyer::CVoiceKeyer() :
@@ -77,7 +76,8 @@ bool CVoiceKeyer::hasClock()
 
 void CVoiceKeyer::clock()
 {
-	wxASSERT(m_status != VOICE_STOPPED);
+	if (m_status == VOICE_STOPPED)
+		return;
 
 	if (m_file != NULL)
 		m_file->clock();
@@ -89,7 +89,7 @@ void CVoiceKeyer::setCallback(IDataCallback* callback, int id)
 	m_id       = id;
 }
 
-void CVoiceKeyer::send(const wxString& fileName, int status)
+void CVoiceKeyer::send(const wxString& fileName, VOICESTATUS status)
 {
 	wxASSERT(status == VOICE_SINGLE || status == VOICE_CONTINUOUS);
 

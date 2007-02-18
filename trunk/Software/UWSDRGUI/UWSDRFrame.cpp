@@ -231,7 +231,6 @@ CUWSDRFrame::~CUWSDRFrame()
 	delete   m_menu;
 	delete   m_voiceKeyboard;
 	delete   m_cwKeyboard;
-	delete   m_sdr;
 }
 
 void CUWSDRFrame::setParameters(CSDRParameters* parameters)
@@ -1493,7 +1492,7 @@ void CUWSDRFrame::sendCW(unsigned int speed, const wxString& text)
 	m_dsp->sendCW(speed, text);
 }
 
-void CUWSDRFrame::sendAudio(const wxString& fileName, int state)
+void CUWSDRFrame::sendAudio(const wxString& fileName, VOICESTATUS state)
 {
 	// If we're in CW mode, ignore
 	if (m_parameters->m_mode == MODE_CWUW || m_parameters->m_mode == MODE_CWUN || m_parameters->m_mode == MODE_CWLW || m_parameters->m_mode == MODE_CWLN)

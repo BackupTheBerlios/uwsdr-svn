@@ -794,7 +794,7 @@ void CUWSDRApp::sendCW(unsigned int speed, const wxString& text)
 	m_frame->sendCW(speed, text);
 }
 
-void CUWSDRApp::sendAudio(const wxString& fileName, int state)
+void CUWSDRApp::sendAudio(const wxString& fileName, VOICESTATUS state)
 {
 	m_frame->sendAudio(fileName, state);
 }

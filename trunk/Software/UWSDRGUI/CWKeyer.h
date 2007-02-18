@@ -21,6 +21,7 @@
 
 #include <wx/wx.h>
 
+#include "UWSDRDefs.h"
 #include "ThreadReader.h"
 #include "RingBuffer.h"
 
@@ -42,6 +43,8 @@ class CCWKeyer : public CThreadReader {
 	virtual void send(unsigned int speed, const wxString& text);
 	virtual void abort();
 
+	virtual void key(bool keyDown);
+
     protected:
 	virtual ~CCWKeyer();
 
@@ -52,16 +55,25 @@ class CCWKeyer : public CThreadReader {
 	int            m_id;
 	unsigned int   m_dotLen;
 	wxString       m_text;
+	CWSTATUS       m_status;
 	bool           m_stop;
+	bool           m_keyDown;
+	bool           m_lastKeyDown;
 	float*         m_buffer;
 	float*         m_dotBuffer;
 	float*         m_dashBuffer;
 	float*         m_silBuffer;
 	CRingBuffer*   m_cwBuffer;
+	unsigned int   m_defLen;
+	float          m_cosDelta;
+	float          m_sinDelta;
+	float          m_cosValue;
+	float          m_sinValue;
 
 	void         createSymbol(float* buffer, unsigned int len);
 	unsigned int calcDotLength(int speed);
 	void         fillBuffer();
+	void         processKey();
 };
 
 #endif
