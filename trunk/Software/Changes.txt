@@ -341,5 +341,5 @@ Added USB serial devices for Linux in GUISetup.
 
 More text in the log file at startup with details of devices opened.
 
-The PNG images are now semi-transparent, and look better on Linux.
+The PNG, XPM and ICO images are now semi-transparent, and look better.
 

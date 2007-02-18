@@ -1,7 +1,7 @@
 /* XPM */
 static char *GUISetup_xpm[]={
 "32 32 177 2",
-"      c #FFFFFF",
+"      c None",
 " 0    c #A5A5A5",
 " 1    c #585858",
 " 2    c #ADADAD",
