@@ -126,14 +126,14 @@ bool CSerialControl::open()
 
 	m_handle = ::CreateFile(m_dev.mb_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
 	if (m_handle == INVALID_HANDLE_VALUE) {
-		::wxLogError(wxT("Cannot open the serial port - %ld"), ::GetLastError());
+		::wxLogError(wxT("SerialControl: cannot open the serial port - %ld"), ::GetLastError());
 		return false;
 	}
 
 	DCB dcb;
 	if (::GetCommState(m_handle, &dcb) == 0) {
 		::CloseHandle(m_handle);
-		::wxLogError(wxT("Cannot get the serial port status - %ld"), ::GetLastError());
+		::wxLogError(wxT("SerialControl: cannot get the serial port status - %ld"), ::GetLastError());
 		return false;
 	}
 
@@ -144,10 +144,10 @@ bool CSerialControl::open()
 
 	if (::SetCommState(m_handle, &dcb) == 0) {
 		::CloseHandle(m_handle);
-		::wxLogError(wxT("Cannot set the serial port status - %ld"), ::GetLastError());
+		::wxLogError(wxT("SerialControl: cannot set the serial port status - %ld"), ::GetLastError());
 		return false;
 	}
-
+/*
 	bool ret = setRTS(false);
 	if (!ret) {
 		::CloseHandle(m_handle);
@@ -159,7 +159,7 @@ bool CSerialControl::open()
 		::CloseHandle(m_handle);
 		return false;
 	}
-
+*/
 	m_count++;
 
 	Create();
@@ -177,7 +177,7 @@ void* CSerialControl::Entry()
 
 		DWORD status;
 		if (::GetCommModemStatus(m_handle, &status) == 0) {
-			::wxLogError(wxT("Cannot get the serial port status - %ld"), ::GetLastError());
+			::wxLogError(wxT("SerialControl: cannot get the serial port status - %ld"), ::GetLastError());
 		} else {
 			m_cts = (status & MS_CTS_ON) == MS_CTS_ON;
 			m_dsr = (status & MS_DSR_ON) == MS_DSR_ON;
@@ -203,7 +203,7 @@ bool CSerialControl::setRTS(bool set)
 	DWORD rts = (set) ? SETRTS : CLRRTS;
 
 	if (::EscapeCommFunction(m_handle, rts) == 0) {
-		::wxLogError(wxT("Cannot set RTS - %ld"), ::GetLastError());
+		::wxLogError(wxT("SerialControl: cannot set RTS - %ld"), ::GetLastError());
 		return false;
 	}
 
@@ -222,7 +222,7 @@ bool CSerialControl::setDTR(bool set)
 	DWORD dtr = (set) ? SETDTR : CLRDTR;
 
 	if (::EscapeCommFunction(m_handle, dtr) == 0) {
-		::wxLogError(wxT("Cannot set DTR - %ld"), ::GetLastError());
+		::wxLogError(wxT("SerialControl: cannot set DTR - %ld"), ::GetLastError());
 		return false;
 	}
 
@@ -280,16 +280,16 @@ bool CSerialControl::open()
 
 	m_fd = ::open(m_dev.mb_str(), O_RDWR, 0);
 	if (m_fd < 0) {
-		::wxLogError(wxT("Cannot open the serial port - %d, %s"), errno, strerror(errno));
+		::wxLogError(wxT("SerialControl: cannot open the serial port - %d, %s"), errno, strerror(errno));
 		return false;
 	}
 
 	if (::isatty(m_fd) == 0) {
 		::close(m_fd);
-		::wxLogError(wxT("%s is not a serial port"), m_dev.c_str());
+		::wxLogError(wxT("SerialControl: %s is not a serial port"), m_dev.c_str());
 		return false;
 	}
-
+/*
 	bool ret = setRTS(false);
 	if (!ret) {
 		::close(m_fd);
@@ -301,7 +301,7 @@ bool CSerialControl::open()
 		::close(m_fd);
 		return false;
 	}
-
+*/
 	m_count++;
 
 	Create();
@@ -319,7 +319,7 @@ void* CSerialControl::Entry()
 
 		unsigned int y;
 		if (::ioctl(m_fd, TIOCMGET, &y) < 0) {
-			::wxLogError(wxT("Cannot get the serial port status - %d, %s"), errno, strerror(errno));
+			::wxLogError(wxT("SerialControl: cannot get the serial port status - %d, %s"), errno, strerror(errno));
 		} else {
 			m_cts = (y & TIOCM_CTS) == TIOCM_CTS;
 			m_dsr = (y & TIOCM_DSR) == TIOCM_DSR;
@@ -342,7 +342,7 @@ bool CSerialControl::setRTS(bool set)
 
 	unsigned int y;
 	if (::ioctl(m_fd, TIOCMGET, &y) < 0) {
-		::wxLogError(wxT("Cannot get the serial port status - %d, %s"), errno, strerror(errno));
+		::wxLogError(wxT("SerialControl: cannot get the serial port status - %d, %s"), errno, strerror(errno));
 		return false;
 	}
 
@@ -352,7 +352,7 @@ bool CSerialControl::setRTS(bool set)
 		y &= ~TIOCM_RTS;
 
 	if (::ioctl(m_fd, TIOCMSET, &y) < 0) {
-		::wxLogError(wxT("Cannot set the serial port status - %d, %s"), errno, strerror(errno));
+		::wxLogError(wxT("SerialControl: cannot set the serial port status - %d, %s"), errno, strerror(errno));
 		return false;
 	}
 
@@ -370,7 +370,7 @@ bool CSerialControl::setDTR(bool set)
 
 	unsigned int y;
 	if (::ioctl(m_fd, TIOCMGET, &y) < 0) {
-		::wxLogError(wxT("Cannot get the serial port status - %d, %s"), errno, strerror(errno));
+		::wxLogError(wxT("SerialControl: cannot get the serial port status - %d, %s"), errno, strerror(errno));
 		return false;
 	}
 
@@ -380,7 +380,7 @@ bool CSerialControl::setDTR(bool set)
 		y &= ~TIOCM_DTR;
 
 	if (::ioctl(m_fd, TIOCMSET, &y) < 0) {
-		::wxLogError(wxT("Cannot set the serial port status - %d, %s"), errno, strerror(errno));
+		::wxLogError(wxT("SerialControl: cannot set the serial port status - %d, %s"), errno, strerror(errno));
 		return false;
 	}
 

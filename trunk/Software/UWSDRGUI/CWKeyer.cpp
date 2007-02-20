@@ -20,7 +20,7 @@
 
 #include "UWSDRApp.h"
 
-const int DEF_SPEED  = 14;
+const float RC_LEN   = 5.0F;	// The length of the raised cosine in ms
 
 const int DOT_LEN    = 1;
 const int DASH_LEN   = 3;
@@ -70,9 +70,8 @@ bool CCWKeyer::open(float sampleRate, unsigned int blockSize)
 	m_sampleRate = sampleRate;
 	m_blockSize  = blockSize;
 
-	// Calculate the default speed for hand keying
-	unsigned int dotLen = calcDotLength(DEF_SPEED);
-	m_defLen = (dotLen * DOT_LEN) / 10;
+	// Calculate the length of the raised cosine shaping section
+	m_defLen = (unsigned int)(RC_LEN * m_sampleRate / 1000.0F + 0.5F);
 
 	float delta = CW_OFFSET / m_sampleRate * 2.0 * M_PI;
 
@@ -82,7 +81,7 @@ bool CCWKeyer::open(float sampleRate, unsigned int blockSize)
 	m_buffer = new float[m_blockSize * 2];
 
 	// Allocate buffers based on the slowest speed that we handle
-	dotLen = calcDotLength(5);
+	unsigned int dotLen = calcDotLength(5);
 
 	m_dotBuffer   = new float[dotLen * DOT_LEN];
 	m_dashBuffer  = new float[dotLen * DASH_LEN];
@@ -129,7 +128,7 @@ bool CCWKeyer::create()
 		m_stop   = false;
 		m_status = CW_STOPPED;
 
-		::wxGetApp().sendCW(0, wxEmptyString);
+		::wxGetApp().sendCW(CW_END, wxEmptyString);
 
 		return true;
 	}
@@ -202,11 +201,9 @@ void CCWKeyer::createSymbol(float* buffer, unsigned int len)
 		buffer[i] = sinVal;
 	}
 
-	unsigned int l = (m_dotLen * DOT_LEN) / 10;
-
 	// Now shape it
-	for (unsigned int j = 0; j < l; j++) {
-		float ampl = 0.5F * (1.0F + ::cos(M_PI + M_PI * (float(j) / float(l))));
+	for (unsigned int j = 0; j < m_defLen; j++) {
+		float ampl = 0.5F * (1.0F - ::cos(M_PI * (float(j) / float(m_defLen))));
 
 		buffer[j]       *= ampl;
 		buffer[len - j] *= ampl;
@@ -251,7 +248,7 @@ unsigned int CCWKeyer::calcDotLength(int speed)
 
 bool CCWKeyer::isActive() const
 {
-	return m_status == CW_RUNNING;
+	return true;
 }
 
 void CCWKeyer::key(bool keyDown)
@@ -293,7 +290,7 @@ void CCWKeyer::processKey()
 	// Start of a tone, shape the beginning
 	if (m_keyDown && !m_lastKeyDown) {
 		for (unsigned int i = 0; i < m_defLen; i++) {
-			float ampl = 0.5F * (1.0F + ::cos(M_PI + M_PI * (float(i) / float(m_defLen))));
+			float ampl = 0.5F * (1.0F - ::cos(M_PI * (float(i) / float(m_defLen))));
 
 			m_buffer[i * 2 + 0] *= ampl;
 			m_buffer[i * 2 + 1] *= ampl;
@@ -306,7 +303,7 @@ void CCWKeyer::processKey()
 
 	// The end of a tone, so we transmit just enough to shape it, and then silence
 	for (unsigned int j = 0; j < m_defLen; j++) {
-		float ampl = 0.5F * (1.0F + ::cos(M_PI * (float(j) / float(m_defLen))));
+		float ampl = 0.5F * (1.0F - ::cos(M_PI + M_PI * (float(j) / float(m_defLen))));
 
 		m_buffer[j * 2 + 0] *= ampl;
 		m_buffer[j * 2 + 1] *= ampl;

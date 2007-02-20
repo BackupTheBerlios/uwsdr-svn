@@ -134,6 +134,9 @@ class CDSPControl : public wxThread, public IDataCallback {
 
 	int             m_clockId;
 
+	bool            m_lastTXIn;
+	bool            m_lastKeyIn;
+
 	unsigned int    m_rxUnderruns;
 	unsigned int    m_rxOverruns;
 	unsigned int    m_txUnderruns;

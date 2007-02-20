@@ -334,8 +334,8 @@ Fixed the LSB based filter bandwidths, they are now the mirror image of the USB 
 Fixed the sound device problems in GUISetup and in the GUI, now ALSA and DirectSound works.
 
 
-Version 0.7.5 - February 2007
-=============================
+Version 0.8 - February 2007
+===========================
 
 Added USB serial devices for Linux in GUISetup.
 
@@ -343,3 +343,8 @@ More text in the log file at startup with details of devices opened.
 
 The PNG, XPM and ICO images are now semi-transparent, and look better.
 
+Changed the rise and fall times of the CW signal.
+
+The serial port can be used for controlling an external TX (i.e. SoftRock RXTX).
+
+The serial port can be used for an external key and/or external transmit input.

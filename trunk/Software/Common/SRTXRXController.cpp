@@ -31,15 +31,6 @@ m_port(NULL)
 	wxASSERT(pin == RTS || pin == DTR);
 
 	m_port = CSerialControl::getInstance(device);
-
-	switch (pin) {
-		case RTS:
-			m_port->setRTS(false);
-			break;
-		case DTR:
-			m_port->setDTR(false);
-			break;
-	}
 }
 
 CSRTXRXController::~CSRTXRXController()

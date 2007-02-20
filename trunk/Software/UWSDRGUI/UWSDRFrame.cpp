@@ -1487,7 +1487,16 @@ void CUWSDRFrame::sendCW(unsigned int speed, const wxString& text)
 	if (m_parameters->m_mode != MODE_CWUW && m_parameters->m_mode != MODE_CWUN && m_parameters->m_mode != MODE_CWLW && m_parameters->m_mode != MODE_CWLN)
 		return;
 
-	setTransmit(speed != 0U);
+	switch (speed) {
+		case CW_END:
+			setTransmit(false);
+			break;
+		case CW_ABORT:		// A CW_STOP will be sent for this event from the keyer
+			break;
+		default:
+			setTransmit(true);
+			break;
+	}
 
 	m_dsp->sendCW(speed, text);
 }
