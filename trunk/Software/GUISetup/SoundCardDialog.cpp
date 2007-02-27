@@ -31,13 +31,15 @@ BEGIN_EVENT_TABLE(CSoundCardDialog, wxDialog)
 END_EVENT_TABLE()
 
 
-CSoundCardDialog::CSoundCardDialog(wxWindow* parent, const wxString& title, long inDev, long outDev, int id) :
+CSoundCardDialog::CSoundCardDialog(wxWindow* parent, const wxString& title, long inDev, long outDev, unsigned int minIn, unsigned int minOut, int id) :
 wxDialog(parent, id, title),
 m_apiChoice(NULL),
 m_devChoice(NULL),
 m_info(),
 m_inDev(inDev),
-m_outDev(outDev)
+m_outDev(outDev),
+m_minIn(minIn),
+m_minOut(minOut)
 {
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -172,7 +174,7 @@ void CSoundCardDialog::enumerateAudio(const CSoundCardAPI& api)
 	for (unsigned int i = 0U; i < m_info.getDevs().size(); i++) {
 		CSoundCardDev* dev = m_info.getDevs().at(i);
 
-		if (dev->getAPI() == api.getAPI() && dev->getInChannels() >= 2 && dev->getOutChannels() >= 2) {
+		if (dev->getAPI() == api.getAPI() && dev->getInChannels() >= int(m_minIn) && dev->getOutChannels() >= int(m_minOut)) {
 			m_devChoice->Append(dev->getName(), dev);
 
 			if (m_inDev != -1L && m_inDev == dev->getInDev()) {

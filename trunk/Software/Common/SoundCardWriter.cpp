@@ -29,23 +29,27 @@ int scwCallback(const void* WXUNUSED(input), void* output, unsigned long nSample
 }
 
 
-CSoundCardWriter::CSoundCardWriter(int dev) :
+CSoundCardWriter::CSoundCardWriter(int dev, unsigned int channels) :
 m_dev(dev),
+m_channels(channels),
 m_blockSize(0),
 m_stream(NULL),
 m_buffer(NULL),
 m_lastBuffer(NULL),
+m_inBuffer(NULL),
 m_requests(0),
 m_underruns(0),
 m_overruns(0),
 m_enabled(false)
 {
+	wxASSERT(channels == 1U || channels == 2U);
 }
 
 CSoundCardWriter::~CSoundCardWriter()
 {
 	delete   m_buffer;
 	delete[] m_lastBuffer;
+	delete[] m_inBuffer;
 }
 
 bool CSoundCardWriter::open(float sampleRate, unsigned int blockSize)
@@ -53,10 +57,12 @@ bool CSoundCardWriter::open(float sampleRate, unsigned int blockSize)
 	m_blockSize = blockSize;
 	m_enabled   = false;
 
-	m_buffer = new CRingBuffer(blockSize * 5, 2);
+	m_buffer = new CRingBuffer(blockSize * 5U, 2U);
 
-	m_lastBuffer = new float[blockSize * 2];
-	::memset(m_lastBuffer, 0x00, blockSize * 2 * sizeof(float));
+	m_lastBuffer = new float[blockSize * 2U];
+	::memset(m_lastBuffer, 0x00, blockSize * 2U * sizeof(float));
+
+	m_inBuffer = new float[blockSize * 2U];
 
 	PaError error = ::Pa_Initialize();
 	if (error != paNoError) {
@@ -72,7 +78,7 @@ bool CSoundCardWriter::open(float sampleRate, unsigned int blockSize)
 
 	PaStreamParameters params;
 	params.device                    = m_dev;
-	params.channelCount              = 2;
+	params.channelCount              = m_channels;
 	params.sampleFormat              = paFloat32;
 	params.hostApiSpecificStreamInfo = NULL;
 	params.suggestedLatency          = info->defaultLowOutputLatency;
@@ -104,10 +110,19 @@ void CSoundCardWriter::write(const float* buffer, unsigned int nSamples)
 	if (!m_enabled)
 		return;
 
-	if (nSamples == 0)
+	if (nSamples == 0U)
 		return;
 
 	wxASSERT(buffer != NULL);
+
+	if (m_channels == 1U) {
+		for (unsigned int i = 0U; i < nSamples; i++) {
+			m_inBuffer[i * 2U + 0U] = buffer[i];
+			m_inBuffer[i * 2U + 1U] = buffer[i];
+		}
+
+		buffer = m_inBuffer;
+	}
 
 	unsigned int n = m_buffer->addData(buffer, nSamples);
 
@@ -157,7 +172,7 @@ void CSoundCardWriter::enable(bool enable)
 	m_enabled = enable;
 
 	if (!enable)
-		::memset(m_lastBuffer, 0x00, m_blockSize * 2 * sizeof(float));
+		::memset(m_lastBuffer, 0x00, m_blockSize * 2U * sizeof(float));
 }
 
 void CSoundCardWriter::disable()

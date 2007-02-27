@@ -151,7 +151,7 @@ bool CDataControl::setSoundFileReader(const wxString& fileName)
 
 bool CDataControl::openIO()
 {
-	CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_inDev, m_outDev);
+	CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_inDev, m_outDev, 2U, 2U);
 	m_soundCardReader = scrw;
 	m_soundCardWriter = scrw;
 

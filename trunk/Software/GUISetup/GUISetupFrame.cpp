@@ -624,7 +624,7 @@ void CGUISetupFrame::readConfig(const wxString& name)
 
 void CGUISetupFrame::onUserAudio(wxCommandEvent& WXUNUSED(event))
 {
-	CSoundCardDialog dialog(this, _("User Audio Setup"), m_userAudioInDev, m_userAudioOutDev);
+	CSoundCardDialog dialog(this, _("User Audio Setup"), m_userAudioInDev, m_userAudioOutDev, 1U, 2U);
 
 	int ret = dialog.ShowModal();
 	if (ret == wxID_OK) {
@@ -635,7 +635,7 @@ void CGUISetupFrame::onUserAudio(wxCommandEvent& WXUNUSED(event))
 
 void CGUISetupFrame::onSDRAudio(wxCommandEvent& WXUNUSED(event))
 {
-	CSoundCardDialog dialog(this, _("SDR Audio Setup"), m_sdrAudioInDev, m_sdrAudioOutDev);
+	CSoundCardDialog dialog(this, _("SDR Audio Setup"), m_sdrAudioInDev, m_sdrAudioOutDev, 2U, 2U);
 
 	int ret = dialog.ShowModal();
 	if (ret == wxID_OK) {

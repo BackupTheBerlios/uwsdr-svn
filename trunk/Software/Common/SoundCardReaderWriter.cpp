@@ -29,15 +29,19 @@ int scrwCallback(const void* input, void* output, unsigned long nSamples, const 
 }
 
 
-CSoundCardReaderWriter::CSoundCardReaderWriter(int inDev, int outDev) :
+CSoundCardReaderWriter::CSoundCardReaderWriter(int inDev, int outDev, unsigned int inChannels, unsigned int outChannels) :
 m_inDev(inDev),
 m_outDev(outDev),
+m_inChannels(inChannels),
+m_outChannels(outChannels),
 m_blockSize(0),
 m_callback(NULL),
 m_id(0),
 m_stream(NULL),
 m_buffer(NULL),
 m_lastBuffer(NULL),
+m_inBuffer(NULL),
+m_outBuffer(NULL),
 m_requests(0),
 m_underruns(0),
 m_overruns(0),
@@ -45,12 +49,16 @@ m_enabled(false),
 m_opened(0),
 m_active(false)
 {
+	wxASSERT(inChannels == 1U || outChannels == 2U);
+	wxASSERT(outChannels == 1U || outChannels == 2U);
 }
 
 CSoundCardReaderWriter::~CSoundCardReaderWriter()
 {
 	delete   m_buffer;
 	delete[] m_lastBuffer;
+	delete[] m_inBuffer;
+	delete[] m_outBuffer;
 }
 
 void CSoundCardReaderWriter::setCallback(IDataCallback* callback, int id)
@@ -71,10 +79,13 @@ bool CSoundCardReaderWriter::open(float sampleRate, unsigned int blockSize)
 	m_blockSize = blockSize;
 	m_enabled   = false;
 
-	m_buffer = new CRingBuffer(blockSize * 5, 2);
+	m_buffer = new CRingBuffer(blockSize * 5U, 2U);
 
-	m_lastBuffer = new float[blockSize * 2];
-	::memset(m_lastBuffer, 0x00, blockSize * 2 * sizeof(float));
+	m_inBuffer  = new float[blockSize * 2U];
+	m_outBuffer = new float[blockSize * 2U];
+
+	m_lastBuffer = new float[blockSize * 2U];
+	::memset(m_lastBuffer, 0x00, blockSize * 2U * sizeof(float));
 
 	PaError error = ::Pa_Initialize();
 	if (error != paNoError) {
@@ -96,14 +107,14 @@ bool CSoundCardReaderWriter::open(float sampleRate, unsigned int blockSize)
 
 	PaStreamParameters paramsIn;
 	paramsIn.device                    = m_inDev;
-	paramsIn.channelCount              = 2;
+	paramsIn.channelCount              = m_inChannels;
 	paramsIn.sampleFormat              = paFloat32;
 	paramsIn.hostApiSpecificStreamInfo = NULL;
 	paramsIn.suggestedLatency          = inInfo->defaultLowInputLatency;
 
 	PaStreamParameters paramsOut;
 	paramsOut.device                    = m_outDev;
-	paramsOut.channelCount              = 2;
+	paramsOut.channelCount              = m_outChannels;
 	paramsOut.sampleFormat              = paFloat32;
 	paramsOut.hostApiSpecificStreamInfo = NULL;
 	paramsOut.suggestedLatency          = outInfo->defaultLowOutputLatency;
@@ -138,10 +149,19 @@ void CSoundCardReaderWriter::write(const float* buffer, unsigned int nSamples)
 	if (!m_enabled)
 		return;
 
-	if (nSamples == 0)
+	if (nSamples == 0U)
 		return;
 
 	wxASSERT(buffer != NULL);
+
+	if (m_outChannels == 1U) {
+		for (unsigned int i = 0U; i < nSamples; i++) {
+			m_outBuffer[i * 2U + 0U] = buffer[i];
+			m_outBuffer[i * 2U + 1U] = buffer[i];
+		}
+
+		buffer = m_outBuffer;
+	}
 
 	unsigned int n = m_buffer->addData(buffer, nSamples);
 
@@ -157,16 +177,27 @@ int CSoundCardReaderWriter::callback(const void* input, void* output, unsigned l
 
 	m_requests++;
 
-	m_callback->callback((float *)input, nSamples, m_id);
+	float* in = (float*)input;
+
+	if (m_inChannels == 1U) {
+		for (unsigned int i = 0U; i < nSamples; i++) {
+			m_inBuffer[i * 2U + 0U] = in[i];
+			m_inBuffer[i * 2U + 1U] = in[i];
+		}
+
+		in = m_inBuffer;
+	}
+
+	m_callback->callback(in, nSamples, m_id);
 
 	if (m_buffer->dataSpace() >= nSamples) {
 		m_buffer->getData((float*)output, nSamples);
 	} else {
-		::memcpy(output, m_lastBuffer, nSamples * 2 * sizeof(float));
+		::memcpy(output, m_lastBuffer, nSamples * 2U * sizeof(float));
 		m_underruns++;
 	}
 
-	::memcpy(m_lastBuffer, output, nSamples * 2 * sizeof(float));
+	::memcpy(m_lastBuffer, output, nSamples * 2U * sizeof(float));
 	
 	return paContinue;
 }
@@ -178,7 +209,7 @@ int CSoundCardReaderWriter::callback(const void* input, void* output, unsigned l
 void CSoundCardReaderWriter::close()
 {
 	if (!m_active) {
-		if (m_opened == 0) {
+		if (m_opened == 0U) {
 			delete this;
 			return;
 		}

@@ -47,7 +47,8 @@ class CUWSDRPreferences : public wxDialog {
 	wxTextCtrl*     m_minRXFreq;
 	wxTextCtrl*     m_maxTXFreq;
 	wxTextCtrl*     m_minTXFreq;
-	wxTextCtrl*     m_freqShift;
+	wxTextCtrl*     m_freqShift1;
+	wxTextCtrl*     m_freqShift2;
 	wxTextCtrl*     m_freqOffset;
 	wxChoice*       m_deviationFMW;
 	wxChoice*       m_deviationFMN;

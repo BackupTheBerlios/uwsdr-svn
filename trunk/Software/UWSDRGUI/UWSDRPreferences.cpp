@@ -50,7 +50,8 @@ m_maxRXFreq(NULL),
 m_minRXFreq(NULL),
 m_maxTXFreq(NULL),
 m_minTXFreq(NULL),
-m_freqShift(NULL),
+m_freqShift1(NULL),
+m_freqShift2(NULL),
 m_freqOffset(NULL),
 m_deviationFMW(NULL),
 m_deviationFMN(NULL),
@@ -129,8 +130,11 @@ m_swapIQ(NULL)
 	m_maxTXFreq->SetValue(m_parameters->m_maxTransmitFreq.getString(3));
 
 	wxString text;
-	text.Printf(wxT("%u"), m_parameters->m_freqShift / 1000);
-	m_freqShift->SetValue(text);
+	text.Printf(wxT("%u"), m_parameters->m_freqShift1 / 1000);
+	m_freqShift1->SetValue(text);
+
+	text.Printf(wxT("%u"), m_parameters->m_freqShift2 / 1000);
+	m_freqShift2->SetValue(text);
 
 	text.Printf(wxT("%.1lf"), m_parameters->m_freqOffset);
 	m_freqOffset->SetValue(text);
@@ -207,7 +211,8 @@ m_swapIQ(NULL)
 	if (m_parameters->m_hardwareReceiveOnly) {
 		m_minTXFreq->Disable();
 		m_maxTXFreq->Disable();
-		m_freqShift->Disable();
+		m_freqShift1->Disable();
+		m_freqShift2->Disable();
 
 		m_deviationFMW->Disable();
 		m_deviationFMN->Disable();
@@ -306,23 +311,43 @@ void CUWSDRPreferences::onOK(wxCommandEvent& WXUNUSED(event))
 		return;
 	}
 
-	text = m_freqShift->GetValue();
+	text = m_freqShift1->GetValue();
 
 	if (text.IsEmpty()) {
-		::wxMessageBox(_("The shift may not empty."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("Shift 1 may not be empty."), _("uWave SDR Error"), wxICON_ERROR);
 		return;
 	}
 
-	long shift;
-	bool ret = text.ToLong(&shift);
+	long shift1;
+	bool ret = text.ToLong(&shift1);
 
 	if (!ret) {
-		::wxMessageBox(_("The shift is not a valid number."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("Shift 1 is not a valid number."), _("uWave SDR Error"), wxICON_ERROR);
 		return;
 	}
 
-	if (shift < 0L) {
-		::wxMessageBox(_("The Shift may not be negative."), _("uWave SDR Error"), wxICON_ERROR);
+	if (shift1 < 0L) {
+		::wxMessageBox(_("Shift 1 may not be negative."), _("uWave SDR Error"), wxICON_ERROR);
+		return;
+	}
+
+	text = m_freqShift2->GetValue();
+
+	if (text.IsEmpty()) {
+		::wxMessageBox(_("Shift 2 may not be empty."), _("uWave SDR Error"), wxICON_ERROR);
+		return;
+	}
+
+	long shift2;
+	ret = text.ToLong(&shift2);
+
+	if (!ret) {
+		::wxMessageBox(_("Shift 2 is not a valid number."), _("uWave SDR Error"), wxICON_ERROR);
+		return;
+	}
+
+	if (shift2 < 0L) {
+		::wxMessageBox(_("Shift 2 may not be negative."), _("uWave SDR Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -447,7 +472,8 @@ void CUWSDRPreferences::onOK(wxCommandEvent& WXUNUSED(event))
 	m_parameters->m_minTransmitFreq = minTXFreq;
 	m_parameters->m_maxTransmitFreq = maxTXFreq;
 
-	m_parameters->m_freqShift  = shift * 1000;
+	m_parameters->m_freqShift1 = shift1 * 1000U;
+	m_parameters->m_freqShift2 = shift2 * 1000U;
 	m_parameters->m_freqOffset = offset;
 
 	m_parameters->m_deviationFMW = FMDEVIATION(m_deviationFMW->GetSelection());
@@ -556,14 +582,20 @@ wxPanel* CUWSDRPreferences::createFrequencyTab(wxNotebook* noteBook)
 	m_maxTXFreq = new wxTextCtrl(panel, -1);
 	sizer->Add(m_maxTXFreq, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label5 = new wxStaticText(panel, -1, _("Shift (kHz)"));
+	wxStaticText* label5 = new wxStaticText(panel, -1, _("Shift 1 (kHz)"));
 	sizer->Add(label5, 0, wxALL, BORDER_SIZE);
 
-	m_freqShift = new wxTextCtrl(panel, -1);
-	sizer->Add(m_freqShift, 0, wxALL, BORDER_SIZE);
+	m_freqShift1 = new wxTextCtrl(panel, -1);
+	sizer->Add(m_freqShift1, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label6 = new wxStaticText(panel, -1, _("Offset (Hz)"));
+	wxStaticText* label6 = new wxStaticText(panel, -1, _("Shift 2 (kHz)"));
 	sizer->Add(label6, 0, wxALL, BORDER_SIZE);
+
+	m_freqShift2 = new wxTextCtrl(panel, -1);
+	sizer->Add(m_freqShift2, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* label7 = new wxStaticText(panel, -1, _("Offset (Hz)"));
+	sizer->Add(label7, 0, wxALL, BORDER_SIZE);
 
 	m_freqOffset = new wxTextCtrl(panel, -1);
 	sizer->Add(m_freqOffset, 0, wxALL, BORDER_SIZE);

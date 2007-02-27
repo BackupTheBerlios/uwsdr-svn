@@ -29,16 +29,20 @@ int scrCallback(const void* input, void* WXUNUSED(output), unsigned long nSample
 }
 
 
-CSoundCardReader::CSoundCardReader(int dev) :
+CSoundCardReader::CSoundCardReader(int dev, unsigned int channels) :
 m_dev(dev),
+m_channels(channels),
 m_callback(NULL),
 m_id(0),
-m_stream(NULL)
+m_stream(NULL),
+m_buffer(NULL)
 {
+	wxASSERT(channels == 1U || channels == 2U);
 }
 
 CSoundCardReader::~CSoundCardReader()
 {
+	delete[] m_buffer;
 }
 
 void CSoundCardReader::setCallback(IDataCallback* callback, int id)
@@ -52,6 +56,8 @@ void CSoundCardReader::setCallback(IDataCallback* callback, int id)
 bool CSoundCardReader::open(float sampleRate, unsigned int blockSize)
 {
 	wxASSERT(m_callback != NULL);
+
+	m_buffer = new float[blockSize * 2U];
 
 	PaError error = ::Pa_Initialize();
 	if (error != paNoError) {
@@ -67,7 +73,7 @@ bool CSoundCardReader::open(float sampleRate, unsigned int blockSize)
 
 	PaStreamParameters params;
 	params.device                    = m_dev;
-	params.channelCount              = 2;
+	params.channelCount              = m_channels;
 	params.sampleFormat              = paFloat32;
 	params.hostApiSpecificStreamInfo = NULL;
 	params.suggestedLatency          = info->defaultLowInputLatency;
@@ -99,7 +105,18 @@ int CSoundCardReader::callback(const void* input, unsigned long nSamples, const 
 	wxASSERT(m_callback != NULL);
 	wxASSERT(input != NULL);
 
-	m_callback->callback((float *)input, nSamples, m_id);
+	float* in = (float*)input;
+
+	if (m_channels == 1U) {
+		for (unsigned int i = 0U; i < nSamples; i++) {
+			m_buffer[i * 2U + 0U] = in[i];
+			m_buffer[i * 2U + 1U] = in[i];
+		}
+
+		in = m_buffer;
+	}
+
+	m_callback->callback(in, nSamples, m_id);
 
 	return paContinue;
 }

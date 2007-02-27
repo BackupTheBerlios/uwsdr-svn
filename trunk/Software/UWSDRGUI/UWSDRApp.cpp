@@ -36,7 +36,8 @@ const wxString KEY_VFO_A              = wxT("/VfoA");
 const wxString KEY_VFO_B              = wxT("/VfoB");
 const wxString KEY_VFO_C              = wxT("/VfoC");
 const wxString KEY_VFO_D              = wxT("/VfoD");
-const wxString KEY_FREQ_SHIFT         = wxT("/FreqShift");
+const wxString KEY_FREQ_SHIFT1        = wxT("/FreqShift1");
+const wxString KEY_FREQ_SHIFT2        = wxT("/FreqShift2");
 const wxString KEY_FREQ_OFFSET        = wxT("/FreqOffset");
 const wxString KEY_VFO_CHOICE         = wxT("/VfoChoice");
 const wxString KEY_VFO_SPLIT_SHIFT    = wxT("/VfoSplitShift");
@@ -293,7 +294,8 @@ bool CUWSDRApp::readConfig()
 	wxString keyVfoB            = wxT("/") + m_parameters->m_name + KEY_VFO_B;
 	wxString keyVfoC            = wxT("/") + m_parameters->m_name + KEY_VFO_C;
 	wxString keyVfoD            = wxT("/") + m_parameters->m_name + KEY_VFO_D;
-	wxString keyFreqShift       = wxT("/") + m_parameters->m_name + KEY_FREQ_SHIFT;
+	wxString keyFreqShift1      = wxT("/") + m_parameters->m_name + KEY_FREQ_SHIFT1;
+	wxString keyFreqShift2      = wxT("/") + m_parameters->m_name + KEY_FREQ_SHIFT2;
 	wxString keyFreqOffset      = wxT("/") + m_parameters->m_name + KEY_FREQ_OFFSET;
 	wxString keyVfoChoice       = wxT("/") + m_parameters->m_name + KEY_VFO_CHOICE;
 	wxString keyVfoSplitShift   = wxT("/") + m_parameters->m_name + KEY_VFO_SPLIT_SHIFT;
@@ -427,8 +429,11 @@ bool CUWSDRApp::readConfig()
 	m_parameters->m_vfoD.setFrequency(freq);
 
 	long num;
-	profile->Read(keyFreqShift,        &num, 0L);
-	m_parameters->m_freqShift = num;
+	profile->Read(keyFreqShift1,       &num, 0L);
+	m_parameters->m_freqShift1 = num;
+
+	profile->Read(keyFreqShift2,       &num, 0L);
+	m_parameters->m_freqShift2 = num;
 
 	profile->Read(keyFreqOffset,       &m_parameters->m_freqOffset, 0.0);
 
@@ -613,7 +618,8 @@ void CUWSDRApp::writeConfig()
 	wxString keyVfoB          = wxT("/") + m_parameters->m_name + KEY_VFO_B;
 	wxString keyVfoC          = wxT("/") + m_parameters->m_name + KEY_VFO_C;
 	wxString keyVfoD          = wxT("/") + m_parameters->m_name + KEY_VFO_D;
-	wxString keyFreqShift     = wxT("/") + m_parameters->m_name + KEY_FREQ_SHIFT;
+	wxString keyFreqShift1    = wxT("/") + m_parameters->m_name + KEY_FREQ_SHIFT1;
+	wxString keyFreqShift2    = wxT("/") + m_parameters->m_name + KEY_FREQ_SHIFT2;
 	wxString keyFreqOffset    = wxT("/") + m_parameters->m_name + KEY_FREQ_OFFSET;
 	wxString keyVfoChoice     = wxT("/") + m_parameters->m_name + KEY_VFO_CHOICE;
 	wxString keyVfoSplitShift = wxT("/") + m_parameters->m_name + KEY_VFO_SPLIT_SHIFT;
@@ -707,7 +713,8 @@ void CUWSDRApp::writeConfig()
 	profile->Write(keyVfoB,             m_parameters->m_vfoB.getString());
 	profile->Write(keyVfoC,             m_parameters->m_vfoC.getString());
 	profile->Write(keyVfoD,             m_parameters->m_vfoD.getString());
-	profile->Write(keyFreqShift,        int(m_parameters->m_freqShift));
+	profile->Write(keyFreqShift1,       int(m_parameters->m_freqShift1));
+	profile->Write(keyFreqShift2,       int(m_parameters->m_freqShift2));
 	profile->Write(keyFreqOffset,       m_parameters->m_freqOffset);
 	profile->Write(keyVfoChoice,        m_parameters->m_vfoChoice);
 	profile->Write(keyVfoSplitShift,    m_parameters->m_vfoSplitShift);

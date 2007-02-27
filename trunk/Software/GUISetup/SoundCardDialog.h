@@ -26,7 +26,7 @@
 class CSoundCardDialog : public wxDialog {
 
     public:
-	CSoundCardDialog(wxWindow* parent, const wxString& title, long inDev, long outDev, int id = -1);
+	CSoundCardDialog(wxWindow* parent, const wxString& title, long inDev, long outDev, unsigned int minIn, unsigned int minOut, int id = -1);
 	virtual ~CSoundCardDialog();
 
 	void onAPI(wxCommandEvent& event);
@@ -41,6 +41,8 @@ class CSoundCardDialog : public wxDialog {
 	CSoundCardInfo m_info;
 	long           m_inDev;
 	long           m_outDev;
+	unsigned int   m_minIn;
+	unsigned int   m_minOut;
 
 	DECLARE_EVENT_TABLE()
 

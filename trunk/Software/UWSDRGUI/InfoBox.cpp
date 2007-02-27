@@ -125,8 +125,10 @@ void CInfoBox::setSplitShift(int splitShift)
 	memoryDC.SetTextForeground(wxColour(0, 64, 64));
 
 	memoryDC.DrawText(wxT("SPLIT"), 5, m_height / 2 + 2);
-	memoryDC.DrawText(wxT("SHIFT -"), 5, m_height / 2 + 2);
-	memoryDC.DrawText(wxT("SHIFT +"), 5, m_height / 2 + 2);
+	memoryDC.DrawText(wxT("SHIFT 1 -"), 5, m_height / 2 + 2);
+	memoryDC.DrawText(wxT("SHIFT 1 +"), 5, m_height / 2 + 2);
+	memoryDC.DrawText(wxT("SHIFT 2 -"), 5, m_height / 2 + 2);
+	memoryDC.DrawText(wxT("SHIFT 2 +"), 5, m_height / 2 + 2);
 
 	memoryDC.SetTextForeground(wxColour(0, 255, 255));
 
@@ -136,11 +138,17 @@ void CInfoBox::setSplitShift(int splitShift)
 		case VFO_SPLIT:
 			memoryDC.DrawText(wxT("SPLIT"), 5, m_height / 2 + 2);
 			break;
-		case VFO_SHIFT_1:
-			memoryDC.DrawText(wxT("SHIFT -"), 5, m_height / 2 + 2);
+		case VFO_SHIFT1_PLUS:
+			memoryDC.DrawText(wxT("SHIFT 1 +"), 5, m_height / 2 + 2);
 			break;
-		case VFO_SHIFT_2:
-			memoryDC.DrawText(wxT("SHIFT +"), 5, m_height / 2 + 2);
+		case VFO_SHIFT1_MINUS:
+			memoryDC.DrawText(wxT("SHIFT 1 -"), 5, m_height / 2 + 2);
+			break;
+		case VFO_SHIFT2_PLUS:
+			memoryDC.DrawText(wxT("SHIFT 2 +"), 5, m_height / 2 + 2);
+			break;
+		case VFO_SHIFT2_MINUS:
+			memoryDC.DrawText(wxT("SHIFT 2 -"), 5, m_height / 2 + 2);
 			break;
 	}
 

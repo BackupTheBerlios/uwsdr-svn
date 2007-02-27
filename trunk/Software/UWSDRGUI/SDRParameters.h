@@ -50,7 +50,8 @@ class CSDRParameters {
 	CFrequency    m_vfoB;
 	CFrequency    m_vfoC;
 	CFrequency    m_vfoD;
-	unsigned int  m_freqShift;
+	unsigned int  m_freqShift1;
+	unsigned int  m_freqShift2;
 	double        m_freqOffset;
 	VFOCHOICE     m_vfoChoice;
 	VFOMODE       m_vfoSplitShift;

@@ -334,8 +334,8 @@ Fixed the LSB based filter bandwidths, they are now the mirror image of the USB 
 Fixed the sound device problems in GUISetup and in the GUI, now ALSA and DirectSound works.
 
 
-Version 0.8 - February 2007
-===========================
+Version 0.8 - March 2007
+========================
 
 Added USB serial devices for Linux in GUISetup.
 
@@ -348,3 +348,7 @@ Changed the rise and fall times of the CW signal.
 The serial port can be used for controlling an external TX (i.e. SoftRock RXTX).
 
 The serial port can be used for an external key and/or external transmit input.
+
+Added a second shift so that multiple repeater shifts can easily be accomodated.
+
+Open the microphone with one channel and double it, this means that GUISetup can see more devices under ALSA.

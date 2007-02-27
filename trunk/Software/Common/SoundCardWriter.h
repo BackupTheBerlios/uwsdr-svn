@@ -34,7 +34,7 @@ extern "C" {
 
 class CSoundCardWriter : public IDataWriter {
     public:
-	CSoundCardWriter(int dev);
+	CSoundCardWriter(int dev, unsigned int channels);
 
 	virtual bool open(float sampleRate, unsigned int blockSize);
 	virtual void write(const float* buffer, unsigned int nSamples);
@@ -50,10 +50,12 @@ class CSoundCardWriter : public IDataWriter {
 
     private:
 	int          m_dev;
+	unsigned int m_channels;
 	unsigned int m_blockSize;
 	PaStream*    m_stream;
 	CRingBuffer* m_buffer;
 	float*       m_lastBuffer;
+	float*       m_inBuffer;
 	unsigned int m_requests;
 	unsigned int m_underruns;
 	unsigned int m_overruns;

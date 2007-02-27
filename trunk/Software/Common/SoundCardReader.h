@@ -33,7 +33,7 @@ extern "C" {
 
 class CSoundCardReader : public IDataReader {
     public:
-	CSoundCardReader(int dev);
+	CSoundCardReader(int dev, unsigned int channels);
 
 	virtual void setCallback(IDataCallback* callback, int id);
 
@@ -52,9 +52,11 @@ class CSoundCardReader : public IDataReader {
 
     private:
 	int            m_dev;
+	unsigned int   m_channels;
 	IDataCallback* m_callback;
 	int            m_id;
 	PaStream*      m_stream;
+	float*         m_buffer;
 };
 
 #endif

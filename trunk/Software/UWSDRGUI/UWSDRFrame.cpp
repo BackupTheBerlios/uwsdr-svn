@@ -288,22 +288,22 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 			// If the same API and device is used for both, then use the shared sound card input/output driver.
 			if (m_parameters->m_sdrAudioInDev == m_parameters->m_userAudioInDev) {
-				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_sdrAudioInDev, m_parameters->m_userAudioOutDev);
+				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_sdrAudioInDev, m_parameters->m_userAudioOutDev, 2U, 2U);
 				m_dsp->setRXReader(scrw);
 				m_dsp->setRXWriter(scrw);
 			} else {
-				m_dsp->setRXReader(new CSoundCardReader(m_parameters->m_sdrAudioInDev));
-				m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_userAudioOutDev));
+				m_dsp->setRXReader(new CSoundCardReader(m_parameters->m_sdrAudioInDev, 2U));
+				m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_userAudioOutDev, 2U));
 			}
 			break;
 
 		case TYPE_AUDIOTXRX: {
 				// TX and RX are from audio cards for signal input and audio output, also simple TX/RX control
-				CSoundCardReaderWriter* scrw1 = new CSoundCardReaderWriter(m_parameters->m_sdrAudioInDev, m_parameters->m_sdrAudioOutDev);
+				CSoundCardReaderWriter* scrw1 = new CSoundCardReaderWriter(m_parameters->m_sdrAudioInDev, m_parameters->m_sdrAudioOutDev, 2U, 2U);
 				m_dsp->setRXReader(scrw1);
 				m_dsp->setTXWriter(scrw1);
 
-				CSoundCardReaderWriter* scrw2 = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev);
+				CSoundCardReaderWriter* scrw2 = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 1U, 2U);
 				m_dsp->setTXReader(scrw2);
 				m_dsp->setRXWriter(scrw2);
 			}
@@ -311,7 +311,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 		case TYPE_DEMO: {
 				// A self contained variant for demo's and testing
-				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev);
+				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 1U, 2U);
 
 				m_dsp->setTXReader(new CThreeToneReader(500.0F, 1500.0F, 2000.0F, 0.25F, scrw));
 				m_dsp->setRXWriter(scrw);
@@ -322,7 +322,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			break;
 
 		case TYPE_UWSDR1: {
-				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev);
+				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 1U, 2U);
 				m_dsp->setRXWriter(scrw);
 #if defined(TOBIAS)
 				// UDP in/out with audio on loudspeaker and two-tone audio on transmit
@@ -489,10 +489,10 @@ wxSizer* CUWSDRFrame::createVFOButtons(wxWindow* window)
 	m_split = new wxButton(window, VFO_SPLIT_BUTTON, _("SPLIT"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
 	grid->Add(m_split);
 
-	m_shift1 = new wxButton(window, VFO_SHIFT1_BUTTON, _("SHIFT -"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
+	m_shift1 = new wxButton(window, VFO_SHIFT1_BUTTON, _("SHIFT 1"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
 	grid->Add(m_shift1);
 
-	m_shift2 = new wxButton(window, VFO_SHIFT2_BUTTON, _("SHIFT +"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
+	m_shift2 = new wxButton(window, VFO_SHIFT2_BUTTON, _("SHIFT 2"), wxDefaultPosition, wxSize(FREQDIAL_WIDTH / 2, BUTTON_HEIGHT));
 	grid->Add(m_shift2);
 
 	grid->SetSizeHints(window);
@@ -848,17 +848,31 @@ void CUWSDRFrame::onVFOButton(wxCommandEvent& event)
 			m_infoBox->setSplitShift(m_parameters->m_vfoSplitShift);
 			break;
 		case VFO_SHIFT1_BUTTON:
-			if (m_parameters->m_vfoSplitShift == VFO_SHIFT_1)
-				m_parameters->m_vfoSplitShift = VFO_NONE;
-			else
-				m_parameters->m_vfoSplitShift = VFO_SHIFT_1;
+			switch (m_parameters->m_vfoSplitShift) {
+				case VFO_SHIFT1_PLUS:
+					m_parameters->m_vfoSplitShift = VFO_SHIFT1_MINUS;
+					break;
+				case VFO_SHIFT1_MINUS:
+					m_parameters->m_vfoSplitShift = VFO_NONE;
+					break;
+				default:
+					m_parameters->m_vfoSplitShift = VFO_SHIFT1_PLUS;
+					break;
+			}
 			m_infoBox->setSplitShift(m_parameters->m_vfoSplitShift);
 			break;
 		case VFO_SHIFT2_BUTTON:
-			if (m_parameters->m_vfoSplitShift == VFO_SHIFT_2)
-				m_parameters->m_vfoSplitShift = VFO_NONE;
-			else
-				m_parameters->m_vfoSplitShift = VFO_SHIFT_2;
+			switch (m_parameters->m_vfoSplitShift) {
+				case VFO_SHIFT2_PLUS:
+					m_parameters->m_vfoSplitShift = VFO_SHIFT2_MINUS;
+					break;
+				case VFO_SHIFT2_MINUS:
+					m_parameters->m_vfoSplitShift = VFO_NONE;
+					break;
+				default:
+					m_parameters->m_vfoSplitShift = VFO_SHIFT2_PLUS;
+					break;
+			}
 			m_infoBox->setSplitShift(m_parameters->m_vfoSplitShift);
 			break;
 	}
@@ -969,22 +983,41 @@ bool CUWSDRFrame::normaliseTransmit(bool txOn)
 		else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SPLIT)
 			freq = m_parameters->m_vfoC;
 
-		else if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SHIFT_1)
-			freq = m_parameters->m_vfoA - m_parameters->m_freqShift;
-		else if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SHIFT_2)
-			freq = m_parameters->m_vfoA + m_parameters->m_freqShift;
-		else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SHIFT_1)
-			freq = m_parameters->m_vfoB - m_parameters->m_freqShift;
-		else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SHIFT_2)
-			freq = m_parameters->m_vfoB + m_parameters->m_freqShift;
-		else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SHIFT_1)
-			freq = m_parameters->m_vfoC - m_parameters->m_freqShift;
-		else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SHIFT_2)
-			freq = m_parameters->m_vfoC + m_parameters->m_freqShift;
-		else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SHIFT_1)
-			freq = m_parameters->m_vfoD - m_parameters->m_freqShift;
-		else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SHIFT_2)
-			freq = m_parameters->m_vfoD + m_parameters->m_freqShift;
+		else if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SHIFT1_MINUS)
+			freq = m_parameters->m_vfoA - m_parameters->m_freqShift1;
+		else if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SHIFT1_PLUS)
+			freq = m_parameters->m_vfoA + m_parameters->m_freqShift1;
+		else if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SHIFT2_MINUS)
+			freq = m_parameters->m_vfoA - m_parameters->m_freqShift2;
+		else if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SHIFT2_PLUS)
+			freq = m_parameters->m_vfoA + m_parameters->m_freqShift2;
+
+		else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SHIFT1_MINUS)
+			freq = m_parameters->m_vfoB - m_parameters->m_freqShift1;
+		else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SHIFT1_PLUS)
+			freq = m_parameters->m_vfoB + m_parameters->m_freqShift1;
+		else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SHIFT2_MINUS)
+			freq = m_parameters->m_vfoB - m_parameters->m_freqShift2;
+		else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SHIFT2_PLUS)
+			freq = m_parameters->m_vfoB + m_parameters->m_freqShift2;
+
+		else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SHIFT1_MINUS)
+			freq = m_parameters->m_vfoC - m_parameters->m_freqShift1;
+		else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SHIFT1_PLUS)
+			freq = m_parameters->m_vfoC + m_parameters->m_freqShift1;
+		else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SHIFT2_MINUS)
+			freq = m_parameters->m_vfoC - m_parameters->m_freqShift2;
+		else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SHIFT2_PLUS)
+			freq = m_parameters->m_vfoC + m_parameters->m_freqShift2;
+
+		else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SHIFT1_MINUS)
+			freq = m_parameters->m_vfoD - m_parameters->m_freqShift1;
+		else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SHIFT1_PLUS)
+			freq = m_parameters->m_vfoD + m_parameters->m_freqShift1;
+		else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SHIFT2_MINUS)
+			freq = m_parameters->m_vfoD - m_parameters->m_freqShift2;
+		else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SHIFT2_PLUS)
+			freq = m_parameters->m_vfoD + m_parameters->m_freqShift2;
 
 		if (freq >= m_parameters->m_maxTransmitFreq || freq < m_parameters->m_minTransmitFreq) {
 			::wxBell();
@@ -1023,31 +1056,13 @@ void CUWSDRFrame::normaliseFreq()
 
 	CFrequency freq;
 
-	if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_NONE)
+	if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift != VFO_SPLIT)
 		freq = m_parameters->m_vfoA;
-	else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_NONE)
+	else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift != VFO_SPLIT)
 		freq = m_parameters->m_vfoB;
-	else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_NONE)
+	else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift != VFO_SPLIT)
 		freq = m_parameters->m_vfoC;
-	else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_NONE)
-		freq = m_parameters->m_vfoD;
-
-	else if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SHIFT_1)
-		freq = m_parameters->m_vfoA;
-	else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SHIFT_1)
-		freq = m_parameters->m_vfoB;
-	else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SHIFT_1)
-		freq = m_parameters->m_vfoC;
-	else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SHIFT_1)
-		freq = m_parameters->m_vfoD;
-
-	else if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SHIFT_2)
-		freq = m_parameters->m_vfoA;
-	else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SHIFT_2)
-		freq = m_parameters->m_vfoB;
-	else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SHIFT_2)
-		freq = m_parameters->m_vfoC;
-	else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SHIFT_2)
+	else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift != VFO_SPLIT)
 		freq = m_parameters->m_vfoD;
 
 	else if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn == 0U)
@@ -1068,10 +1083,24 @@ void CUWSDRFrame::normaliseFreq()
 	else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn > 0U)
 		freq = m_parameters->m_vfoC;
 
-	if (m_txOn > 0U && m_parameters->m_vfoSplitShift == VFO_SHIFT_1)
-		freq -= m_parameters->m_freqShift;
-	if (m_txOn > 0U && m_parameters->m_vfoSplitShift == VFO_SHIFT_2)
-		freq += m_parameters->m_freqShift;
+	if (m_txOn > 0U) {
+		switch (m_parameters->m_vfoSplitShift) {
+			case VFO_SHIFT1_MINUS:
+				freq -= m_parameters->m_freqShift1;
+				break;
+			case VFO_SHIFT1_PLUS:
+				freq += m_parameters->m_freqShift1;
+				break;
+			case VFO_SHIFT2_MINUS:
+				freq -= m_parameters->m_freqShift2;
+				break;
+			case VFO_SHIFT2_PLUS:
+				freq += m_parameters->m_freqShift2;
+				break;
+			default:
+				break;
+		}
+	}
 
 	// Set the RIT
 	if (m_parameters->m_ritOn && m_txOn == 0U)
