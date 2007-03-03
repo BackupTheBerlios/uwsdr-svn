@@ -42,13 +42,11 @@ class CGUISetupFrame : public wxFrame {
 	wxComboBox*    m_name;
 	wxTextCtrl*    m_filenameText;
 	wxCheckBox*    m_startMenu;
+	wxCheckBox*    m_deskTop;
 	wxButton*      m_userAudio;
 	wxButton*      m_sdrAudio;
 	wxButton*      m_ethernet;
 	wxButton*      m_port;
-#if defined(__WXMSW__)
-	wxCheckBox*    m_deskTop;
-#endif
 	wxString       m_filename;
 	SDRTYPE        m_sdrType;
 	long           m_userAudioInDev;
@@ -71,10 +69,11 @@ class CGUISetupFrame : public wxFrame {
 
 	void enumerateConfigs();
 	void readConfig(const wxString& name);
-	void writeStartMenu(const wxString& name, const wxString& instDir);
 #if defined(__WXMSW__)
+	void writeStartMenu(const wxString& name, const wxString& instDir);
+#endif
 	void writeDeskTop(const wxString& name, const wxString& instDir);
-#elif defined(__WXGTK__)
+#if defined(__WXGTK__)
 	bool getMenuDir(wxString& dir) const;
 	bool getDesktopDir(wxString& dir) const;
 #endif

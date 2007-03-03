@@ -228,7 +228,7 @@ void CSDREmulatorWriter::writePacket()
 		}
 
 		if (ret != int(len)) {
-			::wxLogError(wxT("SDREmulatorWriter: Error only wrote %d of %lu bytes to the datagram socket"), ret, len);
+			::wxLogError(wxT("SDREmulatorWriter: Error only wrote %d of %u bytes to the datagram socket"), ret, len);
 			return;
 		}
 

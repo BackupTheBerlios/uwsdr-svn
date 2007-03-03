@@ -1,4 +1,4 @@
-	/*
+/*
  *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -226,7 +226,7 @@ void CSDRDataWriter::writePacket()
 		}
 
 		if (ret != int(len)) {
-			::wxLogError(wxT("SDRDataWriter: Error only wrote %ld of %u bytes to the datagram socket"), ret, len);
+			::wxLogError(wxT("SDRDataWriter: Error only wrote %d of %u bytes to the datagram socket"), ret, len);
 			return;
 		}
 

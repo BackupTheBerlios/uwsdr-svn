@@ -89,6 +89,7 @@ wxFrame(NULL, -1, wxString(_("uWave SDR GUI Setup")), wxDefaultPosition, wxDefau
 m_name(NULL),
 m_filenameText(NULL),
 m_startMenu(NULL),
+m_deskTop(NULL),
 m_userAudio(NULL),
 m_sdrAudio(NULL),
 m_ethernet(NULL),
@@ -194,7 +195,6 @@ m_txOutPin(OUT_NONE)
 #endif
 
 #if defined(__WXGTK__)
-	wxString dir;
 	if (getDesktopDir(dir)) {
 #endif
 		wxStaticText* label8 = new wxStaticText(panel, -1, _("Create Desktop icon:"));
@@ -825,7 +825,7 @@ void CGUISetupFrame::writeDeskTop(const wxString& name, const wxString& dir)
 
 #elif defined(__WXGTK__)
 
-void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
+void CGUISetupFrame::writeDeskTop(const wxString& name, const wxString& dir)
 {
 	wxString fileName;
 	fileName.Printf(wxT("%s/%s"), DATA_DIR, UWSDR_FILE.c_str());
