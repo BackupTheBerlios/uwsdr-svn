@@ -23,7 +23,6 @@
 
 #include "UWSDRDefs.h"
 #include "ThreadReader.h"
-#include "RingBuffer.h"
 
 class CCWKeyer : public CThreadReader {
 
@@ -33,8 +32,6 @@ class CCWKeyer : public CThreadReader {
 	virtual bool open(float sampleRate, unsigned int blockSize);
 
 	virtual bool create();
-
-	virtual void close();
 
 	virtual bool isActive() const;
 
@@ -53,27 +50,21 @@ class CCWKeyer : public CThreadReader {
 	unsigned int   m_blockSize;
 	IDataCallback* m_callback;
 	int            m_id;
-	unsigned int   m_dotLen;
-	wxString       m_text;
-	CWSTATUS       m_status;
-	bool           m_stop;
-	bool           m_keyDown;
-	bool           m_lastKeyDown;
+	bool*          m_bits;
+	unsigned int   m_bitsLen;
+	unsigned int   m_bitsIndex;
+	bool           m_key;
+	bool           m_lastKey;
 	float*         m_buffer;
-	float*         m_dotBuffer;
-	float*         m_dashBuffer;
-	float*         m_silBuffer;
-	CRingBuffer*   m_cwBuffer;
 	unsigned int   m_defLen;
 	float          m_cosDelta;
 	float          m_sinDelta;
 	float          m_cosValue;
 	float          m_sinValue;
 
-	void         createSymbol(float* buffer, unsigned int len);
-	unsigned int calcDotLength(int speed);
-	void         fillBuffer();
-	void         processKey();
+	unsigned int speedToUnits(unsigned int speed);
+	void         processKey(bool key);
+	void         end();
 };
 
 #endif

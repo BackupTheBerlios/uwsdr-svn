@@ -35,17 +35,12 @@ m_sampleRate(0.0F),
 m_blockSize(0U),
 m_callback(NULL),
 m_id(0),
-m_dotLen(0U),
-m_text(),
-m_status(CW_STOPPED),
-m_stop(false),
-m_keyDown(false),
-m_lastKeyDown(false),
+m_bits(NULL),
+m_bitsLen(0U),
+m_bitsIndex(0U),
+m_key(false),
+m_lastKey(false),
 m_buffer(NULL),
-m_dotBuffer(NULL),
-m_dashBuffer(NULL),
-m_silBuffer(NULL),
-m_cwBuffer(NULL),
 m_defLen(0U),
 m_cosDelta(0.0F),
 m_sinDelta(0.0F),
@@ -56,11 +51,8 @@ m_sinValue(0.0F)
 
 CCWKeyer::~CCWKeyer()
 {
+	delete[] m_bits;
 	delete[] m_buffer;
-	delete[] m_dotBuffer;
-	delete[] m_dashBuffer;
-	delete[] m_silBuffer;
-	delete   m_cwBuffer;
 }
 
 bool CCWKeyer::open(float sampleRate, unsigned int blockSize)
@@ -78,33 +70,14 @@ bool CCWKeyer::open(float sampleRate, unsigned int blockSize)
 	m_cosDelta = ::cos(delta);
 	m_sinDelta = ::sin(delta);
 
-	m_buffer = new float[m_blockSize * 2];
-
-	// Allocate buffers based on the slowest speed that we handle
-	unsigned int dotLen = calcDotLength(5);
-
-	m_dotBuffer   = new float[dotLen * DOT_LEN];
-	m_dashBuffer  = new float[dotLen * DASH_LEN];
-	m_silBuffer   = new float[dotLen * DOT_LEN];
-
-	::memset(m_silBuffer, 0x00, dotLen * DOT_LEN * sizeof(float));
-
-	m_cwBuffer = new CRingBuffer(dotLen * 10, 1);
+	m_buffer = new float[m_blockSize * 2U];
 
 	return CThreadReader::open(sampleRate, blockSize);
 }
 
-void CCWKeyer::close()
-{
-	m_status = CW_STOPPED;
-
-	CThreadReader::close();
-}
-
 void CCWKeyer::abort()
 {
-	if (m_status != CW_STOPPED)
-		m_stop = true;
+	end();
 }
 
 /*
@@ -113,43 +86,28 @@ void CCWKeyer::abort()
  */
 bool CCWKeyer::create()
 {
-	wxASSERT(m_callback != NULL);
-
-	if (m_status != CW_RUNNING) {
-		processKey();
+	// Key pressed when transmitting from the CW keyboard, abort
+	if (m_key && m_bitsLen > 0U) {
+		end();
 		return true;
 	}
 
-	// Aborted or end of transmission
-	if (m_stop || (m_cwBuffer->dataSpace() == 0 && m_text.length() == 0)) {
-		::memset(m_buffer, 0x00, m_blockSize * 2 * sizeof(float));
-		m_callback->callback(m_buffer, m_blockSize, m_id);
+	// Sending a message from the keyboard
+	if (m_bitsLen > 0U) {
+		// End of the message ?
+		if (m_bitsIndex == m_bitsLen) {
+			end();
+			return true;
+		}
 
-		m_stop   = false;
-		m_status = CW_STOPPED;
-
-		::wxGetApp().sendCW(CW_END, wxEmptyString);
-
+		// Send the next unit, from the bit array
+		bool key = m_bits[m_bitsIndex++];
+		processKey(key);
 		return true;
 	}
 
-	if (m_cwBuffer->dataSpace() < m_blockSize)
-		fillBuffer();
-
-	for (unsigned int i = 0; i < m_blockSize; i++) {
-		float f;
-		unsigned int n = m_cwBuffer->getData(&f, 1);
-
-		// No more data, so fill with silence
-		if (n == 0)
-			f = 0.0F;
-
-		m_buffer[i * 2 + 0] = f;
-		m_buffer[i * 2 + 1] = f;
-	}
-
-	m_callback->callback(m_buffer, m_blockSize, m_id);
-
+	// Use the status of the real key
+	processKey(m_key);
 	return true;
 }
 
@@ -160,90 +118,83 @@ void CCWKeyer::setCallback(IDataCallback* callback, int id)
 }
 
 /*
- * Set the speed in WPM and generate the dot length in samples as well as the
- * dot and dash samples.
+ * Set the speed in WPM and generate a bit map of the individual blocks with
+ * carrier (or not) entries.
  */
 void CCWKeyer::send(unsigned int speed, const wxString& text)
 {
 	wxASSERT(speed >= 5 && speed <= 30);
 
-	m_dotLen = calcDotLength(speed);
+	unsigned int textLen = text.Length();
 
-	createSymbol(m_dotBuffer,  m_dotLen * DOT_LEN);
-	createSymbol(m_dashBuffer, m_dotLen * DASH_LEN);
-
-	if (text.length() == 0)
+	if (textLen == 0U)
 		return;
 
-	m_cwBuffer->clear();
+	unsigned int mult = speedToUnits(speed);
 
-	m_status = CW_RUNNING;
-	m_stop   = false;
-	m_text   = text;
-}
+	// Quick and dirty maximum length calculation
+	unsigned int bitsLen = textLen * 4U * mult;
 
-/*
- * Create a sine wave of the correct tone of the desired length and shape it with
- * a raised cosine to minimise key clicks.
- */
-void CCWKeyer::createSymbol(float* buffer, unsigned int len)
-{
-	wxASSERT(buffer != NULL);
+	m_bits = new bool[bitsLen];
 
-	float cosVal = 1.0F;
-	float sinVal = 0.0F;
+	bitsLen = 0U;
 
-	for (unsigned int i = 0; i < len; i++) {
-		float tmpVal = cosVal * m_cosDelta - sinVal * m_sinDelta;
-		sinVal = cosVal * m_sinDelta + sinVal * m_cosDelta;
-		cosVal = tmpVal;
-
-		buffer[i] = sinVal;
-	}
-
-	// Now shape it
-	for (unsigned int j = 0; j < m_defLen; j++) {
-		float ampl = 0.5F * (1.0F - ::cos(M_PI * (float(j) / float(m_defLen))));
-
-		buffer[j]       *= ampl;
-		buffer[len - j] *= ampl;
-	}
-}
-
-void CCWKeyer::fillBuffer()
-{
-	while (m_cwBuffer->freeSpace() > (m_dotLen * DASH_LEN * 3) && m_text.length() > 0) {
-		wxChar c = m_text.GetChar(0);
+	unsigned int j;
+	for (unsigned int i = 0U; i < textLen; i++) {
+		wxChar c = text.GetChar(i);
 
 		switch (c) {
 			case wxT('.'):
-				m_cwBuffer->addData(m_dotBuffer, m_dotLen * DOT_LEN);
-				m_cwBuffer->addData(m_silBuffer, m_dotLen * DOT_LEN);
+				for (j = 0U; j < 1U * mult; j++)
+					m_bits[bitsLen++] = true;
 				break;
 
 			case wxT('-'):
-				m_cwBuffer->addData(m_dashBuffer, m_dotLen * DASH_LEN);
-				m_cwBuffer->addData(m_silBuffer,  m_dotLen * DOT_LEN);
+				for (j = 0U; j < 3U * mult; j++)
+					m_bits[bitsLen++] = true;
 				break;
 
 			case wxT(' '):
-				m_cwBuffer->addData(m_silBuffer, m_dotLen * DOT_LEN);
-				m_cwBuffer->addData(m_silBuffer, m_dotLen * DOT_LEN);
-				m_cwBuffer->addData(m_silBuffer, m_dotLen * DOT_LEN);
+				for (j = 0U; j < 1U * mult; j++)
+					m_bits[bitsLen++] = false;
 				break;
 		}
 
-		m_text = m_text.Right(m_text.length() - 1);
+		for (j = 0U; j < 1U * mult; j++)
+			m_bits[bitsLen++] = false;
 	}
+
+	m_bitsLen   = bitsLen;
+	m_bitsIndex = 0U;
 }
 
 /*
- * Calculate the length of a dot in samples from the speed in words per minute.
- * At 12 WPM a dot is 1/10 of a second.
+ * Calculate the length of a dot in numbers of blocks, the speed in words per minute.
+ * At 12.5 WPM a dot is 1/10 of a second.
  */
-unsigned int CCWKeyer::calcDotLength(int speed)
+unsigned int CCWKeyer::speedToUnits(unsigned int speed)
 {
-	return (unsigned int)(m_sampleRate * 1.2F / float(speed) + 0.5F);
+	float sysUnitsPerSec = m_sampleRate / float(m_blockSize);
+
+	float unitsPerSec = 10.0F * float(speed) / 12.5F;
+
+	unsigned int mult = (unsigned int)(sysUnitsPerSec / unitsPerSec + 0.5F);
+
+	if (mult == 0U)
+		return 1U;
+
+	return mult;
+}
+
+void CCWKeyer::end()
+{
+	m_bitsLen   = 0U;
+	m_bitsIndex = 0U;
+
+	delete[] m_bits;
+	m_bits = NULL;
+
+	::wxGetApp().sendCW(CW_END, wxEmptyString);
 }
 
 bool CCWKeyer::isActive() const
@@ -253,20 +204,22 @@ bool CCWKeyer::isActive() const
 
 void CCWKeyer::key(bool keyDown)
 {
-	m_keyDown = keyDown;
+	m_key = keyDown;
 }
 
-void CCWKeyer::processKey()
+void CCWKeyer::processKey(bool key)
 {
+	wxASSERT(m_callback != NULL);
+
 	// Generate silence
-	if (!m_keyDown && !m_lastKeyDown) {
+	if (!key && !m_lastKey) {
 		::memset(m_buffer, 0x00, m_blockSize * 2 * sizeof(float));
 		m_callback->callback(m_buffer, m_blockSize, m_id);
 		return;
 	}
 
 	// Reset the phase if beginning a symbol
-	if (m_keyDown && !m_lastKeyDown) {
+	if (key && !m_lastKey) {
 		m_cosValue = 1.0F;
 		m_sinValue = 0.0F;
 	}
@@ -277,27 +230,27 @@ void CCWKeyer::processKey()
 		m_sinValue = m_cosValue * m_sinDelta + m_sinValue * m_cosDelta;
 		m_cosValue = tmpValue;
 
-		m_buffer[i * 2 + 0] = m_sinValue;
-		m_buffer[i * 2 + 1] = m_sinValue;
+		m_buffer[i * 2U + 0U] = m_sinValue;
+		m_buffer[i * 2U + 1U] = m_sinValue;
 	}
 
 	// Continuous tone
-	if (m_keyDown && m_lastKeyDown) {
+	if (key && m_lastKey) {
 		m_callback->callback(m_buffer, m_blockSize, m_id);
 		return;
 	}
 
 	// Start of a tone, shape the beginning
-	if (m_keyDown && !m_lastKeyDown) {
+	if (key && !m_lastKey) {
 		for (unsigned int i = 0; i < m_defLen; i++) {
 			float ampl = 0.5F * (1.0F - ::cos(M_PI * (float(i) / float(m_defLen))));
 
-			m_buffer[i * 2 + 0] *= ampl;
-			m_buffer[i * 2 + 1] *= ampl;
+			m_buffer[i * 2U + 0U] *= ampl;
+			m_buffer[i * 2U + 1U] *= ampl;
 		}
 
 		m_callback->callback(m_buffer, m_blockSize, m_id);
-		m_lastKeyDown = m_keyDown;
+		m_lastKey = key;
 		return;
 	}
 
@@ -305,13 +258,13 @@ void CCWKeyer::processKey()
 	for (unsigned int j = 0; j < m_defLen; j++) {
 		float ampl = 0.5F * (1.0F - ::cos(M_PI + M_PI * (float(j) / float(m_defLen))));
 
-		m_buffer[j * 2 + 0] *= ampl;
-		m_buffer[j * 2 + 1] *= ampl;
+		m_buffer[j * 2U + 0U] *= ampl;
+		m_buffer[j * 2U + 1U] *= ampl;
 	}
 
 	if (m_defLen < m_blockSize)
-		::memset(m_buffer + m_defLen * 2, 0x00, (m_blockSize - m_defLen) * 2 * sizeof(float));
+		::memset(m_buffer + m_defLen * 2U, 0x00, (m_blockSize - m_defLen) * 2 * sizeof(float));
 
 	m_callback->callback(m_buffer, m_blockSize, m_id);
-	m_lastKeyDown = m_keyDown;
+	m_lastKey = key;
 }

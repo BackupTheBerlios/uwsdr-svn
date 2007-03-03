@@ -334,8 +334,6 @@ void CCWKeyboard::onTransmit(wxCommandEvent& WXUNUSED(event))
 		}
 	}
 
-	cwData.Append(wxT(" "));
-
 	::wxGetApp().sendCW(getSpeed(), cwData);
 }
 
