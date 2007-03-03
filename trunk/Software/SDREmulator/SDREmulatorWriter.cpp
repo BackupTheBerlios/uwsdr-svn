@@ -36,13 +36,13 @@ m_sequence(0),
 m_sockBuffer(NULL),
 m_dataBuffer(NULL),
 m_buffer(NULL),
-m_delay(0UL),
+m_delayOn(delay),
+m_delayTime(0UL),
 m_waiting(),
 m_requests(0),
 m_overruns(0),
 m_packets(0),
-MAX_SAMPLES(maxSamples),
-DELAY(delay),
+m_maxSamples(maxSamples),
 m_packetRequests(0),
 m_enabled(false)
 {
@@ -107,14 +107,14 @@ bool CSDREmulatorWriter::open(float sampleRate, unsigned int blockSize)
 		return false;
 	}
 
-	m_sockBuffer = new unsigned char[HEADER_SIZE + MAX_SAMPLES * SAMPLE_SIZE];
-	m_dataBuffer = new float[MAX_SAMPLES * 2];
+	m_sockBuffer = new unsigned char[HEADER_SIZE + m_maxSamples * SAMPLE_SIZE];
+	m_dataBuffer = new float[m_maxSamples * 2];
 
 	m_buffer = new CRingBuffer(blockSize * 10, 2);
 
-	if (DELAY) {
-		m_delay = (500UL * MAX_SAMPLES) / (unsigned long)sampleRate;
-		::wxLogMessage(wxT("Delay is %lums"), m_delay);
+	if (m_delayOn) {
+		m_delayTime = (500UL * m_maxSamples) / (unsigned long)sampleRate;
+		::wxLogMessage(wxT("Delay is %lums"), m_delayTime);
 	}
 
 	Create();
@@ -169,14 +169,14 @@ void* CSDREmulatorWriter::Entry()
 	delete[] m_dataBuffer;
 	delete   m_buffer;
 
-	::wxLogMessage(wxT("SDREmulatorWriter: %u max samples, %u overruns, %u requests, %u packet requests, %u packets"), MAX_SAMPLES, m_overruns, m_requests, m_packetRequests, m_packets);
+	::wxLogMessage(wxT("SDREmulatorWriter: %u max samples, %u overruns, %u requests, %u packet requests, %u packets"), m_maxSamples, m_overruns, m_requests, m_packetRequests, m_packets);
 
 	return (void*)0;
 }
 
 void CSDREmulatorWriter::writePacket()
 {
-	unsigned int nSamples = m_buffer->getData(m_dataBuffer, MAX_SAMPLES);
+	unsigned int nSamples = m_buffer->getData(m_dataBuffer, m_maxSamples);
 
 	m_packetRequests++;
 
@@ -228,14 +228,14 @@ void CSDREmulatorWriter::writePacket()
 		}
 
 		if (ret != int(len)) {
-			::wxLogError(wxT("SDREmulatorWriter: Error only wrote %d of %u bytes to the datagram socket"), ret, len);
+			::wxLogError(wxT("SDREmulatorWriter: Error only wrote %d of %lu bytes to the datagram socket"), ret, len);
 			return;
 		}
 
-		if (DELAY)
-			::wxMilliSleep(m_delay);
+		if (m_delayOn)
+			::wxMilliSleep(m_delayTime);
 
-		nSamples = m_buffer->getData(m_dataBuffer, MAX_SAMPLES);
+		nSamples = m_buffer->getData(m_dataBuffer, m_maxSamples);
 	}
 }
 

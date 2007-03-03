@@ -64,6 +64,7 @@ class CSoundFileReader : public CThreadReader {
 	int            m_id;
 	float*         m_buffer;
 	unsigned int   m_format;
+	unsigned int   m_channels;
 	uint8*         m_buffer8;
 	sint16*        m_buffer16;
 	float32*       m_buffer32;

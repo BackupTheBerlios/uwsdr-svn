@@ -64,13 +64,13 @@ class CSDRDataWriter : public wxThread, public IDataWriter {
 	unsigned char*     m_sockBuffer;
 	float*             m_dataBuffer;
 	CRingBuffer*       m_buffer;
-	unsigned long      m_delay;
+	bool               m_delay;
+	unsigned long      m_delayTime;
 	wxSemaphore        m_waiting;
 	unsigned int       m_requests;
 	unsigned int       m_overruns;
 	unsigned int       m_packets;
-	unsigned int       MAX_SAMPLES;
-	bool               DELAY;
+	unsigned int       m_maxSamples;
 	unsigned int       m_packetRequests;
 	bool               m_enabled;
 

@@ -36,11 +36,12 @@ const int WAVE_FORMAT_IEEE_FLOAT = 3;
 CSoundFileReader::CSoundFileReader(const wxString& fileName, IDataReader* reader) :
 CThreadReader(reader),
 m_fileName(fileName),
-m_blockSize(0),
+m_blockSize(0U),
 m_callback(NULL),
 m_id(0),
 m_buffer(NULL),
-m_format(99),
+m_format(99U),
+m_channels(0U),
 m_buffer8(NULL),
 m_buffer16(NULL),
 m_buffer32(NULL),
@@ -112,8 +113,9 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 		return false;
 	}
 
-	if (format.nChannels != 2) {
-		::wxLogError(wxT("SoundFileReader: %s has no of channels %u, not 2."), m_fileName.c_str(), format.nChannels);
+	m_channels = format.nChannels;
+	if (m_channels > 2U) {
+		::wxLogError(wxT("SoundFileReader: %s has %u channels, more than 2."), m_fileName.c_str(), m_channels);
 		return false;
 	}
 
@@ -149,17 +151,17 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 
 	switch (m_format) {
 		case FORMAT_8BIT:
-			m_buffer8 =  new uint8[m_blockSize * 2];
+			m_buffer8 =  new uint8[m_blockSize * m_channels];
 			break;
 		case FORMAT_16BIT:
-			m_buffer16 = new sint16[m_blockSize * 2];
+			m_buffer16 = new sint16[m_blockSize * m_channels];
 			break;
 		case FORMAT_32BIT:
-			m_buffer32 = new float32[m_blockSize * 2];
+			m_buffer32 = new float32[m_blockSize * m_channels];
 			break;
 	}
 
-	m_buffer = new float[m_blockSize * 2];
+	m_buffer = new float[m_blockSize * 2U];
 
 	return CThreadReader::open(sampleRate, blockSize);
 }
@@ -174,55 +176,79 @@ bool CSoundFileReader::create()
 
 	switch (m_format) {
 		case FORMAT_8BIT:
-			n = ::mmioRead(m_handle, (char *)m_buffer8, m_blockSize * 2 * sizeof(uint8));
+			n = ::mmioRead(m_handle, (char *)m_buffer8, m_blockSize * m_channels * sizeof(uint8));
 
-			if (n <= 0) {
-				m_callback->callback(m_buffer, 0, m_id);
+			if (n <= 0L) {
+				m_callback->callback(m_buffer, 0U, m_id);
 				return false;
 			}
 
-			n /= sizeof(uint8);
+			n /= (sizeof(uint8) * m_channels);
 
-			for (i = 0; i < n; i++)
-				m_buffer[i] = (float(m_buffer8[i]) - 127.0F) / 128.0F;
+			switch (m_channels) {
+				case 1U:
+					for (i = 0; i < n; i++)
+						m_buffer[i * 2U + 0U] = m_buffer[i * 2U + 1U] = (float(m_buffer8[i]) - 127.0F) / 128.0F;
+					break;
+				case 2U:
+					for (i = 0; i < n; i++) {
+						m_buffer[i * 2U + 0U] = (float(m_buffer8[i * 2U + 0U]) - 127.0F) / 128.0F;
+						m_buffer[i * 2U + 1U] = (float(m_buffer8[i * 2U + 1U]) - 127.0F) / 128.0F;
+					}
+					break;
+			}
 			break;
 
 		case FORMAT_16BIT:
-			n = ::mmioRead(m_handle, (char *)m_buffer16, m_blockSize * 2 * sizeof(sint16));
+			n = ::mmioRead(m_handle, (char *)m_buffer16, m_blockSize * m_channels * sizeof(sint16));
 
-			if (n <= 0) {
-				m_callback->callback(m_buffer, 0, m_id);
+			if (n <= 0L) {
+				m_callback->callback(m_buffer, 0U, m_id);
 				return false;
 			}
 
-			n /= sizeof(sint16);
+			n /= (sizeof(sint16) * m_channels);
 
-			for (i = 0; i < n; i++)
-				m_buffer[i] = float(m_buffer16[i]) / 32768.0F;
+			switch (m_channels) {
+				case 1U:
+					for (i = 0; i < n; i++)
+						m_buffer[i * 2U + 0U] = m_buffer[i * 2U + 1U] = float(m_buffer16[i]) / 32768.0F;
+					break;
+				case 2U:
+					for (i = 0; i < n; i++) {
+						m_buffer[i * 2U + 0U] = float(m_buffer16[i * 2U + 0U]) / 32768.0F;
+						m_buffer[i * 2U + 1U] = float(m_buffer16[i * 2U + 1U]) / 32768.0F;
+					}
+					break;
+			}
 			break;
 
 		case FORMAT_32BIT:
-			n = ::mmioRead(m_handle, (char *)m_buffer32, m_blockSize * 2 * sizeof(float32));
+			n = ::mmioRead(m_handle, (char *)m_buffer32, m_blockSize * m_channels * sizeof(float32));
 
-			if (n <= 0) {
-				m_callback->callback(m_buffer, 0, m_id);
+			if (n <= 0L) {
+				m_callback->callback(m_buffer, 0U, m_id);
 				return false;
 			}
 
-			n /= sizeof(float32);
+			n /= (sizeof(float32) * m_channels);
 
-			// Swap I and Q for SDR-1000 data
-			for (i = 0; i < n / 2; i++) {
-				float qData = m_buffer32[i * 2 + 0];
-				float iData = m_buffer32[i * 2 + 1];
-
-				m_buffer[i * 2 + 0] = iData;
-				m_buffer[i * 2 + 1] = qData;
+			switch (m_channels) {
+				case 1U:
+					for (i = 0U; i < n; i++)
+						m_buffer[i * 2U + 0U] = m_buffer32[i * 2U + 1U];
+					break;
+				case 2U:
+					// Swap I and Q for SDR-1000 data
+					for (i = 0U; i < n; i++) {
+						m_buffer[i * 2U + 0U] = m_buffer32[i * 2U + 1U];
+						m_buffer[i * 2U + 1U] = m_buffer32[i * 2U + 0U];
+					}
+					break;
 			}
-			break;
 	}
 
-	m_callback->callback(m_buffer, n / 2, m_id);
+	m_callback->callback(m_buffer, n, m_id);
 
 	return true;
 }
@@ -242,18 +268,19 @@ const int WAVE_FORMAT_IEEE_FLOAT = 3;
 CSoundFileReader::CSoundFileReader(const wxString& fileName, IDataReader* reader) :
 CThreadReader(reader),
 m_fileName(fileName),
-m_blockSize(0),
+m_blockSize(0U),
 m_callback(NULL),
 m_id(0),
 m_buffer(NULL),
-m_format(99),
+m_format(99U),
+m_channels(0U),
 m_buffer8(NULL),
 m_buffer16(NULL),
 m_buffer32(NULL),
 m_file(NULL),
 m_offset(0),
-m_length(0),
-m_read(0)
+m_length(0U),
+m_read(0U)
 {
 }
 
@@ -333,11 +360,12 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 
 	n = m_file->Read(&uint16, sizeof(wxUint16));
 
-	wxUint16 channels = wxUINT16_SWAP_ON_BE(uint16);
-	if (n != sizeof(wxUint16) || channels != 2) {
-		::wxLogError(wxT("SoundFileReader: %s has no of channels %u, not 2."), m_fileName.c_str(), channels);
+	m_channels = wxUINT16_SWAP_ON_BE(uint16);
+	if (n != sizeof(wxUint16) || m_channels > 2U) {
+		::wxLogError(wxT("SoundFileReader: %s has %u channels, more than 2."), m_fileName.c_str(), m_channels);
 		return false;
 	}
+
 
 	n = m_file->Read(&uint32, sizeof(wxUint32));
 
@@ -406,17 +434,17 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 
 	switch (m_format) {
 		case FORMAT_8BIT:
-			m_buffer8 =  new uint8[m_blockSize * 2];
+			m_buffer8 =  new uint8[m_blockSize * m_channels];
 			break;
 		case FORMAT_16BIT:
-			m_buffer16 = new sint16[m_blockSize * 2];
+			m_buffer16 = new sint16[m_blockSize * m_channels];
 			break;
 		case FORMAT_32BIT:
-			m_buffer32 = new float32[m_blockSize * 2];
+			m_buffer32 = new float32[m_blockSize * m_channels];
 			break;
 	}
 
-	m_buffer = new float[m_blockSize * 2];
+	m_buffer = new float[m_blockSize * 2U];
 
 	return CThreadReader::open(sampleRate, blockSize);
 }
@@ -426,82 +454,107 @@ bool CSoundFileReader::create()
 	wxASSERT(m_callback != NULL);
 	wxASSERT(m_file != NULL);
 
-	unsigned int n = 0;
 	unsigned int i;
 	unsigned int readSize;
+	size_t n = 0U;
 
 	switch (m_format) {
 		case FORMAT_8BIT:
-			readSize = m_blockSize * 2 * sizeof(uint8);
+			readSize = m_blockSize * m_channels * sizeof(uint8);
 
 			if (readSize > (m_length - m_read))
-				readSize = (m_length - m_read) / (2 * sizeof(uint8));
+				readSize = (m_length - m_read) / (m_channels * sizeof(uint8));
 
 			n = m_file->Read(m_buffer8, readSize);
 
-			if (n <= 0) {
-				m_callback->callback(m_buffer, 0, m_id);
+			if (n == 0U) {
+				m_callback->callback(m_buffer, 0U, m_id);
 				return false;
 			}
 
 			m_read += n;
 
-			n /= sizeof(uint8);
+			n /= (sizeof(uint8) * m_channels);
 
-			for (i = 0; i < n; i++)
-				m_buffer[i] = (float(m_buffer8[i]) - 127.0F) / 128.0F;
+			switch (m_channels) {
+				case 1U:
+					for (i = 0; i < n; i++)
+						m_buffer[i * 2U + 0U] = m_buffer[i * 2U + 1U] = (float(m_buffer8[i]) - 127.0F) / 128.0F;
+					break;
+				case 2U:
+					for (i = 0; i < n; i++) {
+						m_buffer[i * 2U + 0U] = (float(m_buffer8[i * 2U + 0U]) - 127.0F) / 128.0F;
+						m_buffer[i * 2U + 1U] = (float(m_buffer8[i * 2U + 1U]) - 127.0F) / 128.0F;
+					}
+					break;
+			}
 			break;
 
 		case FORMAT_16BIT:
-			readSize = m_blockSize * 2 * sizeof(sint16);
+			readSize = m_blockSize * m_channels * sizeof(sint16);
 
 			if (readSize > (m_length - m_read))
-				readSize = (m_length - m_read) / (2 * sizeof(sint16));
+				readSize = (m_length - m_read) / (m_channels * sizeof(sint16));
 
 			n = m_file->Read(m_buffer16, readSize);
 
-			if (n <= 0) {
-				m_callback->callback(m_buffer, 0, m_id);
+			if (n == 0U) {
+				m_callback->callback(m_buffer, 0U, m_id);
 				return false;
 			}
 
 			m_read += n;
 
-			n /= sizeof(sint16);
+			n /= (sizeof(sint16) * m_channels);
 
-			for (i = 0; i < n; i++)
-				m_buffer[i] = float(m_buffer16[i]) / 32768.0F;
+			switch (m_channels) {
+				case 1U:
+					for (i = 0; i < n; i++)
+						m_buffer[i * 2U + 0U] = m_buffer[i * 2U + 1U] = float(m_buffer16[i]) / 32768.0F;
+					break;
+				case 2U:
+					for (i = 0; i < n; i++) {
+						m_buffer[i * 2U + 0U] = float(m_buffer16[i * 2U + 0U]) / 32768.0F;
+						m_buffer[i * 2U + 1U] = float(m_buffer16[i * 2U + 1U]) / 32768.0F;
+					}
+					break;
+			}
 			break;
 
 		case FORMAT_32BIT:
-			readSize = m_blockSize * 2 * sizeof(float32);
+			readSize = m_blockSize * m_channels * sizeof(float32);
 
 			if (readSize > (m_length - m_read))
-				readSize = (m_length - m_read) / (2 * sizeof(float32));
+				readSize = (m_length - m_read) / (m_channels * sizeof(float32));
 
 			n = m_file->Read(m_buffer32, readSize);
 
-			if (n <= 0) {
-				m_callback->callback(m_buffer, 0, m_id);
+			if (n == 0U) {
+				m_callback->callback(m_buffer, 0U, m_id);
 				return false;
 			}
 
 			m_read += n;
 
-			n /= sizeof(float32);
+			n /= (sizeof(float32) * m_channels);
 
-			// Swap I and Q for SDR-1000 data
-			for (i = 0; i < n / 2; i++) {
-				float qData = m_buffer32[i * 2 + 0];
-				float iData = m_buffer32[i * 2 + 1];
-
-				m_buffer[i * 2 + 0] = iData;
-				m_buffer[i * 2 + 1] = qData;
+			switch (m_channels) {
+				case 1U:
+					for (i = 0U; i < n; i++)
+						m_buffer[i * 2U + 0U] = m_buffer32[i * 2U + 1U];
+					break;
+				case 2U:
+					// Swap I and Q for SDR-1000 data
+					for (i = 0U; i < n; i++) {
+						m_buffer[i * 2U + 0U] = m_buffer32[i * 2U + 1U];
+						m_buffer[i * 2U + 1U] = m_buffer32[i * 2U + 0U];
+					}
+					break;
 			}
 			break;
 	}
 
-	m_callback->callback(m_buffer, n / 2, m_id);
+	m_callback->callback(m_buffer, n, m_id);
 
 	return true;
 }

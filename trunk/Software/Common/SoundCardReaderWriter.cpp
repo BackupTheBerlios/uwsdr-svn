@@ -154,15 +154,6 @@ void CSoundCardReaderWriter::write(const float* buffer, unsigned int nSamples)
 
 	wxASSERT(buffer != NULL);
 
-	if (m_outChannels == 1U) {
-		for (unsigned int i = 0U; i < nSamples; i++) {
-			m_outBuffer[i * 2U + 0U] = buffer[i];
-			m_outBuffer[i * 2U + 1U] = buffer[i];
-		}
-
-		buffer = m_outBuffer;
-	}
-
 	unsigned int n = m_buffer->addData(buffer, nSamples);
 
 	if (n != nSamples)
@@ -177,7 +168,8 @@ int CSoundCardReaderWriter::callback(const void* input, void* output, unsigned l
 
 	m_requests++;
 
-	float* in = (float*)input;
+	float* in  = (float*)input;
+	float* out = (float*)output;
 
 	if (m_inChannels == 1U) {
 		for (unsigned int i = 0U; i < nSamples; i++) {
@@ -191,14 +183,25 @@ int CSoundCardReaderWriter::callback(const void* input, void* output, unsigned l
 	m_callback->callback(in, nSamples, m_id);
 
 	if (m_buffer->dataSpace() >= nSamples) {
-		m_buffer->getData((float*)output, nSamples);
+		m_buffer->getData(m_outBuffer, nSamples);
 	} else {
-		::memcpy(output, m_lastBuffer, nSamples * 2U * sizeof(float));
+		::memcpy(m_outBuffer, m_lastBuffer, nSamples * 2U * sizeof(float));
 		m_underruns++;
 	}
 
-	::memcpy(m_lastBuffer, output, nSamples * 2U * sizeof(float));
-	
+	::memcpy(m_lastBuffer, m_outBuffer, nSamples * 2U * sizeof(float));
+
+	switch (m_outChannels) {
+		case 1U: {
+				for (unsigned int i = 0U; i < nSamples; i++)
+					out[i] = m_outBuffer[i * 2U + 0U];
+			}
+			break;
+		case 2U:
+			::memcpy(out, m_outBuffer, nSamples * 2U * sizeof(float));
+			break;
+	}
+
 	return paContinue;
 }
 

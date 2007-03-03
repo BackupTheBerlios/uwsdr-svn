@@ -37,7 +37,7 @@ typedef signed short  sint16;
 class CSoundFileWriter : public IDataWriter {
 
     public:
-    CSoundFileWriter(const wxString& fileName, unsigned int channels = 2, unsigned int sampleWidth = 16);
+    CSoundFileWriter(const wxString& fileName, unsigned int channels, unsigned int sampleWidth = 16);
 
 	virtual bool open(float sampleRate, unsigned int blockSize);
 

@@ -288,12 +288,12 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 			// If the same API and device is used for both, then use the shared sound card input/output driver.
 			if (m_parameters->m_sdrAudioInDev == m_parameters->m_userAudioInDev) {
-				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_sdrAudioInDev, m_parameters->m_userAudioOutDev, 2U, 2U);
+				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_sdrAudioInDev, m_parameters->m_userAudioOutDev, 2U, 1U);
 				m_dsp->setRXReader(scrw);
 				m_dsp->setRXWriter(scrw);
 			} else {
 				m_dsp->setRXReader(new CSoundCardReader(m_parameters->m_sdrAudioInDev, 2U));
-				m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_userAudioOutDev, 2U));
+				m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_userAudioOutDev, 1U));
 			}
 			break;
 
@@ -303,7 +303,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 				m_dsp->setRXReader(scrw1);
 				m_dsp->setTXWriter(scrw1);
 
-				CSoundCardReaderWriter* scrw2 = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 1U, 2U);
+				CSoundCardReaderWriter* scrw2 = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 1U, 1U);
 				m_dsp->setTXReader(scrw2);
 				m_dsp->setRXWriter(scrw2);
 			}
@@ -311,7 +311,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 		case TYPE_DEMO: {
 				// A self contained variant for demo's and testing
-				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 1U, 2U);
+				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 1U, 1U);
 
 				m_dsp->setTXReader(new CThreeToneReader(500.0F, 1500.0F, 2000.0F, 0.25F, scrw));
 				m_dsp->setRXWriter(scrw);
@@ -322,7 +322,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			break;
 
 		case TYPE_UWSDR1: {
-				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 1U, 2U);
+				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 1U, 1U);
 				m_dsp->setRXWriter(scrw);
 #if defined(TOBIAS)
 				// UDP in/out with audio on loudspeaker and two-tone audio on transmit
@@ -331,8 +331,8 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 				// The standard configuration, UDP in/out and sound card for the user
 				m_dsp->setTXReader(scrw);
 #endif
-				m_dsp->setTXWriter(new CSDRDataWriter(m_parameters->m_ipAddress, m_parameters->m_dataPort, 1));
-				m_dsp->setRXReader(new CSDRDataReader(m_parameters->m_ipAddress, m_parameters->m_dataPort, 1));
+				m_dsp->setTXWriter(new CSDRDataWriter(m_parameters->m_ipAddress, m_parameters->m_dataPort, 1U));
+				m_dsp->setRXReader(new CSDRDataReader(m_parameters->m_ipAddress, m_parameters->m_dataPort, 1U));
 			}
 			break;
 	}
@@ -638,7 +638,7 @@ wxSizer* CUWSDRFrame::createRIT(wxWindow* window)
 wxPanel* CUWSDRFrame::createInfoBox(wxWindow* window)
 {
 	m_infoBox = new CInfoBox(window, INFO_DISPLAY, wxDefaultPosition, wxSize(INFO_WIDTH, INFO_HEIGHT));
-	
+
 	return m_infoBox;
 }
 
@@ -646,7 +646,7 @@ wxPanel* CUWSDRFrame::createSMeter(wxWindow* window)
 {
 	m_sMeter = new CSMeter(window, SMETER, wxDefaultPosition, wxSize(SMETER_WIDTH, SMETER_HEIGHT));
 	m_sMeter->setLevel(0);
-	
+
 	return m_sMeter;
 }
 
@@ -1369,7 +1369,6 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 				"\t\tNeil Whiting, G4BRK\n"
 				"Firmware:\tTobias Weber, DG3YEV\n"
 				"Software:\tJonathan Naylor, ON/G4KLX\n"
-				"\t\tMichael White, G3WOE\n"
 				"DTTSP:\t\tBob McGwier, N4HY\n"
 				"\t\tFrank Brickle, AB2KT"),
 				_("About uWave SDR"),

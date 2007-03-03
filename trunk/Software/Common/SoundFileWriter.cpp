@@ -123,28 +123,51 @@ void CSoundFileWriter::write(const float* buffer, unsigned int length)
 	wxASSERT(buffer != NULL);
 	wxASSERT(length > 0 && length <= m_blockSize);
 
+	unsigned int i;
+	LONG bytes = 0L;
+	LONG n = 0L;
+
 	if (!m_enabled)
 		return;
 
-	if (m_sampleWidth == 8) {
-		for (unsigned int i = 0; i < (length * m_channels); i++)
-			m_buffer8[i] = uint8(buffer[i] * 128.0 + 127.0);
+	switch (m_sampleWidth) {
+		case 8U:
+			switch (m_channels) {
+				case 1U:
+					for (i = 0U; i < length; i++)
+						m_buffer8[i] = uint8(buffer[i * 2U + 0U] * 128.0 + 127.0);
+					break;
+				case 2U:
+					for (i = 0U; i < (length * 2U); i++)
+						m_buffer8[i] = uint8(buffer[i] * 128.0 + 127.0);
+					break;
+			}
 
-		LONG bytes = length * m_channels * sizeof(uint8);
+			bytes = length * m_channels * sizeof(uint8);
 
-		LONG n = ::mmioWrite(m_handle, (char *)m_buffer8, bytes);
-		if (n != bytes)
-			::wxLogError(wxT("SoundFileWriter: error from mmioWrite(), wanted %ld available %ld"), bytes, n);
-	} else {
-		for (unsigned int i = 0; i < (length * m_channels); i++)
-			m_buffer16[i] = sint16(buffer[i] * 32768.0);
+			n = ::mmioWrite(m_handle, (char *)m_buffer8, bytes);
+			break;
 
-		LONG bytes = length * m_channels * sizeof(sint16);
+		case 16U:
+			switch (m_channels) {
+				case 1U:
+					for (i = 0U; i < length; i++)
+						m_buffer16[i] = sint16(buffer[i * 2U + 0U] * 32768.0);
+					break;
+				case 2U:
+					for (i = 0U; i < (length * 2U); i++)
+						m_buffer16[i] = sint16(buffer[i] * 32768.0);
+					break;
+			}
 
-		LONG n = ::mmioWrite(m_handle, (char *)m_buffer16, bytes);
-		if (n != bytes)
-			::wxLogError(wxT("SoundFileWriter: error from mmioWrite(), wanted %ld available %ld"), bytes, n);
+			bytes = length * m_channels * sizeof(sint16);
+
+			n = ::mmioWrite(m_handle, (char *)m_buffer16, bytes);
+			break;
 	}
+
+	if (n != bytes)
+		::wxLogError(wxT("SoundFileWriter: error from mmioWrite(), wanted %ld available %ld"), bytes, n);
 }
 
 void CSoundFileWriter::close()
@@ -257,32 +280,53 @@ void CSoundFileWriter::write(const float* buffer, unsigned int length)
 	wxASSERT(buffer != NULL);
 	wxASSERT(length > 0 && length <= m_blockSize);
 
+	unsigned int bytes = 0U;
+	unsigned int i;
+	size_t n = 0UL;
+
 	if (!m_enabled)
 		return;
 
-	if (m_sampleWidth == 8) {
-		for (unsigned int i = 0; i < (length * m_channels); i++)
-			m_buffer8[i] = uint8(buffer[i] * 128.0 + 127.0);
+	switch (m_sampleWidth) {
+		case 8U:
+			switch (m_channels) {
+				case 1U:
+					for (i = 0U; i < length; i++)
+						m_buffer8[i] = uint8(buffer[i * 2U + 0U] * 128.0 + 127.0);
+					break;
+				case 2U:
+					for (i = 0U; i < (length * 2U); i++)
+						m_buffer8[i] = uint8(buffer[i] * 128.0 + 127.0);
+					break;
+			}
 
-		unsigned int bytes = length * m_channels * sizeof(uint8);
+			bytes = length * m_channels * sizeof(uint8);
 
-		unsigned int n = m_file->Write(m_buffer8, bytes);
-		if (n != bytes)
-			::wxLogError(wxT("SoundFileWriter: error from wxFFile::Write(), wanted %u available %u"), bytes, n);
+			n = m_file->Write(m_buffer8, bytes);
+			break;
 
-		m_length += n;
-	} else {
-		for (unsigned int i = 0; i < (length * m_channels); i++)
-			m_buffer16[i] = sint16(buffer[i] * 32768.0);
+		case 16U:
+			switch (m_channels) {
+				case 1U:
+					for (i = 0U; i < length; i++)
+						m_buffer16[i] = sint16(buffer[i * 2U + 0U] * 32768.0);
+					break;
+				case 2U:
+					for (i = 0U; i < (length * 2U); i++)
+						m_buffer16[i] = sint16(buffer[i] * 32768.0);
+					break;
+			}
 
-		unsigned int bytes = length * m_channels * sizeof(sint16);
+			bytes = length * m_channels * sizeof(sint16);
 
-		unsigned int n = m_file->Write(m_buffer16, bytes);
-		if (n != bytes)
-			::wxLogError(wxT("SoundFileWriter: error from wxFFile::Write(), wanted %u available %u"), bytes, n);
-
-		m_length += n;
+			n = m_file->Write(m_buffer16, bytes);
+			break;
 	}
+
+	if (n != bytes)
+		::wxLogError(wxT("SoundFileWriter: error from wxFFile::Write(), wanted %u available %lu"), bytes, n);
+
+	m_length += n;
 }
 
 void CSoundFileWriter::close()

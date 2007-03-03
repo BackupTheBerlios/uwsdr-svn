@@ -351,4 +351,12 @@ The serial port can be used for an external key and/or external transmit input.
 
 Added a second shift so that multiple repeater shifts can easily be accomodated.
 
-Open the microphone with one channel and double it, this means that GUISetup can see more devices under ALSA.
+Open user audio with one channel and double it, this means that GUISetup can see more devices under ALSA.
+
+Changes for building on Mac OS X.
+
+On Windows, revert to Visual C++ Express.
+
+New CW Keyer.
+
+Create optional entries on the Desktop for Linux with GUISetup.

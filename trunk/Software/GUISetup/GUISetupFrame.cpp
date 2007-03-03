@@ -33,6 +33,7 @@
 const wxString XDG_DATA_HOME_ENV = wxT("XDG_DATA_HOME");
 const wxString HOME_ENV          = wxT("HOME");
 const wxString DEFAULT_DIR       = wxT("/.local/share");
+const wxString DESKTOP_DIR       = wxT("/Desktop");
 const wxString APPLICATION_DIR   = wxT("/applications");
 const wxString UWSDR_FILE        = wxT("UWSDR.desktop");
 const wxString NAME_TOKEN        = wxT("@NAME@");
@@ -178,7 +179,7 @@ m_txOutPin(OUT_NONE)
 
 #if defined(__WXGTK__)
 	wxString dir;
-	if (getDesktopDir(dir)) {
+	if (getMenuDir(dir)) {
 #endif
 		wxStaticText* label7 = new wxStaticText(panel, -1, _("Create Menu entry:"));
 		panelSizer->Add(label7, 0, wxALL, BORDER_SIZE);
@@ -192,15 +193,20 @@ m_txOutPin(OUT_NONE)
 	}
 #endif
 
-#if defined(__WXMSW__)
-	wxStaticText* label8 = new wxStaticText(panel, -1, _("Create Desktop icon:"));
-	panelSizer->Add(label8, 0, wxALL, BORDER_SIZE);
+#if defined(__WXGTK__)
+	wxString dir;
+	if (getDesktopDir(dir)) {
+#endif
+		wxStaticText* label8 = new wxStaticText(panel, -1, _("Create Desktop icon:"));
+		panelSizer->Add(label8, 0, wxALL, BORDER_SIZE);
 
-	m_deskTop = new wxCheckBox(panel, -1, wxEmptyString);
-	panelSizer->Add(m_deskTop, 0, wxALL, BORDER_SIZE);
+		m_deskTop = new wxCheckBox(panel, -1, wxEmptyString);
+		panelSizer->Add(m_deskTop, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* dummy7 = new wxStaticText(panel, -1, wxEmptyString);
-	panelSizer->Add(dummy7, 0, wxALL, BORDER_SIZE);
+		wxStaticText* dummy7 = new wxStaticText(panel, -1, wxEmptyString);
+		panelSizer->Add(dummy7, 0, wxALL, BORDER_SIZE);
+#if defined(__WXGTK__)
+	}
 #endif
 
 	wxStaticText* dummy8 = new wxStaticText(panel, -1, wxEmptyString);
@@ -250,7 +256,7 @@ void CGUISetupFrame::onBrowse(wxCommandEvent& WXUNUSED(event))
 	}
 
 	sdrDir.Append(wxT("\\SDR Files"));
-#elif defined(__WXGTK__)
+#else
 	wxString sdrDir = DATA_DIR;
 #endif
 
@@ -511,9 +517,17 @@ void CGUISetupFrame::onCreate(wxCommandEvent& WXUNUSED(event))
 	bool create = m_startMenu->GetValue();
 	if (create) {
 		wxString dir;
+		getMenuDir(dir);
+
+		writeDeskTop(name, dir);
+	}
+
+	create = m_deskTop->GetValue();
+	if (create) {
+		wxString dir;
 		getDesktopDir(dir);
 
-		writeStartMenu(name, dir);
+		writeDeskTop(name, dir);
 	}
 #else
 	bool create = m_startMenu->GetValue();
@@ -624,7 +638,7 @@ void CGUISetupFrame::readConfig(const wxString& name)
 
 void CGUISetupFrame::onUserAudio(wxCommandEvent& WXUNUSED(event))
 {
-	CSoundCardDialog dialog(this, _("User Audio Setup"), m_userAudioInDev, m_userAudioOutDev, 1U, 2U);
+	CSoundCardDialog dialog(this, _("User Audio Setup"), m_userAudioInDev, m_userAudioOutDev, 1U, 1U);
 
 	int ret = dialog.ShowModal();
 	if (ret == wxID_OK) {
@@ -854,7 +868,7 @@ void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
 	inFile.Close();
 }
 
-bool CGUISetupFrame::getDesktopDir(wxString& dir) const
+bool CGUISetupFrame::getMenuDir(wxString& dir) const
 {
 	bool ret = ::wxGetEnv(XDG_DATA_HOME_ENV, &dir);
 
@@ -867,6 +881,18 @@ bool CGUISetupFrame::getDesktopDir(wxString& dir) const
 	}
 
 	dir.Append(APPLICATION_DIR);
+
+	return wxDir::Exists(dir);
+}
+
+bool CGUISetupFrame::getDesktopDir(wxString& dir) const
+{
+	bool ret = ::wxGetEnv(HOME_ENV, &dir);
+
+	if (!ret)
+		return false;
+
+	dir.Append(DESKTOP_DIR);
 
 	return wxDir::Exists(dir);
 }

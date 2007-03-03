@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -109,8 +109,7 @@ bool CThreeToneReader::create()
 		m_sinVal3 = m_cosVal3 * m_sinDelta3 + m_sinVal3 * m_cosDelta3;
 		m_cosVal3 = tmpVal;
 
-		m_buffer[i * 2 + 0] = m_cosVal1 * m_amplitude + m_cosVal2 * m_amplitude + m_cosVal3 * m_amplitude;
-		m_buffer[i * 2 + 1] = m_sinVal1 * m_amplitude + m_sinVal2 * m_amplitude + m_sinVal3 * m_amplitude;
+		m_buffer[i * 2 + 0] = m_buffer[i * 2 + 1] = m_cosVal1 * m_amplitude + m_cosVal2 * m_amplitude + m_cosVal3 * m_amplitude;
 	}
 
 	m_callback->callback(m_buffer, m_blockSize, m_id);

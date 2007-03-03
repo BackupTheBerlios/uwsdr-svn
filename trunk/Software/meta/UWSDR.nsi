@@ -13,8 +13,8 @@
 ;Configuration
 
   ;General
-  Name "UWSDR 0.7.5"
-  OutFile "UWSDR-0.7.5.exe"
+  Name "UWSDR 0.8"
+  OutFile "UWSDR-0.8.exe"
 
   ;Folder selection page
   InstallDir "$PROGRAMFILES\UWSDR"

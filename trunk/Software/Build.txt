@@ -34,11 +34,11 @@ The Help files are not built by default, these have to be done manually. Go to t
 Linux
 -----
 
-The build platform used is Ubuntu 6.10, although the comments apply equally well to Ubuntu 6.06. Generally the comments below will apply to most other Linux distributions, particularly Debian which Ubuntu is based on.
+The build platform used is Ubuntu 6.10, although the comments apply equally well to Ubuntu 6.06. Generally the comments below will apply to most other Linux distributions, particularly Debian which Ubuntu is based on. By default Ubuntu does not come with any compilers installed, and so you'll need to install g++ and make.
 
 Before building the software you need to ensure that you have the pre-requisites installed, either as packages or built from source. Note that in all cases I installed the libraries in /usr/lib rather than the default /usr/local/lib. To do this add the "--prefix=/usr" to the configure command line, however this is not shown in the examples below.
 
-wxWidgets 2.8.0 or later should be built and installed. This can be found at http://www.wxwidgets.org and will take some time to build. If you install it as a package then ensure that the devel part is installed as well.
+wxWidgets 2.8.0 or later should be built and installed. This can be found at http://www.wxwidgets.org and will take some time to build. If you install it as a package then ensure that the devel part is installed as well. In order to do this you'll need to install the libgtk2.0-dev package.
 
 FFTW 3 should be either installed or built. This can be found at http://www.fftw.org and if building it yourself, you have to configure it as:
 

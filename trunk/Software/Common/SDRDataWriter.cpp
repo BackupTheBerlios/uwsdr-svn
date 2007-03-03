@@ -1,4 +1,4 @@
-/*
+	/*
  *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -32,18 +32,18 @@ m_port(port),
 m_version(version),
 m_fd(-1),
 m_remAddr(),
-m_sequence(0),
+m_sequence(0U),
 m_sockBuffer(NULL),
 m_dataBuffer(NULL),
 m_buffer(NULL),
-m_delay(0UL),
+m_delay(delay),
+m_delayTime(0UL),
 m_waiting(),
-m_requests(0),
-m_overruns(0),
-m_packets(0),
-MAX_SAMPLES(maxSamples),
-DELAY(delay),
-m_packetRequests(0),
+m_requests(0U),
+m_overruns(0U),
+m_packets(0U),
+m_maxSamples(maxSamples),
+m_packetRequests(0U),
 m_enabled(false)
 {
 }
@@ -107,14 +107,14 @@ bool CSDRDataWriter::open(float sampleRate, unsigned int blockSize)
 		return false;
 	}
 
-	m_sockBuffer = new unsigned char[HEADER_SIZE + MAX_SAMPLES * SAMPLE_SIZE];
-	m_dataBuffer = new float[MAX_SAMPLES * 2];
+	m_sockBuffer = new unsigned char[HEADER_SIZE + m_maxSamples * SAMPLE_SIZE];
+	m_dataBuffer = new float[m_maxSamples * 2];
 
 	m_buffer = new CRingBuffer(blockSize * 10, 2);
 
-	if (DELAY) {
-		m_delay = (500UL * MAX_SAMPLES) / (unsigned long)sampleRate;
-		::wxLogMessage(wxT("Delay is %lums"), m_delay);
+	if (m_delay) {
+		m_delayTime = (500UL * m_maxSamples) / (unsigned long)sampleRate;
+		::wxLogMessage(wxT("Delay is %lums"), m_delayTime);
 	}
 
 	::wxLogMessage(wxT("SDRDataWriter: started with address %s and port %d"), m_address.c_str(), m_port);
@@ -171,14 +171,14 @@ void* CSDRDataWriter::Entry()
 	delete[] m_dataBuffer;
 	delete   m_buffer;
 
-	::wxLogMessage(wxT("SDRDataWriter: %u max samples, %u overruns, %u requests, %u packet requests, %u packets"), MAX_SAMPLES, m_overruns, m_requests, m_packetRequests, m_packets);
+	::wxLogMessage(wxT("SDRDataWriter: %u max samples, %u overruns, %u requests, %u packet requests, %u packets"), m_maxSamples, m_overruns, m_requests, m_packetRequests, m_packets);
 
 	return (void*)0;
 }
 
 void CSDRDataWriter::writePacket()
 {
-	unsigned int nSamples = m_buffer->getData(m_dataBuffer, MAX_SAMPLES);
+	unsigned int nSamples = m_buffer->getData(m_dataBuffer, m_maxSamples);
 
 	m_packetRequests++;
 
@@ -226,14 +226,14 @@ void CSDRDataWriter::writePacket()
 		}
 
 		if (ret != int(len)) {
-			::wxLogError(wxT("SDRDataWriter: Error only wrote %d of %u bytes to the datagram socket"), ret, len);
+			::wxLogError(wxT("SDRDataWriter: Error only wrote %ld of %u bytes to the datagram socket"), ret, len);
 			return;
 		}
 
-		if (DELAY)
-			::wxMilliSleep(m_delay);
+		if (m_delay)
+			::wxMilliSleep(m_delayTime);
 
-		nSamples = m_buffer->getData(m_dataBuffer, MAX_SAMPLES);
+		nSamples = m_buffer->getData(m_dataBuffer, m_maxSamples);
 	}
 }
 

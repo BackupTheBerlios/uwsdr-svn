@@ -74,8 +74,8 @@ class CGUISetupFrame : public wxFrame {
 	void writeStartMenu(const wxString& name, const wxString& instDir);
 #if defined(__WXMSW__)
 	void writeDeskTop(const wxString& name, const wxString& instDir);
-#endif
-#if defined(__WXGTK__)
+#elif defined(__WXGTK__)
+	bool getMenuDir(wxString& dir) const;
 	bool getDesktopDir(wxString& dir) const;
 #endif
 };

@@ -36,7 +36,7 @@ m_blockSize(0),
 m_stream(NULL),
 m_buffer(NULL),
 m_lastBuffer(NULL),
-m_inBuffer(NULL),
+m_outBuffer(NULL),
 m_requests(0),
 m_underruns(0),
 m_overruns(0),
@@ -49,7 +49,7 @@ CSoundCardWriter::~CSoundCardWriter()
 {
 	delete   m_buffer;
 	delete[] m_lastBuffer;
-	delete[] m_inBuffer;
+	delete[] m_outBuffer;
 }
 
 bool CSoundCardWriter::open(float sampleRate, unsigned int blockSize)
@@ -62,7 +62,7 @@ bool CSoundCardWriter::open(float sampleRate, unsigned int blockSize)
 	m_lastBuffer = new float[blockSize * 2U];
 	::memset(m_lastBuffer, 0x00, blockSize * 2U * sizeof(float));
 
-	m_inBuffer = new float[blockSize * 2U];
+	m_outBuffer = new float[blockSize * 2U];
 
 	PaError error = ::Pa_Initialize();
 	if (error != paNoError) {
@@ -115,15 +115,6 @@ void CSoundCardWriter::write(const float* buffer, unsigned int nSamples)
 
 	wxASSERT(buffer != NULL);
 
-	if (m_channels == 1U) {
-		for (unsigned int i = 0U; i < nSamples; i++) {
-			m_inBuffer[i * 2U + 0U] = buffer[i];
-			m_inBuffer[i * 2U + 1U] = buffer[i];
-		}
-
-		buffer = m_inBuffer;
-	}
-
 	unsigned int n = m_buffer->addData(buffer, nSamples);
 
 	if (n != nSamples)
@@ -137,13 +128,26 @@ int CSoundCardWriter::callback(void* output, unsigned long nSamples, const PaStr
 	m_requests++;
 
 	if (m_buffer->dataSpace() >= nSamples) {
-		m_buffer->getData((float*)output, nSamples);
+		m_buffer->getData(m_outBuffer, nSamples);
 	} else {
-		::memcpy(output, m_lastBuffer, nSamples * 2 * sizeof(float));
+		::memcpy(m_outBuffer, m_lastBuffer, nSamples * 2U * sizeof(float));
 		m_underruns++;
 	}
 
-	::memcpy(m_lastBuffer, output, nSamples * 2 * sizeof(float));
+	::memcpy(m_lastBuffer, m_outBuffer, nSamples * 2U * sizeof(float));
+
+	float* out = (float*)output;
+
+	switch (m_channels) {
+		case 1U: {
+				for (unsigned int i = 0U; i < nSamples; i++)
+					out[i] = m_outBuffer[i * 2U + 0U];
+			}
+			break;
+		case 2U:
+			::memcpy(out, m_outBuffer, nSamples * 2U * sizeof(float));
+			break;
+	}
 	
 	return paContinue;
 }

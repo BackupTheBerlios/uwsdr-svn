@@ -688,7 +688,7 @@ bool CDSPControl::setRecord(bool record)
 		wxDateTime now = wxDateTime::Now();
 		wxString fileName = now.Format(wxT("%Y%m%d-%H%M%S.wav"));
 
-		CSoundFileWriter* sdfw = new CSoundFileWriter(fileName);
+		CSoundFileWriter* sdfw = new CSoundFileWriter(fileName, 1U);
 
 		bool ret = sdfw->open(m_sampleRate, BLOCK_SIZE);
 		if (!ret) {

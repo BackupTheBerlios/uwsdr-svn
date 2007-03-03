@@ -94,8 +94,7 @@ bool CTwoToneReader::create()
 		m_sinVal2 = m_cosVal2 * m_sinDelta2 + m_sinVal2 * m_cosDelta2;
 		m_cosVal2 = tmpVal;
 
-		m_buffer[i * 2 + 0] = m_cosVal1 * m_amplitude + m_cosVal2 * m_amplitude;
-		m_buffer[i * 2 + 1] = m_sinVal1 * m_amplitude + m_sinVal2 * m_amplitude;
+		m_buffer[i * 2 + 0] = m_buffer[i * 2 + 1] = m_cosVal1 * m_amplitude + m_cosVal2 * m_amplitude;
 	}
 
 	m_callback->callback(m_buffer, m_blockSize, m_id);
