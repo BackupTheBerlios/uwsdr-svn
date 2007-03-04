@@ -93,8 +93,8 @@ class CDSPControl : public wxThread, public IDataCallback {
 	virtual float getTXOffset();
 	virtual float getRXOffset();
 
-	virtual void sendCW(unsigned int speed, const wxString& text);
-	virtual void sendAudio(const wxString& fileName, VOICESTATUS state);
+	virtual bool sendCW(unsigned int speed, const wxString& text, CWSTATUS state);
+	virtual bool sendAudio(const wxString& fileName, VOICESTATUS state);
 
     private:
 	CDTTSPControl*  m_dttsp;

@@ -728,26 +728,14 @@ void CDSPControl::scaleBuffer(float* buffer, unsigned int nSamples, float scale,
 	}
 }
 
-void CDSPControl::sendCW(unsigned int speed, const wxString& text)
+bool CDSPControl::sendCW(unsigned int speed, const wxString& text, CWSTATUS state)
 {
-	switch (speed) {
-		case CW_END:
-			break;
-		case CW_ABORT:
-			m_cwKeyer->abort();
-			break;
-		default:
-			m_cwKeyer->send(speed, text);
-			break;
-	}
+	return m_cwKeyer->send(speed, text, state);
 }
 
-void CDSPControl::sendAudio(const wxString& fileName, VOICESTATUS state)
+bool CDSPControl::sendAudio(const wxString& fileName, VOICESTATUS state)
 {
-	if (state == VOICE_STOPPED)
-		m_voiceKeyer->abort();
-	else
-		m_voiceKeyer->send(fileName, state);
+	return m_voiceKeyer->send(fileName, state);
 }
 
 #if defined(__WXDEBUG__)

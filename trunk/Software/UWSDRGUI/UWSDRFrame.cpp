@@ -286,8 +286,8 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			m_dsp->setTXReader(new CNullReader());
 			m_dsp->setTXWriter(new CNullWriter());
 
-			// If the same API and device is used for both, then use the shared sound card input/output driver.
-			if (m_parameters->m_sdrAudioInDev == m_parameters->m_userAudioInDev) {
+			// If the same device is used for both, then use the shared sound card input/output driver.
+			if (m_parameters->m_sdrAudioInDev == m_parameters->m_userAudioOutDev) {
 				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_sdrAudioInDev, m_parameters->m_userAudioOutDev, 2U, 1U);
 				m_dsp->setRXReader(scrw);
 				m_dsp->setRXWriter(scrw);
@@ -1042,6 +1042,7 @@ bool CUWSDRFrame::normaliseTransmit(bool txOn)
 		m_infoBox->setVFO(m_parameters->m_vfoChoice);
 
 	m_infoBox->setTX(m_txOn > 0U);
+	m_sMeter->setTX(m_txOn > 0U);
 
 	normaliseFreq();
 
@@ -1509,35 +1510,40 @@ void CUWSDRFrame::onClose(wxCloseEvent& event)
 	}
 }
 
-void CUWSDRFrame::sendCW(unsigned int speed, const wxString& text)
+bool CUWSDRFrame::sendCW(unsigned int speed, const wxString& text, CWSTATUS state)
 {
 	// If we're not in CW mode, ignore
 	if (m_parameters->m_mode != MODE_CWUW && m_parameters->m_mode != MODE_CWUN && m_parameters->m_mode != MODE_CWLW && m_parameters->m_mode != MODE_CWLN)
-		return;
+		return false;
 
-	switch (speed) {
-		case CW_END:
-			setTransmit(false);
-			break;
-		case CW_ABORT:		// A CW_STOP will be sent for this event from the keyer
-			break;
-		default:
+	switch (state) {
+		case CW_TX_ON:
 			setTransmit(true);
-			break;
+			return true;
+		case CW_TX_OFF:
+			setTransmit(false);
+			return true;
+		default:
+			return m_dsp->sendCW(speed, text, state);
 	}
-
-	m_dsp->sendCW(speed, text);
 }
 
-void CUWSDRFrame::sendAudio(const wxString& fileName, VOICESTATUS state)
+bool CUWSDRFrame::sendAudio(const wxString& fileName, VOICESTATUS state)
 {
 	// If we're in CW mode, ignore
 	if (m_parameters->m_mode == MODE_CWUW || m_parameters->m_mode == MODE_CWUN || m_parameters->m_mode == MODE_CWLW || m_parameters->m_mode == MODE_CWLN)
-		return;
+		return false;
 
-	setTransmit(state != VOICE_STOPPED);
-
-	m_dsp->sendAudio(fileName, state);
+	switch (state) {
+		case VOICE_TX_ON:
+			setTransmit(true);
+			return true;
+		case VOICE_TX_OFF:
+			setTransmit(false);
+			return true;
+		default:
+			return m_dsp->sendAudio(fileName, state);
+	}
 }
 
 void CUWSDRFrame::setTransmit(bool txOn)

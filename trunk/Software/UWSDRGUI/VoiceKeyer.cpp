@@ -26,7 +26,7 @@ m_sampleRate(0.0F),
 m_blockSize(0),
 m_callback(NULL),
 m_id(0),
-m_status(VOICE_STOPPED),
+m_status(VOICE_ABORT),
 m_file(NULL)
 {
 }
@@ -53,16 +53,6 @@ void CVoiceKeyer::close()
 	delete this;
 }
 
-void CVoiceKeyer::abort()
-{
-	if (m_file != NULL) {
-		m_file->close();
-		m_file = NULL;
-	}
-
-	m_status = VOICE_STOPPED;
-}
-
 void CVoiceKeyer::purge()
 {
 	if (m_file != NULL)
@@ -76,7 +66,7 @@ bool CVoiceKeyer::hasClock()
 
 void CVoiceKeyer::clock()
 {
-	if (m_status == VOICE_STOPPED)
+	if (m_status == VOICE_ABORT)
 		return;
 
 	if (m_file != NULL)
@@ -89,22 +79,45 @@ void CVoiceKeyer::setCallback(IDataCallback* callback, int id)
 	m_id       = id;
 }
 
-void CVoiceKeyer::send(const wxString& fileName, VOICESTATUS status)
+bool CVoiceKeyer::send(const wxString& fileName, VOICESTATUS status)
 {
-	wxASSERT(status == VOICE_SINGLE || status == VOICE_CONTINUOUS);
+	if (status == VOICE_ABORT && m_file == NULL)
+		return true;
 
-	m_file = new CSoundFileReader(fileName);
+	if (status == VOICE_ABORT && m_file != NULL) {
+		if (m_file != NULL) {
+			m_file->close();
+			m_file = NULL;
+		}
 
-	bool ret = m_file->open(m_sampleRate, m_blockSize);
-	if (!ret) {
-		::wxLogError(wxT("Unable to open sound file %s"), fileName.c_str());
-		m_file = NULL;
-		return;
+		m_status = status;
+
+		::wxGetApp().sendAudio(wxEmptyString, VOICE_TX_OFF);
+
+		return true;
 	}
 
-	m_file->setCallback(this, 0);
+	wxASSERT(status == VOICE_SINGLE || status == VOICE_CONTINUOUS);
 
-	m_status = status;
+	if (m_file == NULL) {
+		m_file = new CSoundFileReader(fileName);
+
+		bool ret = m_file->open(m_sampleRate, m_blockSize);
+		if (!ret) {
+			m_file = NULL;
+			return false;
+		}
+
+		m_file->setCallback(this, 0);
+
+		m_status = status;
+
+		::wxGetApp().sendAudio(wxEmptyString, VOICE_TX_ON);
+
+		return true;
+	}
+
+	return false;
 }
 
 void CVoiceKeyer::callback(float* buffer, unsigned int nSamples, int WXUNUSED(id))
@@ -113,10 +126,9 @@ void CVoiceKeyer::callback(float* buffer, unsigned int nSamples, int WXUNUSED(id
 
 	// EOF in single mode means the end of transmission
 	if (nSamples == 0 && m_status == VOICE_SINGLE) {
-		m_status = VOICE_STOPPED;
 		nSamples = m_blockSize;
 		::memset(buffer, 0x00, m_blockSize * 2 * sizeof(float));
-		::wxGetApp().sendAudio(wxEmptyString, VOICE_STOPPED);
+		::wxGetApp().sendAudio(wxEmptyString, VOICE_ABORT);
 	}
 
 	// Restart the sound file and send a block of silence for now

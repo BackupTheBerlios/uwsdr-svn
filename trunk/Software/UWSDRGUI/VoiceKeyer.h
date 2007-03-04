@@ -46,8 +46,7 @@ class CVoiceKeyer : public IDataReader, public IDataCallback {
 
 	virtual void setCallback(IDataCallback* callback, int id);
 
-	virtual void send(const wxString& fileName, VOICESTATUS state);
-	virtual void abort();
+	virtual bool send(const wxString& fileName, VOICESTATUS state);
 
     protected:
 	virtual ~CVoiceKeyer();

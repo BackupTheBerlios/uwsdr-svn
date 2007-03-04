@@ -243,9 +243,19 @@ enum SPECTRUMRANGE {
 };
 
 enum VOICESTATUS {
-	VOICE_STOPPED,
 	VOICE_SINGLE,
-	VOICE_CONTINUOUS
+	VOICE_CONTINUOUS,
+	VOICE_ABORT,
+	VOICE_TX_ON,
+	VOICE_TX_OFF
+};
+
+enum CWSTATUS {
+	CW_SEND_TEXT,
+	CW_SEND_CHAR,
+	CW_ABORT,
+	CW_TX_ON,
+	CW_TX_OFF
 };
 
 enum INPIN {
@@ -267,9 +277,6 @@ const int CWKEYBOARD_COUNT    = 6;
 const int VOICEKEYER_COUNT    = 20;
 
 const float CW_OFFSET         = 800.0F;
-
-const unsigned int CW_END     = 0U;		// Real CW speeds start at 5
-const unsigned int CW_ABORT   = 1U;
 
 const double FREQ_VERY_FAST_STEP = 500.0;
 const double FREQ_FAST_STEP      = 300.0;

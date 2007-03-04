@@ -50,17 +50,20 @@ CSMeter::CSMeter(wxWindow* parent, int id, const wxPoint& pos, const wxSize& siz
 wxPanel(parent, id, pos, size, style, name),
 m_width(size.GetWidth()),
 m_height(size.GetHeight()),
-m_background(NULL),
+m_rxBackground(NULL),
+m_txBackground(NULL),
 m_bitmap(NULL),
 m_menu(NULL),
 m_rxMenu(NULL),
 m_txMenu(NULL),
 m_rxMeter(METER_SIGNAL),
 m_txMeter(METER_POWER),
-m_lastLevel(999.9F)
+m_lastLevel(999.9F),
+m_txOn(false)
 {
-	m_bitmap     = new wxBitmap(m_width, m_height);
-	m_background = new wxBitmap(m_width, m_height);
+	m_bitmap       = new wxBitmap(m_width, m_height);
+	m_rxBackground = new wxBitmap(m_width, m_height);
+	m_txBackground = new wxBitmap(m_width, m_height);
 
 	m_rxMenu = new wxMenu();
 	m_rxMenu->AppendRadioItem(MENU_I_INPUT,    _("I Input"));
@@ -85,13 +88,19 @@ m_lastLevel(999.9F)
 CSMeter::~CSMeter()
 {
 	delete m_bitmap;
-	delete m_background;
+	delete m_rxBackground;
+	delete m_txBackground;
 	delete m_menu;
 }
 
 void CSMeter::setTXMenu(bool set)
 {
 	m_menu->Enable(MENU_TX_MENU, set);
+}
+
+void CSMeter::setTX(bool on)
+{
+	m_txOn = on;
 }
 
 void CSMeter::setLevel(float level)
@@ -103,7 +112,10 @@ void CSMeter::setLevel(float level)
 		return;
 
 	wxMemoryDC dcBackground;
-	dcBackground.SelectObject(*m_background);
+	if (m_txOn)
+		dcBackground.SelectObject(*m_txBackground);
+	else
+		dcBackground.SelectObject(*m_rxBackground);
 
 	wxMemoryDC dc;
 	dc.SelectObject(*m_bitmap);
@@ -157,28 +169,40 @@ void CSMeter::show(wxDC& dc)
 void CSMeter::createBackground()
 {
 	// Flood the graph area with black to start with
-	wxMemoryDC dc;
-	dc.SelectObject(*m_background);
+	wxMemoryDC rxDC, txDC;
 
-	dc.SetBackground(*wxBLACK_BRUSH);
-	dc.Clear();
+	rxDC.SelectObject(*m_rxBackground);
+	txDC.SelectObject(*m_txBackground);
 
-	dc.SetBrush(*wxGREEN_BRUSH);
-	dc.SetPen(*wxBLACK_PEN);
-	dc.DrawEllipticArc(0, 20, SMETER_WIDTH, SMETER_WIDTH, 90.0, 135.0);
+	rxDC.SetBackground(*wxBLACK_BRUSH);
+	txDC.SetBackground(*wxBLACK_BRUSH);
+	rxDC.Clear();
+	txDC.Clear();
 
-	dc.SetBrush(*wxRED_BRUSH);
-	dc.SetPen(*wxBLACK_PEN);
-	dc.DrawEllipticArc(0, 20, SMETER_WIDTH, SMETER_WIDTH, 45.0, 90.0);
+	rxDC.SetBrush(*wxGREEN_BRUSH);
+	rxDC.SetPen(*wxBLACK_PEN);
+	rxDC.DrawEllipticArc(0, 20, SMETER_WIDTH, SMETER_WIDTH, 90.0, 135.0);
 
-	dc.SetPen(*wxWHITE_PEN);
+	rxDC.SetBrush(*wxRED_BRUSH);
+	rxDC.SetPen(*wxBLACK_PEN);
+	rxDC.DrawEllipticArc(0, 20, SMETER_WIDTH, SMETER_WIDTH, 45.0, 90.0);
+
+	txDC.SetBrush(*wxGREEN_BRUSH);
+	txDC.SetPen(*wxBLACK_PEN);
+	txDC.DrawEllipticArc(0, 20, SMETER_WIDTH, SMETER_WIDTH, 45.0, 135.0);
+
+	rxDC.SetPen(*wxWHITE_PEN);
+	txDC.SetPen(*wxWHITE_PEN);
 
 	wxFont font = wxSystemSettings::GetFont(wxSYS_SYSTEM_FONT);
 	font.SetPointSize(11);
 	font.SetWeight(wxFONTWEIGHT_BOLD);
-	dc.SetFont(font);
 
-	dc.SetTextForeground(*wxWHITE);
+	rxDC.SetFont(font);
+	txDC.SetFont(font);
+
+	rxDC.SetTextForeground(*wxWHITE);
+	txDC.SetTextForeground(*wxWHITE);
 
 	int centreX = SMETER_WIDTH / 2;
 	int centreY = SMETER_WIDTH / 2 + 20;
@@ -186,39 +210,67 @@ void CSMeter::createBackground()
 	// S0
 	int endX = centreX - int((SMETER_WIDTH + 15) * 0.35355 + 0.5);
 	int endY = centreY - int((SMETER_WIDTH + 15) * 0.35355 + 0.5);
-	dc.DrawLine(centreX, centreY, endX, endY);
-	dc.DrawText(wxT("0"), endX - 10, endY - 10);
+	rxDC.DrawLine(centreX, centreY, endX, endY);
+	rxDC.DrawText(wxT("0"), endX - 10, endY - 10);
 	// S3
 	endX = centreX - int((SMETER_WIDTH + 15) * 0.25 + 0.5);
 	endY = centreY - int((SMETER_WIDTH + 15) * 0.43301 + 0.5);
-	dc.DrawLine(centreX, centreY, endX, endY);
-	dc.DrawText(wxT("3"), endX - 6, endY - 12);
+	rxDC.DrawLine(centreX, centreY, endX, endY);
+	rxDC.DrawText(wxT("3"), endX - 6, endY - 12);
 	// S6
 	endX = centreX - int((SMETER_WIDTH + 15) * 0.12941 + 0.5);
 	endY = centreY - int((SMETER_WIDTH + 15) * 0.48296 + 0.5);
-	dc.DrawLine(centreX, centreY, endX, endY);
-	dc.DrawText(wxT("6"), endX - 5, endY - 14);
+	rxDC.DrawLine(centreX, centreY, endX, endY);
+	rxDC.DrawText(wxT("6"), endX - 5, endY - 14);
 	// S9
 	endX = centreX;
 	endY = 15;
-	dc.DrawLine(centreX, centreY, endX, endY);
-	dc.DrawText(wxT("9"), endX - 5, endY - 15);
+	rxDC.DrawLine(centreX, centreY, endX, endY);
+	rxDC.DrawText(wxT("9"), endX - 5, endY - 15);
 	// S9+20
 	endX = centreX + int((SMETER_WIDTH + 15) * 0.19134 + 0.5);
 	endY = centreY - int((SMETER_WIDTH + 15) * 0.46194 + 0.5);
-	dc.DrawLine(centreX, centreY, endX, endY);
-	dc.DrawText(wxT("+20"), endX - 5, endY - 12);
+	rxDC.DrawLine(centreX, centreY, endX, endY);
+	rxDC.DrawText(wxT("+20"), endX - 5, endY - 12);
 	// S9+40
 	endX = centreX + int((SMETER_WIDTH + 15) * 0.35355 + 0.5);
 	endY = centreY - int((SMETER_WIDTH + 15) * 0.35355 + 0.5);
-	dc.DrawLine(centreX, centreY, endX, endY);
-	dc.DrawText(wxT("+40"), endX - 10, endY - 10);
+	rxDC.DrawLine(centreX, centreY, endX, endY);
+	rxDC.DrawText(wxT("+40"), endX - 5, endY - 10);
 
-	dc.SetBrush(*wxBLACK_BRUSH);
-	dc.SetPen(*wxBLACK_PEN);
-	dc.DrawEllipticArc(5, 25, SMETER_WIDTH - 10, SMETER_WIDTH - 10, 40.0, 140.0);
+	// 0
+	endX = centreX - int((SMETER_WIDTH + 15) * 0.35355 + 0.5);
+	endY = centreY - int((SMETER_WIDTH + 15) * 0.35355 + 0.5);
+	txDC.DrawLine(centreX, centreY, endX, endY);
+	txDC.DrawText(wxT("0"), endX - 10, endY - 10);
+	// 2.5
+	endX = centreX - int((SMETER_WIDTH + 15) * 0.19134 + 0.5);
+	endY = centreY - int((SMETER_WIDTH + 15) * 0.46194 + 0.5);
+	txDC.DrawLine(centreX, centreY, endX, endY);
+	// 5
+	endX = centreX + int((SMETER_WIDTH + 15) * 0.0 + 0.5);
+	endY = centreY - int((SMETER_WIDTH + 15) * 0.5 + 0.5);
+	txDC.DrawLine(centreX, centreY, endX, endY);
+	// 7.5
+	endX = centreX + int((SMETER_WIDTH + 15) * 0.19134 + 0.5);
+	endY = centreY - int((SMETER_WIDTH + 15) * 0.46194 + 0.5);
+	txDC.DrawLine(centreX, centreY, endX, endY);
+	// 10
+	endX = centreX + int((SMETER_WIDTH + 15) * 0.35355 + 0.5);
+	endY = centreY - int((SMETER_WIDTH + 15) * 0.35355 + 0.5);
+	txDC.DrawLine(centreX, centreY, endX, endY);
+	txDC.DrawText(wxT("10"), endX, endY - 10);
 
-	dc.SelectObject(wxNullBitmap);
+	rxDC.SetBrush(*wxBLACK_BRUSH);
+	rxDC.SetPen(*wxBLACK_PEN);
+	rxDC.DrawEllipticArc(5, 25, SMETER_WIDTH - 10, SMETER_WIDTH - 10, 40.0, 140.0);
+
+	txDC.SetBrush(*wxBLACK_BRUSH);
+	txDC.SetPen(*wxBLACK_PEN);
+	txDC.DrawEllipticArc(5, 25, SMETER_WIDTH - 10, SMETER_WIDTH - 10, 40.0, 140.0);
+
+	rxDC.SelectObject(wxNullBitmap);
+	txDC.SelectObject(wxNullBitmap);
 }
 
 void CSMeter::onMouse(wxMouseEvent& event)

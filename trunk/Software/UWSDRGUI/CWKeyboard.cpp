@@ -334,7 +334,9 @@ void CCWKeyboard::onTransmit(wxCommandEvent& WXUNUSED(event))
 		}
 	}
 
-	::wxGetApp().sendCW(getSpeed(), cwData);
+	bool ret = ::wxGetApp().sendCW(getSpeed(), cwData, CW_SEND_TEXT);
+	if (!ret)
+		::wxMessageBox(_("Already sending a message"), _("uWave SDR Error"), wxICON_ERROR);
 }
 
 /*
@@ -342,5 +344,5 @@ void CCWKeyboard::onTransmit(wxCommandEvent& WXUNUSED(event))
  */
 void CCWKeyboard::onAbort(wxCommandEvent& WXUNUSED(event))
 {
-	::wxGetApp().sendCW(CW_ABORT, wxEmptyString);
+	::wxGetApp().sendCW(0U, wxEmptyString, CW_ABORT);
 }

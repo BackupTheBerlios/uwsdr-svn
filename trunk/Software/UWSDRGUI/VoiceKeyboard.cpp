@@ -171,13 +171,16 @@ void CVoiceKeyboard::onTransmit(wxCommandEvent& WXUNUSED(event))
 	}
 
 	if (m_single->GetValue())
-		::wxGetApp().sendAudio(fileName, VOICE_SINGLE);
+		ret = ::wxGetApp().sendAudio(fileName, VOICE_SINGLE);
 
 	if (m_continuous->GetValue())
-		::wxGetApp().sendAudio(fileName, VOICE_CONTINUOUS);
+		ret = ::wxGetApp().sendAudio(fileName, VOICE_CONTINUOUS);
+
+	if (!ret)
+		::wxMessageBox(_("Unable to open the sound file or already sending a file"), _("uWave SDR Error"), wxICON_ERROR);
 }
 
 void CVoiceKeyboard::onAbort(wxCommandEvent& WXUNUSED(event))
 {
-	::wxGetApp().sendAudio(wxEmptyString, VOICE_STOPPED);
+	::wxGetApp().sendAudio(wxEmptyString, VOICE_ABORT);
 }

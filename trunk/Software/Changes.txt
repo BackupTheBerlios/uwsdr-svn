@@ -360,3 +360,5 @@ On Windows, revert to Visual C++ Express.
 New CW Keyer.
 
 Create optional entries on the Desktop for Linux with GUISetup.
+
+A diferent meter is now shown on transmit.

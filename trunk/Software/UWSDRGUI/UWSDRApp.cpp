@@ -796,14 +796,14 @@ void CUWSDRApp::showHelp(int id)
 	m_help->Display(id);
 }
 
-void CUWSDRApp::sendCW(unsigned int speed, const wxString& text)
+bool CUWSDRApp::sendCW(unsigned int speed, const wxString& text, CWSTATUS state)
 {
-	m_frame->sendCW(speed, text);
+	return m_frame->sendCW(speed, text, state);
 }
 
-void CUWSDRApp::sendAudio(const wxString& fileName, VOICESTATUS state)
+bool CUWSDRApp::sendAudio(const wxString& fileName, VOICESTATUS state)
 {
-	m_frame->sendAudio(fileName, state);
+	return m_frame->sendAudio(fileName, state);
 }
 
 void CUWSDRApp::setTransmit(bool txOn)

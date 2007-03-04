@@ -31,6 +31,7 @@ class CSMeter : public wxPanel {
 	virtual ~CSMeter();
 
 	virtual void setTXMenu(bool set);
+	virtual void setTX(bool on);
 
 	virtual void setLevel(float level);
 
@@ -47,7 +48,8 @@ class CSMeter : public wxPanel {
     private:
 	int          m_width;
 	int          m_height;
-	wxBitmap*    m_background;
+	wxBitmap*    m_rxBackground;
+	wxBitmap*    m_txBackground;
 	wxBitmap*    m_bitmap;
 	wxMenu*      m_menu;
 	wxMenu*      m_rxMenu;
@@ -55,6 +57,7 @@ class CSMeter : public wxPanel {
 	METERPOS     m_rxMeter;
 	METERPOS     m_txMeter;
 	float        m_lastLevel;
+	bool         m_txOn;
 
 	DECLARE_EVENT_TABLE()
 
