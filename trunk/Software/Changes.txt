@@ -357,7 +357,7 @@ Changes for building on Mac OS X.
 
 On Windows, revert to Visual C++ Express.
 
-New CW Keyer.
+New CW Keyer with a higher and more accurate top speed.
 
 Create optional entries on the Desktop for Linux with GUISetup.
 

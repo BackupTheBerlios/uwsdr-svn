@@ -62,7 +62,7 @@ class CCWKeyer : public CThreadReader {
 	float          m_sinValue;
 
 	unsigned int speedToUnits(unsigned int speed);
-	void         processKey(bool key);
+	void         processKey(bool key, float* buffer, unsigned int blockSize);
 	void         end();
 };
 

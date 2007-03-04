@@ -20,14 +20,9 @@
 
 #include "UWSDRApp.h"
 
-const float RC_LEN   = 5.0F;	// The length of the raised cosine in ms
+const float RC_LEN = 5.0F;			// The length of the raised cosine in ms
 
-const int DOT_LEN    = 1;
-const int DASH_LEN   = 3;
-const int SYMBOL_GAP = 1;
-const int LETTER_GAP = 3;
-const int WORD_GAP   = 7;
-
+const unsigned int SUBDIV = 4U;		// The sub-division of the clock
 
 CCWKeyer::CCWKeyer() :
 CThreadReader(),
@@ -81,6 +76,8 @@ bool CCWKeyer::open(float sampleRate, unsigned int blockSize)
  */
 bool CCWKeyer::create()
 {
+	wxASSERT(m_callback != NULL);
+
 	// Key pressed when transmitting from the CW keyboard, abort
 	if (m_key && m_bitsLen > 0U) {
 		end();
@@ -90,19 +87,29 @@ bool CCWKeyer::create()
 	// Sending a message from the keyboard
 	if (m_bitsLen > 0U) {
 		// End of the message ?
-		if (m_bitsIndex == m_bitsLen) {
+		if (m_bitsIndex >= m_bitsLen) {
 			end();
 			return true;
 		}
 
-		// Send the next unit, from the bit array
-		bool key = m_bits[m_bitsIndex++];
-		processKey(key);
+		// Send the next set of units, from the bit array
+		float* buffer = m_buffer;
+		for (unsigned int i = 0U; i < SUBDIV && m_bitsIndex < m_bitsLen; i++) {
+			bool key = m_bits[m_bitsIndex++];
+			processKey(key, buffer, m_blockSize / SUBDIV);
+			buffer += (m_blockSize / SUBDIV) * 2U;
+		}
+
+		m_callback->callback(m_buffer, m_blockSize, m_id);
+
 		return true;
 	}
 
 	// Use the status of the real key
-	processKey(m_key);
+	processKey(m_key, m_buffer, m_blockSize);
+
+	m_callback->callback(m_buffer, m_blockSize, m_id);
+
 	return true;
 }
 
@@ -182,7 +189,7 @@ bool CCWKeyer::send(unsigned int speed, const wxString& text, CWSTATUS state)
  */
 unsigned int CCWKeyer::speedToUnits(unsigned int speed)
 {
-	float sysUnitsPerSec = m_sampleRate / float(m_blockSize);
+	float sysUnitsPerSec = float(SUBDIV) * m_sampleRate / float(m_blockSize);
 
 	float unitsPerSec = 10.0F * float(speed) / 12.5F;
 
@@ -215,14 +222,13 @@ void CCWKeyer::key(bool keyDown)
 	m_key = keyDown;
 }
 
-void CCWKeyer::processKey(bool key)
+void CCWKeyer::processKey(bool key, float* buffer, unsigned int blockSize)
 {
-	wxASSERT(m_callback != NULL);
+	wxASSERT(buffer != NULL);
 
 	// Generate silence
 	if (!key && !m_lastKey) {
-		::memset(m_buffer, 0x00, m_blockSize * 2 * sizeof(float));
-		m_callback->callback(m_buffer, m_blockSize, m_id);
+		::memset(buffer, 0x00, blockSize * 2U * sizeof(float));
 		return;
 	}
 
@@ -233,31 +239,28 @@ void CCWKeyer::processKey(bool key)
 	}
 
 	// Generate a continuous tone, phase contiguous with the previous one
-	for (unsigned int i = 0; i < m_blockSize; i++) {
+	for (unsigned int i = 0; i < blockSize; i++) {
 		float tmpValue = m_cosValue * m_cosDelta - m_sinValue * m_sinDelta;
 		m_sinValue = m_cosValue * m_sinDelta + m_sinValue * m_cosDelta;
 		m_cosValue = tmpValue;
 
-		m_buffer[i * 2U + 0U] = m_sinValue;
-		m_buffer[i * 2U + 1U] = m_sinValue;
+		buffer[i * 2U + 0U] = m_sinValue;
+		buffer[i * 2U + 1U] = m_sinValue;
 	}
 
 	// Continuous tone
-	if (key && m_lastKey) {
-		m_callback->callback(m_buffer, m_blockSize, m_id);
+	if (key && m_lastKey)
 		return;
-	}
 
 	// Start of a tone, shape the beginning
 	if (key && !m_lastKey) {
-		for (unsigned int i = 0; i < m_defLen; i++) {
+		for (unsigned int i = 0U; i < m_defLen; i++) {
 			float ampl = 0.5F * (1.0F - ::cos(M_PI * (float(i) / float(m_defLen))));
 
-			m_buffer[i * 2U + 0U] *= ampl;
-			m_buffer[i * 2U + 1U] *= ampl;
+			buffer[i * 2U + 0U] *= ampl;
+			buffer[i * 2U + 1U] *= ampl;
 		}
 
-		m_callback->callback(m_buffer, m_blockSize, m_id);
 		m_lastKey = key;
 		return;
 	}
@@ -266,13 +269,12 @@ void CCWKeyer::processKey(bool key)
 	for (unsigned int j = 0; j < m_defLen; j++) {
 		float ampl = 0.5F * (1.0F - ::cos(M_PI + M_PI * (float(j) / float(m_defLen))));
 
-		m_buffer[j * 2U + 0U] *= ampl;
-		m_buffer[j * 2U + 1U] *= ampl;
+		buffer[j * 2U + 0U] *= ampl;
+		buffer[j * 2U + 1U] *= ampl;
 	}
 
-	if (m_defLen < m_blockSize)
-		::memset(m_buffer + m_defLen * 2U, 0x00, (m_blockSize - m_defLen) * 2 * sizeof(float));
+	if (m_defLen < blockSize)
+		::memset(buffer + m_defLen * 2U, 0x00, (blockSize - m_defLen) * 2U * sizeof(float));
 
-	m_callback->callback(m_buffer, m_blockSize, m_id);
 	m_lastKey = key;
 }
