@@ -24,7 +24,6 @@
 #include "SRTXRXController.h"
 #include "UWSDRController.h"
 #include "FreqKeypad.h"
-#include "Version.h"
 #include "NullReader.h"
 #include "NullWriter.h"
 #include "SignalReader.h"

@@ -28,4 +28,18 @@ const wxDateTime::wxDateTime_t REL_DATE_DAY   = 11;
 const wxDateTime::Month        REL_DATE_MONTH = wxDateTime::Mar;
 const unsigned int             REL_DATE_YEAR  = 2007;
 
+enum INPIN {
+	IN_NONE = -1,
+	IN_RTS_CTS,
+	IN_RTS_DSR,
+	IN_DTR_DSR,
+	IN_DTR_CTS
+};
+
+enum OUTPIN {
+	OUT_NONE = -1,
+	OUT_RTS,
+	OUT_DTR
+};
+
 #endif

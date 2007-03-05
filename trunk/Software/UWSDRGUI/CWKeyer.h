@@ -49,6 +49,9 @@ class CCWKeyer : public CThreadReader {
 	unsigned int   m_blockSize;
 	IDataCallback* m_callback;
 	int            m_id;
+	CWSTATUS       m_state;
+	unsigned int   m_speed;
+	wxString       m_text;
 	bool*          m_bits;
 	unsigned int   m_bitsLen;
 	unsigned int   m_bitsIndex;
@@ -62,8 +65,9 @@ class CCWKeyer : public CThreadReader {
 	float          m_sinValue;
 
 	unsigned int speedToUnits(unsigned int speed);
-	void         processKey(bool key, float* buffer, unsigned int blockSize);
-	void         end();
+	void processKey(bool key, float* buffer, unsigned int blockSize);
+	void createCW(const wxString& text, unsigned int speed);
+	void end();
 };
 
 #endif

@@ -558,6 +558,10 @@
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
+				RelativePath=".\Common.h"
+				>
+			</File>
+			<File
 				RelativePath="ControlInterface.h"
 				>
 			</File>
@@ -663,10 +667,6 @@
 			</File>
 			<File
 				RelativePath="UWSDRController.h"
-				>
-			</File>
-			<File
-				RelativePath="Version.h"
 				>
 			</File>
 		</Filter>

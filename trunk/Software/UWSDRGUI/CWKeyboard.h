@@ -30,6 +30,7 @@ class CCWKeyboard : public wxDialog {
 	CCWKeyboard(wxWindow* parent, int id);
 	virtual ~CCWKeyboard();
 
+	void onRealTime(wxCommandEvent& event);
 	void onTransmit(wxCommandEvent& event);
 	void onAbort(wxCommandEvent& event);
 	void onHelp(wxCommandEvent& event);
@@ -62,8 +63,10 @@ class CCWKeyboard : public wxDialog {
 	wxTextCtrl*    m_report;
 	wxTextCtrl*    m_serial;
 	wxTextCtrl*    m_text[CWKEYBOARD_COUNT];
-	wxRadioButton* m_button[CWKEYBOARD_COUNT];
+	wxRadioButton* m_button[CWKEYBOARD_COUNT + 1];
+	wxTextCtrl*    m_realTime;
 	wxSpinCtrl*    m_speed;
+	unsigned int   m_prevLen;
 
 	DECLARE_EVENT_TABLE()
 };

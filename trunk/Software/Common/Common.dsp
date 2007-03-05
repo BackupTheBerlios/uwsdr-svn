@@ -179,6 +179,10 @@ SOURCE=.\UWSDRController.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
+SOURCE=.\Common.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\ControlInterface.h
 # End Source File
 # Begin Source File
@@ -284,10 +288,6 @@ SOURCE=.\TwoToneReader.h
 # Begin Source File
 
 SOURCE=.\UWSDRController.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\Version.h
 # End Source File
 # End Group
 # End Target

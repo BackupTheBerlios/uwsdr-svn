@@ -55,6 +55,7 @@ const int SMETER_HEIGHT    = 70;
 
 const int CWTEXT_WIDTH     = 650;
 const int CWKEYB_WIDTH     = 750;
+const int REAL_TIME_HEIGHT = 50;
 
 const int VOICETEXT_WIDTH  = 200;
 const int VOICEKEYB_WIDTH  = 350;
@@ -90,6 +91,7 @@ const int SMETER_HEIGHT    = 85;
 
 const int CWTEXT_WIDTH     = 650;
 const int CWKEYB_WIDTH     = 750;
+const int REAL_TIME_HEIGHT = 50;
 
 const int VOICETEXT_WIDTH  = 225;
 const int VOICEKEYB_WIDTH  = 325;
@@ -125,6 +127,7 @@ const int SMETER_HEIGHT    = 78;
 
 const int CWTEXT_WIDTH     = 700;
 const int CWKEYB_WIDTH     = 810;
+const int REAL_TIME_HEIGHT = 50;
 
 const int VOICETEXT_WIDTH  = 225;
 const int VOICEKEYB_WIDTH  = 390;
@@ -253,30 +256,16 @@ enum VOICESTATUS {
 enum CWSTATUS {
 	CW_SEND_TEXT,
 	CW_SEND_CHAR,
-	CW_ABORT,
+	CW_STOP,
 	CW_TX_ON,
 	CW_TX_OFF
 };
 
-enum INPIN {
-	IN_NONE = -1,
-	IN_RTS_CTS,
-	IN_RTS_DSR,
-	IN_DTR_DSR,
-	IN_DTR_CTS
-};
+const unsigned int CWKEYBOARD_COUNT = 6U;
 
-enum OUTPIN {
-	OUT_NONE = -1,
-	OUT_RTS,
-	OUT_DTR
-};
+const unsigned int VOICEKEYER_COUNT = 20U;
 
-const int CWKEYBOARD_COUNT    = 6;
-
-const int VOICEKEYER_COUNT    = 20;
-
-const float CW_OFFSET         = 800.0F;
+const float CW_OFFSET            = 800.0F;
 
 const double FREQ_VERY_FAST_STEP = 500.0;
 const double FREQ_FAST_STEP      = 300.0;

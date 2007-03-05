@@ -21,20 +21,7 @@
 
 #include <wx/wx.h>
 
-enum INPIN {
-	IN_NONE = -1,
-	IN_RTS_CTS,
-	IN_RTS_DSR,
-	IN_DTR_DSR,
-	IN_DTR_CTS
-};
-
-enum OUTPIN {
-	OUT_NONE = -1,
-	OUT_RTS,
-	OUT_DTR
-};
-
+#include "Common.h"
 
 class CPortDialog : public wxDialog {
 

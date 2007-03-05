@@ -17,7 +17,7 @@ GUISetupFrame.o: GUISetupFrame.cpp GUISetupFrame.h EthernetDialog.h PortDialog.h
 EthernetDialog.o:	EthernetDialog.cpp EthernetDialog.h
 		$(CC) $(CFLAGS) -c EthernetDialog.cpp
 
-PortDialog.o:	PortDialog.cpp PortDialog.h ../Common/SerialControl.h
+PortDialog.o:	PortDialog.cpp PortDialog.h ../Common/SerialControl.h ../Common/Common.h
 		$(CC) $(CFLAGS) -c PortDialog.cpp
 
 SoundCardDialog.o:	SoundCardDialog.cpp SoundCardDialog.h ../Common/SoundCardInfo.h

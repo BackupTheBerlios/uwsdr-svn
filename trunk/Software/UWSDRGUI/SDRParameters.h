@@ -21,6 +21,7 @@
 
 #include <wx/wx.h>
 
+#include "Common.h"
 #include "UWSDRDefs.h"
 #include "Frequency.h"
 #include "SDRDescrFile.h"

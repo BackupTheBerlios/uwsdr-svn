@@ -79,22 +79,13 @@ static struct {
 const int cwLookupLen = sizeof(cwLookup) / sizeof(cwLookup[0]);
 
 enum {
-	BUTTON_0 = 18344,
-	BUTTON_1,
-	BUTTON_2,
-	BUTTON_3,
-	BUTTON_4,
-	BUTTON_5,
-	BUTTON_6,
-	BUTTON_7,
-	BUTTON_8,
-	BUTTON_9,
-	BUTTON_10,
+	REAL_TIME = 18344,
 	BUTTON_TRANSMIT,
 	BUTTON_ABORT
 };
 
 BEGIN_EVENT_TABLE(CCWKeyboard, wxDialog)
+	EVT_TEXT(REAL_TIME,         CCWKeyboard::onRealTime)
 	EVT_BUTTON(BUTTON_TRANSMIT, CCWKeyboard::onTransmit)
 	EVT_BUTTON(BUTTON_ABORT,    CCWKeyboard::onAbort)
 	EVT_BUTTON(wxID_HELP,       CCWKeyboard::onHelp)
@@ -109,7 +100,9 @@ m_report(NULL),
 m_serial(NULL),
 m_text(),
 m_button(),
-m_speed(NULL)
+m_realTime(NULL),
+m_speed(NULL),
+m_prevLen(0U)
 {
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -164,7 +157,8 @@ m_speed(NULL)
 
 	wxFlexGridSizer* textSizer = new wxFlexGridSizer(3);
 
-	for (int i = 0; i < CWKEYBOARD_COUNT; i++) {
+	unsigned int i;
+	for (i = 0U; i < CWKEYBOARD_COUNT; i++) {
 		wxString text;
 		text.Printf(_("Message %d:"), i + 1);
 
@@ -175,10 +169,21 @@ m_speed(NULL)
 		m_text[i]->SetMaxLength(200);
 		textSizer->Add(m_text[i], 0, wxALL, BORDER_SIZE);
 
-		m_button[i] = new wxRadioButton(this, BUTTON_0 + i, wxEmptyString, wxDefaultPosition, wxDefaultSize, (i == 0) ? wxRB_GROUP : 0);
+		m_button[i] = new wxRadioButton(this, -1, wxEmptyString, wxDefaultPosition, wxDefaultSize, (i == 0) ? wxRB_GROUP : 0);
 		m_button[i]->SetValue(i == 0);
 		textSizer->Add(m_button[i], 0, wxALL, BORDER_SIZE);
 	}
+
+	wxStaticText* labelRealTime = new wxStaticText(this, -1, _("Real Time:"));
+	textSizer->Add(labelRealTime, 0, wxALL, BORDER_SIZE);
+
+	m_realTime = new wxTextCtrl(this, REAL_TIME, wxEmptyString, wxDefaultPosition, wxSize(CWTEXT_WIDTH, REAL_TIME_HEIGHT));
+	m_realTime->SetMaxLength(1000);
+	textSizer->Add(m_realTime, 0, wxALL, BORDER_SIZE);
+
+	m_button[i] = new wxRadioButton(this, -1, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	m_button[i]->SetValue(false);
+	textSizer->Add(m_button[i], 0, wxALL, BORDER_SIZE);
 
 	mainSizer->Add(textSizer, 0, wxALL, BORDER_SIZE);
 
@@ -303,12 +308,18 @@ void CCWKeyboard::onTransmit(wxCommandEvent& WXUNUSED(event))
 {
 	wxString text;
 
+	bool found = false;
 	for (int i = 0; i < CWKEYBOARD_COUNT; i++) {
 		if (m_button[i]->GetValue()) {
 			text = m_text[i]->GetValue();
+			found = true;
 			break;
 		}
 	}
+
+	// It could be the real time part ....
+	if (!found)
+		return;
 
 	text.UpperCase();
 
@@ -339,10 +350,42 @@ void CCWKeyboard::onTransmit(wxCommandEvent& WXUNUSED(event))
 		::wxMessageBox(_("Already sending a message"), _("uWave SDR Error"), wxICON_ERROR);
 }
 
+void CCWKeyboard::onRealTime(wxCommandEvent& WXUNUSED(event))
+{
+	if (!m_button[CWKEYBOARD_COUNT]->GetValue())
+		return;
+
+	unsigned int length = m_realTime->GetLastPosition();
+
+	wxString text = m_realTime->GetRange(m_prevLen, length);
+
+	m_prevLen = length;
+
+	text.UpperCase();
+
+	wxString cwData;
+
+	for (unsigned int n = 0; n < text.length(); n++) {
+		wxChar c = text.GetChar(n);
+
+		for (int m = 0; m < cwLookupLen; m++)	{
+			if (cwLookup[m].character == c) {
+				cwData.Append(cwLookup[m].cwString);
+				cwData.Append(wxT(" "));
+				break;
+			}
+		}
+	}
+
+	bool ret = ::wxGetApp().sendCW(getSpeed(), cwData, CW_SEND_CHAR);
+	if (!ret)
+		::wxMessageBox(_("Already sending a message"), _("uWave SDR Error"), wxICON_ERROR);
+}
+
 /*
  * Tell the system to stop transmitting.
  */
 void CCWKeyboard::onAbort(wxCommandEvent& WXUNUSED(event))
 {
-	::wxGetApp().sendCW(0U, wxEmptyString, CW_ABORT);
+	::wxGetApp().sendCW(0U, wxEmptyString, CW_STOP);
 }

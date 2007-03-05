@@ -30,6 +30,9 @@ m_sampleRate(0.0F),
 m_blockSize(0U),
 m_callback(NULL),
 m_id(0),
+m_state(CW_STOP),
+m_speed(0U),
+m_text(),
 m_bits(NULL),
 m_bitsLen(0U),
 m_bitsIndex(0U),
@@ -88,8 +91,13 @@ bool CCWKeyer::create()
 	if (m_bitsLen > 0U) {
 		// End of the message ?
 		if (m_bitsIndex >= m_bitsLen) {
-			end();
-			return true;
+			if (!m_text.IsEmpty()) {
+				createCW(m_text, m_speed);
+				m_text.Clear();
+			} else {
+				end();
+				return true;
+			}
 		}
 
 		// Send the next set of units, from the bit array
@@ -125,21 +133,90 @@ void CCWKeyer::setCallback(IDataCallback* callback, int id)
  */
 bool CCWKeyer::send(unsigned int speed, const wxString& text, CWSTATUS state)
 {
-	if (state == CW_ABORT && m_bitsLen > 0U) {
+	if (state == CW_STOP && m_bitsLen > 0U) {
 		end();
 		return true;
 	}
 
 	wxASSERT(state == CW_SEND_TEXT || state == CW_SEND_CHAR);
 
-	// We're already sending text
-	if (state == CW_SEND_TEXT && m_bitsLen > 0U)
+	// We're already sending text, we can't do anything
+	if (m_state == CW_SEND_TEXT && m_bitsLen > 0U)
 		return false;
+
+	// Already sending real-time so queue the next character
+	if (state == CW_SEND_CHAR && m_state == CW_SEND_CHAR && m_bitsLen > 0U) {
+		m_text.Append(text);
+		return true;
+	}
+
+	createCW(text, speed);
+
+	if (state == CW_SEND_TEXT)
+		::wxGetApp().sendCW(0U, wxEmptyString, CW_TX_ON);
+
+	m_speed = speed;
+	m_state = state;
+
+	return true;
+}
+
+/*
+ * Calculate the length of a dot in numbers of blocks, the speed in words per minute.
+ * At 12.5 WPM a dot is 1/10 of a second.
+ */
+unsigned int CCWKeyer::speedToUnits(unsigned int speed)
+{
+	float sysUnitsPerSec = float(SUBDIV) * m_sampleRate / float(m_blockSize);
+
+	float unitsPerSec = 10.0F * float(speed) / 12.5F;
+
+	unsigned int mult = (unsigned int)(sysUnitsPerSec / unitsPerSec + 0.5F);
+
+	if (mult == 0U)
+		return 1U;
+
+	return mult;
+}
+
+void CCWKeyer::end()
+{
+	m_bitsLen   = 0U;
+	m_bitsIndex = 0U;
+
+	delete[] m_bits;
+	m_bits = NULL;
+
+	m_text.Clear();
+
+	if (m_state == CW_SEND_TEXT)
+		::wxGetApp().sendCW(0U, wxEmptyString, CW_TX_OFF);
+
+	m_state = CW_STOP;
+}
+
+bool CCWKeyer::isActive() const
+{
+	return true;
+}
+
+void CCWKeyer::key(bool keyDown)
+{
+	m_key = keyDown;
+}
+
+void CCWKeyer::createCW(const wxString& text, unsigned int speed)
+{
+	m_bitsLen   = 0U;
+	m_bitsIndex = 0U;
+
+	delete[] m_bits;
+	m_bits = NULL;
 
 	unsigned int textLen = text.Length();
 
 	if (textLen == 0U)
-		return true;
+		return;
 
 	unsigned int mult = speedToUnits(speed);
 
@@ -177,49 +254,6 @@ bool CCWKeyer::send(unsigned int speed, const wxString& text, CWSTATUS state)
 
 	m_bitsLen   = bitsLen;
 	m_bitsIndex = 0U;
-
-	::wxGetApp().sendCW(0U, wxEmptyString, CW_TX_ON);
-
-	return true;
-}
-
-/*
- * Calculate the length of a dot in numbers of blocks, the speed in words per minute.
- * At 12.5 WPM a dot is 1/10 of a second.
- */
-unsigned int CCWKeyer::speedToUnits(unsigned int speed)
-{
-	float sysUnitsPerSec = float(SUBDIV) * m_sampleRate / float(m_blockSize);
-
-	float unitsPerSec = 10.0F * float(speed) / 12.5F;
-
-	unsigned int mult = (unsigned int)(sysUnitsPerSec / unitsPerSec + 0.5F);
-
-	if (mult == 0U)
-		return 1U;
-
-	return mult;
-}
-
-void CCWKeyer::end()
-{
-	m_bitsLen   = 0U;
-	m_bitsIndex = 0U;
-
-	delete[] m_bits;
-	m_bits = NULL;
-
-	::wxGetApp().sendCW(0U, wxEmptyString, CW_TX_OFF);
-}
-
-bool CCWKeyer::isActive() const
-{
-	return true;
-}
-
-void CCWKeyer::key(bool keyDown)
-{
-	m_key = keyDown;
 }
 
 void CCWKeyer::processKey(bool key, float* buffer, unsigned int blockSize)

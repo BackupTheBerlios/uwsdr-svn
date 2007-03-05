@@ -21,6 +21,7 @@
 
 #include <wx/wx.h>
 
+#include "Common.h"
 #include "UWSDRDefs.h"
 #include "SoundFileWriter.h"
 #include "DTTSPControl.h"
