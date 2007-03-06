@@ -828,7 +828,7 @@ void CGUISetupFrame::writeDeskTop(const wxString& name, const wxString& dir)
 void CGUISetupFrame::writeDeskTop(const wxString& name, const wxString& dir)
 {
 	wxString fileName;
-	fileName.Printf(wxT("%s/%s"), DATA_DIR, UWSDR_FILE.c_str());
+	fileName.Printf(wxT("%s/%s"), DATA_DIR, UWSDR_FILE);
 
 	// Open the .desktop template file
 	wxTextFile inFile;

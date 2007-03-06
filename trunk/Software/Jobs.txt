@@ -13,8 +13,6 @@ Upgrade GUISetup for Mac OS X icons and menu entries
 
 Set of screenshots for all platforms
 
-Sort out building with Visual C++ Express
-
 Internationalisation
 
 Shading of the receive bandwidth on the spectrum display
