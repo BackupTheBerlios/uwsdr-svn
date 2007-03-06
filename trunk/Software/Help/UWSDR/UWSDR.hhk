@@ -25,6 +25,11 @@
        </object>
 
   <li> <object type="text/sitemap">
+           <param name="Name" value="Config Chooser">
+           <param name="Local" value="Starting.htm">
+       </object>
+
+  <li> <object type="text/sitemap">
            <param name="Name" value="CW Keyboard">
            <param name="Local" value="CWKeyboard.htm">
        </object>

@@ -24,6 +24,7 @@
 #include "UWSDRApp.h"
 #include "UWSDRDefs.h"
 #include "SDRDescrFile.h"
+#include "ConfigChooser.h"
 #include "Log.h"
 
 const wxChar* KEY_FILE_NAME          = wxT("/FileName");
@@ -122,8 +123,6 @@ const wxChar* KEY_VOICE_FILE         = wxT("/VoiceFile");
 const wxChar* KEY_INST_PATH          = wxT("/InstPath");
 #endif
 
-const wxChar* KEY_LAST_NAME          = wxT("/LastName");
-
 const wxChar* SDR_NAME_PARAM         = wxT("SDR Name");
 
 
@@ -145,10 +144,13 @@ CUWSDRApp::~CUWSDRApp()
 
 bool CUWSDRApp::OnInit()
 {
-	if (!wxApp::OnInit()) {
-		::wxMessageBox(_("No configuration name found for the GUI"), _("uWave SDR Error"), wxICON_ERROR);
+	m_frame = new CUWSDRFrame;
+	m_frame->Show();
+
+	SetTopWindow(m_frame);
+
+	if (!wxApp::OnInit())
 		return false;
-	}
 
 	wxLog* logger = new CLog(m_parameters->m_name + wxT(".log"));
 	wxLog::SetActiveTarget(logger);
@@ -179,8 +181,6 @@ bool CUWSDRApp::OnInit()
 		return false;
 	}
 
-	setDefaultConfig(m_parameters->m_name);
-
 	::wxLogMessage(wxT("Using hardware configuration file: ") + m_parameters->m_fileName);
 
 	if (m_parameters->m_hardwareStepSize > 100.0F      ||
@@ -191,10 +191,7 @@ bool CUWSDRApp::OnInit()
 
 	wxString title = VERSION + wxT(" - ") + m_parameters->m_name;
 
-	m_frame = new CUWSDRFrame(title);
-	m_frame->Show();
-
-	SetTopWindow(m_frame);
+	m_frame->SetTitle(title);
 
 	// Sanity checking for the frequencies
 	if (m_parameters->m_maxReceiveFreq > m_parameters->m_hardwareMaxFreq ||
@@ -259,7 +256,14 @@ bool CUWSDRApp::OnCmdLineParsed(wxCmdLineParser& parser)
 		return true;
 	}
 
-	return getDefaultConfig(m_parameters->m_name);
+	CConfigChooser configChooser(m_frame);
+	int ret = configChooser.ShowModal();
+	if (ret != wxID_OK)
+		return false;
+
+	m_parameters->m_name = configChooser.getName();
+
+	return true;
 }
 
 int CUWSDRApp::OnExit()
@@ -849,28 +853,6 @@ wxString CUWSDRApp::getHelpDir()
 #else
 #error "Unknown platform"
 #endif
-}
-
-bool CUWSDRApp::getDefaultConfig(wxString& name)
-{
-	wxConfig* config = new wxConfig(APPNAME);
-	wxASSERT(config != NULL);
-
-	bool ret = config->Read(KEY_LAST_NAME, &name);
-
-	delete config;
-
-	return ret;
-}
-
-void CUWSDRApp::setDefaultConfig(const wxString& name)
-{
-	wxConfig* config = new wxConfig(APPNAME);
-	wxASSERT(config != NULL);
-
-	config->Write(KEY_LAST_NAME, name);
-
-	delete config;
 }
 
 #if defined(__WXDEBUG__)

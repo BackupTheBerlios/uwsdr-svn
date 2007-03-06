@@ -41,7 +41,7 @@
 
 class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterface {
     public:
-	CUWSDRFrame(const wxString& title);
+	CUWSDRFrame(const wxString& title = wxEmptyString);
 	virtual ~CUWSDRFrame();
 
 	void onMenuButton(wxCommandEvent& event);

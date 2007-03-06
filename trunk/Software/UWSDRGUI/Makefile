@@ -4,12 +4,15 @@ CFLAGS		:= -I../Common $(CFLAGS)
 
 LIBS		:= -lportaudio -lfftw3f $(LIBS)
 
-OBJS :=		CWKeyboard.o CWKeyer.o DSPControl.o DTTSPControl.o FreqDial.o FreqDisplay.o FreqKeypad.o InfoBox.o \
-		SDRParameters.o SMeter.o SpectrumDisplay.o UWSDRApp.o UWSDRFrame.o UWSDRPreferences.o \
+OBJS :=		ConfigChooser.o CWKeyboard.o CWKeyer.o DSPControl.o DTTSPControl.o FreqDial.o FreqDisplay.o FreqKeypad.o \
+		InfoBox.o SDRParameters.o SMeter.o SpectrumDisplay.o UWSDRApp.o UWSDRFrame.o UWSDRPreferences.o \
 		VoiceKeyboard.o VoiceKeyer.o VolumeDial.o
 
 UWSDR:		$(OBJS)
 		$(CC) $(LDFLAGS) -o UWSDR $(OBJS) ../Common/Common.a ../DttSP++/DttSP.a $(LIBS)
+
+ConfigChooser.o:	ConfigChooser.cpp ConfigChooser.h UWSDRDefs.h
+		$(CC) $(CFLAGS) -c ConfigChooser.cpp
 
 CWKeyboard.o:	CWKeyboard.cpp CWKeyboard.h UWSDRApp.h UWSDRDefs.h
 		$(CC) $(CFLAGS) -c CWKeyboard.cpp
@@ -46,7 +49,8 @@ SMeter.o:	SMeter.cpp SMeter.h UWSDRDefs.h
 SpectrumDisplay.o: SpectrumDisplay.cpp SpectrumDisplay.h UWSDRDefs.h
 		$(CC) $(CFLAGS) -c SpectrumDisplay.cpp
 
-UWSDRApp.o:	UWSDRApp.cpp UWSDRApp.h ../Common/Log.h SDRParameters.h UWSDRDefs.h UWSDRFrame.h ../Common/SDRDescrFile.h
+UWSDRApp.o:	UWSDRApp.cpp UWSDRApp.h ConfigChooser.h ../Common/Log.h SDRParameters.h UWSDRDefs.h UWSDRFrame.h \
+		../Common/SDRDescrFile.h
 		$(CC) $(CFLAGS) -c UWSDRApp.cpp
 
 UWSDRFrame.o:	UWSDRFrame.cpp UWSDRFrame.h ../Common/ControlInterface.h CWKeyboard.h DialInterface.h DSPControl.h FreqDial.h \

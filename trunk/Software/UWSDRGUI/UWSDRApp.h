@@ -37,9 +37,6 @@ class CUWSDRApp : public wxApp {
 	virtual bool OnCmdLineParsed(wxCmdLineParser& parser);
 	virtual void OnInitCmdLine(wxCmdLineParser& parser);
 
-	virtual bool getDefaultConfig(wxString& name);
-	virtual void setDefaultConfig(const wxString& name);
-
 	virtual bool readDescrFile();
 	virtual bool readConfig();
 	virtual void writeConfig();
