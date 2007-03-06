@@ -185,12 +185,12 @@
        </object>
 
   <li> <object type="text/sitemap">
-           <param name="Name" value="SHIFT -">
+           <param name="Name" value="SHIFT 1">
            <param name="Local" value="TuningButtons.htm">
        </object>
 
   <li> <object type="text/sitemap">
-           <param name="Name" value="SHIFT +">
+           <param name="Name" value="SHIFT 2">
            <param name="Local" value="TuningButtons.htm">
        </object>
 
@@ -207,6 +207,11 @@
   <li> <object type="text/sitemap">
            <param name="Name" value="Squelch">
            <param name="Local" value="Squelch.htm">
+       </object>
+
+  <li> <object type="text/sitemap">
+           <param name="Name" value="Starting the GUI">
+           <param name="Local" value="Starting.htm">
        </object>
 
   <li> <object type="text/sitemap">

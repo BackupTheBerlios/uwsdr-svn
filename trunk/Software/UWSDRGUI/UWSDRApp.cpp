@@ -118,6 +118,14 @@ const wxChar* KEY_CW_MESSAGE         = wxT("/CWMessage");
 const wxChar* KEY_VOICE_DIR          = wxT("/VoiceDir");
 const wxChar* KEY_VOICE_FILE         = wxT("/VoiceFile");
 
+#if defined(__WXMSW__)
+const wxChar* KEY_INST_PATH          = wxT("/InstPath");
+#endif
+
+const wxChar* KEY_LAST_NAME          = wxT("/LastName");
+
+const wxChar* SDR_NAME_PARAM         = wxT("SDR Name");
+
 
 IMPLEMENT_APP(CUWSDRApp)
 
@@ -137,8 +145,10 @@ CUWSDRApp::~CUWSDRApp()
 
 bool CUWSDRApp::OnInit()
 {
-	if (!wxApp::OnInit())
+	if (!wxApp::OnInit()) {
+		::wxMessageBox(_("No configuration name found for the GUI"), _("uWave SDR Error"), wxICON_ERROR);
 		return false;
+	}
 
 	wxLog* logger = new CLog(m_parameters->m_name + wxT(".log"));
 	wxLog::SetActiveTarget(logger);
@@ -168,6 +178,8 @@ bool CUWSDRApp::OnInit()
 		::wxMessageBox(_("Cannot open the SDR description file - ") + m_parameters->m_fileName, _("uWave SDR Error"), wxICON_ERROR);
 		return false;
 	}
+
+	setDefaultConfig(m_parameters->m_name);
 
 	::wxLogMessage(wxT("Using hardware configuration file: ") + m_parameters->m_fileName);
 
@@ -232,7 +244,7 @@ bool CUWSDRApp::OnInit()
 
 void CUWSDRApp::OnInitCmdLine(wxCmdLineParser& parser)
 {
-	parser.AddParam(_("SDR configuration name"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_OPTION_MANDATORY);
+	parser.AddParam(SDR_NAME_PARAM, wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL);
 
 	wxApp::OnInitCmdLine(parser);
 }
@@ -242,9 +254,12 @@ bool CUWSDRApp::OnCmdLineParsed(wxCmdLineParser& parser)
 	if (!wxApp::OnCmdLineParsed(parser))
 		return false;
 
-	m_parameters->m_name = parser.GetParam(0);
+	if (parser.GetParamCount() > 0U) {
+		m_parameters->m_name = parser.GetParam(0);
+		return true;
+	}
 
-	return true;
+	return getDefaultConfig(m_parameters->m_name);
 }
 
 int CUWSDRApp::OnExit()
@@ -817,7 +832,7 @@ wxString CUWSDRApp::getHelpDir()
 	wxASSERT(config != NULL);
 
 	wxString dir;
-	bool ret = config->Read(wxT("/InstPath"), &dir);
+	bool ret = config->Read(KEY_INST_PATH, &dir);
 
 	if (!ret) {
 		delete config;
@@ -834,6 +849,28 @@ wxString CUWSDRApp::getHelpDir()
 #else
 #error "Unknown platform"
 #endif
+}
+
+bool CUWSDRApp::getDefaultConfig(wxString& name)
+{
+	wxConfig* config = new wxConfig(APPNAME);
+	wxASSERT(config != NULL);
+
+	bool ret = config->Read(KEY_LAST_NAME, &name);
+
+	delete config;
+
+	return ret;
+}
+
+void CUWSDRApp::setDefaultConfig(const wxString& name)
+{
+	wxConfig* config = new wxConfig(APPNAME);
+	wxASSERT(config != NULL);
+
+	config->Write(KEY_LAST_NAME, name);
+
+	delete config;
 }
 
 #if defined(__WXDEBUG__)

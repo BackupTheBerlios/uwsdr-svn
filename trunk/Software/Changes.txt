@@ -362,3 +362,5 @@ New CW Keyer with a higher and more accurate top speed, as well as real-time tex
 Create optional entries on the Desktop for Linux with GUISetup.
 
 A diferent meter is now shown on transmit.
+
+The last configuration used is stored and used for the next run of the GUI if no name is given.
