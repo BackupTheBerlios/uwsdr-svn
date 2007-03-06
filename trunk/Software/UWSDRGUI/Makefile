@@ -54,7 +54,7 @@ UWSDRFrame.o:	UWSDRFrame.cpp UWSDRFrame.h ../Common/ControlInterface.h CWKeyboar
 		../Common/SDRDataWriter.h SDRParameters.h ../Common/SerialControl.h SMeter.h ../Common/SoundCardReader.h \
 		../Common/SoundCardReaderWriter.h ../Common/SoundCardWriter.h ../Common/SoundFileWriter.h SpectrumDisplay.h \
 		../Common/SRTXRXController.h UWSDRApp.h ../Common/UWSDRController.h UWSDRDefs.h UWSDRPreferences.h UWSDR.xpm \
-		VoiceKeyboard.h
+		../Common/Common.h VoiceKeyboard.h
 		$(CC) $(CFLAGS) -c UWSDRFrame.cpp
 
 UWSDRPreferences.o: UWSDRPreferences.cpp UWSDRPreferences.h DSPControl.h SDRParameters.h UWSDRApp.h UWSDRDefs.h

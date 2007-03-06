@@ -397,11 +397,11 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_cwKeyboard->setLocator(m_parameters->m_cwLocator);
 	m_cwKeyboard->setReport(m_parameters->m_cwReport);
 	m_cwKeyboard->setSerial(m_parameters->m_cwSerial);
-	for (int i = 0; i < CWKEYBOARD_COUNT; i++)
+	for (unsigned int i = 0; i < CWKEYBOARD_COUNT; i++)
 		m_cwKeyboard->setMessage(i, m_parameters->m_cwMessage[i]);
 
 	m_voiceKeyboard->setDir(m_parameters->m_voiceDir);
-	for (int j = 0; j < VOICEKEYER_COUNT; j++)
+	for (unsigned int j = 0; j < VOICEKEYER_COUNT; j++)
 		m_voiceKeyboard->setFile(j, m_parameters->m_voiceFile[j]);
 
 	m_timer.SetOwner(this, DISPLAY_TIMER);
@@ -1495,12 +1495,12 @@ void CUWSDRFrame::onClose(wxCloseEvent& event)
 		m_parameters->m_cwLocator = m_cwKeyboard->getLocator();
 		m_parameters->m_cwReport  = m_cwKeyboard->getReport();
 		m_parameters->m_cwSerial  = m_cwKeyboard->getSerial();
-		for (int i = 0; i < CWKEYBOARD_COUNT; i++)
+		for (unsigned int i = 0; i < CWKEYBOARD_COUNT; i++)
 			m_parameters->m_cwMessage[i] = m_cwKeyboard->getMessage(i);
 
 		// Grab the parameters from the voice keyer
 		m_parameters->m_voiceDir = m_voiceKeyboard->getDir();
-		for (int j = 0; j < VOICEKEYER_COUNT; j++)
+		for (unsigned int j = 0; j < VOICEKEYER_COUNT; j++)
 			m_parameters->m_voiceFile[j] = m_voiceKeyboard->getFile(j);
 
 		Destroy();
