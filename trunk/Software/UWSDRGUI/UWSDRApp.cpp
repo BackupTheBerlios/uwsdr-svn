@@ -26,97 +26,97 @@
 #include "SDRDescrFile.h"
 #include "Log.h"
 
-const wxString KEY_FILE_NAME          = wxT("/FileName");
-const wxString KEY_MAX_RX_FREQ        = wxT("/MaxReceiveFreq");
-const wxString KEY_MIN_RX_FREQ        = wxT("/MinReceiveFreq");
-const wxString KEY_MAX_TX_FREQ        = wxT("/MaxTransmitFreq");
-const wxString KEY_MIN_TX_FREQ        = wxT("/MinTransmitFreq");
-const wxString KEY_VFO_A              = wxT("/VfoA");
-const wxString KEY_VFO_B              = wxT("/VfoB");
-const wxString KEY_VFO_C              = wxT("/VfoC");
-const wxString KEY_VFO_D              = wxT("/VfoD");
-const wxString KEY_FREQ_SHIFT1        = wxT("/FreqShift1");
-const wxString KEY_FREQ_SHIFT2        = wxT("/FreqShift2");
-const wxString KEY_FREQ_OFFSET        = wxT("/FreqOffset");
-const wxString KEY_VFO_CHOICE         = wxT("/VfoChoice");
-const wxString KEY_VFO_SPLIT_SHIFT    = wxT("/VfoSplitShift");
-const wxString KEY_VFO_SPEED_FM       = wxT("/VfoSpeedFM");
-const wxString KEY_VFO_SPEED_AM       = wxT("/VfoSpeedAM");
-const wxString KEY_VFO_SPEED_SSB      = wxT("/VfoSpeedSSB");
-const wxString KEY_VFO_SPEED_CWW      = wxT("/VfoSpeedCWW");
-const wxString KEY_VFO_SPEED_CWN      = wxT("/VfoSpeedCWN");
-const wxString KEY_STEP_VERY_FAST     = wxT("/StepVeryFast");
-const wxString KEY_STEP_FAST          = wxT("/StepFast");
-const wxString KEY_STEP_MEDIUM        = wxT("/StepMedium");
-const wxString KEY_STEP_SLOW          = wxT("/StepSlow");
-const wxString KEY_STEP_VERY_SLOW     = wxT("/StepVerySlow");
-const wxString KEY_MODE               = wxT("/Mode");
-const wxString KEY_ZERO_IF            = wxT("/ZeroIF");
-const wxString KEY_SWAP_IQ            = wxT("/SwapIQ");
-const wxString KEY_CLOCK_TUNE         = wxT("/ClockTune");
-const wxString KEY_DEV_FMW            = wxT("/DeviationFMW");
-const wxString KEY_DEV_FMN            = wxT("/DeviationFMN");
-const wxString KEY_AGC_AM             = wxT("/AGCAM");
-const wxString KEY_AGC_SSB            = wxT("/AGCSSB");
-const wxString KEY_AGC_CW             = wxT("/AGCCW");
-const wxString KEY_FILTER             = wxT("/Filter");
-const wxString KEY_FILTER_FMW         = wxT("/FilterFMW");
-const wxString KEY_FILTER_FMN         = wxT("/FilterFMN");
-const wxString KEY_FILTER_AM          = wxT("/FilterAM");
-const wxString KEY_FILTER_SSB         = wxT("/FilterSSB");
-const wxString KEY_FILTER_CWW         = wxT("/FilterCWW");
-const wxString KEY_FILTER_CWN         = wxT("/FilterCWN");
-const wxString KEY_IP_ADDRESS         = wxT("/IPAddress");
-const wxString KEY_CONTROL_PORT       = wxT("/ControlPort");
-const wxString KEY_DATA_PORT          = wxT("/DataPort");
-const wxString KEY_TX_IN_ENABLE       = wxT("/TXInEnable");
-const wxString KEY_TX_IN_DEV          = wxT("/TXInDev");
-const wxString KEY_TX_IN_PIN          = wxT("/TXInPin");
-const wxString KEY_KEY_IN_ENABLE      = wxT("/KeyInEnable");
-const wxString KEY_KEY_IN_DEV         = wxT("/KeyInDev");
-const wxString KEY_KEY_IN_PIN         = wxT("/KeyInPin");
-const wxString KEY_TX_OUT_DEV         = wxT("/TXOutDev");
-const wxString KEY_TX_OUT_PIN         = wxT("/TXOutPin");
-const wxString KEY_USER_AUDIO_IN_DEV  = wxT("/UserAudioInDev");
-const wxString KEY_USER_AUDIO_OUT_DEV = wxT("/UserAudioOutDev");
-const wxString KEY_SDR_AUDIO_IN_DEV   = wxT("/SDRAudioInDev");
-const wxString KEY_SDR_AUDIO_OUT_DEV  = wxT("/SDRAudioOutDev");
-const wxString KEY_RIT_CTRL           = wxT("/RitCtrl");
-const wxString KEY_RIT_VALUE          = wxT("/RitFreq");
-const wxString KEY_NB_CTRL            = wxT("/NoiseBlankerCtrl");
-const wxString KEY_NB_VALUE           = wxT("/NoiseBlankerValue");
-const wxString KEY_NB2_CTRL           = wxT("/NoiseBlanker2Ctrl");
-const wxString KEY_NB2_VALUE          = wxT("/NoiseBlanker2Value");
-const wxString KEY_SP_CTRL            = wxT("/SpeechProcCtrl");
-const wxString KEY_SP_VALUE           = wxT("/SpeechprocValue");
-const wxString KEY_CARRIER_LEVEL      = wxT("/CarrierLevel");
-const wxString KEY_ALC_ATTACK         = wxT("/ALCAttackValue");
-const wxString KEY_ALC_DECAY          = wxT("/ALCDecayValue");
-const wxString KEY_ALC_HANG           = wxT("/ALCHangValue");
-const wxString KEY_RX_METER           = wxT("/ReceiveMeter");
-const wxString KEY_TX_METER           = wxT("/TransmitMeter");
-const wxString KEY_SPECTRUM_POS       = wxT("/SpectrumPos");
-const wxString KEY_SPECTRUM_TYPE      = wxT("/SpectrumType");
-const wxString KEY_SPECTRUM_SPEED     = wxT("/SpectrumSpeed");
-const wxString KEY_SPECTRUM_DB        = wxT("/SpectrumDB");
-const wxString KEY_RX_IQ_PHASE        = wxT("/ReceiveIQPhase");
-const wxString KEY_RX_IQ_GAIN         = wxT("/ReceiveIQGain");
-const wxString KEY_TX_IQ_PHASE        = wxT("/TransmitIQPhase");
-const wxString KEY_TX_IQ_GAIN         = wxT("/TransmitIQGain");
-const wxString KEY_AF_GAIN            = wxT("/AFGain");
-const wxString KEY_RF_GAIN            = wxT("/RFGain");
-const wxString KEY_SQUELCH            = wxT("/Squelch");
-const wxString KEY_MIC_GAIN           = wxT("/MicGain");
-const wxString KEY_POWER              = wxT("/Power");
-const wxString KEY_CW_SPEED           = wxT("/CWSpeed");
-const wxString KEY_CW_LOCAL           = wxT("/CWLocalCallsign");
-const wxString KEY_CW_REMOTE          = wxT("/CWRemoteCallsign");
-const wxString KEY_CW_LOCATOR         = wxT("/CWLocator");
-const wxString KEY_CW_REPORT          = wxT("/CWReport");
-const wxString KEY_CW_SERIAL          = wxT("/CWSerialNumber");
-const wxString KEY_CW_MESSAGE         = wxT("/CWMessage");
-const wxString KEY_VOICE_DIR          = wxT("/VoiceDir");
-const wxString KEY_VOICE_FILE         = wxT("/VoiceFile");
+const wxChar* KEY_FILE_NAME          = wxT("/FileName");
+const wxChar* KEY_MAX_RX_FREQ        = wxT("/MaxReceiveFreq");
+const wxChar* KEY_MIN_RX_FREQ        = wxT("/MinReceiveFreq");
+const wxChar* KEY_MAX_TX_FREQ        = wxT("/MaxTransmitFreq");
+const wxChar* KEY_MIN_TX_FREQ        = wxT("/MinTransmitFreq");
+const wxChar* KEY_VFO_A              = wxT("/VfoA");
+const wxChar* KEY_VFO_B              = wxT("/VfoB");
+const wxChar* KEY_VFO_C              = wxT("/VfoC");
+const wxChar* KEY_VFO_D              = wxT("/VfoD");
+const wxChar* KEY_FREQ_SHIFT1        = wxT("/FreqShift1");
+const wxChar* KEY_FREQ_SHIFT2        = wxT("/FreqShift2");
+const wxChar* KEY_FREQ_OFFSET        = wxT("/FreqOffset");
+const wxChar* KEY_VFO_CHOICE         = wxT("/VfoChoice");
+const wxChar* KEY_VFO_SPLIT_SHIFT    = wxT("/VfoSplitShift");
+const wxChar* KEY_VFO_SPEED_FM       = wxT("/VfoSpeedFM");
+const wxChar* KEY_VFO_SPEED_AM       = wxT("/VfoSpeedAM");
+const wxChar* KEY_VFO_SPEED_SSB      = wxT("/VfoSpeedSSB");
+const wxChar* KEY_VFO_SPEED_CWW      = wxT("/VfoSpeedCWW");
+const wxChar* KEY_VFO_SPEED_CWN      = wxT("/VfoSpeedCWN");
+const wxChar* KEY_STEP_VERY_FAST     = wxT("/StepVeryFast");
+const wxChar* KEY_STEP_FAST          = wxT("/StepFast");
+const wxChar* KEY_STEP_MEDIUM        = wxT("/StepMedium");
+const wxChar* KEY_STEP_SLOW          = wxT("/StepSlow");
+const wxChar* KEY_STEP_VERY_SLOW     = wxT("/StepVerySlow");
+const wxChar* KEY_MODE               = wxT("/Mode");
+const wxChar* KEY_ZERO_IF            = wxT("/ZeroIF");
+const wxChar* KEY_SWAP_IQ            = wxT("/SwapIQ");
+const wxChar* KEY_CLOCK_TUNE         = wxT("/ClockTune");
+const wxChar* KEY_DEV_FMW            = wxT("/DeviationFMW");
+const wxChar* KEY_DEV_FMN            = wxT("/DeviationFMN");
+const wxChar* KEY_AGC_AM             = wxT("/AGCAM");
+const wxChar* KEY_AGC_SSB            = wxT("/AGCSSB");
+const wxChar* KEY_AGC_CW             = wxT("/AGCCW");
+const wxChar* KEY_FILTER             = wxT("/Filter");
+const wxChar* KEY_FILTER_FMW         = wxT("/FilterFMW");
+const wxChar* KEY_FILTER_FMN         = wxT("/FilterFMN");
+const wxChar* KEY_FILTER_AM          = wxT("/FilterAM");
+const wxChar* KEY_FILTER_SSB         = wxT("/FilterSSB");
+const wxChar* KEY_FILTER_CWW         = wxT("/FilterCWW");
+const wxChar* KEY_FILTER_CWN         = wxT("/FilterCWN");
+const wxChar* KEY_IP_ADDRESS         = wxT("/IPAddress");
+const wxChar* KEY_CONTROL_PORT       = wxT("/ControlPort");
+const wxChar* KEY_DATA_PORT          = wxT("/DataPort");
+const wxChar* KEY_TX_IN_ENABLE       = wxT("/TXInEnable");
+const wxChar* KEY_TX_IN_DEV          = wxT("/TXInDev");
+const wxChar* KEY_TX_IN_PIN          = wxT("/TXInPin");
+const wxChar* KEY_KEY_IN_ENABLE      = wxT("/KeyInEnable");
+const wxChar* KEY_KEY_IN_DEV         = wxT("/KeyInDev");
+const wxChar* KEY_KEY_IN_PIN         = wxT("/KeyInPin");
+const wxChar* KEY_TX_OUT_DEV         = wxT("/TXOutDev");
+const wxChar* KEY_TX_OUT_PIN         = wxT("/TXOutPin");
+const wxChar* KEY_USER_AUDIO_IN_DEV  = wxT("/UserAudioInDev");
+const wxChar* KEY_USER_AUDIO_OUT_DEV = wxT("/UserAudioOutDev");
+const wxChar* KEY_SDR_AUDIO_IN_DEV   = wxT("/SDRAudioInDev");
+const wxChar* KEY_SDR_AUDIO_OUT_DEV  = wxT("/SDRAudioOutDev");
+const wxChar* KEY_RIT_CTRL           = wxT("/RitCtrl");
+const wxChar* KEY_RIT_VALUE          = wxT("/RitFreq");
+const wxChar* KEY_NB_CTRL            = wxT("/NoiseBlankerCtrl");
+const wxChar* KEY_NB_VALUE           = wxT("/NoiseBlankerValue");
+const wxChar* KEY_NB2_CTRL           = wxT("/NoiseBlanker2Ctrl");
+const wxChar* KEY_NB2_VALUE          = wxT("/NoiseBlanker2Value");
+const wxChar* KEY_SP_CTRL            = wxT("/SpeechProcCtrl");
+const wxChar* KEY_SP_VALUE           = wxT("/SpeechprocValue");
+const wxChar* KEY_CARRIER_LEVEL      = wxT("/CarrierLevel");
+const wxChar* KEY_ALC_ATTACK         = wxT("/ALCAttackValue");
+const wxChar* KEY_ALC_DECAY          = wxT("/ALCDecayValue");
+const wxChar* KEY_ALC_HANG           = wxT("/ALCHangValue");
+const wxChar* KEY_RX_METER           = wxT("/ReceiveMeter");
+const wxChar* KEY_TX_METER           = wxT("/TransmitMeter");
+const wxChar* KEY_SPECTRUM_POS       = wxT("/SpectrumPos");
+const wxChar* KEY_SPECTRUM_TYPE      = wxT("/SpectrumType");
+const wxChar* KEY_SPECTRUM_SPEED     = wxT("/SpectrumSpeed");
+const wxChar* KEY_SPECTRUM_DB        = wxT("/SpectrumDB");
+const wxChar* KEY_RX_IQ_PHASE        = wxT("/ReceiveIQPhase");
+const wxChar* KEY_RX_IQ_GAIN         = wxT("/ReceiveIQGain");
+const wxChar* KEY_TX_IQ_PHASE        = wxT("/TransmitIQPhase");
+const wxChar* KEY_TX_IQ_GAIN         = wxT("/TransmitIQGain");
+const wxChar* KEY_AF_GAIN            = wxT("/AFGain");
+const wxChar* KEY_RF_GAIN            = wxT("/RFGain");
+const wxChar* KEY_SQUELCH            = wxT("/Squelch");
+const wxChar* KEY_MIC_GAIN           = wxT("/MicGain");
+const wxChar* KEY_POWER              = wxT("/Power");
+const wxChar* KEY_CW_SPEED           = wxT("/CWSpeed");
+const wxChar* KEY_CW_LOCAL           = wxT("/CWLocalCallsign");
+const wxChar* KEY_CW_REMOTE          = wxT("/CWRemoteCallsign");
+const wxChar* KEY_CW_LOCATOR         = wxT("/CWLocator");
+const wxChar* KEY_CW_REPORT          = wxT("/CWReport");
+const wxChar* KEY_CW_SERIAL          = wxT("/CWSerialNumber");
+const wxChar* KEY_CW_MESSAGE         = wxT("/CWMessage");
+const wxChar* KEY_VOICE_DIR          = wxT("/VoiceDir");
+const wxChar* KEY_VOICE_FILE         = wxT("/VoiceFile");
 
 
 IMPLEMENT_APP(CUWSDRApp)
@@ -375,7 +375,7 @@ bool CUWSDRApp::readConfig()
 	wxString keyVoiceDir        = wxT("/") + m_parameters->m_name + KEY_VOICE_DIR;
 
 	wxString keyCwMessage[CWKEYBOARD_COUNT];
-	for (int i = 0; i < CWKEYBOARD_COUNT; i++) {
+	for (unsigned int i = 0; i < CWKEYBOARD_COUNT; i++) {
 		wxString number;
 		number.Printf(wxT("%d"), i);
 
@@ -384,7 +384,7 @@ bool CUWSDRApp::readConfig()
 	}
 
 	wxString keyVoiceFile[VOICEKEYER_COUNT];
-	for (int j = 0; j < VOICEKEYER_COUNT; j++) {
+	for (unsigned int j = 0; j < VOICEKEYER_COUNT; j++) {
 		wxString number;
 		number.Printf(wxT("%d"), j);
 
@@ -592,12 +592,12 @@ bool CUWSDRApp::readConfig()
 	profile->Read(keyCwReport,         &m_parameters->m_cwReport,  KEYER_REPORT);
 	profile->Read(keyCwSerial,         &m_parameters->m_cwSerial,  KEYER_SERIAL);
 
-	for (int n = 0; n < CWKEYBOARD_COUNT; n++)
+	for (unsigned int n = 0; n < CWKEYBOARD_COUNT; n++)
 		profile->Read(keyCwMessage[n], &m_parameters->m_cwMessage[n], KEYER_MESSAGE[n]);
 
 	profile->Read(keyVoiceDir,         &m_parameters->m_voiceDir,  wxEmptyString);
 
-	for (int m = 0; m < VOICEKEYER_COUNT; m++)
+	for (unsigned int m = 0; m < VOICEKEYER_COUNT; m++)
 		profile->Read(keyVoiceFile[m], &m_parameters->m_voiceFile[m], wxEmptyString);
 
 	profile->Flush();
@@ -684,7 +684,7 @@ void CUWSDRApp::writeConfig()
 	wxString keyVoiceDir      = wxT("/") + m_parameters->m_name + KEY_VOICE_DIR;
 
 	wxString keyCwMessage[CWKEYBOARD_COUNT];
-	for (int i = 0; i < CWKEYBOARD_COUNT; i++) {
+	for (unsigned int i = 0; i < CWKEYBOARD_COUNT; i++) {
 		wxString number;
 		number.Printf(wxT("%d"), i);
 
@@ -693,7 +693,7 @@ void CUWSDRApp::writeConfig()
 	}
 
 	wxString keyVoiceFile[VOICEKEYER_COUNT];
-	for (int j = 0; j < VOICEKEYER_COUNT; j++) {
+	for (unsigned int j = 0; j < VOICEKEYER_COUNT; j++) {
 		wxString number;
 		number.Printf(wxT("%d"), j);
 
@@ -777,12 +777,12 @@ void CUWSDRApp::writeConfig()
 	profile->Write(keyCwReport,         m_parameters->m_cwReport);
 	profile->Write(keyCwSerial,         m_parameters->m_cwSerial);
 
-	for (int n = 0; n < CWKEYBOARD_COUNT; n++)
+	for (unsigned int n = 0; n < CWKEYBOARD_COUNT; n++)
 		profile->Write(keyCwMessage[n], m_parameters->m_cwMessage[n]);
 
 	profile->Write(keyVoiceDir,         m_parameters->m_voiceDir);
 
-	for (int m = 0; m < CWKEYBOARD_COUNT; m++)
+	for (unsigned int m = 0; m < CWKEYBOARD_COUNT; m++)
 		profile->Write(keyVoiceFile[m], m_parameters->m_voiceFile[m]);
 
 	profile->Flush();

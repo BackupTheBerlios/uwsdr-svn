@@ -86,7 +86,7 @@ const int FREQUENCY_HEIGHT = 85;
 
 const int CONTROL_WIDTH    = 100;
 
-const int SMETER_WIDTH     = 145;
+const int SMETER_WIDTH     = 260;
 const int SMETER_HEIGHT    = 85;
 
 const int CWTEXT_WIDTH     = 650;

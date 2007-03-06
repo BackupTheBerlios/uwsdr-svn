@@ -30,13 +30,13 @@
 #endif
 
 #if defined(__WXGTK__)
-const wxString XDG_DATA_HOME_ENV = wxT("XDG_DATA_HOME");
-const wxString HOME_ENV          = wxT("HOME");
-const wxString DEFAULT_DIR       = wxT("/.local/share");
-const wxString DESKTOP_DIR       = wxT("/Desktop");
-const wxString APPLICATION_DIR   = wxT("/applications");
-const wxString UWSDR_FILE        = wxT("UWSDR.desktop");
-const wxString NAME_TOKEN        = wxT("@NAME@");
+const wxChar* XDG_DATA_HOME_ENV = wxT("XDG_DATA_HOME");
+const wxChar* HOME_ENV          = wxT("HOME");
+const wxChar* DEFAULT_DIR       = wxT("/.local/share");
+const wxChar* DESKTOP_DIR       = wxT("/Desktop");
+const wxChar* APPLICATION_DIR   = wxT("/applications");
+const wxChar* UWSDR_FILE        = wxT("UWSDR.desktop");
+const wxChar* NAME_TOKEN        = wxT("@NAME@");
 #endif
 
 #if defined(__WINDOWS__)

@@ -309,7 +309,7 @@ void CCWKeyboard::onTransmit(wxCommandEvent& WXUNUSED(event))
 	wxString text;
 
 	bool found = false;
-	for (int i = 0; i < CWKEYBOARD_COUNT; i++) {
+	for (unsigned int i = 0; i < CWKEYBOARD_COUNT; i++) {
 		if (m_button[i]->GetValue()) {
 			text = m_text[i]->GetValue();
 			found = true;
