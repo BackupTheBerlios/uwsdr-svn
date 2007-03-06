@@ -178,6 +178,7 @@ m_txOutPin(OUT_NONE)
 	wxStaticText* dummy5 = new wxStaticText(panel, -1, wxEmptyString);
 	panelSizer->Add(dummy5, 0, wxALL, BORDER_SIZE);
 
+#if !defined(__WXMAC__)
 #if defined(__WXGTK__)
 	wxString dir;
 	if (getMenuDir(dir)) {
@@ -207,6 +208,7 @@ m_txOutPin(OUT_NONE)
 		panelSizer->Add(dummy7, 0, wxALL, BORDER_SIZE);
 #if defined(__WXGTK__)
 	}
+#endif
 #endif
 
 	wxStaticText* dummy8 = new wxStaticText(panel, -1, wxEmptyString);
@@ -494,8 +496,6 @@ void CGUISetupFrame::onCreate(wxCommandEvent& WXUNUSED(event))
 		}
 	}
 
-	config->Flush();
-
 #if defined(__WXMSW__)
 	wxString instDirKey = wxT("/InstPath");
 
@@ -529,11 +529,9 @@ void CGUISetupFrame::onCreate(wxCommandEvent& WXUNUSED(event))
 
 		writeDeskTop(name, dir);
 	}
-#else
-	bool create = m_startMenu->GetValue();
-	if (create)
-		writeStartMenu(name, wxEmptyString);
 #endif
+
+	config->Flush();
 
 	delete config;
 
@@ -896,12 +894,4 @@ bool CGUISetupFrame::getDesktopDir(wxString& dir) const
 
 	return wxDir::Exists(dir);
 }
-
-#else
-
-void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
-{
-   // To be filled in later
-}
-
 #endif

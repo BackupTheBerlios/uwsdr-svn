@@ -71,11 +71,11 @@ class CGUISetupFrame : public wxFrame {
 	void readConfig(const wxString& name);
 #if defined(__WXMSW__)
 	void writeStartMenu(const wxString& name, const wxString& instDir);
-#endif
 	void writeDeskTop(const wxString& name, const wxString& instDir);
-#if defined(__WXGTK__)
+#elif defined(__WXGTK__)
 	bool getMenuDir(wxString& dir) const;
 	bool getDesktopDir(wxString& dir) const;
+	void writeDeskTop(const wxString& name, const wxString& instDir);
 #endif
 };
 
