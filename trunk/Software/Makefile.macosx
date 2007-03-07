@@ -1,0 +1,121 @@
+# Makefile.macosx
+# make UWSDR on Mac OS X
+# Gerrit Polder, February 2007
+
+ZIP = /usr/bin/zip
+
+export APPLDIR := ./MacOSX
+export DATADIR := "./data"
+
+export WXCONFIG := /usr/local/bin/wx-config
+export PORTAUDIO_INC := ../../../../portaudio/include
+export PORTAUDIO_LIB := ../../../../portaudio/lib
+export FFTW3_INC := /opt/local/include
+export FFTW3_LIB := /opt/local/lib
+export FRAMEWORKS := -framework CoreAudio -framework AudioToolbox -framework AudioUnit -framework CoreServices
+export CC := $(shell $(WXCONFIG) --cxx)
+
+export LIBS := $(shell $(WXCONFIG) --libs adv,core,html,net) -L$(PORTAUDIO_LIB) -L$(FFTW3_LIB) $(FRAMEWORKS)
+
+export CFLAGS := -O3 -Wall -Wno-non-virtual-dtor -Wno-strict-aliasing  -DDATA_DIR='$(DATADIR)'  $(shell $(WXCONFIG) --cxxflags) -I$(PORTAUDIO_INC) -I$(FFTW3_INC)
+
+all:		GUISetup/GUISetup SDREmulator/SDREmulator SDRHelp/SDRHelp SDRSetup/SDRSetup UWSDRGUI/UWSDR install
+
+GUISetup/GUISetup:	Common/Common.a
+		make -C GUISetup
+
+SDREmulator/SDREmulator: Common/Common.a
+		make -C SDREmulator
+
+SDRHelp/SDRHelp:
+		make -C SDRHelp
+
+SDRSetup/SDRSetup:
+		make -C SDRSetup
+
+UWSDRGUI/UWSDR:	Common/Common.a DttSP++/DttSP.a
+		make -C UWSDRGUI
+
+DttSP++/DttSP.a:	Common/Common.a
+		make -C DttSP++
+
+Common/Common.a:
+		make -C Common
+
+install:	GUISetup.app SDRHelp.app UWSDR.app Helpfiles Otherfiles
+
+
+GUISetup.app: GUISetup/GUISetup
+	-mkdir $(APPLDIR)
+	-mkdir $(APPLDIR)/GUISetup.app    
+	-mkdir $(APPLDIR)/GUISetup.app/Contents
+	-mkdir $(APPLDIR)/GUISetup.app/Contents/MacOS
+	-mkdir $(APPLDIR)/GUISetup.app/Contents/Resources
+	-mkdir $(APPLDIR)/GUISetup.app/Contents/Resources/English.lproj
+	echo -n 'APPL????' > $(APPLDIR)/GUISetup.app/Contents/PkgInfo
+	cp GUISetup/GUISetup $(APPLDIR)/GUISetup.app/Contents/MacOS/GUISetup
+
+SDRHelp.app: SDRHelp/SDRHelp
+	-mkdir $(APPLDIR)
+	-mkdir $(APPLDIR)/SDRHelp.app    
+	-mkdir $(APPLDIR)/SDRHelp.app/Contents
+	-mkdir $(APPLDIR)/SDRHelp.app/Contents/MacOS
+	-mkdir $(APPLDIR)/SDRHelp.app/Contents/Resources
+	-mkdir $(APPLDIR)/SDRHelp.app/Contents/Resources/English.lproj
+	echo -n 'APPL????' > $(APPLDIR)/SDRHelp.app/Contents/PkgInfo
+	cp SDRHelp/SDRHelp $(APPLDIR)/SDRHelp.app/Contents/MacOS/SDRHelp
+
+UWSDR.app: UWSDRGUI/UWSDR
+	-mkdir $(APPLDIR)
+	-mkdir $(APPLDIR)/UWSDR.app    
+	-mkdir $(APPLDIR)/UWSDR.app/Contents
+	-mkdir $(APPLDIR)/UWSDR.app/Contents/MacOS
+	-mkdir $(APPLDIR)/UWSDR.app/Contents/Resources
+	-mkdir $(APPLDIR)/UWSDR.app/Contents/Resources/English.lproj
+	echo -n 'APPL????' > $(APPLDIR)/GUISetup.app/Contents/PkgInfo
+	cp UWSDRGUI/UWSDR $(APPLDIR)/UWSDR.app/Contents/MacOS/UWSDR
+	
+Helpfiles:
+	-mkdir $(APPLDIR)/$(DATADIR)
+	rm -f Help/GUISetup/GUISetup.zip
+	rm -f Help/SDRSetup/SDRSetup.zip
+	rm -f Help/UWSDR/UWSDR.zip
+	$(ZIP) -j -9 Help/GUISetup/GUISetup.zip Help/GUISetup/*.htm Help/GUISetup/*.png Help/GUISetup/*.hh[ckp]
+	$(ZIP) -j -9 Help/SDRSetup/SDRSetup.zip Help/SDRSetup/*.htm Help/SDRSetup/*.png Help/SDRSetup/*.hh[ckp]
+	$(ZIP) -j -9 Help/UWSDR/UWSDR.zip Help/UWSDR/*.htm Help/UWSDR/*.png Help/UWSDR/*.hh[ckp]
+	cp Help/GUISetup/GUISetup.zip $(APPLDIR)/$(DATADIR)
+	cp Help/SDRSetup/SDRSetup.zip $(APPLDIR)/$(DATADIR)
+	cp Help/UWSDR/UWSDR.zip       $(APPLDIR)/$(DATADIR)
+
+Otherfiles:
+	-mkdir $(APPLDIR)/$(DATADIR)
+	install -m 0664 Build.txt    	             $(APPLDIR)/$(DATADIR)
+	install -m 0664 Build.txt   	             $(APPLDIR)/$(DATADIR)
+	install -m 0664 Changes.txt 	             $(APPLDIR)/$(DATADIR)
+	install -m 0664 Copying.txt 	             $(APPLDIR)/$(DATADIR)
+	install -m 0664 Install.txt 	             $(APPLDIR)/$(DATADIR)
+	install -m 0664 Jobs.txt    	             $(APPLDIR)/$(DATADIR)
+	install -m 0664 SoftRock.txt 	             $(APPLDIR)/$(DATADIR)
+	install -m 0664 SDRFiles/13cms.sdr           $(APPLDIR)/$(DATADIR)
+	install -m 0664 SDRFiles/23cms.sdr           $(APPLDIR)/$(DATADIR)
+	install -m 0664 SDRFiles/Demo.sdr            $(APPLDIR)/$(DATADIR)
+	install -m 0664 SDRFiles/SoftRock30.sdr      $(APPLDIR)/$(DATADIR)
+	install -m 0664 SDRFiles/SoftRock40.sdr      $(APPLDIR)/$(DATADIR)
+	install -m 0664 SDRFiles/SoftRock80.sdr      $(APPLDIR)/$(DATADIR)
+	install -m 0664 SDRFiles/SoftRock160.sdr     $(APPLDIR)/$(DATADIR)
+	install -m 0664 SDRFiles/SoftRock40-TXRX.sdr $(APPLDIR)/$(DATADIR)
+	install -m 0664 SDRFiles/SoftRock80-TXRX.sdr $(APPLDIR)/$(DATADIR)
+	install -m 0664 SDRFiles/Skeleton.sdr        $(APPLDIR)/$(DATADIR)
+	install -m 0664 SDRFiles/Readme.txt          $(APPLDIR)/$(DATADIR)
+
+clean:
+	rm -f core *~ *.bak
+	rm -rf MacOSX
+	make -C Common clean
+	make -C DttSP++ clean
+	make -C GUISetup clean
+	make -C SDREmulator clean
+	make -C SDRHelp clean
+	make -C SDRSetup clean
+	make -C UWSDRGUI clean
+	make -C Help clean

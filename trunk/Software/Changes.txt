@@ -364,3 +364,5 @@ Create optional entries on the Desktop for Linux with GUISetup.
 A diferent meter is now shown on transmit.
 
 If no configuration name is given, an SDR Name chooser popup box will appear.
+
+A Makefile for Mac OS X is now included.

@@ -4,6 +4,11 @@ List of Bugs and Jobs for the UWSDR Software
 BUGS
 ----
 
+Control Port doesn't work on Mac OS X
+
+Can't create desktop or menu entries on Mac OS X
+
+GUI is too large on Mac OS X
 
 
 TODO
@@ -13,9 +18,8 @@ Upgrade GUISetup for Mac OS X icons and menu entries
 
 Set of screenshots for all platforms
 
-Internationalisation
+Add Jack support for Linux and Mac OS X
 
-Shading of the receive bandwidth on the spectrum display
 
 
 Future
@@ -24,3 +28,7 @@ Future
 I + Q storage for different frequencies
 
 Frequency database with display on the spectrum.
+
+Shading of the receive bandwidth on the spectrum display
+
+Internationalisation

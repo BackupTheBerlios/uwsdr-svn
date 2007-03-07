@@ -521,18 +521,18 @@ bool CUWSDRApp::readConfig()
 	profile->Read(keyDataPort,         &num);
 	m_parameters->m_dataPort = num;
 
-	profile->Read(keyTXInEnable,       &m_parameters->m_txInEnable);
-	profile->Read(keyTXInDev,          &m_parameters->m_txInDev);
-	profile->Read(keyTXInPin,          &num);
+	profile->Read(keyTXInEnable,       &m_parameters->m_txInEnable, false);
+	profile->Read(keyTXInDev,          &m_parameters->m_txInDev,    wxEmptyString);
+	profile->Read(keyTXInPin,          &num,                        IN_NONE);
 	m_parameters->m_txInPin = INPIN(num);
 
-	profile->Read(keyKeyInEnable,      &m_parameters->m_keyInEnable);
-	profile->Read(keyKeyInDev,         &m_parameters->m_keyInDev);
-	profile->Read(keyKeyInPin,         &num);
+	profile->Read(keyKeyInEnable,      &m_parameters->m_keyInEnable, false);
+	profile->Read(keyKeyInDev,         &m_parameters->m_keyInDev,    wxEmptyString);
+	profile->Read(keyKeyInPin,         &num,                         IN_NONE);
 	m_parameters->m_keyInPin = INPIN(num);
 
-	profile->Read(keyTXOutDev,         &m_parameters->m_txOutDev);
-	profile->Read(keyTXOutPin,         &num);
+	profile->Read(keyTXOutDev,         &m_parameters->m_txOutDev, wxEmptyString);
+	profile->Read(keyTXOutPin,         &num,                      OUT_NONE);
 	m_parameters->m_txOutPin = OUTPIN(num);
 
 	profile->Read(keyUserAudioInDev,   &m_parameters->m_userAudioInDev);
@@ -846,12 +846,8 @@ wxString CUWSDRApp::getHelpDir()
 	delete config;
 
 	return dir;
-#elif defined(__WXGTK__)
-	return DATA_DIR;
-#elif defined(__WXMAC__)
-	return wxEmptyString;
 #else
-#error "Unknown platform"
+	return DATA_DIR;
 #endif
 }
 

@@ -1,12 +1,12 @@
 <ul>
 
          <li> <object type="text/sitemap">
-                  <param name="Name" value="ALSA">
+                  <param name="Name" value="ALSA (Linux)">
                   <param name="Local" value="AudioAPI.htm">
               </object>
 
          <li> <object type="text/sitemap">
-                  <param name="Name" value="ASIO">
+                  <param name="Name" value="ASIO (Windows)">
                   <param name="Local" value="AudioAPI.htm">
               </object>
 
@@ -31,6 +31,11 @@
               </object>
 
          <li> <object type="text/sitemap">
+                  <param name="Name" value="Core Audio (Mac OS X)">
+                  <param name="Local" value="AudioAPI.htm">
+              </object>
+
+         <li> <object type="text/sitemap">
                   <param name="Name" value="Create Button">
                   <param name="Local" value="CreateButton.htm">
               </object>
@@ -43,6 +48,11 @@
          <li> <object type="text/sitemap">
                   <param name="Name" value="Create Menu Entry">
                   <param name="Local" value="CreateMenuEntry.htm">
+              </object>
+
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="DirectSound (Windows)">
+                  <param name="Local" value="AudioAPI.htm">
               </object>
 
          <li> <object type="text/sitemap">
@@ -61,7 +71,7 @@
               </object>
 
          <li> <object type="text/sitemap">
-                  <param name="Name" value="MME">
+                  <param name="Name" value="MME (Windows)">
                   <param name="Local" value="AudioAPI.htm">
               </object>
 
@@ -71,7 +81,7 @@
               </object>
 
          <li> <object type="text/sitemap">
-                  <param name="Name" value="OSS">
+                  <param name="Name" value="OSS (Linux)">
                   <param name="Local" value="AudioAPI.htm">
               </object>
 
@@ -118,11 +128,6 @@
          <li> <object type="text/sitemap">
                   <param name="Name" value="User Audio Setup">
                   <param name="Local" value="UserAudio.htm">
-              </object>
-
-         <li> <object type="text/sitemap">
-                  <param name="Name" value="Windows DirectSound">
-                  <param name="Local" value="AudioAPI.htm">
               </object>
 
 </ul>

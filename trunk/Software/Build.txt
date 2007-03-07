@@ -48,17 +48,17 @@ Finally you will need PortAudio V19. This is still in beta, and has been for yea
 
 Once all of these packages are installed, you can build the UWSDR software. From the command line type:
 
-$ make
+$ make -f Makefile.linux
 
 Which should build all of the programs without errors, there will be a few warnings, but only a few.
 
 If using Ubuntu it can then be installed with the command:
 
-$ sudo make install
+$ sudo make -f Makefile.linux install
 
 And on most other Linux versions by logging in as root and typing:
 
-# make install
+# make -f Makefile.linux install
 
 Which will put the executables in /usr/bin and the other files into /usr/share/uwsdr. These locations can be changed from the top level Makefile. If you do change these, you will also have to change the .desktop files in the meta directory as these also contain paths to the executables.
 
@@ -74,4 +74,8 @@ where USER is your user name. As yourself (not as super-user), go to your home d
 Mac OS X
 --------
 
-To be written.
+Building UWSDR on Mac OS X is very similar to doing so under Linux. In each case read the documentation for each to find out any specific Mac OS X information.
+
+Building the basic UWSDR is the same as for Linux except that instead of using Makefile.linux, use Makefile.macosx instead.
+
+The Mac OS X version is still not as complete as the other versions, in particular the Control Port choices are incorrect and should be switched off. This means that currently it cannot be used with a SoftRock RXTX. This should be remedied in a future release. Likewise the creation of menu and desktop entries is not supported either.
