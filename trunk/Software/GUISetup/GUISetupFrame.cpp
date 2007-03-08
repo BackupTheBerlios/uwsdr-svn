@@ -514,20 +514,24 @@ void CGUISetupFrame::onCreate(wxCommandEvent& WXUNUSED(event))
 			writeDeskTop(name, dir);
 	}
 #elif defined(__WXGTK__)
-	bool create = m_startMenu->GetValue();
-	if (create) {
-		wxString dir;
-		getMenuDir(dir);
+	if (m_startMenu != NULL) {
+		bool create = m_startMenu->GetValue();
+		if (create) {
+			wxString dir;
+			getMenuDir(dir);
 
-		writeDeskTop(name, dir);
+			writeDeskTop(name, dir);
+		}
 	}
 
-	create = m_deskTop->GetValue();
-	if (create) {
-		wxString dir;
-		getDesktopDir(dir);
+	if (m_deskTop != NULL) {
+		bool create = m_deskTop->GetValue();
+		if (create) {
+			wxString dir;
+			getDesktopDir(dir);
 
-		writeDeskTop(name, dir);
+			writeDeskTop(name, dir);
+		}
 	}
 #endif
 

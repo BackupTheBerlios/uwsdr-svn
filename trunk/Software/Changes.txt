@@ -334,8 +334,8 @@ Fixed the LSB based filter bandwidths, they are now the mirror image of the USB 
 Fixed the sound device problems in GUISetup and in the GUI, now ALSA and DirectSound works.
 
 
-Version 0.8 - 10 March 2007
-===========================
+Version 0.8 - 8 March 2007
+==========================
 
 Added USB serial devices for Linux in GUISetup.
 
