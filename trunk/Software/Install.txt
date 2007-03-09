@@ -9,7 +9,7 @@ There are a number of .sdr files included, if the 23cms or 13cms .sdr files are 
 
 Please note that the SDR Emulator and the GUI cannot operate on the same PC. The IP Address of the machine running the SDREmulator will need to be entered, this value can be found by running the command "ipconfig" in a Command Window on Windows. The control port should be an unused port number on your PC, I use 5001, and the data port should also be an unused port number, I use 5003.
 
-You then have the option to create a start menu entry for your new SDR instance and, depending on the platform, an option to create a desktop icon for it also. For running the GUI, all you need to do is click on the menu entry/icon that is created by GUISetup. On  Linux it is possible that the creation of the start menu option is not available, this is because of a problem in Gnome/KDE or a directory not being available. If that is the case then the GUI must be started from the command line.
+You may have the option to create a desktop icon for your new SDR instance. To run the GUI, all you need to do is click on the desktop icon that is created by GUISetup. On Linux it is possible that the creation of the desktop icon is not available. If that is the case then the GUI must be started from the command line.
 
 Pressing Create will put these initial parameters into the registry/configuration file. You can change these values later, the name of existing configurations will appear on the drop down menu. Changing the values here will not change any other values associated with the named SDR if it already exists.
 
@@ -17,7 +17,7 @@ If nothing changes, you shouldn't need to run GUISetup again, unless you get ano
 
 As well as starting the GUI from an icon created by GUISetup, it is also possible to start it from the command line, the definition of this is:
 
-UWSDR <SDR Name>
+UWSDR [SDR Name]
 
 It is possible to have multiple names for one physical SDR, this can happen if the SDR is used (for example) for both tropo and EME work. If you have two such names (say 13cms-Tropo and 13cms-EME) then each will have it's own settings for the VFO's and other parameters. Obviously only one GUI for each physical SDR may be running at a time.
 

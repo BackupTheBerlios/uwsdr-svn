@@ -41,7 +41,6 @@ class CGUISetupFrame : public wxFrame {
     private:
 	wxComboBox*    m_name;
 	wxTextCtrl*    m_filenameText;
-	wxCheckBox*    m_startMenu;
 	wxCheckBox*    m_deskTop;
 	wxButton*      m_userAudio;
 	wxButton*      m_sdrAudio;
@@ -70,10 +69,8 @@ class CGUISetupFrame : public wxFrame {
 	void enumerateConfigs();
 	void readConfig(const wxString& name);
 #if defined(__WXMSW__)
-	void writeStartMenu(const wxString& name, const wxString& instDir);
 	void writeDeskTop(const wxString& name, const wxString& instDir);
 #elif defined(__WXGTK__)
-	bool getMenuDir(wxString& dir) const;
 	bool getDesktopDir(wxString& dir) const;
 	void writeDeskTop(const wxString& name, const wxString& instDir);
 #endif

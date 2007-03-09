@@ -1,11 +1,9 @@
 [Desktop Entry]
 Type=Application
 Version=1.0
-Name=UWSDR @NAME@
-Name[de]=UWSDR @NAME@
+Name=UWSDR
 Categories=Network;HamRadio
-Comment=UWSDR for @NAME@
-Comment[de]=UWSDR fuer @NAME@
+Comment=UWSDR GUI
 Icon=UWSDR.png
-Exec=/usr/bin/UWSDR @NAME@
+Exec=/usr/bin/UWSDR
 Terminal=false

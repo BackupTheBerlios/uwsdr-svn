@@ -46,11 +46,6 @@
               </object>
 
          <li> <object type="text/sitemap">
-                  <param name="Name" value="Create Menu Entry">
-                  <param name="Local" value="CreateMenuEntry.htm">
-              </object>
-
-         <li> <object type="text/sitemap">
                   <param name="Name" value="DirectSound (Windows)">
                   <param name="Local" value="AudioAPI.htm">
               </object>

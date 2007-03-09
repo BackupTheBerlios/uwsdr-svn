@@ -64,12 +64,6 @@ Which will put the executables in /usr/bin and the other files into /usr/share/u
 
 If none of the programs within the UWSDR package run and complain about being unable to find the wxGTK library then you probably have a problem with the configuration of the library path. Thankfully the solution is simple. You need to log in as the super user and edit a configuration file, On Ubuntu/Debian and SuSE it's /etc/ld.so.conf and on Fedora Core it's /etc/ld.so.conf.d/mypath.conf. In those files you should add the path to your new libraries which will probably be /usr/local/lib unless you override this when configuring the packages as explained at the beginning.
 
-In order to allow GUISetup to create menu entries for new UWSDR configurations you will have to set the environment variable $XDG_DATA_HOME for the system. This can be done by editing the file /etc/environment as the super-user. The line to add is:
-
-XDG_DATA_HOME=/home/USER/.local/share
-
-where USER is your user name. As yourself (not as super-user), go to your home directory and create the directory .local and then the directory share within that, and then applications within that. I'm sorry for this long-winded and not very good way of doing things, but it's the only option for now. It would be better if $HOME could be embedded in /etc/environment but that doesn't work.
-
 
 Mac OS X
 --------

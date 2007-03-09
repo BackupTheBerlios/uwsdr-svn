@@ -13,8 +13,8 @@
 ;Configuration
 
   ;General
-  Name "UWSDR 0.8"
-  OutFile "UWSDR-0.8.exe"
+  Name "UWSDR 0.8.1"
+  OutFile "UWSDR-0.8.1.exe"
 
   ;Folder selection page
   InstallDir "$PROGRAMFILES\UWSDR"
@@ -87,6 +87,7 @@ Section "UWSDR Program Files" SecProgram
 
   ;Create start menu entry
   CreateDirectory "$SMPROGRAMS\UWSDR"
+  CreateShortCut "$SMPROGRAMS\UWSDR\UWSDR.lnk"     "$INSTDIR\UWSDR.exe"
   CreateShortCut "$SMPROGRAMS\UWSDR\GUISetup.lnk"  "$INSTDIR\GUISetup.exe"
   CreateShortCut "$SMPROGRAMS\UWSDR\SDRHelp.lnk"   "$INSTDIR\SDRHelp.exe"
   CreateShortCut "$SMPROGRAMS\UWSDR\SDRSetup.lnk"  "$INSTDIR\SDRSetup.exe"

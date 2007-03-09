@@ -30,13 +30,10 @@
 #endif
 
 #if defined(__WXGTK__)
-const wxChar* XDG_DATA_HOME_ENV = wxT("XDG_DATA_HOME");
-const wxChar* HOME_ENV          = wxT("HOME");
-const wxChar* DEFAULT_DIR       = wxT("/.local/share");
-const wxChar* DESKTOP_DIR       = wxT("/Desktop");
-const wxChar* APPLICATION_DIR   = wxT("/applications");
-const wxChar* UWSDR_FILE        = wxT("UWSDR.desktop");
-const wxChar* NAME_TOKEN        = wxT("@NAME@");
+const wxChar* HOME_ENV      = wxT("HOME");
+const wxChar* DESKTOP_DIR   = wxT("/Desktop");
+const wxChar* SKELETON_FILE = wxT("Skeleton.desktop");
+const wxChar* NAME_TOKEN    = wxT("@NAME@");
 #endif
 
 #if defined(__WINDOWS__)
@@ -88,7 +85,6 @@ CGUISetupFrame::CGUISetupFrame() :
 wxFrame(NULL, -1, wxString(_("uWave SDR GUI Setup")), wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX  | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN),
 m_name(NULL),
 m_filenameText(NULL),
-m_startMenu(NULL),
 m_deskTop(NULL),
 m_userAudio(NULL),
 m_sdrAudio(NULL),
@@ -180,39 +176,23 @@ m_txOutPin(OUT_NONE)
 
 #if !defined(__WXMAC__)
 #if defined(__WXGTK__)
-	wxString dir;
-	if (getMenuDir(dir)) {
+	if (getDesktopDir(dir)) {
 #endif
-		wxStaticText* label7 = new wxStaticText(panel, -1, _("Create Menu entry:"));
+		wxStaticText* label7 = new wxStaticText(panel, -1, _("Create Desktop icon:"));
 		panelSizer->Add(label7, 0, wxALL, BORDER_SIZE);
 
-		m_startMenu = new wxCheckBox(panel, -1, wxEmptyString);
-		panelSizer->Add(m_startMenu, 0, wxALL, BORDER_SIZE);
+		m_deskTop = new wxCheckBox(panel, -1, wxEmptyString);
+		panelSizer->Add(m_deskTop, 0, wxALL, BORDER_SIZE);
 
 		wxStaticText* dummy6 = new wxStaticText(panel, -1, wxEmptyString);
 		panelSizer->Add(dummy6, 0, wxALL, BORDER_SIZE);
 #if defined(__WXGTK__)
 	}
 #endif
-
-#if defined(__WXGTK__)
-	if (getDesktopDir(dir)) {
-#endif
-		wxStaticText* label8 = new wxStaticText(panel, -1, _("Create Desktop icon:"));
-		panelSizer->Add(label8, 0, wxALL, BORDER_SIZE);
-
-		m_deskTop = new wxCheckBox(panel, -1, wxEmptyString);
-		panelSizer->Add(m_deskTop, 0, wxALL, BORDER_SIZE);
-
-		wxStaticText* dummy7 = new wxStaticText(panel, -1, wxEmptyString);
-		panelSizer->Add(dummy7, 0, wxALL, BORDER_SIZE);
-#if defined(__WXGTK__)
-	}
-#endif
 #endif
 
-	wxStaticText* dummy8 = new wxStaticText(panel, -1, wxEmptyString);
-	panelSizer->Add(dummy8, 0, wxALL, BORDER_SIZE);
+	wxStaticText* dummy7 = new wxStaticText(panel, -1, wxEmptyString);
+	panelSizer->Add(dummy7, 0, wxALL, BORDER_SIZE);
 
 	wxButton* create = new wxButton(panel, CREATE_BUTTON, _("Create"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
 	panelSizer->Add(create, 0, wxALL, BORDER_SIZE);
@@ -505,25 +485,11 @@ void CGUISetupFrame::onCreate(wxCommandEvent& WXUNUSED(event))
 	if (!found) {
 		::wxMessageBox(_("Cannot find the registry key for the\ninstallation directory. Cannot create\nthe start menu entry."), _("GUISetup Error"), wxICON_ERROR);
 	} else {
-		bool create = m_startMenu->GetValue();
-		if (create)
-			writeStartMenu(name, dir);
-
-		create = m_deskTop->GetValue();
+		bool create = m_deskTop->GetValue();
 		if (create)
 			writeDeskTop(name, dir);
 	}
 #elif defined(__WXGTK__)
-	if (m_startMenu != NULL) {
-		bool create = m_startMenu->GetValue();
-		if (create) {
-			wxString dir;
-			getMenuDir(dir);
-
-			writeDeskTop(name, dir);
-		}
-	}
-
 	if (m_deskTop != NULL) {
 		bool create = m_deskTop->GetValue();
 		if (create) {
@@ -705,66 +671,6 @@ void CGUISetupFrame::onPort(wxCommandEvent& WXUNUSED(event))
 
 #if defined(__WXMSW__)
 
-void CGUISetupFrame::writeStartMenu(const wxString& name, const wxString& dir)
-{
-	TCHAR folder[MAX_PATH];
-	BOOL res = ::SHGetSpecialFolderPath(NULL, folder, CSIDL_PROGRAMS, FALSE);
-
-	if (!res) {
-		::wxMessageBox(_("Cannot get the Start Menu folder from Windows"), _("GUISetup Error"), wxICON_ERROR);
-		return;
-	}
-
-	wxString linkName = name + wxT(".lnk");
-	wxString linkPath = wxString(folder) + wxT("\\UWSDR\\") + linkName;
-	wxString exePath  = dir + wxT("\\UWSDR.exe");
-	wxString args     = name;
-
-	HRESULT hRes = ::CoInitialize(NULL);
-	if (!SUCCEEDED(hRes)) {
-		::wxMessageBox(_("Cannot initialise the COM interface"), _("GUISetup Error"), wxICON_ERROR);
-		return;
-	}
-
-	IShellLink* pShellLink;
-	hRes = ::CoCreateInstance(CLSID_ShellLink, NULL,
-								CLSCTX_INPROC_SERVER,
-								IID_IShellLink,
-								(void**)&pShellLink);
-
-	if (!SUCCEEDED(hRes)) {
-		::CoUninitialize();
-		::wxMessageBox(_("Cannot create a COM interface"), _("GUISetup Error"), wxICON_ERROR);
-		return;
-	}
-
-	pShellLink->SetPath(exePath.c_str());
-	pShellLink->SetArguments(args.c_str());
-	pShellLink->SetWorkingDirectory(dir.c_str());
-
-    WORD wszLinkfile[MAX_PATH];
-	::MultiByteToWideChar(CP_ACP, 0, linkPath.c_str(), -1, LPWSTR(wszLinkfile), MAX_PATH);
-
-    IPersistFile* pPersistFile;
-	hRes = pShellLink->QueryInterface(IID_IPersistFile, (void**)&pPersistFile);
-
-	if (!SUCCEEDED(hRes)) {
-		pShellLink->Release();
-		::CoUninitialize();
-		::wxMessageBox(_("Cannot query the COM interface"), _("GUISetup Error"), wxICON_ERROR);
-		return;
-	}
-
-	hRes = pPersistFile->Save(LPCOLESTR(wszLinkfile), TRUE);
-	if (!SUCCEEDED(hRes))
-		::wxMessageBox(_("Cannot save the shortcut file"), _("GUISetup Error"), wxICON_ERROR);
-
-	pPersistFile->Release();
-	pShellLink->Release();
-
-	::CoUninitialize();
-}
-
 void CGUISetupFrame::writeDeskTop(const wxString& name, const wxString& dir)
 {
 	TCHAR folder[MAX_PATH];
@@ -830,7 +736,7 @@ void CGUISetupFrame::writeDeskTop(const wxString& name, const wxString& dir)
 void CGUISetupFrame::writeDeskTop(const wxString& name, const wxString& dir)
 {
 	wxString fileName;
-	fileName.Printf(wxT("%s/%s"), DATA_DIR, UWSDR_FILE);
+	fileName.Printf(wxT("%s/%s"), DATA_DIR, SKELETON_FILE);
 
 	// Open the .desktop template file
 	wxTextFile inFile;
@@ -870,23 +776,6 @@ void CGUISetupFrame::writeDeskTop(const wxString& name, const wxString& dir)
 	inFile.Close();
 }
 
-bool CGUISetupFrame::getMenuDir(wxString& dir) const
-{
-	bool ret = ::wxGetEnv(XDG_DATA_HOME_ENV, &dir);
-
-	if (!ret) {
-		ret = ::wxGetEnv(wxT(HOME_ENV), &dir);
-		if (!ret)
-			return false;
-
-		dir.Append(DEFAULT_DIR);
-	}
-
-	dir.Append(APPLICATION_DIR);
-
-	return wxDir::Exists(dir);
-}
-
 bool CGUISetupFrame::getDesktopDir(wxString& dir) const
 {
 	bool ret = ::wxGetEnv(HOME_ENV, &dir);
@@ -898,4 +787,5 @@ bool CGUISetupFrame::getDesktopDir(wxString& dir) const
 
 	return wxDir::Exists(dir);
 }
+
 #endif
