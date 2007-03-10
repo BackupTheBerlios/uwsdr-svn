@@ -279,54 +279,177 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_dsp = new CDSPControl(m_parameters->m_hardwareSampleRate);
 
 	switch (m_parameters->m_hardwareType) {
-		case TYPE_AUDIORX: {
-				// TX is disabled, RX is from audio card for signal input and audio output
-				m_dsp->setTXReader(new CNullReader());
-				m_dsp->setTXWriter(new CNullWriter());
+		case TYPE_AUDIORX:
+			// TX is disabled, RX is from audio card for signal input and audio output
+			m_dsp->setTXReader(new CNullReader());
+			m_dsp->setTXWriter(new CNullWriter());
 
-				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_sdrAudioInDev, m_parameters->m_userAudioOutDev, 2U, 1U);
-				m_dsp->setRXReader(scrw);
-				m_dsp->setRXWriter(scrw);
+			// TX and RX are from audio cards for signal input and audio output, also simple TX/RX control
+			if (m_parameters->m_sdrAudioInDev == JACK_DEV) {
+#if defined(USE_JACK)
+				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" SDR"), 2U, 0U);
+				m_dsp->setRXReader(rw);
+#else
+				::wxLogError(wxT("Need Jack but not compiled with it"));
+				::wxMessageBox(_("Need Jack but not compiled with it"), _("uWave SDR Error"), wxICON_ERROR);
+				Close(true);
+				return;
+#endif
+			} else {
+#if defined(USE_PORTAUDIO)
+				CSoundCardReaderWriter* rw = new CSoundCardReaderWriter(m_parameters->m_sdrAudioInDev, -1, 2U, 0U);
+				m_dsp->setRXReader(rw);
+#else
+				::wxLogError(wxT("Need PortAudio but not compiled with it"));
+				::wxMessageBox(_("Need PortAudio but not compiled with it"), _("uWave SDR Error"), wxICON_ERROR);
+				Close(true);
+				return;
+#endif
+			}
+
+			if (m_parameters->m_userAudioInDev == JACK_DEV) {
+#if defined(USE_JACK)
+				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" User"), 0U, 1U);
+				m_dsp->setRXWriter(rw);
+#else
+				::wxLogError(wxT("Need Jack but not compiled with it"));
+				::wxMessageBox(_("Need Jack but not compiled with it"), _("uWave SDR Error"), wxICON_ERROR);
+				Close(true);
+				return;
+#endif
+			} else {
+#if defined(USE_PORTAUDIO)
+				CSoundCardReaderWriter* rw = new CSoundCardReaderWriter(-1, m_parameters->m_userAudioOutDev, 0U, 1U);
+				m_dsp->setRXWriter(rw);
+#else
+				::wxLogError(wxT("Need PortAudio but not compiled with it"));
+				::wxMessageBox(_("Need PortAudio but not compiled with it"), _("uWave SDR Error"), wxICON_ERROR);
+				Close(true);
+				return;
+#endif
 			}
 			break;
 
-		case TYPE_AUDIOTXRX: {
-				// TX and RX are from audio cards for signal input and audio output, also simple TX/RX control
-				CSoundCardReaderWriter* scrw1 = new CSoundCardReaderWriter(m_parameters->m_sdrAudioInDev, m_parameters->m_sdrAudioOutDev, 2U, 2U);
-				m_dsp->setRXReader(scrw1);
-				m_dsp->setTXWriter(scrw1);
+		case TYPE_AUDIOTXRX:
+			// TX and RX are from audio cards for signal input and audio output, also simple TX/RX control
+			if (m_parameters->m_sdrAudioInDev == JACK_DEV) {
+#if defined(USE_JACK)
+				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" SDR"), 2U, 2U);
+				m_dsp->setRXReader(rw);
+				m_dsp->setTXWriter(rw);
+#else
+				::wxLogError(wxT("Need Jack but not compiled with it"));
+				::wxMessageBox(_("Need Jack but not compiled with it"), _("uWave SDR Error"), wxICON_ERROR);
+				Close(true);
+				return;
+#endif
+			} else {
+#if defined(USE_PORTAUDIO)
+				CSoundCardReaderWriter* rw = new CSoundCardReaderWriter(m_parameters->m_sdrAudioInDev, m_parameters->m_sdrAudioOutDev, 2U, 2U);
+				m_dsp->setRXReader(rw);
+				m_dsp->setTXWriter(rw);
+#else
+				::wxLogError(wxT("Need PortAudio but not compiled with it"));
+				::wxMessageBox(_("Need PortAudio but not compiled with it"), _("uWave SDR Error"), wxICON_ERROR);
+				Close(true);
+				return;
+#endif
+			}
 
-				CSoundCardReaderWriter* scrw2 = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 1U, 1U);
-				m_dsp->setTXReader(scrw2);
-				m_dsp->setRXWriter(scrw2);
+			if (m_parameters->m_userAudioInDev == JACK_DEV) {
+#if defined(USE_JACK)
+				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" User"), 1U, 1U);
+				m_dsp->setTXReader(rw);
+				m_dsp->setRXWriter(rw);
+#else
+				::wxLogError(wxT("Need Jack but not compiled with it"));
+				::wxMessageBox(_("Need Jack but not compiled with it"), _("uWave SDR Error"), wxICON_ERROR);
+				Close(true);
+				return;
+#endif
+			} else {
+#if defined(USE_PORTAUDIO)
+				CSoundCardReaderWriter* rw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 1U, 1U);
+				m_dsp->setTXReader(rw);
+				m_dsp->setRXWriter(rw);
+#else
+				::wxLogError(wxT("Need PortAudio but not compiled with it"));
+				::wxMessageBox(_("Need PortAudio but not compiled with it"), _("uWave SDR Error"), wxICON_ERROR);
+				Close(true);
+				return;
+#endif
 			}
 			break;
 
-		case TYPE_DEMO: {
-				// A self contained variant for demo's and testing
-				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 1U, 1U);
-
-				m_dsp->setTXReader(new CThreeToneReader(500.0F, 1500.0F, 2000.0F, 0.25F, scrw));
-				m_dsp->setRXWriter(scrw);
-
-				m_dsp->setTXWriter(new CNullWriter());
-				m_dsp->setRXReader(new CSignalReader(1000.5F, 0.0003F, 0.0004F));
+		case TYPE_DEMO:
+			// A self contained variant for demo's and testing
+			if (m_parameters->m_userAudioInDev == JACK_DEV) {
+#if defined(USE_JACK)
+				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" User"), 1U, 1U);
+				m_dsp->setTXReader(new CThreeToneReader(500.0F, 1500.0F, 2000.0F, 0.25F, rw));
+				m_dsp->setRXWriter(rw);
+#else
+				::wxLogError(wxT("Need Jack but not compiled with it"));
+				::wxMessageBox(_("Need Jack but not compiled with it"), _("uWave SDR Error"), wxICON_ERROR);
+				Close(true);
+				return;
+#endif
+			} else {
+#if defined(USE_PORTAUDIO)
+				CSoundCardReaderWriter* rw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 1U, 1U);
+				m_dsp->setTXReader(new CThreeToneReader(500.0F, 1500.0F, 2000.0F, 0.25F, rw));
+				m_dsp->setRXWriter(rw);
+#else
+				::wxLogError(wxT("Need PortAudio but not compiled with it"));
+				::wxMessageBox(_("Need PortAudio but not compiled with it"), _("uWave SDR Error"), wxICON_ERROR);
+				Close(true);
+				return;
+#endif
 			}
+
+			m_dsp->setTXWriter(new CNullWriter());
+			m_dsp->setRXReader(new CSignalReader(1000.5F, 0.0003F, 0.0004F));
 			break;
 
-		case TYPE_UWSDR1: {
-				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 1U, 1U);
-				m_dsp->setRXWriter(scrw);
+		case TYPE_UWSDR1:
+			if (m_parameters->m_userAudioInDev == JACK_DEV) {
+#if defined(USE_JACK)
+				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" User"), 1U, 1U);
+				m_dsp->setRXWriter(rw);
 #if defined(TOBIAS)
 				// UDP in/out with audio on loudspeaker and two-tone audio on transmit
-				m_dsp->setTXReader(new CTwoToneReader(1000.0F, 1300.0F, 0.4F, scrw));
+				m_dsp->setTXReader(new CTwoToneReader(1000.0F, 1300.0F, 0.4F, rw));
 #else
 				// The standard configuration, UDP in/out and sound card for the user
-				m_dsp->setTXReader(scrw);
+				m_dsp->setTXReader(rw);
 #endif
-				m_dsp->setTXWriter(new CSDRDataWriter(m_parameters->m_ipAddress, m_parameters->m_dataPort, 1U));
-				m_dsp->setRXReader(new CSDRDataReader(m_parameters->m_ipAddress, m_parameters->m_dataPort, 1U));
+#else
+				::wxLogError(wxT("Need Jack but not compiled with it"));
+				::wxMessageBox(_("Need Jack but not compiled with it"), _("uWave SDR Error"), wxICON_ERROR);
+				Close(true);
+				return;
+#endif
+			} else {
+#if defined(USE_PORTAUDIO)
+				CSoundCardReaderWriter* rw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 1U, 1U);
+				m_dsp->setRXWriter(rw);
+#if defined(TOBIAS)
+				// UDP in/out with audio on loudspeaker and two-tone audio on transmit
+				m_dsp->setTXReader(new CTwoToneReader(1000.0F, 1300.0F, 0.4F, rw));
+#else
+				// The standard configuration, UDP in/out and sound card for the user
+				m_dsp->setTXReader(rw);
+#endif
+#else
+				::wxLogError(wxT("Need PortAudio but not compiled with it"));
+				::wxMessageBox(_("Need PortAudio but not compiled with it"), _("uWave SDR Error"), wxICON_ERROR);
+				Close(true);
+				return;
+#endif
 			}
+
+			m_dsp->setTXWriter(new CSDRDataWriter(m_parameters->m_ipAddress, m_parameters->m_dataPort, 1U));
+			m_dsp->setRXReader(new CSDRDataReader(m_parameters->m_ipAddress, m_parameters->m_dataPort, 1U));
 			break;
 	}
 

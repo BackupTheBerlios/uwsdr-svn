@@ -10,13 +10,13 @@ export PNGDIR := "/usr/share/pixmaps"
 #
 # Uncomment the two lines below to enable PortAudio support
 #
-export PA_DEF := "-DUSE_PORTAUDIO=1"
+export PA_DEF := -DUSE_PORTAUDIO=1
 export PALIBS := -lportaudio
 
 #
 # Uncomment the two lines below to enable Jack support
 #
-export JACK_DEF := "-DUSE_JACK=1"
+export JACK_DEF := -DUSE_JACK=1
 export JACKLIBS := -ljack
 
 

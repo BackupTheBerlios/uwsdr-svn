@@ -73,7 +73,7 @@ void CJackReaderWriter::setCallback(IDataCallback* callback, int id)
 
 bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
 {
-	if (m_opened > 0) {
+	if (m_opened > 0U) {
 		m_opened++;
 		return true;
 	}
@@ -92,7 +92,7 @@ bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
 
 	jack_nframes_t jsr = ::jack_get_sample_rate(m_client);
 	if (float(jsr) != sampleRate) {
-		::wxLogError(wxT("JackReaderWriter: incorrect Jack sample rate of " PRIu32), jsr);
+		::wxLogError(wxT("JackReaderWriter: incorrect Jack sample rate of %u"), jsr);
 		::jack_client_close(m_client);
 		return false;
 	}
@@ -101,7 +101,7 @@ bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
 		m_inPort = ::jack_port_register(m_client, "Input", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
 
 		if (m_inPort == NULL) {
-			::wxLogError(wxT("JackReaderWriter: unable to open the Jack input port");
+			::wxLogError(wxT("JackReaderWriter: unable to open the Jack input port"));
 			::jack_client_close(m_client);
 			return false;
 		}
@@ -111,7 +111,7 @@ bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
 		m_outPort = ::jack_port_register(m_client, "Output", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
 
 		if (m_outPort == NULL) {
-			::wxLogError(wxT("JackReaderWriter: unable to open the Jack output port");
+			::wxLogError(wxT("JackReaderWriter: unable to open the Jack output port"));
 			::jack_client_close(m_client);
 			return false;
 		}
@@ -119,7 +119,7 @@ bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
 
 	int ret = ::jack_activate(m_client);
 	if (ret != 0) {
-		::wxLogError(wxT("JackReaderWriter: error %d when activating the Jack client", ret);
+		::wxLogError(wxT("JackReaderWriter: error %d when activating the Jack client"), ret);
 		::jack_client_close(m_client);
 		return false;
 	}
@@ -134,7 +134,7 @@ bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
 
 void CJackReaderWriter::write(const float* buffer, unsigned int nSamples)
 {
-	if (!m_enabled || m_outDev == -1)
+	if (!m_enabled || m_outChannels > 0U)
 		return;
 
 	if (nSamples == 0U)
@@ -156,7 +156,7 @@ int CJackReaderWriter::callback(jack_nframes_t nFrames)
 		wxASSERT(m_callback != NULL);
 		wxASSERT(m_inBuffer != NULL);
 
-		jack_default_audio_sample_t* input = ::jack_port_get_buffer(m_inPort, nFrames);
+		float* input = (float*)::jack_port_get_buffer(m_inPort, nFrames);
 
 		if (m_inChannels == 1U) {
 			for (unsigned int i = 0U; i < nFrames; i++) {
@@ -175,7 +175,7 @@ int CJackReaderWriter::callback(jack_nframes_t nFrames)
 		wxASSERT(m_outBuffer != NULL);
 		wxASSERT(m_lastBuffer != NULL);
 
-		float* output = ::jack_port_get_buffer(m_outPort, nFrames);
+		float* output = (float*)::jack_port_get_buffer(m_outPort, nFrames);
 
 		if (m_buffer->dataSpace() >= nFrames) {
 			m_buffer->getData(m_outBuffer, nFrames);
