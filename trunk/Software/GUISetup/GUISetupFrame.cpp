@@ -92,10 +92,10 @@ m_ethernet(NULL),
 m_port(NULL),
 m_filename(),
 m_sdrType(TYPE_UWSDR1),
-m_userAudioInDev(-1L),
-m_userAudioOutDev(-1L),
-m_sdrAudioInDev(-1L),
-m_sdrAudioOutDev(-1L),
+m_userAudioInDev(-1),
+m_userAudioOutDev(-1),
+m_sdrAudioInDev(-1),
+m_sdrAudioOutDev(-1),
 m_ipAddress(),
 m_controlPort(-1L),
 m_dataPort(-1L),
@@ -176,6 +176,7 @@ m_txOutPin(OUT_NONE)
 
 #if !defined(__WXMAC__)
 #if defined(__WXGTK__)
+	wxString dir;
 	if (getDesktopDir(dir)) {
 #endif
 		wxStaticText* label7 = new wxStaticText(panel, -1, _("Create Desktop icon:"));
@@ -581,14 +582,14 @@ void CGUISetupFrame::readConfig(const wxString& name)
 
 	config->Read(txInEnableKey,  &m_txInEnable);
 	config->Read(txInDevKey,     &m_txInDev);
-	config->Read(txInPinKey,     (long*)&m_txInPin);
+	config->Read(txInPinKey,     (int*)&m_txInPin);
 
 	config->Read(keyInEnableKey, &m_keyInEnable);
 	config->Read(keyInDevKey,    &m_keyInDev);
-	config->Read(keyInPinKey,    (long*)&m_keyInPin);
+	config->Read(keyInPinKey,    (int*)&m_keyInPin);
 
 	config->Read(txOutDevKey,    &m_txOutDev);
-	config->Read(txOutPinKey,    (long*)&m_txOutPin);
+	config->Read(txOutPinKey,    (int*)&m_txOutPin);
 
 	delete config;
 

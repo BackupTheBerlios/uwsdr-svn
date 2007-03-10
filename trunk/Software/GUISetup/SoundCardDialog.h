@@ -26,21 +26,21 @@
 class CSoundCardDialog : public wxDialog {
 
     public:
-	CSoundCardDialog(wxWindow* parent, const wxString& title, long inDev, long outDev, unsigned int minIn, unsigned int minOut, int id = -1);
+	CSoundCardDialog(wxWindow* parent, const wxString& title, int inDev, int outDev, unsigned int minIn, unsigned int minOut, int id = -1);
 	virtual ~CSoundCardDialog();
 
 	void onAPI(wxCommandEvent& event);
 	void onOK(wxCommandEvent& event);
 
-	virtual long getInDev() const;
-	virtual long getOutDev() const;
+	virtual int getInDev() const;
+	virtual int getOutDev() const;
 
     private:
 	wxChoice*      m_apiChoice;
 	wxChoice*      m_devChoice;
 	CSoundCardInfo m_info;
-	long           m_inDev;
-	long           m_outDev;
+	int            m_inDev;
+	int            m_outDev;
 	unsigned int   m_minIn;
 	unsigned int   m_minOut;
 

@@ -31,7 +31,7 @@ BEGIN_EVENT_TABLE(CSoundCardDialog, wxDialog)
 END_EVENT_TABLE()
 
 
-CSoundCardDialog::CSoundCardDialog(wxWindow* parent, const wxString& title, long inDev, long outDev, unsigned int minIn, unsigned int minOut, int id) :
+CSoundCardDialog::CSoundCardDialog(wxWindow* parent, const wxString& title, int inDev, int outDev, unsigned int minIn, unsigned int minOut, int id) :
 wxDialog(parent, id, title),
 m_apiChoice(NULL),
 m_devChoice(NULL),
@@ -177,12 +177,12 @@ void CSoundCardDialog::enumerateAudio(const CSoundCardAPI& api)
 		if (dev->getAPI() == api.getAPI() && dev->getInChannels() >= int(m_minIn) && dev->getOutChannels() >= int(m_minOut)) {
 			m_devChoice->Append(dev->getName(), dev);
 
-			if (m_inDev != -1L && m_inDev == dev->getInDev()) {
+			if (m_inDev != -1 && m_inDev == dev->getInDev()) {
 				m_devChoice->SetSelection(n);
 				m_outDev = dev->getOutDev();
 			}
 
-			if (m_inDev == -1L && dev->getInDev() == api.getInDefault()) {
+			if (m_inDev == -1 && dev->getInDev() == api.getInDefault()) {
 				m_devChoice->SetSelection(n);
 				m_inDev  = dev->getInDev();
 				m_outDev = dev->getOutDev();
@@ -193,12 +193,12 @@ void CSoundCardDialog::enumerateAudio(const CSoundCardAPI& api)
 	}
 }
 
-long CSoundCardDialog::getInDev() const
+int CSoundCardDialog::getInDev() const
 {
 	return m_inDev;
 }
 
-long CSoundCardDialog::getOutDev() const
+int CSoundCardDialog::getOutDev() const
 {
 	return m_outDev;
 }

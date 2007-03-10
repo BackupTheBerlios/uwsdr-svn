@@ -28,7 +28,7 @@ using namespace std;
 
 class CSoundCardAPI {
     public:
-	CSoundCardAPI(int api, const wxString& name, bool def, long inDef, long outDef) :
+	CSoundCardAPI(int api, const wxString& name, bool def, int inDef, int outDef) :
 	m_api(api),
 	m_name(name),
 	m_def(def),
@@ -56,12 +56,12 @@ class CSoundCardAPI {
 		return m_def;
 	}
 
-	long getInDefault() const
+	int getInDefault() const
 	{
 		return m_inDef;
 	}
 
-	long getOutDefault() const
+	int getOutDefault() const
 	{
 		return m_outDef;
 	}
@@ -70,8 +70,8 @@ class CSoundCardAPI {
 	int      m_api;
 	wxString m_name;
 	bool     m_def;
-	long     m_inDef;
-	long     m_outDef;
+	int      m_inDef;
+	int      m_outDef;
 };
 
 class CSoundCardDev {
@@ -79,8 +79,8 @@ class CSoundCardDev {
 	CSoundCardDev(const wxString& name) :
 	m_name(name),
 	m_api(-1),
-	m_inDev(-1L),
-	m_outDev(-1L),
+	m_inDev(-1),
+	m_outDev(-1),
 	m_inChannels(0),
 	m_outChannels(0)
 	{
@@ -100,12 +100,12 @@ class CSoundCardDev {
 		return m_api;
 	}
 
-	long getInDev() const
+	int getInDev() const
 	{
 		return m_inDev;
 	}
 
-	long getOutDev() const
+	int getOutDev() const
 	{
 		return m_outDev;
 	}
@@ -120,14 +120,14 @@ class CSoundCardDev {
 		return m_outChannels;
 	}
 
-	void setIn(int api, long dev, int channels)
+	void setIn(int api, int dev, int channels)
 	{
 		m_api        = api;
 		m_inDev      = dev;
 		m_inChannels = channels;
 	}
 
-	void setOut(int api, long dev, int channels)
+	void setOut(int api, int dev, int channels)
 	{
 		m_api         = api;
 		m_outDev      = dev;
@@ -137,8 +137,8 @@ class CSoundCardDev {
     private:
 	wxString m_name;
 	int      m_api;
-	long     m_inDev;
-	long     m_outDev;
+	int      m_inDev;
+	int      m_outDev;
 	int      m_inChannels;
 	int      m_outChannels;
 };

@@ -48,10 +48,10 @@ class CGUISetupFrame : public wxFrame {
 	wxButton*      m_port;
 	wxString       m_filename;
 	SDRTYPE        m_sdrType;
-	long           m_userAudioInDev;
-	long           m_userAudioOutDev;
-	long           m_sdrAudioInDev;
-	long           m_sdrAudioOutDev;
+	int            m_userAudioInDev;
+	int            m_userAudioOutDev;
+	int            m_sdrAudioInDev;
+	int            m_sdrAudioOutDev;
 	wxString       m_ipAddress;
 	long           m_controlPort;
 	long           m_dataPort;
