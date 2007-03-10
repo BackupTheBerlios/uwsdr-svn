@@ -2,7 +2,7 @@ all:		UWSDR
 
 CFLAGS		:= -I../Common $(CFLAGS)
 
-LIBS		:= -lportaudio -lfftw3f $(LIBS)
+LIBS		:= $(PALIBS) $(JACKLIBS) -lfftw3f $(LIBS)
 
 OBJS :=		ConfigChooser.o CWKeyboard.o CWKeyer.o DSPControl.o DTTSPControl.o FreqDial.o FreqDisplay.o FreqKeypad.o \
 		InfoBox.o SDRParameters.o SMeter.o SpectrumDisplay.o UWSDRApp.o UWSDRFrame.o UWSDRPreferences.o \
@@ -55,7 +55,7 @@ UWSDRApp.o:	UWSDRApp.cpp UWSDRApp.h ConfigChooser.h ../Common/Log.h SDRParameter
 
 UWSDRFrame.o:	UWSDRFrame.cpp UWSDRFrame.h ../Common/ControlInterface.h CWKeyboard.h DialInterface.h DSPControl.h FreqDial.h \
 		FreqDisplay.h FreqKeypad.h ../Common/Frequency.h InfoBox.h ../Common/NullController.h ../Common/SDRDataReader.h \
-		../Common/SDRDataWriter.h SDRParameters.h ../Common/SerialControl.h SMeter.h \
+		../Common/SDRDataWriter.h SDRParameters.h ../Common/SerialControl.h SMeter.h ../Common/JackReaderWriter.h \
 		../Common/SoundCardReaderWriter.h ../Common/SoundFileWriter.h SpectrumDisplay.h \
 		../Common/SRTXRXController.h UWSDRApp.h ../Common/UWSDRController.h UWSDRDefs.h UWSDRPreferences.h UWSDR.xpm \
 		../Common/Common.h VoiceKeyboard.h

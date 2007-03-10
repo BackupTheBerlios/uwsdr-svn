@@ -92,10 +92,12 @@ m_ethernet(NULL),
 m_port(NULL),
 m_filename(),
 m_sdrType(TYPE_UWSDR1),
-m_userAudioInDev(-1),
-m_userAudioOutDev(-1),
-m_sdrAudioInDev(-1),
-m_sdrAudioOutDev(-1),
+m_userAudioType(),
+m_userAudioInDev(NO_DEV),
+m_userAudioOutDev(NO_DEV),
+m_sdrAudioType(),
+m_sdrAudioInDev(NO_DEV),
+m_sdrAudioOutDev(NO_DEV),
 m_ipAddress(),
 m_controlPort(-1L),
 m_dataPort(-1L),
@@ -311,21 +313,21 @@ void CGUISetupFrame::onCreate(wxCommandEvent& WXUNUSED(event))
 	m_sdrType = file.getType();
 
 	if (featureList[m_sdrType].userAudioButton) {
-		if (m_userAudioInDev == -1L || m_userAudioOutDev == -1L) {
+		if (m_userAudioInDev == NO_DEV || m_userAudioOutDev == NO_DEV) {
 			::wxMessageBox(_("The User Audio has not been set"), _("GUISetup Error"), wxICON_ERROR);
 			return;
 		}
 	}
 
 	if (featureList[m_sdrType].sdrAudioButton) {
-		if (m_sdrAudioInDev == -1L || m_sdrAudioOutDev == -1L) {
+		if (m_sdrAudioInDev == NO_DEV || m_sdrAudioOutDev == NO_DEV) {
 			::wxMessageBox(_("The SDR Audio has not been set"), _("GUISetup Error"), wxICON_ERROR);
 			return;
 		}
 	}
 
 	if (featureList[m_sdrType].audioCheck) {
-		if (m_sdrAudioInDev == m_userAudioInDev || m_sdrAudioOutDev == m_userAudioOutDev) {
+		if (m_sdrAudioType != SOUND_JACK && m_userAudioType == m_sdrAudioType && (m_sdrAudioInDev == m_userAudioInDev || m_sdrAudioOutDev == m_userAudioOutDev)) {
 			::wxMessageBox(_("The SDR Audio cannot be the same as the User Audio"), _("GUISetup Error"), wxICON_ERROR);
 			return;
 		}
@@ -611,6 +613,7 @@ void CGUISetupFrame::onUserAudio(wxCommandEvent& WXUNUSED(event))
 
 	int ret = dialog.ShowModal();
 	if (ret == wxID_OK) {
+		m_userAudioType   = dialog.getType();
 		m_userAudioInDev  = dialog.getInDev();
 		m_userAudioOutDev = dialog.getOutDev();
 	}
@@ -622,6 +625,7 @@ void CGUISetupFrame::onSDRAudio(wxCommandEvent& WXUNUSED(event))
 
 	int ret = dialog.ShowModal();
 	if (ret == wxID_OK) {
+		m_sdrAudioType   = dialog.getType();
 		m_sdrAudioInDev  = dialog.getInDev();
 		m_sdrAudioOutDev = dialog.getOutDev();
 	}

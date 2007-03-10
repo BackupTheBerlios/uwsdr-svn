@@ -36,6 +36,7 @@ wxDialog(parent, id, title),
 m_apiChoice(NULL),
 m_devChoice(NULL),
 m_info(),
+m_type(),
 m_inDev(inDev),
 m_outDev(outDev),
 m_minIn(minIn),
@@ -100,6 +101,7 @@ void CSoundCardDialog::onAPI(wxCommandEvent& WXUNUSED(event))
 
 	CAudioDevAPI* api = (CAudioDevAPI*)m_apiChoice->GetClientData(apiChoice);
 
+	m_type   = api->getType();
 	m_inDev  = api->getInDefault();
 	m_outDev = api->getOutDefault();
 
@@ -118,6 +120,7 @@ void CSoundCardDialog::onOK(wxCommandEvent& WXUNUSED(event))
 
 	wxASSERT(dev != NULL);
 
+	m_type   = dev->getType();
 	m_inDev  = dev->getInDev();
 	m_outDev = dev->getOutDev();
 
@@ -131,9 +134,9 @@ void CSoundCardDialog::onOK(wxCommandEvent& WXUNUSED(event))
 
 void CSoundCardDialog::enumerateAPI()
 {
-	int defAPI = -1;
+	int defAPI = NO_API;
 
-	if (m_inDev != -1L) {
+	if (m_inDev != NO_DEV) {
 		for (unsigned int i = 0U; i < m_info.getDevs().size(); i++) {
 			CAudioDevDev* dev = m_info.getDevs().at(i);
 
@@ -151,12 +154,12 @@ void CSoundCardDialog::enumerateAPI()
 
 		m_apiChoice->Append(api->getName(), api);
 
-		if (defAPI != -1 && defAPI == api->getAPI()) {
+		if (defAPI != NO_API && defAPI == api->getAPI()) {
 			m_apiChoice->SetSelection(i);
 			chosen = api;
 		}
 
-		if (defAPI == -1 && api->getDefault()) {
+		if (defAPI == NO_API && api->getDefault()) {
 			m_apiChoice->SetSelection(i);
 			chosen = api;
 		}
@@ -177,12 +180,12 @@ void CSoundCardDialog::enumerateAudio(const CAudioDevAPI& api)
 		if (dev->getAPI() == api.getAPI() && dev->getInChannels() >= int(m_minIn) && dev->getOutChannels() >= int(m_minOut)) {
 			m_devChoice->Append(dev->getName(), dev);
 
-			if (m_inDev != -1 && m_inDev == dev->getInDev()) {
+			if (m_inDev != NO_DEV && m_inDev == dev->getInDev()) {
 				m_devChoice->SetSelection(n);
 				m_outDev = dev->getOutDev();
 			}
 
-			if (m_inDev == -1 && dev->getInDev() == api.getInDefault()) {
+			if (m_inDev == NO_DEV && dev->getInDev() == api.getInDefault()) {
 				m_devChoice->SetSelection(n);
 				m_inDev  = dev->getInDev();
 				m_outDev = dev->getOutDev();
@@ -191,6 +194,11 @@ void CSoundCardDialog::enumerateAudio(const CAudioDevAPI& api)
 			n++;
 		}
 	}
+}
+
+SOUNDTYPE CSoundCardDialog::getType() const
+{
+	return m_type;
 }
 
 int CSoundCardDialog::getInDev() const

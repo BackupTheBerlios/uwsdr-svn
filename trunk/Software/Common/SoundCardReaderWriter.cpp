@@ -18,6 +18,7 @@
 
 #include "SoundCardReaderWriter.h"
 
+#if defined(USE_PORTAUDIO)
 
 int scrwCallback(const void* input, void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void* userData)
 {
@@ -263,6 +264,9 @@ void CSoundCardReaderWriter::close()
 
 void CSoundCardReaderWriter::enable(bool enable)
 {
+	if (m_outDev == -1)
+		return;
+
 	m_enabled = enable;
 
 	if (!enable)
@@ -286,3 +290,5 @@ bool CSoundCardReaderWriter::hasClock()
 void CSoundCardReaderWriter::clock()
 {
 }
+
+#endif

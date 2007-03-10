@@ -1,17 +1,21 @@
 all:		Common.a
 
-OBJS := 	AudioDevInfo.o Frequency.o Log.o NullController.o NullReader.o NullWriter.o RingBuffer.o SDRDataReader.o \
-		SDRDataWriter.o SDRDescrFile.o SerialControl.o SignalReader.o SoundCardReaderWriter.o SoundFileReader.o \
-		SoundFileWriter.o SRTXRXController.o ThreadReader.o ThreeToneReader.o TwoToneReader.o UWSDRController.o
+OBJS := 	AudioDevInfo.o Frequency.o JackReaderWriter.o Log.o NullController.o NullReader.o NullWriter.o RingBuffer.o \
+		SDRDataReader.o SDRDataWriter.o SDRDescrFile.o SerialControl.o SignalReader.o SoundCardReaderWriter.o \
+		SoundFileReader.o SoundFileWriter.o SRTXRXController.o ThreadReader.o ThreeToneReader.o TwoToneReader.o \
+		UWSDRController.o
 
 Common.a:	$(OBJS)
 		ar rcs Common.a $(OBJS)
 
-AudioDevInfo.o:	AudioDevInfo.cpp AudioDevInfo.h
+AudioDevInfo.o:	AudioDevInfo.cpp AudioDevInfo.h Common.h
 		$(CC) $(CFLAGS) -c AudioDevInfo.cpp
 
 Frequency.o:	Frequency.cpp Frequency.h
 		$(CC) $(CFLAGS) -c Frequency.cpp
+
+JackReaderWriter.o: JackReaderWriter.cpp JackReaderWriter.h DataCallback.h DataReader.h DataWriter.h RingBuffer.h
+		$(CC) $(CFLAGS) -c JackReaderWriter.cpp
 
 Log.o:		Log.cpp Log.h
 		$(CC) $(CFLAGS) -c Log.cpp

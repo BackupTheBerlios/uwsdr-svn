@@ -17,6 +17,11 @@
  */
 
 #include "AudioDevInfo.h"
+#include "Common.h"
+
+#if defined(USE_PORTAUDIO)
+#include "portaudio.h"
+#endif
 
 
 CAudioDevInfo::CAudioDevInfo() :
@@ -36,6 +41,12 @@ bool CAudioDevInfo::enumerateAPIs()
 	freeAPIs();
 	freeDevs();
 
+#if defined(USE_JACK)
+	CAudioDevAPI* api = new CAudioDevAPI(JACK_API, wxT("Jack"), true, JACK_DEV, JACK_DEV, SOUND_JACK);
+	m_apis.push_back(api);
+#endif
+
+#if defined(USE_PORTAUDIO)
 	PaError error = ::Pa_Initialize();
 	if (error != paNoError)
 		return false;
@@ -52,11 +63,12 @@ bool CAudioDevInfo::enumerateAPIs()
 	for (PaHostApiIndex i = 0; i < n; i++) {
 		const PaHostApiInfo* hostAPI = ::Pa_GetHostApiInfo(i);
 
-		CAudioDevAPI* api = new CAudioDevAPI(i, hostAPI->name, i == defAPI, hostAPI->defaultInputDevice, hostAPI->defaultOutputDevice);
+		CAudioDevAPI* api = new CAudioDevAPI(i, hostAPI->name, i == defAPI, hostAPI->defaultInputDevice, hostAPI->defaultOutputDevice, SOUND_PORTAUDIO);
 		m_apis.push_back(api);
 	}
 
 	::Pa_Terminate();
+#endif
 
 	return true;
 }
@@ -65,6 +77,14 @@ bool CAudioDevInfo::enumerateDevs()
 {
 	freeDevs();
 
+#if defined(USE_JACK)
+	CAudioDevDev* dev = new CAudioDevDev(wxT("Jack"), SOUND_JACK);
+	dev->setIn(JACK_API, JACK_DEV, 2U);
+	dev->setOut(JACK_API, JACK_DEV, 2U);
+	m_devs.push_back(dev);
+#endif
+
+#if defined(USE_PORTAUDIO)
 	PaError error = ::Pa_Initialize();
 	if (error != paNoError)
 		return false;
@@ -94,10 +114,10 @@ bool CAudioDevInfo::enumerateDevs()
 #endif
 
 		if (device->maxInputChannels > 0) {
-			CAudioDevDev* dev = findDev(name);
+			CAudioDevDev* dev = findDev(name, SOUND_PORTAUDIO);
 
 			if (dev == NULL) {
-				dev = new CAudioDevDev(name);
+				dev = new CAudioDevDev(name, SOUND_PORTAUDIO);
 				m_devs.push_back(dev);
 			}
 
@@ -105,10 +125,10 @@ bool CAudioDevInfo::enumerateDevs()
 		}
 
 		if (device->maxOutputChannels > 0) {
-			CAudioDevDev* dev = findDev(name);
+			CAudioDevDev* dev = findDev(name, SOUND_PORTAUDIO);
 
 			if (dev == NULL) {
-				dev = new CAudioDevDev(name);
+				dev = new CAudioDevDev(name, SOUND_PORTAUDIO);
 				m_devs.push_back(dev);
 			}
 
@@ -117,6 +137,7 @@ bool CAudioDevInfo::enumerateDevs()
 	}
 
 	::Pa_Terminate();
+#endif
 
 	return true;
 }
@@ -143,12 +164,12 @@ CAudioDevAPI* CAudioDevInfo::findAPI(const wxString& name)
 	return NULL;
 }
 
-CAudioDevDev* CAudioDevInfo::findDev(const wxString& name)
+CAudioDevDev* CAudioDevInfo::findDev(const wxString& name, SOUNDTYPE type)
 {
 	for (unsigned int i = 0; i < m_devs.size(); i++) {
 		CAudioDevDev* dev = m_devs.at(i);
 
-		if (dev->getName().IsSameAs(name))
+		if (dev->getName().IsSameAs(name) && dev->getType() == type)
 			return dev;
 	}
 

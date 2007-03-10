@@ -34,6 +34,7 @@
 #include "SerialControl.h"
 #include "SoundFileReader.h"
 #include "SoundFileWriter.h"
+#include "JackReaderWriter.h"
 #include "SoundCardReaderWriter.h"
 
 #if defined(__WXGTK__) || defined(__WXMAC__)

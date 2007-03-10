@@ -22,6 +22,7 @@
 #include <wx/wx.h>
 
 #include "SDRDescrFile.h"
+#include "AudioDevInfo.h"
 #include "PortDialog.h"
 
 class CGUISetupFrame : public wxFrame {
@@ -48,8 +49,10 @@ class CGUISetupFrame : public wxFrame {
 	wxButton*      m_port;
 	wxString       m_filename;
 	SDRTYPE        m_sdrType;
+	SOUNDTYPE      m_userAudioType;
 	int            m_userAudioInDev;
 	int            m_userAudioOutDev;
+	SOUNDTYPE      m_sdrAudioType;
 	int            m_sdrAudioInDev;
 	int            m_sdrAudioOutDev;
 	wxString       m_ipAddress;

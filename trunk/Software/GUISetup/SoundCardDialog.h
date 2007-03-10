@@ -23,6 +23,9 @@
 
 #include "AudioDevInfo.h"
 
+const int NO_API = -1;
+const int NO_DEV = -2;
+
 class CSoundCardDialog : public wxDialog {
 
     public:
@@ -32,13 +35,15 @@ class CSoundCardDialog : public wxDialog {
 	void onAPI(wxCommandEvent& event);
 	void onOK(wxCommandEvent& event);
 
-	virtual int getInDev() const;
-	virtual int getOutDev() const;
+	virtual SOUNDTYPE getType() const;
+	virtual int       getInDev() const;
+	virtual int       getOutDev() const;
 
     private:
 	wxChoice*     m_apiChoice;
 	wxChoice*     m_devChoice;
 	CAudioDevInfo m_info;
+	SOUNDTYPE     m_type;
 	int           m_inDev;
 	int           m_outDev;
 	unsigned int  m_minIn;

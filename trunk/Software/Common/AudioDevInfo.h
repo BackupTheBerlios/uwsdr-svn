@@ -24,16 +24,20 @@
 #include <vector>
 using namespace std;
 
-#include "portaudio.h"
+enum SOUNDTYPE {
+	SOUND_JACK,
+	SOUND_PORTAUDIO
+};
 
 class CAudioDevAPI {
     public:
-	CAudioDevAPI(int api, const wxString& name, bool def, int inDef, int outDef) :
+	CAudioDevAPI(int api, const wxString& name, bool def, int inDef, int outDef, SOUNDTYPE type) :
 	m_api(api),
 	m_name(name),
 	m_def(def),
 	m_inDef(inDef),
-	m_outDef(outDef)
+	m_outDef(outDef),
+	m_type(type)
 	{
 	}
 
@@ -66,18 +70,25 @@ class CAudioDevAPI {
 		return m_outDef;
 	}
 
+	SOUNDTYPE getType() const
+	{
+		return m_type;
+	}
+
     private:
-	int      m_api;
-	wxString m_name;
-	bool     m_def;
-	int      m_inDef;
-	int      m_outDef;
+	int       m_api;
+	wxString  m_name;
+	bool      m_def;
+	int       m_inDef;
+	int       m_outDef;
+	SOUNDTYPE m_type;
 };
 
 class CAudioDevDev {
     public:
-	CAudioDevDev(const wxString& name) :
+	CAudioDevDev(const wxString& name, SOUNDTYPE type) :
 	m_name(name),
+	m_type(type),
 	m_api(-1),
 	m_inDev(-1),
 	m_outDev(-1),
@@ -93,6 +104,11 @@ class CAudioDevDev {
 	wxString getName() const
 	{
 		return m_name;
+	}
+
+	SOUNDTYPE getType() const
+	{
+		return m_type;
 	}
 
 	int getAPI() const
@@ -135,12 +151,13 @@ class CAudioDevDev {
 	}
 
     private:
-	wxString m_name;
-	int      m_api;
-	int      m_inDev;
-	int      m_outDev;
-	int      m_inChannels;
-	int      m_outChannels;
+	wxString  m_name;
+	SOUNDTYPE m_type;
+	int       m_api;
+	int       m_inDev;
+	int       m_outDev;
+	int       m_inChannels;
+	int       m_outChannels;
 };
 
 class CAudioDevInfo {
@@ -155,7 +172,7 @@ class CAudioDevInfo {
 	vector<CAudioDevDev*>& getDevs();
 
 	CAudioDevAPI* findAPI(const wxString& name);
-	CAudioDevDev* findDev(const wxString& name);
+	CAudioDevDev* findDev(const wxString& name, SOUNDTYPE type);
 
     private:
 	vector<CAudioDevAPI*> m_apis;

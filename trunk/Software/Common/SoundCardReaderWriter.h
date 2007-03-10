@@ -19,6 +19,8 @@
 #ifndef	SoundCardReaderWriter_H
 #define	SoundCardReaderWriter_H
 
+#if defined(USE_PORTAUDIO)
+
 #include <wx/wx.h>
 
 #include "DataReader.h"
@@ -77,5 +79,7 @@ class CSoundCardReaderWriter : public IDataWriter, public IDataReader {
 	unsigned int   m_opened;
 	bool           m_active;
 };
+
+#endif
 
 #endif

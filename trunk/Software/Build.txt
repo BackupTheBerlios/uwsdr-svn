@@ -40,9 +40,7 @@ Before building the software you need to ensure that you have the pre-requisites
 
 wxWidgets 2.8.0 or later should be built and installed. This can be found at http://www.wxwidgets.org and will take some time to build. If you install it as a package then ensure that the devel part is installed as well. In order to do this you'll need to install the libgtk2.0-dev package.
 
-FFTW 3 should be either installed or built. This can be found at http://www.fftw.org and if building it yourself, you have to configure it as:
-
-$ ./configure --enable-single --enable-shared
+The FFTW3 library must be installed, both the libraries and the header files. These are available as the packages fftw3 and fftw3-dev within the Synaptic package Manager.
 
 Finally you will need PortAudio V19. This is still in beta, and has been for years, and can be found at http://www.portaudio.com and download the latest stable release of the V19 branch, which is currently pa_stable_v19_061121.tar.gz which can be found at http://www.portaudio.com/archives/pa_stable_v19_061121.tar.gz. Build this and install it as per its instrucions. Note that you will have to load the libasound2 development package otherwise portaudio will only use OSS otherwise. The latest v19-devel branch has problems with OSS under Linux. Note that you should stop all sound daemons before using the UWSDR GUI as they don't interact nicely when using ALSA, they can be switched off from the Ubuntu menu from System -> Preferences -> Sound.
 

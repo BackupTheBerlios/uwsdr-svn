@@ -43,7 +43,7 @@
 				Optimization="0"
 				FavorSizeOrSpeed="1"
 				AdditionalIncludeDirectories="C:\wxWidgets-2.8.0\lib\vc_dll\mswd,C:\wxWidgets-2.8.0\include,..\PA19"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;__WXMSW__;__WXDEBUG__;WXUSINGDLL"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;__WXMSW__;__WXDEBUG__;WXUSINGDLL;USE_PORTAUDIO"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -122,7 +122,7 @@
 				InlineFunctionExpansion="0"
 				FavorSizeOrSpeed="1"
 				AdditionalIncludeDirectories="C:\wxWidgets-2.8.0\lib\vc_dll\msw,C:\wxWidgets-2.8.0\include,..\PA19"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;__WXMSW__;WXUSINGDLL"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;__WXMSW__;WXUSINGDLL;USE_PORTAUDIO"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -201,6 +201,10 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\JackReaderWriter.cpp"
+				>
 			</File>
 			<File
 				RelativePath="Log.cpp"
@@ -521,6 +525,10 @@
 			</File>
 			<File
 				RelativePath="Frequency.h"
+				>
+			</File>
+			<File
+				RelativePath=".\JackReaderWriter.h"
 				>
 			</File>
 			<File

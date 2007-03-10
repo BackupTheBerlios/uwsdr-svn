@@ -42,4 +42,7 @@ enum OUTPIN {
 	OUT_DTR
 };
 
+const int JACK_API = -1;
+const int JACK_DEV = -1;
+
 #endif
