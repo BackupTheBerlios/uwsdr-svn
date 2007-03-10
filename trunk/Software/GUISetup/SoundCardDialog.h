@@ -21,7 +21,7 @@
 
 #include <wx/wx.h>
 
-#include "SoundCardInfo.h"
+#include "AudioDevInfo.h"
 
 class CSoundCardDialog : public wxDialog {
 
@@ -36,18 +36,18 @@ class CSoundCardDialog : public wxDialog {
 	virtual int getOutDev() const;
 
     private:
-	wxChoice*      m_apiChoice;
-	wxChoice*      m_devChoice;
-	CSoundCardInfo m_info;
-	int            m_inDev;
-	int            m_outDev;
-	unsigned int   m_minIn;
-	unsigned int   m_minOut;
+	wxChoice*     m_apiChoice;
+	wxChoice*     m_devChoice;
+	CAudioDevInfo m_info;
+	int           m_inDev;
+	int           m_outDev;
+	unsigned int  m_minIn;
+	unsigned int  m_minOut;
 
 	DECLARE_EVENT_TABLE()
 
 	void enumerateAPI();
-	void enumerateAudio(const CSoundCardAPI& api);
+	void enumerateAudio(const CAudioDevAPI& api);
 };
 
 #endif

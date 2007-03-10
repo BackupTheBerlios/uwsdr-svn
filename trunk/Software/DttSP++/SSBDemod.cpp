@@ -84,3 +84,4 @@ bool CSSBDemod::hasANF() const
 {
 	return true;
 }
+

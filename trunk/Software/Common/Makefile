@@ -1,12 +1,14 @@
 all:		Common.a
 
-OBJS := 	Frequency.o Log.o NullController.o NullReader.o NullWriter.o RingBuffer.o SDRDataReader.o \
-		SDRDataWriter.o SDRDescrFile.o SerialControl.o SignalReader.o SoundCardInfo.o SoundCardReader.o \
-		SoundCardReaderWriter.o SoundCardWriter.o SoundFileReader.o SoundFileWriter.o SRTXRXController.o \
-		ThreadReader.o ThreeToneReader.o TwoToneReader.o UWSDRController.o
+OBJS := 	AudioDevInfo.o Frequency.o Log.o NullController.o NullReader.o NullWriter.o RingBuffer.o SDRDataReader.o \
+		SDRDataWriter.o SDRDescrFile.o SerialControl.o SignalReader.o SoundCardReaderWriter.o SoundFileReader.o \
+		SoundFileWriter.o SRTXRXController.o ThreadReader.o ThreeToneReader.o TwoToneReader.o UWSDRController.o
 
 Common.a:	$(OBJS)
 		ar rcs Common.a $(OBJS)
+
+AudioDevInfo.o:	AudioDevInfo.cpp AudioDevInfo.h
+		$(CC) $(CFLAGS) -c AudioDevInfo.cpp
 
 Frequency.o:	Frequency.cpp Frequency.h
 		$(CC) $(CFLAGS) -c Frequency.cpp
@@ -41,17 +43,8 @@ SerialControl.o:	SerialControl.cpp SerialControl.h
 SignalReader.o:	SignalReader.cpp SignalReader.h ThreadReader.h
 		$(CC) $(CFLAGS) -c SignalReader.cpp
 
-SoundCardInfo.o: SoundCardInfo.cpp SoundCardInfo.h
-		$(CC) $(CFLAGS) -c SoundCardInfo.cpp
-
-SoundCardReader.o: SoundCardReader.cpp SoundCardReader.h DataCallback.h DataReader.h
-		$(CC) $(CFLAGS) -c SoundCardReader.cpp
-
 SoundCardReaderWriter.o: SoundCardReaderWriter.cpp SoundCardReaderWriter.h DataCallback.h DataReader.h DataWriter.h RingBuffer.h
 		$(CC) $(CFLAGS) -c SoundCardReaderWriter.cpp
-
-SoundCardWriter.o: SoundCardWriter.cpp SoundCardWriter.h DataWriter.h RingBuffer.h
-		$(CC) $(CFLAGS) -c SoundCardWriter.cpp
 
 SoundFileReader.o: SoundFileReader.cpp SoundFileReader.h ThreadReader.h
 		$(CC) $(CFLAGS) -c SoundFileReader.cpp

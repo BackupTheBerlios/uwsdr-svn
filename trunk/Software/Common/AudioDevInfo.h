@@ -16,8 +16,8 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	SoundCardInfo_H
-#define	SoundCardInfo_H
+#ifndef	AudioDevInfo_H
+#define	AudioDevInfo_H
 
 #include <wx/wx.h>
 
@@ -26,9 +26,9 @@ using namespace std;
 
 #include "portaudio.h"
 
-class CSoundCardAPI {
+class CAudioDevAPI {
     public:
-	CSoundCardAPI(int api, const wxString& name, bool def, int inDef, int outDef) :
+	CAudioDevAPI(int api, const wxString& name, bool def, int inDef, int outDef) :
 	m_api(api),
 	m_name(name),
 	m_def(def),
@@ -37,7 +37,7 @@ class CSoundCardAPI {
 	{
 	}
 
-	~CSoundCardAPI()
+	~CAudioDevAPI()
 	{
 	}
 
@@ -74,9 +74,9 @@ class CSoundCardAPI {
 	int      m_outDef;
 };
 
-class CSoundCardDev {
+class CAudioDevDev {
     public:
-	CSoundCardDev(const wxString& name) :
+	CAudioDevDev(const wxString& name) :
 	m_name(name),
 	m_api(-1),
 	m_inDev(-1),
@@ -86,7 +86,7 @@ class CSoundCardDev {
 	{
 	}
 
-	~CSoundCardDev()
+	~CAudioDevDev()
 	{
 	}
 
@@ -143,23 +143,23 @@ class CSoundCardDev {
 	int      m_outChannels;
 };
 
-class CSoundCardInfo {
+class CAudioDevInfo {
     public:
-	CSoundCardInfo();
-	virtual ~CSoundCardInfo();
+	CAudioDevInfo();
+	virtual ~CAudioDevInfo();
 
 	bool enumerateAPIs();
 	bool enumerateDevs();
 
-	vector<CSoundCardAPI*>& getAPIs();
-	vector<CSoundCardDev*>& getDevs();
+	vector<CAudioDevAPI*>& getAPIs();
+	vector<CAudioDevDev*>& getDevs();
 
-	CSoundCardAPI* findAPI(const wxString& name);
-	CSoundCardDev* findDev(const wxString& name);
+	CAudioDevAPI* findAPI(const wxString& name);
+	CAudioDevDev* findDev(const wxString& name);
 
     private:
-	vector<CSoundCardAPI*> m_apis;
-	vector<CSoundCardDev*> m_devs;
+	vector<CAudioDevAPI*> m_apis;
+	vector<CAudioDevDev*> m_devs;
 
 	void freeAPIs();
 	void freeDevs();

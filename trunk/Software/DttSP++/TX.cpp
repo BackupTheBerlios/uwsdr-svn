@@ -327,3 +327,4 @@ float CTX::getOffset() const
 		return 0.0F;
 	}
 }
+

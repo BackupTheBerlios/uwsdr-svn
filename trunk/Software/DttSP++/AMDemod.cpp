@@ -172,3 +172,4 @@ bool CAMDemod::hasANF() const
 {
 	return true;
 }
+

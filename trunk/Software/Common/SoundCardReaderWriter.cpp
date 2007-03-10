@@ -34,7 +34,7 @@ m_inDev(inDev),
 m_outDev(outDev),
 m_inChannels(inChannels),
 m_outChannels(outChannels),
-m_blockSize(0),
+m_blockSize(0U),
 m_callback(NULL),
 m_id(0),
 m_stream(NULL),
@@ -79,47 +79,59 @@ bool CSoundCardReaderWriter::open(float sampleRate, unsigned int blockSize)
 	m_blockSize = blockSize;
 	m_enabled   = false;
 
-	m_buffer = new CRingBuffer(blockSize * 5U, 2U);
-
-	m_inBuffer  = new float[blockSize * 2U];
-	m_outBuffer = new float[blockSize * 2U];
-
-	m_lastBuffer = new float[blockSize * 2U];
-	::memset(m_lastBuffer, 0x00, blockSize * 2U * sizeof(float));
-
 	PaError error = ::Pa_Initialize();
 	if (error != paNoError) {
 		::wxLogError(wxT("SoundCardReaderWriter: received %d:%s from Pa_Initialise()"), error, ::Pa_GetErrorText(error));
 		return false;
 	}
 
-	const PaDeviceInfo* inInfo  = ::Pa_GetDeviceInfo(m_inDev);
-	if (inInfo == NULL) {
-		::wxLogError(wxT("SoundCardReaderWriter: received NULL from Pa_GetDeviceInfo()"));
-		return false;
-	}
-
-	const PaDeviceInfo* outInfo = ::Pa_GetDeviceInfo(m_outDev);
-	if (outInfo == NULL) {
-		::wxLogError(wxT("SoundCardReaderWriter: received NULL from Pa_GetDeviceInfo()"));
-		return false;
-	}
+	PaStreamParameters* pParamsIn  = NULL;
+	PaStreamParameters* pParamsOut = NULL;
 
 	PaStreamParameters paramsIn;
-	paramsIn.device                    = m_inDev;
-	paramsIn.channelCount              = m_inChannels;
-	paramsIn.sampleFormat              = paFloat32;
-	paramsIn.hostApiSpecificStreamInfo = NULL;
-	paramsIn.suggestedLatency          = inInfo->defaultLowInputLatency;
-
 	PaStreamParameters paramsOut;
-	paramsOut.device                    = m_outDev;
-	paramsOut.channelCount              = m_outChannels;
-	paramsOut.sampleFormat              = paFloat32;
-	paramsOut.hostApiSpecificStreamInfo = NULL;
-	paramsOut.suggestedLatency          = outInfo->defaultLowOutputLatency;
 
-	error = ::Pa_OpenStream(&m_stream, &paramsIn, &paramsOut, sampleRate, blockSize, paNoFlag, &scrwCallback, this);
+	if (m_inDev != -1) {
+		m_inBuffer  = new float[blockSize * 2U];
+
+		const PaDeviceInfo* inInfo  = ::Pa_GetDeviceInfo(m_inDev);
+		if (inInfo == NULL) {
+			::wxLogError(wxT("SoundCardReaderWriter: received NULL from Pa_GetDeviceInfo()"));
+			return false;
+		}
+
+		paramsIn.device                    = m_inDev;
+		paramsIn.channelCount              = m_inChannels;
+		paramsIn.sampleFormat              = paFloat32;
+		paramsIn.hostApiSpecificStreamInfo = NULL;
+		paramsIn.suggestedLatency          = inInfo->defaultLowInputLatency;
+
+		pParamsIn = &paramsIn;
+	}
+
+	if (m_outDev != -1) {
+		m_outBuffer = new float[blockSize * 2U];
+		m_buffer    = new CRingBuffer(blockSize * 5U, 2U);
+
+		m_lastBuffer = new float[blockSize * 2U];
+		::memset(m_lastBuffer, 0x00, blockSize * 2U * sizeof(float));
+
+		const PaDeviceInfo* outInfo = ::Pa_GetDeviceInfo(m_outDev);
+		if (outInfo == NULL) {
+			::wxLogError(wxT("SoundCardReaderWriter: received NULL from Pa_GetDeviceInfo()"));
+			return false;
+		}
+
+		paramsOut.device                    = m_outDev;
+		paramsOut.channelCount              = m_outChannels;
+		paramsOut.sampleFormat              = paFloat32;
+		paramsOut.hostApiSpecificStreamInfo = NULL;
+		paramsOut.suggestedLatency          = outInfo->defaultLowOutputLatency;
+
+		pParamsOut = &paramsOut;
+	}
+
+	error = ::Pa_OpenStream(&m_stream, pParamsIn, pParamsOut, sampleRate, blockSize, paNoFlag, &scrwCallback, this);
 	if (error != paNoError) {
 		::Pa_Terminate();
 		::wxLogError(wxT("SoundCardReaderWriter: received %d:%s from Pa_OpenStream()"), error, ::Pa_GetErrorText(error));
@@ -146,7 +158,7 @@ bool CSoundCardReaderWriter::open(float sampleRate, unsigned int blockSize)
 
 void CSoundCardReaderWriter::write(const float* buffer, unsigned int nSamples)
 {
-	if (!m_enabled)
+	if (!m_enabled || m_outDev == -1)
 		return;
 
 	if (nSamples == 0U)
@@ -162,44 +174,54 @@ void CSoundCardReaderWriter::write(const float* buffer, unsigned int nSamples)
 
 int CSoundCardReaderWriter::callback(const void* input, void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* WXUNUSED(timeInfo), PaStreamCallbackFlags WXUNUSED(statusFlags))
 {
-	wxASSERT(input != NULL);
-	wxASSERT(output != NULL);
-	wxASSERT(m_callback != NULL);
-
 	m_requests++;
 
-	float* in  = (float*)input;
-	float* out = (float*)output;
+	if (m_inDev != -1) {
+		wxASSERT(input != NULL);
+		wxASSERT(m_callback != NULL);
+		wxASSERT(m_inBuffer != NULL);
 
-	if (m_inChannels == 1U) {
-		for (unsigned int i = 0U; i < nSamples; i++) {
-			m_inBuffer[i * 2U + 0U] = in[i];
-			m_inBuffer[i * 2U + 1U] = in[i];
+		float* in  = (float*)input;
+
+		if (m_inChannels == 1U) {
+			for (unsigned int i = 0U; i < nSamples; i++) {
+				m_inBuffer[i * 2U + 0U] = in[i];
+				m_inBuffer[i * 2U + 1U] = in[i];
+			}
+
+			in = m_inBuffer;
 		}
 
-		in = m_inBuffer;
+		m_callback->callback(in, nSamples, m_id);
 	}
 
-	m_callback->callback(in, nSamples, m_id);
+	if (m_outDev != -1) {
+		wxASSERT(output != NULL);
+		wxASSERT(m_buffer != NULL);
+		wxASSERT(m_outBuffer != NULL);
+		wxASSERT(m_lastBuffer != NULL);
 
-	if (m_buffer->dataSpace() >= nSamples) {
-		m_buffer->getData(m_outBuffer, nSamples);
-	} else {
-		::memcpy(m_outBuffer, m_lastBuffer, nSamples * 2U * sizeof(float));
-		m_underruns++;
-	}
+		float* out = (float*)output;
 
-	::memcpy(m_lastBuffer, m_outBuffer, nSamples * 2U * sizeof(float));
+		if (m_buffer->dataSpace() >= nSamples) {
+			m_buffer->getData(m_outBuffer, nSamples);
+		} else {
+			::memcpy(m_outBuffer, m_lastBuffer, nSamples * 2U * sizeof(float));
+			m_underruns++;
+		}
 
-	switch (m_outChannels) {
-		case 1U: {
-				for (unsigned int i = 0U; i < nSamples; i++)
-					out[i] = m_outBuffer[i * 2U + 0U];
-			}
-			break;
-		case 2U:
-			::memcpy(out, m_outBuffer, nSamples * 2U * sizeof(float));
-			break;
+		::memcpy(m_lastBuffer, m_outBuffer, nSamples * 2U * sizeof(float));
+
+		switch (m_outChannels) {
+			case 1U: {
+					for (unsigned int i = 0U; i < nSamples; i++)
+						out[i] = m_outBuffer[i * 2U + 0U];
+				}
+				break;
+			case 2U:
+				::memcpy(out, m_outBuffer, nSamples * 2U * sizeof(float));
+				break;
+		}
 	}
 
 	return paContinue;
@@ -244,7 +266,7 @@ void CSoundCardReaderWriter::enable(bool enable)
 	m_enabled = enable;
 
 	if (!enable)
-		::memset(m_lastBuffer, 0x00, m_blockSize * 2 * sizeof(float));
+		::memset(m_lastBuffer, 0x00, m_blockSize * 2U * sizeof(float));
 }
 
 void CSoundCardReaderWriter::disable()

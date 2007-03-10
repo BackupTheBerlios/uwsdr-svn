@@ -18,8 +18,6 @@
 
 #include "DataControl.h"
 
-#include "SoundCardReader.h"
-#include "SoundCardWriter.h"
 #include "SoundCardReaderWriter.h"
 
 const int INTERNAL_READER_1 = 77;
@@ -33,7 +31,7 @@ const unsigned int RINGBUFFER_SIZE = 100001;
 const unsigned int BLOCK_SIZE      = 2048;		// XXXX
 
 
-CDataControl::CDataControl(float sampleRate, const wxString& address, int port, long inDev, long outDev, unsigned int maxSamples, bool delay) :
+CDataControl::CDataControl(float sampleRate, const wxString& address, int port, int inDev, int outDev, unsigned int maxSamples, bool delay) :
 wxThread(),
 m_sampleRate(sampleRate),
 m_address(address),

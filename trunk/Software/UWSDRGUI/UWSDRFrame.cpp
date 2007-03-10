@@ -32,8 +32,6 @@
 #include "SDRDataReader.h"
 #include "SDRDataWriter.h"
 #include "SerialControl.h"
-#include "SoundCardReader.h"
-#include "SoundCardWriter.h"
 #include "SoundFileReader.h"
 #include "SoundFileWriter.h"
 #include "SoundCardReaderWriter.h"
@@ -280,19 +278,14 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_dsp = new CDSPControl(m_parameters->m_hardwareSampleRate);
 
 	switch (m_parameters->m_hardwareType) {
-		case TYPE_AUDIORX:
-			// TX is disabled, RX is from audio card for signal input and audio output
-			m_dsp->setTXReader(new CNullReader());
-			m_dsp->setTXWriter(new CNullWriter());
+		case TYPE_AUDIORX: {
+				// TX is disabled, RX is from audio card for signal input and audio output
+				m_dsp->setTXReader(new CNullReader());
+				m_dsp->setTXWriter(new CNullWriter());
 
-			// If the same device is used for both, then use the shared sound card input/output driver.
-			if (m_parameters->m_sdrAudioInDev == m_parameters->m_userAudioOutDev) {
 				CSoundCardReaderWriter* scrw = new CSoundCardReaderWriter(m_parameters->m_sdrAudioInDev, m_parameters->m_userAudioOutDev, 2U, 1U);
 				m_dsp->setRXReader(scrw);
 				m_dsp->setRXWriter(scrw);
-			} else {
-				m_dsp->setRXReader(new CSoundCardReader(m_parameters->m_sdrAudioInDev, 2U));
-				m_dsp->setRXWriter(new CSoundCardWriter(m_parameters->m_userAudioOutDev, 1U));
 			}
 			break;
 

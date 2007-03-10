@@ -378,3 +378,4 @@ float CDCBlock::butterworthHighpass_100_8_96000(float xin)
 
 	return m_output[8];
 }
+

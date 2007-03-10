@@ -20,7 +20,7 @@ EthernetDialog.o:	EthernetDialog.cpp EthernetDialog.h
 PortDialog.o:	PortDialog.cpp PortDialog.h ../Common/SerialControl.h ../Common/Common.h
 		$(CC) $(CFLAGS) -c PortDialog.cpp
 
-SoundCardDialog.o:	SoundCardDialog.cpp SoundCardDialog.h ../Common/SoundCardInfo.h
+SoundCardDialog.o:	SoundCardDialog.cpp SoundCardDialog.h ../Common/AudioDevInfo.h
 		$(CC) $(CFLAGS) -c SoundCardDialog.cpp
 
 install:	GUISetup

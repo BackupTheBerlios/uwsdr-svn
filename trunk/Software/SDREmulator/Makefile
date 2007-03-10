@@ -24,11 +24,10 @@ SDREmulatorWriter.o:	SDREmulatorWriter.cpp SDREmulatorWriter.h ../Common/DataWri
 
 DataControl.o:	DataControl.cpp DataControl.h ../Common/DataReader.h ../Common/DataWriter.h ../Common/NullWriter.h \
 		../Common/SignalReader.h ../Common/RingBuffer.h SDREmulatorReader.h SDREmulatorWriter.h \
-		../Common/SoundCardReader.h ../Common/SoundCardReaderWriter.h ../Common/SoundCardWriter.h \
-		../Common/SoundFileReader.h
+		../Common/SoundCardReaderWriter.h ../Common/SoundFileReader.h
 		$(CC) $(CFLAGS) -c DataControl.cpp
 
-SoundCardDialog.o:	SoundCardDialog.cpp SoundCardDialog.h ../Common/SoundCardInfo.h
+SoundCardDialog.o:	SoundCardDialog.cpp SoundCardDialog.h ../Common/AudioDevInfo.h
 		$(CC) $(CFLAGS) -c SoundCardDialog.cpp
 
 install:	SDREmulator

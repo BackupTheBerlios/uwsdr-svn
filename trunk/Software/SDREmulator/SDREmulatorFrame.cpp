@@ -155,8 +155,8 @@ m_messages(NULL)
 		return;
 	}
 
-	long inDev  = soundCard.getInDev();
-	long outDev = soundCard.getOutDev();
+	int inDev  = soundCard.getInDev();
+	int outDev = soundCard.getOutDev();
 
 	// Start the listening port for the emulator
 	bool ret2 = createListener(controlPort);
@@ -198,7 +198,7 @@ bool CSDREmulatorFrame::createListener(unsigned int port)
 	return true;
 }
 
-bool CSDREmulatorFrame::createDataThread(const wxString& address, unsigned int port, long inDev, long outDev, bool muted, unsigned int maxSamples, bool delay)
+bool CSDREmulatorFrame::createDataThread(const wxString& address, unsigned int port, int inDev, int outDev, bool muted, unsigned int maxSamples, bool delay)
 {
 	m_data = new CDataControl(48000.0F, address, port, inDev, outDev, maxSamples, delay);
 

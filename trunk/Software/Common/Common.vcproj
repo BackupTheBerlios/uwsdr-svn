@@ -177,6 +177,10 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<File
+				RelativePath=".\AudioDevInfo.cpp"
+				>
+			</File>
+			<File
 				RelativePath="Frequency.cpp"
 				>
 				<FileConfiguration
@@ -383,74 +387,8 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="SoundCardInfo.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="SoundCardReader.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath=".\SoundCardReaderWriter.cpp"
 				>
-			</File>
-			<File
-				RelativePath="SoundCardWriter.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="SoundFileReader.cpp"
@@ -558,6 +496,10 @@
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
+				RelativePath=".\AudioDevInfo.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Common.h"
 				>
 			</File>
@@ -626,19 +568,7 @@
 				>
 			</File>
 			<File
-				RelativePath="SoundCardInfo.h"
-				>
-			</File>
-			<File
-				RelativePath="SoundCardReader.h"
-				>
-			</File>
-			<File
 				RelativePath=".\SoundCardReaderWriter.h"
-				>
-			</File>
-			<File
-				RelativePath="SoundCardWriter.h"
 				>
 			</File>
 			<File

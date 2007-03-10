@@ -87,6 +87,10 @@ LIB32=link.exe -lib
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=.\AudioDevInfo.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\Frequency.cpp
 # End Source File
 # Begin Source File
@@ -131,19 +135,7 @@ SOURCE=.\SignalReader.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\SoundCardInfo.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\SoundCardReader.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\SoundCardReaderWriter.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\SoundCardWriter.cpp
 # End Source File
 # Begin Source File
 
@@ -177,6 +169,10 @@ SOURCE=.\UWSDRController.cpp
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=.\AudioDevInfo.h
+# End Source File
 # Begin Source File
 
 SOURCE=.\Common.h
@@ -247,19 +243,7 @@ SOURCE=.\SignalReader.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\SoundCardInfo.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SoundCardReader.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\SoundCardReaderWriter.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SoundCardWriter.h
 # End Source File
 # Begin Source File
 

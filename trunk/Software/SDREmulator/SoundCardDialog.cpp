@@ -96,7 +96,7 @@ void CSoundCardDialog::onAPI(wxCommandEvent& WXUNUSED(event))
 		return;
 	}
 
-	CSoundCardAPI* api = (CSoundCardAPI*)m_apiChoice->GetClientData(apiChoice);
+	CAudioDevAPI* api = (CAudioDevAPI*)m_apiChoice->GetClientData(apiChoice);
 
 	m_inDev  = api->getInDefault();
 	m_outDev = api->getOutDefault();
@@ -112,7 +112,7 @@ void CSoundCardDialog::onOK(wxCommandEvent& WXUNUSED(event))
 		return;
 	}
 
-	CSoundCardDev* dev = (CSoundCardDev*)m_devChoice->GetClientData(devChoice);
+	CAudioDevDev* dev = (CAudioDevDev*)m_devChoice->GetClientData(devChoice);
 
 	m_inDev  = dev->getInDev();
 	m_outDev = dev->getOutDev();
@@ -127,11 +127,11 @@ void CSoundCardDialog::onOK(wxCommandEvent& WXUNUSED(event))
 
 void CSoundCardDialog::enumerateAPI()
 {
-	vector<CSoundCardAPI*>& apis = m_info.getAPIs();
-	CSoundCardAPI* defAPI = NULL;
+	vector<CAudioDevAPI*>& apis = m_info.getAPIs();
+	CAudioDevAPI* defAPI = NULL;
 
 	for (unsigned int i = 0; i < apis.size(); i++) {
-		CSoundCardAPI* api = apis.at(i);
+		CAudioDevAPI* api = apis.at(i);
 
 		m_apiChoice->Append(api->getName(), api);
 
@@ -145,14 +145,14 @@ void CSoundCardDialog::enumerateAPI()
 		enumerateAudio(*defAPI);
 }
 
-void CSoundCardDialog::enumerateAudio(const CSoundCardAPI& api)
+void CSoundCardDialog::enumerateAudio(const CAudioDevAPI& api)
 {
 	m_devChoice->Clear();
 
-	vector<CSoundCardDev*>& devs = m_info.getDevs();
+	vector<CAudioDevDev*>& devs = m_info.getDevs();
 
 	for (unsigned int  i = 0; i < devs.size(); i++) {
-		CSoundCardDev* dev = devs.at(i);
+		CAudioDevDev* dev = devs.at(i);
 
 		m_devChoice->Append(dev->getName(), dev);
 
@@ -161,12 +161,12 @@ void CSoundCardDialog::enumerateAudio(const CSoundCardAPI& api)
 	}
 }
 
-long CSoundCardDialog::getInDev() const
+int CSoundCardDialog::getInDev() const
 {
 	return m_inDev;
 }
 
-long CSoundCardDialog::getOutDev() const
+int CSoundCardDialog::getOutDev() const
 {
 	return m_outDev;
 }

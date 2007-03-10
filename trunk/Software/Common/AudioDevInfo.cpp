@@ -16,22 +16,22 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "SoundCardInfo.h"
+#include "AudioDevInfo.h"
 
 
-CSoundCardInfo::CSoundCardInfo() :
+CAudioDevInfo::CAudioDevInfo() :
 m_apis(),
 m_devs()
 {
 }
 
-CSoundCardInfo::~CSoundCardInfo()
+CAudioDevInfo::~CAudioDevInfo()
 {
 	freeAPIs();
 	freeDevs();
 }
 
-bool CSoundCardInfo::enumerateAPIs()
+bool CAudioDevInfo::enumerateAPIs()
 {
 	freeAPIs();
 	freeDevs();
@@ -52,7 +52,7 @@ bool CSoundCardInfo::enumerateAPIs()
 	for (PaHostApiIndex i = 0; i < n; i++) {
 		const PaHostApiInfo* hostAPI = ::Pa_GetHostApiInfo(i);
 
-		CSoundCardAPI* api = new CSoundCardAPI(i, hostAPI->name, i == defAPI, hostAPI->defaultInputDevice, hostAPI->defaultOutputDevice);
+		CAudioDevAPI* api = new CAudioDevAPI(i, hostAPI->name, i == defAPI, hostAPI->defaultInputDevice, hostAPI->defaultOutputDevice);
 		m_apis.push_back(api);
 	}
 
@@ -61,7 +61,7 @@ bool CSoundCardInfo::enumerateAPIs()
 	return true;
 }
 
-bool CSoundCardInfo::enumerateDevs()
+bool CAudioDevInfo::enumerateDevs()
 {
 	freeDevs();
 
@@ -94,10 +94,10 @@ bool CSoundCardInfo::enumerateDevs()
 #endif
 
 		if (device->maxInputChannels > 0) {
-			CSoundCardDev* dev = findDev(name);
+			CAudioDevDev* dev = findDev(name);
 
 			if (dev == NULL) {
-				dev = new CSoundCardDev(name);
+				dev = new CAudioDevDev(name);
 				m_devs.push_back(dev);
 			}
 
@@ -105,10 +105,10 @@ bool CSoundCardInfo::enumerateDevs()
 		}
 
 		if (device->maxOutputChannels > 0) {
-			CSoundCardDev* dev = findDev(name);
+			CAudioDevDev* dev = findDev(name);
 
 			if (dev == NULL) {
-				dev = new CSoundCardDev(name);
+				dev = new CAudioDevDev(name);
 				m_devs.push_back(dev);
 			}
 
@@ -121,20 +121,20 @@ bool CSoundCardInfo::enumerateDevs()
 	return true;
 }
 
-vector<CSoundCardAPI*>& CSoundCardInfo::getAPIs()
+vector<CAudioDevAPI*>& CAudioDevInfo::getAPIs()
 {
 	return m_apis;
 }
 
-vector<CSoundCardDev*>& CSoundCardInfo::getDevs()
+vector<CAudioDevDev*>& CAudioDevInfo::getDevs()
 {
 	return m_devs;
 }
 
-CSoundCardAPI* CSoundCardInfo::findAPI(const wxString& name)
+CAudioDevAPI* CAudioDevInfo::findAPI(const wxString& name)
 {
 	for (unsigned int i = 0; i < m_apis.size(); i++) {
-		CSoundCardAPI* api = m_apis.at(i);
+		CAudioDevAPI* api = m_apis.at(i);
 
 		if (api->getName().IsSameAs(name))
 			return api;
@@ -143,10 +143,10 @@ CSoundCardAPI* CSoundCardInfo::findAPI(const wxString& name)
 	return NULL;
 }
 
-CSoundCardDev* CSoundCardInfo::findDev(const wxString& name)
+CAudioDevDev* CAudioDevInfo::findDev(const wxString& name)
 {
 	for (unsigned int i = 0; i < m_devs.size(); i++) {
-		CSoundCardDev* dev = m_devs.at(i);
+		CAudioDevDev* dev = m_devs.at(i);
 
 		if (dev->getName().IsSameAs(name))
 			return dev;
@@ -155,7 +155,7 @@ CSoundCardDev* CSoundCardInfo::findDev(const wxString& name)
 	return NULL;
 }
 
-void CSoundCardInfo::freeAPIs()
+void CAudioDevInfo::freeAPIs()
 {
 	for (unsigned int i = 0; i < m_apis.size(); i++)
 		delete m_apis.at(i);
@@ -163,7 +163,7 @@ void CSoundCardInfo::freeAPIs()
 	m_apis.clear();
 }
 
-void CSoundCardInfo::freeDevs()
+void CAudioDevInfo::freeDevs()
 {
 	for (unsigned int i = 0; i < m_devs.size(); i++)
 		delete m_devs.at(i);
