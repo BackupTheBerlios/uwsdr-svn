@@ -29,7 +29,7 @@ const int NO_DEV = -2;
 class CSoundCardDialog : public wxDialog {
 
     public:
-	CSoundCardDialog(wxWindow* parent, const wxString& title, int inDev, int outDev, unsigned int minIn, unsigned int minOut, int id = -1);
+	CSoundCardDialog(wxWindow* parent, const wxString& title, SOUNDTYPE type, int inDev, int outDev, unsigned int minIn, unsigned int minOut, int id = -1);
 	virtual ~CSoundCardDialog();
 
 	void onAPI(wxCommandEvent& event);

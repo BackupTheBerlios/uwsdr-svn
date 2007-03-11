@@ -22,6 +22,7 @@
 #include <wx/wx.h>
 
 #include "Common.h"
+#include "AudioDevInfo.h"
 #include "UWSDRDefs.h"
 #include "Frequency.h"
 #include "SDRDescrFile.h"
@@ -103,9 +104,11 @@ class CSDRParameters {
 	wxString      m_txOutDev;
 	OUTPIN        m_txOutPin;
 
+	SOUNDTYPE     m_userAudioType;
 	int           m_userAudioInDev;
 	int           m_userAudioOutDev;
 
+	SOUNDTYPE     m_sdrAudioType;
 	int           m_sdrAudioInDev;
 	int           m_sdrAudioOutDev;
 

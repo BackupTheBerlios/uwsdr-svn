@@ -285,7 +285,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			m_dsp->setTXWriter(new CNullWriter());
 
 			// TX and RX are from audio cards for signal input and audio output, also simple TX/RX control
-			if (m_parameters->m_sdrAudioInDev == JACK_DEV) {
+			if (m_parameters->m_sdrAudioType == SOUND_JACK) {
 				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" SDR"), 2U, 0U);
 				m_dsp->setRXReader(rw);
 			} else {
@@ -293,7 +293,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 				m_dsp->setRXReader(rw);
 			}
 
-			if (m_parameters->m_userAudioInDev == JACK_DEV) {
+			if (m_parameters->m_userAudioType == SOUND_JACK) {
 				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" User"), 0U, 2U);
 				m_dsp->setRXWriter(rw);
 			} else {
@@ -304,7 +304,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 		case TYPE_AUDIOTXRX:
 			// TX and RX are from audio cards for signal input and audio output, also simple TX/RX control
-			if (m_parameters->m_sdrAudioInDev == JACK_DEV) {
+			if (m_parameters->m_sdrAudioType == SOUND_JACK) {
 				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" SDR"), 2U, 2U);
 				m_dsp->setRXReader(rw);
 				m_dsp->setTXWriter(rw);
@@ -314,7 +314,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 				m_dsp->setTXWriter(rw);
 			}
 
-			if (m_parameters->m_userAudioInDev == JACK_DEV) {
+			if (m_parameters->m_userAudioType == SOUND_JACK) {
 				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" User"), 1U, 2U);
 				m_dsp->setTXReader(rw);
 				m_dsp->setRXWriter(rw);
@@ -327,7 +327,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 		case TYPE_DEMO:
 			// A self contained variant for demo's and testing
-			if (m_parameters->m_userAudioInDev == JACK_DEV) {
+			if (m_parameters->m_userAudioType == SOUND_JACK) {
 				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" User"), 1U, 2U);
 				m_dsp->setTXReader(new CThreeToneReader(500.0F, 1500.0F, 2000.0F, 0.25F, rw));
 				m_dsp->setRXWriter(rw);
@@ -342,7 +342,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			break;
 
 		case TYPE_UWSDR1:
-			if (m_parameters->m_userAudioInDev == JACK_DEV) {
+			if (m_parameters->m_userAudioType == SOUND_JACK) {
 				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" User"), 1U, 2U);
 				m_dsp->setRXWriter(rw);
 #if defined(TOBIAS)

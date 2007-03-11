@@ -31,12 +31,12 @@ BEGIN_EVENT_TABLE(CSoundCardDialog, wxDialog)
 END_EVENT_TABLE()
 
 
-CSoundCardDialog::CSoundCardDialog(wxWindow* parent, const wxString& title, int inDev, int outDev, unsigned int minIn, unsigned int minOut, int id) :
+CSoundCardDialog::CSoundCardDialog(wxWindow* parent, const wxString& title, SOUNDTYPE type, int inDev, int outDev, unsigned int minIn, unsigned int minOut, int id) :
 wxDialog(parent, id, title),
 m_apiChoice(NULL),
 m_devChoice(NULL),
 m_info(),
-m_type(),
+m_type(type),
 m_inDev(inDev),
 m_outDev(outDev),
 m_minIn(minIn),
@@ -135,15 +135,13 @@ void CSoundCardDialog::onOK(wxCommandEvent& WXUNUSED(event))
 void CSoundCardDialog::enumerateAPI()
 {
 	int defAPI = NO_API;
-	SOUNDTYPE defType = SOUNDTYPE(-1);
 
 	if (m_inDev != NO_DEV) {
 		for (unsigned int i = 0U; i < m_info.getDevs().size(); i++) {
 			CAudioDevDev* dev = m_info.getDevs().at(i);
 
-			if (m_inDev == dev->getInDev()) {
-				defType = dev->getType();
-				defAPI  = dev->getAPI();
+			if (m_type == dev->getType() && m_inDev == dev->getInDev()) {
+				defAPI = dev->getAPI();
 				break;
 			}
 		}
@@ -156,7 +154,7 @@ void CSoundCardDialog::enumerateAPI()
 
 		m_apiChoice->Append(api->getName(), api);
 
-		if (defAPI != NO_API && defType == api->getType() && defAPI == api->getAPI()) {
+		if (defAPI != NO_API && m_type == api->getType() && defAPI == api->getAPI()) {
 			m_apiChoice->SetSelection(i);
 			chosen = api;
 		}

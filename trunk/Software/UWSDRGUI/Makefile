@@ -40,7 +40,8 @@ FreqKeypad.o:	FreqKeypad.cpp FreqKeypad.h ../Common/Frequency.h UWSDRDefs.h
 InfoBox.o:	InfoBox.cpp InfoBox.h UWSDRDefs.h
 		$(CC) $(CFLAGS) -c InfoBox.cpp
 
-SDRParameters.o: SDRParameters.cpp SDRParameters.h UWSDRDefs.h ../Common/Common.h ../Common/Frequency.h ../Common/SDRDescrFile.h
+SDRParameters.o: SDRParameters.cpp SDRParameters.h UWSDRDefs.h ../Common/AudioDevInfo.h ../Common/Common.h ../Common/Frequency.h \
+		../Common/SDRDescrFile.h
 		$(CC) $(CFLAGS) -c SDRParameters.cpp
 
 SMeter.o:	SMeter.cpp SMeter.h UWSDRDefs.h
