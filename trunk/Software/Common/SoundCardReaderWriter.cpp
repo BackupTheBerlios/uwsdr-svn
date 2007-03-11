@@ -294,7 +294,7 @@ void CSoundCardReaderWriter::clock()
 
 #else
 
-CSoundCardReaderWriter::CSoundCardReaderWriter(int inDev, int outDev, unsigned int inChannels, unsigned int outChannels)
+CSoundCardReaderWriter::CSoundCardReaderWriter(int WXUNUSED(inDev), int WXUNUSED(outDev), unsigned int WXUNUSED(inChannels), unsigned int WXUNUSED(outChannels))
 {
 }
 
@@ -302,18 +302,18 @@ CSoundCardReaderWriter::~CSoundCardReaderWriter()
 {
 }
 
-void CSoundCardReaderWriter::setCallback(IDataCallback* callback, int id)
+void CSoundCardReaderWriter::setCallback(IDataCallback* WXUNUSED(callback), int WXUNUSED(id))
 {
 }
 
-bool CSoundCardReaderWriter::open(float sampleRate, unsigned int blockSize)
+bool CSoundCardReaderWriter::open(float WXUNUSED(sampleRate), unsigned int WXUNUSED(blockSize))
 {
 	::wxLogError(wxT("SoundCardReaderWriter: UWSDR has been built without PortAudio support"));
 
 	return false;
 }
 
-void CSoundCardReaderWriter::write(const float* buffer, unsigned int nSamples)
+void CSoundCardReaderWriter::write(const float* WXUNUSED(buffer), unsigned int WXUNUSED(nSamples))
 {
 }
 
@@ -321,7 +321,7 @@ void CSoundCardReaderWriter::close()
 {
 }
 
-void CSoundCardReaderWriter::enable(bool enable)
+void CSoundCardReaderWriter::enable(bool WXUNUSED(enable))
 {
 }
 

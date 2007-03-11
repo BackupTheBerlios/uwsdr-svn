@@ -389,7 +389,7 @@ void CJackReaderWriter::clock()
 
 #else
 
-CJackReaderWriter::CJackReaderWriter(const wxString& name, unsigned int inChannels, unsigned int outChannels)
+CJackReaderWriter::CJackReaderWriter(const wxString& WXUNUSED(name), unsigned int WXUNUSED(inChannels), unsigned int WXUNUSED(outChannels))
 {
 }
 
@@ -397,18 +397,18 @@ CJackReaderWriter::~CJackReaderWriter()
 {
 }
 
-void CJackReaderWriter::setCallback(IDataCallback* callback, int id)
+void CJackReaderWriter::setCallback(IDataCallback* WXUNUSED(callback), int WXUNUSED(id))
 {
 }
 
-bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
+bool CJackReaderWriter::open(float WXUNUSED(sampleRate), unsigned int WXUNUSED(blockSize))
 {
 	::wxLogError(wxT("JackReaderWriter: UWSDR has been built without Jack support"));		
 
 	return false;
 }
 
-void CJackReaderWriter::write(const float* buffer, unsigned int nSamples)
+void CJackReaderWriter::write(const float* WXUNUSED(buffer), unsigned int WXUNUSED(nSamples))
 {
 }
 
@@ -416,7 +416,7 @@ void CJackReaderWriter::close()
 {
 }
 
-void CJackReaderWriter::enable(bool enable)
+void CJackReaderWriter::enable(bool WXUNUSED(enable))
 {
 }
 
