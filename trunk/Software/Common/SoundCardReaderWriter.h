@@ -19,14 +19,14 @@
 #ifndef	SoundCardReaderWriter_H
 #define	SoundCardReaderWriter_H
 
-#if defined(USE_PORTAUDIO)
-
 #include <wx/wx.h>
 
 #include "DataReader.h"
 #include "DataWriter.h"
 #include "DataCallback.h"
 #include "RingBuffer.h"
+
+#if defined(USE_PORTAUDIO)
 
 #include "portaudio.h"
 
@@ -78,6 +78,32 @@ class CSoundCardReaderWriter : public IDataWriter, public IDataReader {
 	bool           m_enabled;
 	unsigned int   m_opened;
 	bool           m_active;
+};
+
+#else
+
+class CSoundCardReaderWriter : public IDataWriter, public IDataReader {
+    public:
+	CSoundCardReaderWriter(int inDev, int outDev, unsigned int inChannels, unsigned int outChannels);
+
+	virtual void setCallback(IDataCallback* callback, int id);
+
+	virtual bool open(float sampleRate, unsigned int blockSize);
+	virtual void write(const float* buffer, unsigned int nSamples);
+	virtual void close();
+
+	virtual void enable(bool enable = true);
+	virtual void disable();
+
+	virtual void purge();
+
+	virtual bool hasClock();
+	virtual void clock();
+
+    protected:
+	virtual ~CSoundCardReaderWriter();
+
+    private:
 };
 
 #endif

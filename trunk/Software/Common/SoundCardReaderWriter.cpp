@@ -50,8 +50,9 @@ m_enabled(false),
 m_opened(0),
 m_active(false)
 {
-	wxASSERT(inChannels == 1U || outChannels == 2U);
-	wxASSERT(outChannels == 1U || outChannels == 2U);
+	wxASSERT(inChannels <= 2U);
+	wxASSERT(outChannels <= 2U);
+	wxASSERT(inChannels > 0U || outChannels > 0U);
 }
 
 CSoundCardReaderWriter::~CSoundCardReaderWriter()
@@ -92,7 +93,7 @@ bool CSoundCardReaderWriter::open(float sampleRate, unsigned int blockSize)
 	PaStreamParameters paramsIn;
 	PaStreamParameters paramsOut;
 
-	if (m_inDev != -1) {
+	if (m_inDev != -1 && m_inChannels > 0U) {
 		m_inBuffer  = new float[blockSize * 2U];
 
 		const PaDeviceInfo* inInfo  = ::Pa_GetDeviceInfo(m_inDev);
@@ -110,7 +111,7 @@ bool CSoundCardReaderWriter::open(float sampleRate, unsigned int blockSize)
 		pParamsIn = &paramsIn;
 	}
 
-	if (m_outDev != -1) {
+	if (m_outDev != -1 && m_outChannels > 0U) {
 		m_outBuffer = new float[blockSize * 2U];
 		m_buffer    = new CRingBuffer(blockSize * 5U, 2U);
 
@@ -159,7 +160,7 @@ bool CSoundCardReaderWriter::open(float sampleRate, unsigned int blockSize)
 
 void CSoundCardReaderWriter::write(const float* buffer, unsigned int nSamples)
 {
-	if (!m_enabled || m_outDev == -1)
+	if (!m_enabled || m_outDev == -1 || m_outChannels == 0U)
 		return;
 
 	if (nSamples == 0U)
@@ -264,7 +265,7 @@ void CSoundCardReaderWriter::close()
 
 void CSoundCardReaderWriter::enable(bool enable)
 {
-	if (m_outDev == -1)
+	if (m_outDev == -1 || m_outChannels == 0U)
 		return;
 
 	m_enabled = enable;
@@ -285,6 +286,56 @@ void CSoundCardReaderWriter::purge()
 bool CSoundCardReaderWriter::hasClock()
 {
 	return true;
+}
+
+void CSoundCardReaderWriter::clock()
+{
+}
+
+#else
+
+CSoundCardReaderWriter::CSoundCardReaderWriter(int inDev, int outDev, unsigned int inChannels, unsigned int outChannels)
+{
+}
+
+CSoundCardReaderWriter::~CSoundCardReaderWriter()
+{
+}
+
+void CSoundCardReaderWriter::setCallback(IDataCallback* callback, int id)
+{
+}
+
+bool CSoundCardReaderWriter::open(float sampleRate, unsigned int blockSize)
+{
+	::wxLogError(wxT("SoundCardReaderWriter: UWSDR has been built without PortAudio support"));
+
+	return false;
+}
+
+void CSoundCardReaderWriter::write(const float* buffer, unsigned int nSamples)
+{
+}
+
+void CSoundCardReaderWriter::close()
+{
+}
+
+void CSoundCardReaderWriter::enable(bool enable)
+{
+}
+
+void CSoundCardReaderWriter::disable()
+{
+}
+
+void CSoundCardReaderWriter::purge()
+{
+}
+
+bool CSoundCardReaderWriter::hasClock()
+{
+	return false;
 }
 
 void CSoundCardReaderWriter::clock()

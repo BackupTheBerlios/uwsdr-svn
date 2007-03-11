@@ -23,7 +23,7 @@
 
 #include "AudioDevInfo.h"
 
-const int NO_API = -1;
+const int NO_API = -2;
 const int NO_DEV = -2;
 
 class CSoundCardDialog : public wxDialog {

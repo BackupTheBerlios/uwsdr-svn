@@ -372,3 +372,5 @@ Version 0.8.1 - 2007
 ====================
 
 Added a UWSDR GUI menu option and removed the option to create menu entries.
+
+Added support for Jack on Linux and Mac OS X.

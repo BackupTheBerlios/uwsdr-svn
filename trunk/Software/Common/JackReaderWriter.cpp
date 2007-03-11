@@ -38,8 +38,10 @@ m_blockSize(0U),
 m_callback(NULL),
 m_id(0),
 m_client(NULL),
-m_inPort(NULL),
-m_outPort(NULL),
+m_inPortI(NULL),
+m_inPortQ(NULL),
+m_outPortI(NULL),
+m_outPortQ(NULL),
 m_buffer(NULL),
 m_lastBuffer(NULL),
 m_inBuffer(NULL),
@@ -53,6 +55,7 @@ m_active(false)
 {
 	wxASSERT(inChannels <= 2U);
 	wxASSERT(outChannels <= 2U);
+	wxASSERT(inChannels > 0U || outChannels > 0U);
 }
 
 CJackReaderWriter::~CJackReaderWriter()
@@ -84,11 +87,25 @@ bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
 	jack_status_t status;
 	m_client = ::jack_client_open(m_name.c_str(), JackNullOption, &status, NULL);
 	if (m_client == NULL) {
-		::wxLogError(wxT("JackReaderWriter: received 0x%02X from jack_client_open()"), status);
+		if (status & JackServerFailed)
+			::wxLogError(wxT("JackReaderWriter: unabled to start the Jack server"));
+		else
+			::wxLogError(wxT("JackReaderWriter: received 0x%02X from jack_client_open()"), status);
 		return false;
 	}
 
-	::jack_set_process_callback(m_client, jcrwCallback, this);
+	if (status & JackNameNotUnique) {
+		::wxLogError(wxT("JackReaderWriter: client '%s' name is not unique"), m_name.c_str());
+		::jack_client_close(m_client);
+		return false;
+	}
+
+	int ret = ::jack_set_process_callback(m_client, jcrwCallback, this);
+	if (ret != 0) {
+		::wxLogError(wxT("JackReaderWriter: unable to set the callback, error = %d"), ret);
+		::jack_client_close(m_client);
+		return false;
+	}
 
 	jack_nframes_t jsr = ::jack_get_sample_rate(m_client);
 	if (float(jsr) != sampleRate) {
@@ -97,27 +114,80 @@ bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
 		return false;
 	}
 
-	if (m_inChannels > 0U) {
-		m_inPort = ::jack_port_register(m_client, "Input", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
+	switch (m_inChannels) {
+		case 0U:
+			break;
+		case 1U:
+			m_inPortI = ::jack_port_register(m_client, "Input", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
 
-		if (m_inPort == NULL) {
-			::wxLogError(wxT("JackReaderWriter: unable to open the Jack input port"));
-			::jack_client_close(m_client);
-			return false;
-		}
+			if (m_inPortI == NULL) {
+				::wxLogError(wxT("JackReaderWriter: unable to open the Jack input port"));
+				::jack_client_close(m_client);
+				return false;
+			}
+			break;
+		case 2U:
+			m_inPortI = ::jack_port_register(m_client, "Input I", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
+
+			if (m_inPortI == NULL) {
+				::wxLogError(wxT("JackReaderWriter: unable to open the Jack I input port"));
+				::jack_client_close(m_client);
+				return false;
+			}
+
+			m_inPortQ = ::jack_port_register(m_client, "Input Q", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
+
+			if (m_inPortQ == NULL) {
+				::wxLogError(wxT("JackReaderWriter: unable to open the Jack Q input port"));
+				::jack_client_close(m_client);
+				return false;
+			}
+			break;
+	}
+
+	if (m_inChannels > 0U)
+		m_inBuffer  = new float[blockSize * 2U];
+
+	switch (m_outChannels) {
+		case 0U:
+			break;
+		case 1U:
+			m_outPortI = ::jack_port_register(m_client, "Output", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+
+			if (m_outPortI == NULL) {
+				::wxLogError(wxT("JackReaderWriter: unable to open the Jack output port"));
+				::jack_client_close(m_client);
+				return false;
+			}
+			break;
+		case 2U:
+			m_outPortI = ::jack_port_register(m_client, "Output I", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+
+			if (m_outPortI == NULL) {
+				::wxLogError(wxT("JackReaderWriter: unable to open the Jack I output port"));
+				::jack_client_close(m_client);
+				return false;
+			}
+
+			m_outPortQ = ::jack_port_register(m_client, "Output Q", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+
+			if (m_outPortQ == NULL) {
+				::wxLogError(wxT("JackReaderWriter: unable to open the Jack Q output port"));
+				::jack_client_close(m_client);
+				return false;
+			}
+			break;
 	}
 
 	if (m_outChannels > 0U) {
-		m_outPort = ::jack_port_register(m_client, "Output", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+		m_outBuffer = new float[blockSize * 2U];
+		m_buffer    = new CRingBuffer(blockSize * 5U, 2U);
 
-		if (m_outPort == NULL) {
-			::wxLogError(wxT("JackReaderWriter: unable to open the Jack output port"));
-			::jack_client_close(m_client);
-			return false;
-		}
+		m_lastBuffer = new float[blockSize * 2U];
+		::memset(m_lastBuffer, 0x00, blockSize * 2U * sizeof(float));
 	}
 
-	int ret = ::jack_activate(m_client);
+	ret = ::jack_activate(m_client);
 	if (ret != 0) {
 		::wxLogError(wxT("JackReaderWriter: error %d when activating the Jack client"), ret);
 		::jack_client_close(m_client);
@@ -134,7 +204,7 @@ bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
 
 void CJackReaderWriter::write(const float* buffer, unsigned int nSamples)
 {
-	if (!m_enabled || m_outChannels > 0U)
+	if (!m_enabled || m_outChannels == 0U)
 		return;
 
 	if (nSamples == 0U)
@@ -152,50 +222,111 @@ int CJackReaderWriter::callback(jack_nframes_t nFrames)
 {
 	m_requests++;
 
-	if (m_inChannels > 0U) {
-		wxASSERT(m_callback != NULL);
-		wxASSERT(m_inBuffer != NULL);
-
-		float* input = (float*)::jack_port_get_buffer(m_inPort, nFrames);
-
-		if (m_inChannels == 1U) {
-			for (unsigned int i = 0U; i < nFrames; i++) {
-				m_inBuffer[i * 2U + 0U] = input[i];
-				m_inBuffer[i * 2U + 1U] = input[i];
-			}
-
-			input = m_inBuffer;
-		}
-
-		m_callback->callback(input, nFrames, m_id);
+	if (nFrames != m_blockSize) {
+		::wxLogError(wxT("JackReaderWriter: invalid frame size, given %u, wanted %u"), nFrames, m_blockSize);
+		nFrames = m_blockSize;
 	}
 
-	if (m_outChannels > 0U) {
-		wxASSERT(m_buffer != NULL);
-		wxASSERT(m_outBuffer != NULL);
-		wxASSERT(m_lastBuffer != NULL);
+	switch (m_inChannels) {
+		case 0U:
+			break;
 
-		float* output = (float*)::jack_port_get_buffer(m_outPort, nFrames);
+		case 1U: {
+				wxASSERT(m_callback != NULL);
+				wxASSERT(m_inBuffer != NULL);
+				wxASSERT(m_inPortI != NULL);
 
-		if (m_buffer->dataSpace() >= nFrames) {
-			m_buffer->getData(m_outBuffer, nFrames);
-		} else {
-			::memcpy(m_outBuffer, m_lastBuffer, nFrames * 2U * sizeof(float));
-			m_underruns++;
-		}
+				jack_default_audio_sample_t* input = (jack_default_audio_sample_t*)::jack_port_get_buffer(m_inPortI, nFrames);
 
-		::memcpy(m_lastBuffer, m_outBuffer, nFrames * 2U * sizeof(float));
+				wxASSERT(input != NULL);
 
-		switch (m_outChannels) {
-			case 1U: {
-					for (unsigned int i = 0U; i < nFrames; i++)
-						output[i] = m_outBuffer[i * 2U + 0U];
+				for (unsigned int i = 0U; i < nFrames; i++) {
+					m_inBuffer[i * 2U + 0U] = input[i];
+					m_inBuffer[i * 2U + 1U] = input[i];
 				}
-				break;
-			case 2U:
-				::memcpy(output, m_outBuffer, nFrames * 2U * sizeof(float));
-				break;
-		}
+
+				m_callback->callback(m_inBuffer, nFrames, m_id);
+			}
+			break;			
+
+		case 2U: {
+				wxASSERT(m_callback != NULL);
+				wxASSERT(m_inBuffer != NULL);
+				wxASSERT(m_inPortI != NULL);
+				wxASSERT(m_inPortQ != NULL);
+
+				jack_default_audio_sample_t* inputI = (jack_default_audio_sample_t*)::jack_port_get_buffer(m_inPortI, nFrames);
+				jack_default_audio_sample_t* inputQ = (jack_default_audio_sample_t*)::jack_port_get_buffer(m_inPortQ, nFrames);
+
+				wxASSERT(inputI != NULL);
+				wxASSERT(inputQ != NULL);
+
+				for (unsigned int i = 0U; i < nFrames; i++) {
+					m_inBuffer[i * 2U + 0U] = inputI[i];
+					m_inBuffer[i * 2U + 1U] = inputQ[i];
+				}
+
+				m_callback->callback(m_inBuffer, nFrames, m_id);
+			}
+			break;			
+	}
+
+	switch (m_outChannels) {
+		case 0U:
+			break;
+
+		case 1U: {
+				wxASSERT(m_buffer != NULL);
+				wxASSERT(m_outBuffer != NULL);
+				wxASSERT(m_lastBuffer != NULL);
+				wxASSERT(m_outPortI != NULL);
+
+				jack_default_audio_sample_t* output = (jack_default_audio_sample_t*)::jack_port_get_buffer(m_outPortI, nFrames);
+
+				wxASSERT(output != NULL);
+
+				if (m_buffer->dataSpace() >= nFrames) {
+					m_buffer->getData(m_outBuffer, nFrames);
+				} else {
+					::memcpy(m_outBuffer, m_lastBuffer, nFrames * 2U * sizeof(float));
+					m_underruns++;
+				}
+
+				::memcpy(m_lastBuffer, m_outBuffer, nFrames * 2U * sizeof(float));
+
+				for (unsigned int i = 0U; i < nFrames; i++)
+					output[i] = m_outBuffer[i * 2U + 0U];
+			}
+			break;
+
+		case 2U: {
+				wxASSERT(m_buffer != NULL);
+				wxASSERT(m_outBuffer != NULL);
+				wxASSERT(m_lastBuffer != NULL);
+				wxASSERT(m_outPortI != NULL);
+				wxASSERT(m_outPortQ != NULL);
+
+				jack_default_audio_sample_t* outputI = (jack_default_audio_sample_t*)::jack_port_get_buffer(m_outPortI, nFrames);
+				jack_default_audio_sample_t* outputQ = (jack_default_audio_sample_t*)::jack_port_get_buffer(m_outPortQ, nFrames);
+
+				wxASSERT(outputI != NULL);
+				wxASSERT(outputQ != NULL);
+
+				if (m_buffer->dataSpace() >= nFrames) {
+					m_buffer->getData(m_outBuffer, nFrames);
+				} else {
+					::memcpy(m_outBuffer, m_lastBuffer, nFrames * 2U * sizeof(float));
+					m_underruns++;
+				}
+
+				::memcpy(m_lastBuffer, m_outBuffer, nFrames * 2U * sizeof(float));
+
+				for (unsigned int i = 0U; i < nFrames; i++) {
+					outputI[i] = m_outBuffer[i * 2U + 0U];
+					outputQ[i] = m_outBuffer[i * 2U + 1U];
+				}
+			}
+			break;
 	}
 
 	return 0;
@@ -229,6 +360,9 @@ void CJackReaderWriter::close()
 
 void CJackReaderWriter::enable(bool enable)
 {
+	if (m_outChannels == 0U)
+		return;
+
 	m_enabled = enable;
 
 	if (!enable)
@@ -247,6 +381,56 @@ void CJackReaderWriter::purge()
 bool CJackReaderWriter::hasClock()
 {
 	return true;
+}
+
+void CJackReaderWriter::clock()
+{
+}
+
+#else
+
+CJackReaderWriter::CJackReaderWriter(const wxString& name, unsigned int inChannels, unsigned int outChannels)
+{
+}
+
+CJackReaderWriter::~CJackReaderWriter()
+{
+}
+
+void CJackReaderWriter::setCallback(IDataCallback* callback, int id)
+{
+}
+
+bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
+{
+	::wxLogError(wxT("JackReaderWriter: UWSDR has been built without Jack support"));		
+
+	return false;
+}
+
+void CJackReaderWriter::write(const float* buffer, unsigned int nSamples)
+{
+}
+
+void CJackReaderWriter::close()
+{
+}
+
+void CJackReaderWriter::enable(bool enable)
+{
+}
+
+void CJackReaderWriter::disable()
+{
+}
+
+void CJackReaderWriter::purge()
+{
+}
+
+bool CJackReaderWriter::hasClock()
+{
+	return false;
 }
 
 void CJackReaderWriter::clock()

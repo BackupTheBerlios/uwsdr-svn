@@ -135,13 +135,15 @@ void CSoundCardDialog::onOK(wxCommandEvent& WXUNUSED(event))
 void CSoundCardDialog::enumerateAPI()
 {
 	int defAPI = NO_API;
+	SOUNDTYPE defType = SOUNDTYPE(-1);
 
 	if (m_inDev != NO_DEV) {
 		for (unsigned int i = 0U; i < m_info.getDevs().size(); i++) {
 			CAudioDevDev* dev = m_info.getDevs().at(i);
 
 			if (m_inDev == dev->getInDev()) {
-				defAPI = dev->getAPI();
+				defType = dev->getType();
+				defAPI  = dev->getAPI();
 				break;
 			}
 		}
@@ -154,7 +156,7 @@ void CSoundCardDialog::enumerateAPI()
 
 		m_apiChoice->Append(api->getName(), api);
 
-		if (defAPI != NO_API && defAPI == api->getAPI()) {
+		if (defAPI != NO_API && defType == api->getType() && defAPI == api->getAPI()) {
 			m_apiChoice->SetSelection(i);
 			chosen = api;
 		}
@@ -177,7 +179,7 @@ void CSoundCardDialog::enumerateAudio(const CAudioDevAPI& api)
 	for (unsigned int i = 0U; i < m_info.getDevs().size(); i++) {
 		CAudioDevDev* dev = m_info.getDevs().at(i);
 
-		if (dev->getAPI() == api.getAPI() && dev->getInChannels() >= int(m_minIn) && dev->getOutChannels() >= int(m_minOut)) {
+		if (dev->getAPI() == api.getAPI() && dev->getType() == api.getType() && dev->getInChannels() >= int(m_minIn) && dev->getOutChannels() >= int(m_minOut)) {
 			m_devChoice->Append(dev->getName(), dev);
 
 			if (m_inDev != NO_DEV && m_inDev == dev->getInDev()) {

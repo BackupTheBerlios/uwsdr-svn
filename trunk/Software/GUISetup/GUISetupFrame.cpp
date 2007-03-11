@@ -609,7 +609,7 @@ void CGUISetupFrame::readConfig(const wxString& name)
 
 void CGUISetupFrame::onUserAudio(wxCommandEvent& WXUNUSED(event))
 {
-	CSoundCardDialog dialog(this, _("User Audio Setup"), m_userAudioInDev, m_userAudioOutDev, 1U, 1U);
+	CSoundCardDialog dialog(this, _("User Audio Setup"), m_userAudioInDev, m_userAudioOutDev, 1U, 2U);
 
 	int ret = dialog.ShowModal();
 	if (ret == wxID_OK) {
