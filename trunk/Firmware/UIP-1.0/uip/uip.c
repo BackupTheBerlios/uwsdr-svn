@@ -786,7 +786,7 @@ uip_reass(void)
   }
   nullreturn:
   return 0;
-
+}
 #endif /* UIP_REASSEMBLY */
 /*---------------------------------------------------------------------------*/
 static void uip_add_rcv_nxt(u16_t n)
@@ -799,7 +799,7 @@ static void uip_add_rcv_nxt(u16_t n)
 }
 /*---------------------------------------------------------------------------*/
 
-void uip_process(u8_t flag)
+u16 uip_process(u8_t flag)
 {
   register struct uip_conn *uip_connr = uip_conn;
 
@@ -809,8 +809,9 @@ void uip_process(u8_t flag)
   }
 #endif /* UIP_UDP */
   
-  uip_sappdata = uip_appdata = &uip_buf[UIP_IPTCPH_LEN + UIP_LLH_LEN];
-
+//  uip_sappdata = uip_appdata = &uip_buf[UIP_IPTCPH_LEN + UIP_LLH_LEN];
+  uip_sappdata = uip_appdata = &uip_buf[UIP_IPH_LEN + UIP_LLH_LEN];
+  
   /* Check if we were invoked because of a poll request for a
      particular connection. */
   if(flag == UIP_POLL_REQUEST) {
@@ -1217,6 +1218,14 @@ void uip_process(u8_t flag)
   uip_len = uip_len - UIP_IPUDPH_LEN;
 #endif /* UIP_UDP_CHECKSUMS */
 
+  u32 ul;
+  
+  ul = UDPBUF->destport;
+  /**** Checkpoint UWSDR UDP PORT FOR TX ****/
+  if(ul == HTONS(UDP_LISTEN_PORT)) {
+    return HTONS(ul);
+  }
+  
   /* Demultiplex this UDP packet between the UDP "connections". */
   for(uip_udp_conn = &uip_udp_conns[0];
       uip_udp_conn < &uip_udp_conns[UIP_UDP_CONNS];

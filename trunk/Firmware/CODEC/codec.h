@@ -54,7 +54,11 @@ typedef struct s_codec_hdr {
 } t_codec_hdr;
 
 #define CODEC_HEADER_SIZE     sizeof(t_codec_hdr)
-#define CODEC_BUFFERSIZE      400 * 3 
+#define CODEC_BUFFERSIZE      400 * 3
+#define CODEC_FRAME_SIZE      400 * 3 // 1200bytes
+//#define CODEC_BUFFER_SIZE     2048
+#define CODEC_HEADER_SIZE_TX  6
+#define CODEC_HEADER_SIZE_RX  7
 
 #define CODEC_SET_CS() SET_PIN(CODEC_SPICS_PIN)
 #define CODEC_CLR_CS() CLR_PIN(CODEC_SPICS_PIN)
@@ -67,7 +71,7 @@ typedef struct s_codec_hdr {
 
 
 extern u32 codec_status_flag;
-extern u8 codec_buf[2*CODEC_BUFFERSIZE + 2*CODEC_HEADER_SIZE];
+extern u8 codec_buf[8*CODEC_BUFFERSIZE + 2*CODEC_HEADER_SIZE];
 extern u8 *codec_inactivebuf;
 
 #define CODEC_SET_BUFFER_FULL(x)    (codec_status_flag |= (1 << x))
@@ -94,6 +98,7 @@ void UDP_process(void);
 void CODEC_init(void);
 void CODEC_start(void);
 void codec_getpeaks(void);
+void UDP_process_incomming(void);
 
 #endif //__CODEC_H__
 

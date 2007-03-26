@@ -202,8 +202,8 @@
 #define  RST		0x80
 #define  RDC		0x40
 #define  OVW		0x10
-#define  RXE		0x08
-#define  TXE		0x04
+#define  TXE		0x08
+#define  RXE		0x04
 #define  PTX		0x02
 #define  PRX		0x01
 //******************************************************************
@@ -422,7 +422,7 @@ void ax88796Overrun(void);
 *                 line not used.  This function should be called before
 *                 attempting to retreive a packet from the NIC
 *****************************************************************************/
-void ax88796ProcessInterrupt(void);
+int ax88796ProcessInterrupt(void);
 
 /*****************************************************************************
 *  unsigned char RTL8019ReceiveEmpty(void);

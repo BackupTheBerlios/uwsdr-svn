@@ -97,7 +97,7 @@ void main(void)
   /******** Enable Programmable Clock Output ********/
   
   AT91F_PIO_CfgPeriph(AT91C_BASE_PIOA, 0, (1 << 21));
-  AT91F_PMC_EnablePCK(AT91C_BASE_PMC, 1, 1 + (2 << 2));
+  AT91F_PMC_EnablePCK(AT91C_BASE_PMC, 1, 1 + (1 << 2));
 
   /***** EXT Interrupt *******/
 
@@ -215,7 +215,7 @@ void main(void)
     
   __enable_interrupt();                         // Global interrupt enable
 
-   uip_listen(HTONS(2221));
+   uip_listen(HTONS(2222));
 
    uip_ipaddr_t destaddr =  { HTONS((192 << 8) | 168), HTONS((1 << 8) | 4) };
 
@@ -224,71 +224,60 @@ void main(void)
 
    //uip_send(codec_buf, CODEC_BUFFERSIZE/2);
 
-
-#define BUF ((struct uip_eth_hdr *)&uip_buf[0])
-#define IPBUF ((struct ethip_hdr *)&uip_buf[0])   
-#define UWSDR_UDP_FRAMELEN   (1200 + sizeof(t_codec_hdr))
-
   CODEC_start();
    
   t_codec_hdr*  pHdr;
   
   pHdr = (t_codec_hdr*)&codec_buf;
 
-  u32 framecount;
-  
   LAN_DIS_IRQ();
   
-  uip_send_udp(UDP_Socket, codec_inactivebuf, UWSDR_UDP_FRAMELEN);
-  uip_process(UIP_UDP_SEND_CONN);
-  uip_arp_out();
-  delay_us(10000);
-  nic_send();      
-  LAN_ENA_IRQ();
+  //uip_send_udp(UDP_Socket, codec_inactivebuf, UWSDR_UDP_FRAMELEN);
+  //uip_process(UIP_UDP_SEND_CONN);
+  //uip_arp_out();
+  //delay_us(10000);
+  //nic_send();      
+  //LAN_ENA_IRQ();
   delay_us(100000);
 
-  framecount = 0;
   i = 0;
   for(;;)
   {
-    test32 = AT91C_BASE_SSC->SSC_SR;
-    if(test32 & (AT91C_SSC_RXBUFF)) {
-      CODEC_SSC_ISR();
-      if(codec_inactivebuf) {
-        LAN_DIS_IRQ();
-        pHdr = (t_codec_hdr*)codec_inactivebuf; // - sizeof(t_codec_hdr);
-        
-        framecount += 2;
-        if(framecount == 0xFFFE)
-          framecount = 1;
-        if(framecount == 0xFFFF)
-          framecount = 0;
-
-        pHdr->seqNr = framecount;
-        
-        uip_send_udp(UDP_Socket, codec_inactivebuf, UWSDR_UDP_FRAMELEN);
-        //uip_send(UDP_Socket, codec_inactivebuf, UWSDR_UDP_FRAMELEN);
-        uip_process(UIP_UDP_SEND_CONN);
-        uip_arp_out();  
-        nic_send();
-         codec_inactivebuf = 0;
-        //uip_arp_out();
-        //nic_send();
-        DBG_LED1_ON();
-        
-        //calc peaks
-        codec_getpeaks();
-         
-      DBG_LED1_OFF();
-        LAN_ENA_IRQ();
-      }
-    }
-
-    if(i > 10000) {
-      //uip_process(UIP_UDP_TIMER);
-      i = 0;
-    }
-    i++;
+//    ax88796_process_irq();
+//    test32 = AT91C_BASE_SSC->SSC_SR;
+//    if(test32 & (AT91C_SSC_RXBUFF)) {
+//      CODEC_SSC_ISR();
+//      if(codec_inactivebuf) {
+//        LAN_DIS_IRQ();
+//        pHdr = (t_codec_hdr*)codec_inactivebuf; // - sizeof(t_codec_hdr);
+//        
+//        framecount += 2;
+//        if(framecount == 0xFFFE)
+//          framecount = 1;
+//        if(framecount == 0xFFFF)
+//          framecount = 0;
+//
+//        pHdr->seqNr = framecount;
+//        
+//        uip_send_udp(UDP_Socket, codec_inactivebuf, UWSDR_UDP_FRAMELEN);
+//        //uip_send(UDP_Socket, codec_inactivebuf, UWSDR_UDP_FRAMELEN);
+//        uip_process(UIP_UDP_SEND_CONN);
+//        uip_arp_out();  
+//        nic_send();
+//         codec_inactivebuf = 0;
+//        //uip_arp_out();
+//        //nic_send();
+//        DBG_LED1_ON();
+//        
+//        //calc peaks
+//        codec_getpeaks();
+//         
+//      DBG_LED1_OFF();
+//        LAN_ENA_IRQ();
+//      }
+//    }
+//
+     ax88796_process_irq();
   }
   
 
@@ -331,7 +320,7 @@ void main(void)
     }
      test32 = AT91C_BASE_SSC->SSC_SR;
      if(test32 & (AT91C_SSC_RXBUFF)) {
-       DBG_LED1_ON();
+       //DBG_LED1_ON();
        CODEC_SSC_ISR();
        if(CODEC_GET_ACTIVE_BUFFER() == 1) {
           uip_send(codec_buf + (CODEC_BUFFERSIZE + 2*CODEC_HEADER_SIZE),
@@ -340,7 +329,7 @@ void main(void)
        else {
           uip_send(codec_buf, CODEC_BUFFERSIZE+CODEC_HEADER_SIZE);       
        }
-       DBG_LED1_OFF();
+       //DBG_LED1_OFF();
      }
   }
 }

@@ -41,6 +41,8 @@
 #include "nic.h"
 #include "debug.h"
 #include "delay.h"
+#include "main.h"
+#include "codec.h"
 
 // pointers to locations in the ax88796 receive buffer
 static unsigned char nextPage;
@@ -200,7 +202,7 @@ u8 ax88796Read(u8 address)
 void ax88796Init(void)
 {
 //	unsigned char delaycount=1;
-        unsigned char tcrFduFlag;
+        u8 tcrFduFlag;
 //	ax88796SetupPorts();
 	
 	// do a hard reset
@@ -269,6 +271,7 @@ void ax88796Init(void)
 	ax88796Write(ISR,0xFF);
 	ax88796Write(IMR,IMR_INIT);
 	ax88796Write(TCR,(tcrFduFlag|TCR_INIT));
+        
 }
 
 
@@ -330,7 +333,10 @@ unsigned int ax88796BeginPacketRetreive(void)
   unsigned int rxlen;
 	
   // check for and handle an overflow
-  ax88796ProcessInterrupt();
+  if(ax88796ProcessInterrupt() != -2)
+    return 0;
+  //only continue if PRX event happened
+  // clear the packet received interrupt flag
 
   // read CURR from page 1
   ax88796Write(CR,(PS0|RD2|STOP));
@@ -345,8 +351,6 @@ unsigned int ax88796BeginPacketRetreive(void)
   if(readPagePtr >= RXSTOP_INIT)
     readPagePtr = RXSTART_INIT;
 
-  // clear the packet received interrupt flag
-  //ax88796Write(ISR, PRX);
   
   // return if there is no packet in the buffer
   if( readPagePtr == writePagePtr ) {
@@ -358,14 +362,16 @@ unsigned int ax88796BeginPacketRetreive(void)
   
   // if the boundary pointer is invalid,
   // reset the contents of the buffer and exit
-//  if( (bnryPagePtr < RXSTART_INIT) || (bnryPagePtr >= RXSTOP_INIT) )
-//  {
-//    ax88796Write(BNRY, RXSTART_INIT);
-//    ax88796Write(CR, (PS0|RD2|START));
-//    ax88796Write(CURR, RXSTART_INIT+1);
-//    ax88796Write(CR, (RD2|START));
-//    return 0;
-//  }
+  if( (bnryPagePtr < RXSTART_INIT) || (bnryPagePtr >= RXSTOP_INIT) )
+  {
+    ax88796Write(BNRY, RXSTART_INIT);
+    ax88796Write(CR, (PS0|RD2|START));
+    ax88796Write(CURR, RXSTART_INIT+1);
+    ax88796Write(CR, (RD2|START));
+    // clear the packet received interrupt flag
+    ax88796Write(ISR, PRX);
+    return 0;
+  }
   
   // initiate DMA to transfer the RTL8019 packet header
   ax88796Write(RBCR0, 4);
@@ -380,7 +386,7 @@ unsigned int ax88796BeginPacketRetreive(void)
   
   // end the DMA operation
   ax88796Write(CR, (RD2|START));
-  for(i = 0; i <= 20; i++)
+  for(i = 0; i <= 200; i++)
     if(ax88796Read(ISR) & RDC)
       break;
   
@@ -391,12 +397,11 @@ unsigned int ax88796BeginPacketRetreive(void)
   CurrRXBuffer = nextPage;
     
   currentRetreiveAddress = (readPagePtr<<8) + 4;
-  
-  // if the nextPage pointer is invalid, the packet is not ready yet - exit
 
   // clear the packet received interrupt flag
   ax88796Write(ISR, PRX);
-
+  
+  // if the nextPage pointer is invalid, the packet is not ready yet - exit
   if( (nextPage >= RXSTOP_INIT) || (nextPage < RXSTART_INIT) ) {
     return 0;
   }
@@ -451,6 +456,8 @@ void ax88796EndPacketRetreive(void)
     bnryPagePtr = RXSTOP_INIT-1;
 
   ax88796Write(BNRY, bnryPagePtr);
+  // clear the packet received interrupt flag
+  //ax88796Write(ISR, PRX);
 }
 
 
@@ -501,7 +508,7 @@ void ax88796Overrun(void)
 	if(resend)
 		ax88796Write(CR, (RD2|TXP|START));
 	
-	ax88796Write(ISR, 0xFF);
+	//ax88796Write(ISR, 0xFF);
 }
 
 #define set_mdc		ax88796Write(MEMR,ax88796Read(MEMR)|0x01);
@@ -631,19 +638,32 @@ unsigned int ax88796ReadMii(unsigned char phyad,unsigned char regad)
 	return result16;
 }
 
+u32 cnt;
 
 int ax88796ProcessInterrupt(void)
 {
   unsigned char byte = ax88796Read(ISR);
+  int ret;
   
-  if( byte & OVW ) {
-    ax88796Overrun();
-    return -1;
+  ret = 0;
+  
+  if( byte & RXE) {
+    DBG_LED1_ON();
+    ax88796Write(ISR, RXE); 
+    ret = -1;
   }
   if( byte & PRX ) {
-    return -2;
+    ret = -2;
   }
-  return 0;
+  if( byte & PTX ) {
+    ax88796Write(ISR, PTX); 
+  }
+  if( byte & OVW) {
+    ax88796Overrun();
+    ret = -1;
+  }
+  DBG_LED1_OFF();
+  return ret;
 }
 
 //**************************************************************************
@@ -664,6 +684,7 @@ int ax88796ProcessInterrupt(void)
 void ax88796_process_irq(void)
 {
   // DECLARATIONS
+  u32 ul;
   // INITIALISATION
   // PARAMETER CHECK
   // PROGRAM CODE
@@ -671,21 +692,33 @@ void ax88796_process_irq(void)
   uip_len = ax88796BeginPacketRetreive();
   
   if(uip_len > 0 && uip_len < UIP_BUFSIZE) {
-    // copy the packet data into the uIP packet buffer
-    ax88796RetreivePacketData( uip_buf, uip_len );
-    ax88796EndPacketRetreive();
-
+   
+    ul = sizeof(struct uip_eth_hdr) + sizeof(struct uip_udpip_hdr);
+    ul = MIN(ul, uip_len);
+    ax88796RetreivePacketData( uip_buf, ul );
+    //ax88796EndPacketRetreive();
+    
     if(BUF->type == HTONS(UIP_ETHTYPE_IP)) {
       uip_arp_ipin();
-      uip_input();
-
+      if(uip_input() == UDP_LISTEN_PORT) {
+        // it is a packet for uwsdr
+        UDP_process_incomming();
+        ax88796EndPacketRetreive();
+        uip_len = 0;
+        uip_flags = 0;
+        
+      }
       // transmit a packet, if one is ready
       if(uip_len > 0) {
         uip_arp_out();
         nic_send();
       }
     } else if(BUF->type == HTONS(UIP_ETHTYPE_ARP)) {
+      if(ul < uip_len)
+        ax88796RetreivePacketData( &uip_buf[ul], uip_len - ul );
       uip_arp_arpin();
+      ax88796EndPacketRetreive();
+      
       if(uip_len > 0) {
         nic_send();
       }

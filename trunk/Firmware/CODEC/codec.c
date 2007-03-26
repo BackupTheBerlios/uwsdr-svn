@@ -4,11 +4,20 @@
 #include "string.h"
 #include "delay.h"
 #include "i2c.h"
+#include "ax88796.h"
 
-u8    codec_buf[2*CODEC_BUFFERSIZE + 2*CODEC_HEADER_SIZE]; // ~6kb = 2000 24bit stereo samples
+u8    codec_buf[8*CODEC_BUFFERSIZE + 2*CODEC_HEADER_SIZE]; // ~6kb = 2000 24bit stereo samples
 //u16   codec_send_counter0;
 //u16   codec_send_counter1;
+//u8    codec_buffer0[CODEC_BUFFER_SIZE+8];
+//u8    codec_buffer1[CODEC_BUFFER_SIZE+8];
+//u8    codec_buffer2[CODEC_BUFFER_SIZE+8];
+//u8    codec_buffer3[CODEC_BUFFER_SIZE+8];
+
+u8    codec_active_buffer;
+
 u32   codec_status_flag;
+u8*   codec_tx_pointer;
 
 u8 *  codec_inactivebuf;
 volatile u32 max_I;
@@ -53,6 +62,10 @@ void CODEC_init(void)
 {
   u8 uc;
   int i;
+
+  codec_active_buffer = 0;
+  codec_tx_pointer = codec_buf;
+
   /****** AD1836A Init *******/
   
   CLR_PIN(CODEC_RST_PIN);
@@ -60,36 +73,36 @@ void CODEC_init(void)
   SET_PIN(CODEC_RST_PIN);
   
   /*** Init of the DAC PCM1740 ***/
-//  I2C_send_byte(0x98, 0x00, 0x00);
-//  delay_us(100);
-//  I2C_send_byte(0x98, 0x01, 0x00);
-//  delay_us(100);
-//  I2C_send_byte(0x98, 0x02, 0x98);
-//  delay_us(100);
-//  I2C_send_byte(0x98, 0x03, 0x4B);
-//  delay_us(1000);
-//  I2C_send_byte(0x98, 0x04, 0x00);
-//  delay_us(100);
+  I2C_send_byte(0x98, 0x00, 0x00);
+  delay_us(100);
+  I2C_send_byte(0x98, 0x01, 0x00);
+  delay_us(100);
+  I2C_send_byte(0x98, 0x02, 0x98);
+  delay_us(100);
+  I2C_send_byte(0x98, 0x03, 0x4B);
+  delay_us(1000);
+  I2C_send_byte(0x98, 0x04, 0x00);
+  delay_us(100);
 
   /*** Init of the CS4272 ***/
-  delay_us(500);
-  I2C_send_byte(0x20, 0x07, 0x03); // Mode Control 2
-  delay_us(100);
-
-  I2C_send_byte(0x20, 0x01, 0x29); // Mode Control
-  delay_us(100);
-  I2C_send_byte(0x20, 0x02, 0x00); // DAC Control
-  delay_us(100);
-  I2C_send_byte(0x20, 0x03, 0x09); // DAC Volume & Mixing control
-  delay_us(100);
-  I2C_send_byte(0x20, 0x04, 0x00); // Channel A Volume control
-  delay_us(100);
-  I2C_send_byte(0x20, 0x05, 0x00); // Channel B Volume control
-  delay_us(100);
-  I2C_send_byte(0x20, 0x06, 0x13); // ADC Control
-  delay_us(100);
-  I2C_send_byte(0x20, 0x07, 0x02); // Mode Control 2
-  delay_us(100);
+//  delay_us(500);
+//  I2C_send_byte(0x20, 0x07, 0x03); // Mode Control 2
+//  delay_us(100);
+//
+//  I2C_send_byte(0x20, 0x01, 0x29); // Mode Control
+//  delay_us(100);
+//  I2C_send_byte(0x20, 0x02, 0x00); // DAC Control
+//  delay_us(100);
+//  I2C_send_byte(0x20, 0x03, 0x09); // DAC Volume & Mixing control
+//  delay_us(100);
+//  I2C_send_byte(0x20, 0x04, 0x00); // Channel A Volume control
+//  delay_us(100);
+//  I2C_send_byte(0x20, 0x05, 0x00); // Channel B Volume control
+//  delay_us(100);
+//  I2C_send_byte(0x20, 0x06, 0x13); // ADC Control
+//  delay_us(100);
+//  I2C_send_byte(0x20, 0x07, 0x02); // Mode Control 2
+//  delay_us(100);
   
 //  //***** First init of Reg 7 *****
 //  delay_us(100);
@@ -287,6 +300,21 @@ void UDP_process(void)
     //codec_send_counter0 += CODEC_UDP_FRAMESIZE;
     //uip_slen = 
   }
+}
+
+void UDP_process_incomming()
+{
+  u16 us;
+  t_codec_hdr hdr_buf;
+  
+  ax88796RetreivePacketData( (u8*)&hdr_buf, CODEC_HEADER_SIZE );
+    
+  ax88796RetreivePacketData( codec_tx_pointer, CODEC_FRAME_SIZE );
+  
+  if(codec_tx_pointer >= CODEC_FRAME_SIZE + codec_buf) {
+    codec_tx_pointer = codec_buf;
+  }
+  codec_tx_pointer += CODEC_FRAME_SIZE;
 }
 
 // end of main

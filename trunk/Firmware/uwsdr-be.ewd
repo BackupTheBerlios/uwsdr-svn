@@ -45,7 +45,7 @@
         </option>
         <option>
           <name>MemFile</name>
-          <state>$TOOLKIT_DIR$\CONFIG\ioat91sam7s256.ddf</state>
+          <state>$TOOLKIT_DIR$\CONFIG\ioAT91SAM7S256.ddf</state>
         </option>
         <option>
           <name>RunToEnable</name>
@@ -89,7 +89,7 @@
         </option>
         <option>
           <name>OCLastSavedByProductVersion</name>
-          <state>4.40A</state>
+          <state>4.41A</state>
         </option>
         <option>
           <name>OCDownloadAttachToProgram</name>
@@ -311,6 +311,47 @@
       </data>
     </settings>
     <settings>
+      <name>LMIFTDI_ID</name>
+      <archiveVersion>2</archiveVersion>
+      <data>
+        <version>0</version>
+        <wantNonLocal>1</wantNonLocal>
+        <debug>1</debug>
+        <option>
+          <name>OCDriverInfo</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>LmiftdiSpeed</name>
+          <state>500</state>
+        </option>
+        <option>
+          <name>CCLmiftdiResetRadio</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>CCLmiftdiDoLogfile</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCLmiftdiLogFile</name>
+          <state>$TOOLKIT_DIR$\cspycomm.log</state>
+        </option>
+        <option>
+          <name>CCLmiftdiBreakpointRadio</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCLmiftdiDoUpdateBreakpoints</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCLmiftdiUpdateBreakpoints</name>
+          <state>main</state>
+        </option>
+      </data>
+    </settings>
+    <settings>
       <name>MACRAIGOR_ID</name>
       <archiveVersion>2</archiveVersion>
       <data>
@@ -400,7 +441,7 @@
         <debug>1</debug>
         <option>
           <name>CRDIDriverDll</name>
-          <state>L:\Program Files\H-JTAG V0.4.2\H-JTAG.dll</state>
+          <state>L:\Program Files\H-JTAG V0.4.3\H-JTAG.dll</state>
         </option>
         <option>
           <name>CRDILogFileCheck</name>
@@ -491,7 +532,7 @@
         <loadFlag>1</loadFlag>
       </plugin>
       <plugin>
-        <file>$EW_DIR$\common\plugins\Stack\stack.ewplugin</file>
+        <file>$EW_DIR$\common\plugins\Stack\Stack.ewplugin</file>
         <loadFlag>1</loadFlag>
       </plugin>
       <plugin>
@@ -508,6 +549,10 @@
       </plugin>
       <plugin>
         <file>$TOOLKIT_DIR$\plugins\rtos\OSE\OseEpsilonPlugin.ewplugin</file>
+        <loadFlag>0</loadFlag>
+      </plugin>
+      <plugin>
+        <file>$TOOLKIT_DIR$\plugins\rtos\PowerPac\PowerPacRTOS.ewplugin</file>
         <loadFlag>0</loadFlag>
       </plugin>
       <plugin>
@@ -829,6 +874,47 @@
       </data>
     </settings>
     <settings>
+      <name>LMIFTDI_ID</name>
+      <archiveVersion>2</archiveVersion>
+      <data>
+        <version>0</version>
+        <wantNonLocal>1</wantNonLocal>
+        <debug>0</debug>
+        <option>
+          <name>OCDriverInfo</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>LmiftdiSpeed</name>
+          <state>500</state>
+        </option>
+        <option>
+          <name>CCLmiftdiResetRadio</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>CCLmiftdiDoLogfile</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCLmiftdiLogFile</name>
+          <state>$TOOLKIT_DIR$\cspycomm.log</state>
+        </option>
+        <option>
+          <name>CCLmiftdiBreakpointRadio</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCLmiftdiDoUpdateBreakpoints</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCLmiftdiUpdateBreakpoints</name>
+          <state>main</state>
+        </option>
+      </data>
+    </settings>
+    <settings>
       <name>MACRAIGOR_ID</name>
       <archiveVersion>2</archiveVersion>
       <data>
@@ -1009,7 +1095,7 @@
         <loadFlag>1</loadFlag>
       </plugin>
       <plugin>
-        <file>$EW_DIR$\common\plugins\Stack\stack.ewplugin</file>
+        <file>$EW_DIR$\common\plugins\Stack\Stack.ewplugin</file>
         <loadFlag>1</loadFlag>
       </plugin>
       <plugin>
@@ -1026,6 +1112,10 @@
       </plugin>
       <plugin>
         <file>$TOOLKIT_DIR$\plugins\rtos\OSE\OseEpsilonPlugin.ewplugin</file>
+        <loadFlag>0</loadFlag>
+      </plugin>
+      <plugin>
+        <file>$TOOLKIT_DIR$\plugins\rtos\PowerPac\PowerPacRTOS.ewplugin</file>
         <loadFlag>0</loadFlag>
       </plugin>
       <plugin>

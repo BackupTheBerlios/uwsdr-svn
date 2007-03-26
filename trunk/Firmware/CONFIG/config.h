@@ -60,6 +60,8 @@
 
 //#define UIP_BYTE_ORDER  UIP_LITTLE_ENDIAN
 
+#define UDP_LISTEN_PORT 2222
+
 #define UIP_ETHADDR0    0x00
 #define UIP_ETHADDR1    0x01
 #define UIP_ETHADDR2    0x02

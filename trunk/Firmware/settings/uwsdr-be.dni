@@ -11,18 +11,6 @@ UseTrigger=1
 TriggerName=main
 LimitSize=0
 ByteLimit=50
-[Disassemble mode]
-mode=0
-[Breakpoints]
-Bp0=_ "Code" "{$PROJ_DIR$\main.c}.346.1@1" 0 0 0 0 "" 0 ""
-Bp1=_ "Code" "{$PROJ_DIR$\main.c}.321.4@1" 0 0 0 0 "" 0 ""
-Bp2=_ "Code" "{$PROJ_DIR$\main.c}.309.4@1" 0 0 0 0 "" 0 ""
-Bp3=_ "Code" "{$PROJ_DIR$\main.c}.242.3@1" 0 0 0 0 "" 0 ""
-Bp4=_ "Code" "{$PROJ_DIR$\main.c}.212.3@1" 1 0 0 0 "" 0 ""
-Bp5=_ "Code" "{$PROJ_DIR$\CODEC\codec.c}.186.3@1" 1 0 0 0 "" 0 ""
-Bp6=_ "Code" "{$PROJ_DIR$\CODEC\codec.c}.92.3@1" 1 0 0 0 "" 0 ""
-Bp7=_ "Code" "{$PROJ_DIR$\CODEC\codec.c}.79.3@1" 1 0 0 0 "" 0 ""
-Count=8
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""
@@ -30,6 +18,18 @@ Category=_ 0
 [TermIOLog]
 LoggingEnabled=_ 0
 LogFile=_ ""
+[Disassemble mode]
+mode=0
+[Breakpoints]
+Bp0=_ "Code" "{$PROJ_DIR$\UIP-1.0\uip\uip.c}.1262.3@1" 1 0 0 0 "" 0 ""
+Bp1=_ "Code" "{$PROJ_DIR$\UIP-1.0\uip\uip.c}.1412.3@1" 1 0 0 0 "" 0 ""
+Bp2=_ "Code" "{$PROJ_DIR$\UIP-1.0\uip\uip.c}.1230.3@1" 1 0 0 0 "" 0 ""
+Bp3=_ "Code" "{$PROJ_DIR$\ASIX\ax88796.c}.406.5@1" 1 0 0 0 "" 0 ""
+Bp4=_ "Code" "{$PROJ_DIR$\ASIX\ax88796.c}.662.5@1" 1 0 0 0 "" 0 ""
+Bp5=_ "Code" "{$PROJ_DIR$\ASIX\ax88796.c}.358.5@1" 1 0 0 0 "" 0 ""
+Bp6=_ "Code" "{$PROJ_DIR$\ASIX\ax88796.c}.373.5@1" 1 0 0 0 "" 0 ""
+Bp7=_ "Code" "{$PROJ_DIR$\ASIX\ax88796.c}.656.5@1" 1 0 0 0 "" 0 ""
+Count=8
 [TraceHelper]
 Enabled=0
 ShowSource=1

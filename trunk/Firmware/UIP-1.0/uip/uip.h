@@ -1346,7 +1346,7 @@ extern u8_t uip_flags;
  *
  * The actual uIP function which does all the work.
  */
-void uip_process(u8_t flag);
+u16 uip_process(u8_t flag);
 
 /* The following flags are passed as an argument to the uip_process()
    function. They are used to distinguish between the two cases where
