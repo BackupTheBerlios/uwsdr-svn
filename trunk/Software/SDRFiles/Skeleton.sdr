@@ -24,6 +24,13 @@ lowFreq=2300
 highFreq=2450
 
 #
+# An optional offset may be added for when using something like a converter or transverter.
+# The example here of 116.0 is for a typical 144 to 28 MHz system, if not included an
+# offset of zero is assumed.
+#
+offset=116.0
+
+#
 # The local oscillator step size in Hertz. This is unused for the "audiorx" type.
 #
 stepSize=10000.0

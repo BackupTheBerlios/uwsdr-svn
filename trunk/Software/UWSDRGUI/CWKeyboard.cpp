@@ -345,9 +345,20 @@ void CCWKeyboard::onTransmit(wxCommandEvent& WXUNUSED(event))
 		}
 	}
 
-	bool ret = ::wxGetApp().sendCW(getSpeed(), cwData, CW_SEND_TEXT);
-	if (!ret)
-		::wxMessageBox(_("Already sending a message"), _("uWave SDR Error"), wxICON_ERROR);
+	CWERROR ret = ::wxGetApp().sendCW(getSpeed(), cwData, CW_SEND_TEXT);
+
+	switch (ret) {
+		case CW_ERROR_MODE:
+			::wxMessageBox(_("SDR is in the wrong mode"), _("uWave SDR Error"), wxICON_ERROR);
+			break;
+
+		case CW_ERROR_TX:
+			::wxMessageBox(_("Already sending a message"), _("uWave SDR Error"), wxICON_ERROR);
+			break;
+
+		default:
+			break;
+	}
 }
 
 void CCWKeyboard::onRealTime(wxCommandEvent& WXUNUSED(event))
@@ -377,9 +388,20 @@ void CCWKeyboard::onRealTime(wxCommandEvent& WXUNUSED(event))
 		}
 	}
 
-	bool ret = ::wxGetApp().sendCW(getSpeed(), cwData, CW_SEND_CHAR);
-	if (!ret)
-		::wxMessageBox(_("Already sending a message"), _("uWave SDR Error"), wxICON_ERROR);
+	CWERROR ret = ::wxGetApp().sendCW(getSpeed(), cwData, CW_SEND_CHAR);
+
+	switch (ret) {
+		case CW_ERROR_MODE:
+			::wxMessageBox(_("SDR is in the wrong mode"), _("uWave SDR Error"), wxICON_ERROR);
+			break;
+
+		case CW_ERROR_TX:
+			::wxMessageBox(_("Already sending a message"), _("uWave SDR Error"), wxICON_ERROR);
+			break;
+
+		default:
+			break;
+	}
 }
 
 /*

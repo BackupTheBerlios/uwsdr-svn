@@ -120,7 +120,7 @@ void CTX::process()
 	for (unsigned int i = 0; i < n; i++)
 		CXBdata(m_iBuf, i) = Cmplx(CXBimag(m_iBuf, i), 0.0F);
 */
-	if (m_dcBlockFlag)
+	if (m_dcBlockFlag && (m_mode == USB || m_mode == LSB))
 		m_dcBlock->block();
 
 	meter(m_iBuf, TX_MIC);

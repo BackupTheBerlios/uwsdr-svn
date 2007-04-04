@@ -79,10 +79,10 @@ void CVoiceKeyer::setCallback(IDataCallback* callback, int id)
 	m_id       = id;
 }
 
-bool CVoiceKeyer::send(const wxString& fileName, VOICESTATUS status)
+VOICEERROR CVoiceKeyer::send(const wxString& fileName, VOICESTATUS status)
 {
 	if (status == VOICE_ABORT && m_file == NULL)
-		return true;
+		return VOICE_ERROR_NONE;
 
 	if (status == VOICE_ABORT && m_file != NULL) {
 		if (m_file != NULL) {
@@ -94,7 +94,7 @@ bool CVoiceKeyer::send(const wxString& fileName, VOICESTATUS status)
 
 		::wxGetApp().sendAudio(wxEmptyString, VOICE_TX_OFF);
 
-		return true;
+		return VOICE_ERROR_NONE;
 	}
 
 	wxASSERT(status == VOICE_SINGLE || status == VOICE_CONTINUOUS);
@@ -105,19 +105,17 @@ bool CVoiceKeyer::send(const wxString& fileName, VOICESTATUS status)
 		bool ret = m_file->open(m_sampleRate, m_blockSize);
 		if (!ret) {
 			m_file = NULL;
-			return false;
+			return VOICE_ERROR_FILE;
 		}
 
 		m_file->setCallback(this, 0);
 
 		m_status = status;
 
-		::wxGetApp().sendAudio(wxEmptyString, VOICE_TX_ON);
-
-		return true;
+		return ::wxGetApp().sendAudio(wxEmptyString, VOICE_TX_ON);
 	}
 
-	return false;
+	return VOICE_ERROR_TX;
 }
 
 void CVoiceKeyer::callback(float* buffer, unsigned int nSamples, int WXUNUSED(id))

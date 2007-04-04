@@ -27,6 +27,7 @@ m_name(),
 m_type(TYPE_UWSDR1),
 m_maxFreq(),
 m_minFreq(),
+m_offset(),
 m_stepSize(0.0F),
 m_sampleRate(0.0F),
 m_receiveOnly(true),
@@ -68,6 +69,8 @@ m_valid(false)
 				m_maxFreq.setFrequency(line.Mid(9));
 			else if (line.Left(8).Cmp(wxT("lowFreq=")) == 0)
 				m_minFreq.setFrequency(line.Mid(8));
+			else if (line.Left(8).Cmp(wxT("offset=")) == 0)
+				m_offset.setFrequency(line.Mid(7));
 			else if (line.Left(9).Cmp(wxT("stepSize=")) == 0) {
 				double temp;
 				line.Mid(9).ToDouble(&temp);
@@ -121,6 +124,11 @@ CFrequency CSDRDescrFile::getMaxFreq() const
 CFrequency CSDRDescrFile::getMinFreq() const
 {
 	return m_minFreq;
+}
+
+CFrequency CSDRDescrFile::getOffset() const
+{
+	return m_offset;
 }
 
 float CSDRDescrFile::getStepSize() const

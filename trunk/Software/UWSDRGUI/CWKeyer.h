@@ -37,7 +37,7 @@ class CCWKeyer : public CThreadReader {
 
 	virtual void setCallback(IDataCallback* callback, int id);
 
-	virtual bool send(unsigned int speed, const wxString& text, CWSTATUS state);
+	virtual CWERROR send(unsigned int speed, const wxString& text, CWSTATUS state);
 
 	virtual void key(bool keyDown);
 

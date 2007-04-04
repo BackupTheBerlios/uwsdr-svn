@@ -728,12 +728,12 @@ void CDSPControl::scaleBuffer(float* buffer, unsigned int nSamples, float scale,
 	}
 }
 
-bool CDSPControl::sendCW(unsigned int speed, const wxString& text, CWSTATUS state)
+CWERROR CDSPControl::sendCW(unsigned int speed, const wxString& text, CWSTATUS state)
 {
 	return m_cwKeyer->send(speed, text, state);
 }
 
-bool CDSPControl::sendAudio(const wxString& fileName, VOICESTATUS state)
+VOICEERROR CDSPControl::sendAudio(const wxString& fileName, VOICESTATUS state)
 {
 	return m_voiceKeyer->send(fileName, state);
 }

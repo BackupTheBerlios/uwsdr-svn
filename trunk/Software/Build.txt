@@ -30,6 +30,7 @@ The configuration file for NSIS is to be found in the meta directory. You will p
 
 The Help files are not built by default, these have to be done manually. Go to the Help sub-directory and then go into each of the GUISetup, SDRSetip and UWSDR sub-directories and simply zip up all of the files in those directories, but do not include any path information. On Windows XP and later you can do this by selecting the required files and then clicking the right hand mouse button and selecting "Send To" and then "Compressed (zipped) Folder", you'll probably have to rename the resulting zip files, the same name as the diretory plus .zip.
 
+If you try running the pre-packaged version supplied from the UWSDR web site and you always get problems starting any of the UWSDR programs, then you probably need to download and install a Microsoft run-time library named vcredist_x86-sp1.exe. This can be found at http://www.apachelounge.com/download/vcredist_x86-sp1.exe
 
 Linux
 -----

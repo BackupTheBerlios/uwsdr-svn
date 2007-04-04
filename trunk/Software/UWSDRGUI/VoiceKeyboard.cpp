@@ -170,14 +170,30 @@ void CVoiceKeyboard::onTransmit(wxCommandEvent& WXUNUSED(event))
 		return;
 	}
 
+	VOICEERROR vret = VOICE_ERROR_NONE;
+
 	if (m_single->GetValue())
-		ret = ::wxGetApp().sendAudio(fileName, VOICE_SINGLE);
+		vret = ::wxGetApp().sendAudio(fileName, VOICE_SINGLE);
 
 	if (m_continuous->GetValue())
-		ret = ::wxGetApp().sendAudio(fileName, VOICE_CONTINUOUS);
+		vret = ::wxGetApp().sendAudio(fileName, VOICE_CONTINUOUS);
 
-	if (!ret)
-		::wxMessageBox(_("Unable to open the sound file or already sending a file"), _("uWave SDR Error"), wxICON_ERROR);
+	switch (vret) {
+		case VOICE_ERROR_MODE:
+			::wxMessageBox(_("SDR is in the wrong mode"), _("uWave SDR Error"), wxICON_ERROR);
+			break;
+
+		case VOICE_ERROR_TX:
+			::wxMessageBox(_("Already sending a file"), _("uWave SDR Error"), wxICON_ERROR);
+			break;
+
+		case VOICE_ERROR_FILE:
+			::wxMessageBox(_("Unable to open the sound file"), _("uWave SDR Error"), wxICON_ERROR);
+			break;
+
+		default:
+			break;
+	}
 }
 
 void CVoiceKeyboard::onAbort(wxCommandEvent& WXUNUSED(event))

@@ -46,7 +46,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\wxWidgets-2.8.0\lib\vc_dll\mswd,C:\wxWidgets-2.8.0\include,..\Common,..\PA19"
+				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.3\lib\vc_dll\mswd&quot;;&quot;C:\wxWidgets-2.8.3\include&quot;;..\Common;..\PA19"
 				PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;WXUSINGDLL;_WINDOWS;NOPCH;USE_PORTAUDIO"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -74,11 +74,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxbase28d.lib wxbase28d_net.lib wxmsw28d_core.lib odbc32.lib odbccp32.lib winmm.lib wsock32.lib portaudio_x86.lib"
+				AdditionalDependencies="wxbase28d.lib wxbase28d_net.lib wxmsw28d_core.lib winmm.lib wsock32.lib portaudio_x86.lib"
 				OutputFile="../Debug/SDREmulator.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="C:\wxWidgets-2.8.0\lib\vc_dll,..\PA19\Debug"
+				AdditionalLibraryDirectories="C:\wxWidgets-2.8.3\lib\vc_dll,..\PA19\Debug"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/SDREmulator.pdb"
 				SubSystem="2"
@@ -145,7 +145,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="0"
-				AdditionalIncludeDirectories="C:\wxWidgets-2.8.0\lib\vc_dll\msw,C:\wxWidgets-2.8.0\include,..\Common,..\PA19"
+				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.3\lib\vc_dll\msw&quot;;&quot;C:\wxWidgets-2.8.3\include&quot;;..\Common;..\PA19"
 				PreprocessorDefinitions="WIN32;__WXMSW__;WXUSINGDLL;_WINDOWS;NOPCH;USE_PORTAUDIO"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -172,11 +172,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxbase28.lib wxbase28_net.lib wxmsw28_core.lib odbc32.lib odbccp32.lib winmm.lib wsock32.lib portaudio_x86.lib"
+				AdditionalDependencies="wxbase28.lib wxbase28_net.lib wxmsw28_core.lib winmm.lib wsock32.lib portaudio_x86.lib"
 				OutputFile="../Release/SDREmulator.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="C:\wxWidgets-2.8.0\lib\vc_dll,..\PA19\Release"
+				AdditionalLibraryDirectories="C:\wxWidgets-2.8.3\lib\vc_dll,..\PA19\Release"
 				ProgramDatabaseFile=".\Release/SDREmulator.pdb"
 				SubSystem="2"
 				TargetMachine="1"

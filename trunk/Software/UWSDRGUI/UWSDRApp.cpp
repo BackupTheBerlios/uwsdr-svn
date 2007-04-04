@@ -290,6 +290,7 @@ bool CUWSDRApp::readDescrFile()
 	m_parameters->m_hardwareType        = descrFile.getType();
 	m_parameters->m_hardwareMaxFreq     = descrFile.getMaxFreq();
 	m_parameters->m_hardwareMinFreq     = descrFile.getMinFreq();
+	m_parameters->m_hardwareOffset      = descrFile.getOffset();
 	m_parameters->m_hardwareStepSize    = descrFile.getStepSize();
 	m_parameters->m_hardwareSampleRate  = descrFile.getSampleRate();
 	m_parameters->m_hardwareReceiveOnly = descrFile.getReceiveOnly();
@@ -822,12 +823,12 @@ void CUWSDRApp::showHelp(int id)
 	m_help->Display(id);
 }
 
-bool CUWSDRApp::sendCW(unsigned int speed, const wxString& text, CWSTATUS state)
+CWERROR CUWSDRApp::sendCW(unsigned int speed, const wxString& text, CWSTATUS state)
 {
 	return m_frame->sendCW(speed, text, state);
 }
 
-bool CUWSDRApp::sendAudio(const wxString& fileName, VOICESTATUS state)
+VOICEERROR CUWSDRApp::sendAudio(const wxString& fileName, VOICESTATUS state)
 {
 	return m_frame->sendAudio(fileName, state);
 }

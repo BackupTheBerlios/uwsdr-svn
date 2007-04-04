@@ -131,34 +131,38 @@ void CCWKeyer::setCallback(IDataCallback* callback, int id)
  * Set the speed in WPM and generate a bit map of the individual blocks with
  * carrier (or not) entries.
  */
-bool CCWKeyer::send(unsigned int speed, const wxString& text, CWSTATUS state)
+CWERROR CCWKeyer::send(unsigned int speed, const wxString& text, CWSTATUS state)
 {
 	if (state == CW_STOP && m_bitsLen > 0U) {
 		end();
-		return true;
+		return CW_ERROR_NONE;
 	}
 
 	wxASSERT(state == CW_SEND_TEXT || state == CW_SEND_CHAR);
 
 	// We're already sending text, we can't do anything
 	if (m_state == CW_SEND_TEXT && m_bitsLen > 0U)
-		return false;
+		return CW_ERROR_TX;
 
 	// Already sending real-time so queue the next character
 	if (state == CW_SEND_CHAR && m_state == CW_SEND_CHAR && m_bitsLen > 0U) {
 		m_text.Append(text);
-		return true;
+		return CW_ERROR_NONE;
 	}
 
 	createCW(text, speed);
 
-	if (state == CW_SEND_TEXT)
-		::wxGetApp().sendCW(0U, wxEmptyString, CW_TX_ON);
+	if (state == CW_SEND_TEXT) {
+		CWERROR ret = ::wxGetApp().sendCW(0U, wxEmptyString, CW_TX_ON);
+
+		if (ret != CW_ERROR_NONE)
+			return ret;
+	}
 
 	m_speed = speed;
 	m_state = state;
 
-	return true;
+	return CW_ERROR_NONE;
 }
 
 /*

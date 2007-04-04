@@ -40,6 +40,7 @@ class CSDRDescrFile {
 	SDRTYPE    getType() const;
 	CFrequency getMaxFreq() const;
 	CFrequency getMinFreq() const;
+	CFrequency getOffset() const;
 	float      getStepSize() const;
 	float      getSampleRate() const;
 	bool       getReceiveOnly() const;
@@ -50,6 +51,7 @@ class CSDRDescrFile {
 	SDRTYPE      m_type;
 	CFrequency   m_maxFreq;
 	CFrequency   m_minFreq;
+	CFrequency   m_offset;
 	float        m_stepSize;
 	float        m_sampleRate;
 	bool         m_receiveOnly;

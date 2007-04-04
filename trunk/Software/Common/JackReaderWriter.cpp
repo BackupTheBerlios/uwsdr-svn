@@ -118,7 +118,7 @@ bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
 		case 0U:
 			break;
 		case 1U:
-			m_inPortI = ::jack_port_register(m_client, "Input", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
+			m_inPortI = ::jack_port_register(m_client, "input", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
 
 			if (m_inPortI == NULL) {
 				::wxLogError(wxT("JackReaderWriter: unable to open the Jack input port"));
@@ -127,7 +127,7 @@ bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
 			}
 			break;
 		case 2U:
-			m_inPortI = ::jack_port_register(m_client, "Input I", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
+			m_inPortI = ::jack_port_register(m_client, "input_i", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
 
 			if (m_inPortI == NULL) {
 				::wxLogError(wxT("JackReaderWriter: unable to open the Jack I input port"));
@@ -135,7 +135,7 @@ bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
 				return false;
 			}
 
-			m_inPortQ = ::jack_port_register(m_client, "Input Q", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
+			m_inPortQ = ::jack_port_register(m_client, "input_q", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
 
 			if (m_inPortQ == NULL) {
 				::wxLogError(wxT("JackReaderWriter: unable to open the Jack Q input port"));
@@ -152,7 +152,7 @@ bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
 		case 0U:
 			break;
 		case 1U:
-			m_outPortI = ::jack_port_register(m_client, "Output", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+			m_outPortI = ::jack_port_register(m_client, "output", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
 
 			if (m_outPortI == NULL) {
 				::wxLogError(wxT("JackReaderWriter: unable to open the Jack output port"));
@@ -161,7 +161,7 @@ bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
 			}
 			break;
 		case 2U:
-			m_outPortI = ::jack_port_register(m_client, "Output I", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+			m_outPortI = ::jack_port_register(m_client, "output_i", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
 
 			if (m_outPortI == NULL) {
 				::wxLogError(wxT("JackReaderWriter: unable to open the Jack I output port"));
@@ -169,7 +169,7 @@ bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
 				return false;
 			}
 
-			m_outPortQ = ::jack_port_register(m_client, "Output Q", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+			m_outPortQ = ::jack_port_register(m_client, "output_q", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
 
 			if (m_outPortQ == NULL) {
 				::wxLogError(wxT("JackReaderWriter: unable to open the Jack Q output port"));

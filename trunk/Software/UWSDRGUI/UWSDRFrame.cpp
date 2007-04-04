@@ -1150,6 +1150,8 @@ void CUWSDRFrame::normaliseFreq()
 	if (m_parameters->m_freqOffset != 0.0)
 		dispFreq += m_parameters->m_freqOffset;
 
+	dispFreq = dispFreq + m_parameters->m_hardwareOffset;
+
 	m_freqDisplay->setFrequency(dispFreq);
 
 	// Subtract any offset frequency needed
@@ -1542,37 +1544,37 @@ void CUWSDRFrame::onClose(wxCloseEvent& event)
 	}
 }
 
-bool CUWSDRFrame::sendCW(unsigned int speed, const wxString& text, CWSTATUS state)
+CWERROR CUWSDRFrame::sendCW(unsigned int speed, const wxString& text, CWSTATUS state)
 {
 	// If we're not in CW mode, ignore
 	if (m_parameters->m_mode != MODE_CWUW && m_parameters->m_mode != MODE_CWUN && m_parameters->m_mode != MODE_CWLW && m_parameters->m_mode != MODE_CWLN)
-		return false;
+		return CW_ERROR_MODE;
 
 	switch (state) {
 		case CW_TX_ON:
 			setTransmit(true);
-			return true;
+			return CW_ERROR_NONE;
 		case CW_TX_OFF:
 			setTransmit(false);
-			return true;
+			return CW_ERROR_NONE;
 		default:
 			return m_dsp->sendCW(speed, text, state);
 	}
 }
 
-bool CUWSDRFrame::sendAudio(const wxString& fileName, VOICESTATUS state)
+VOICEERROR CUWSDRFrame::sendAudio(const wxString& fileName, VOICESTATUS state)
 {
-	// If we're in CW mode, ignore
-	if (m_parameters->m_mode == MODE_CWUW || m_parameters->m_mode == MODE_CWUN || m_parameters->m_mode == MODE_CWLW || m_parameters->m_mode == MODE_CWLN)
-		return false;
+	// If we're not in a voice mode, ignore
+	if (m_parameters->m_mode != MODE_USB && m_parameters->m_mode != MODE_LSB && m_parameters->m_mode != MODE_FMN && m_parameters->m_mode != MODE_FMW)
+		return VOICE_ERROR_MODE;
 
 	switch (state) {
 		case VOICE_TX_ON:
 			setTransmit(true);
-			return true;
+			return VOICE_ERROR_NONE;
 		case VOICE_TX_OFF:
 			setTransmit(false);
-			return true;
+			return VOICE_ERROR_NONE;
 		default:
 			return m_dsp->sendAudio(fileName, state);
 	}

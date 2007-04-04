@@ -43,8 +43,8 @@ class CUWSDRApp : public wxApp {
 
 	virtual void showHelp(int id);
 
-	virtual bool sendCW(unsigned int speed, const wxString& text, CWSTATUS state);
-	virtual bool sendAudio(const wxString& fileName, VOICESTATUS state);
+	virtual CWERROR    sendCW(unsigned int speed, const wxString& text, CWSTATUS state);
+	virtual VOICEERROR sendAudio(const wxString& fileName, VOICESTATUS state);
 
 	virtual void setTransmit(bool txOn);
 

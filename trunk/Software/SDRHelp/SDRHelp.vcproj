@@ -46,7 +46,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\wxWidgets-2.8.0\lib\vc_dll\mswd,C:\wxWidgets-2.8.0\include"
+				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.3\lib\vc_dll\mswd&quot;;&quot;C:\wxWidgets-2.8.3\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;WXUSINGDLL;_WINDOWS;NOPCH"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -74,11 +74,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib wxbase28d.lib wxmsw28d_core.lib wxmsw28d_html.lib"
+				AdditionalDependencies="wxbase28d.lib wxmsw28d_core.lib wxmsw28d_html.lib"
 				OutputFile="../Debug/SDRHelp.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="C:\wxWidgets-2.8.0\lib\vc_dll"
+				AdditionalLibraryDirectories="C:\wxWidgets-2.8.3\lib\vc_dll"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/SDRHelp.pdb"
 				SubSystem="2"
@@ -145,7 +145,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="1"
 				InlineFunctionExpansion="0"
-				AdditionalIncludeDirectories="C:\wxWidgets-2.8.0\lib\vc_dll\msw,C:\wxWidgets-2.8.0\include"
+				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.3\lib\vc_dll\msw&quot;;&quot;C:\wxWidgets-2.8.3\include&quot;"
 				PreprocessorDefinitions="WIN32;__WXMSW__;WXUSINGDLL;_WINDOWS;NOPCH"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -172,11 +172,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib wxbase28.lib wxmsw28_core.lib wxmsw28_html.lib"
+				AdditionalDependencies="wxbase28.lib wxmsw28_core.lib wxmsw28_html.lib"
 				OutputFile="../Release/SDRHelp.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="C:\wxWidgets-2.8.0\lib\vc_dll"
+				AdditionalLibraryDirectories="C:\wxWidgets-2.8.3\lib\vc_dll"
 				ProgramDatabaseFile=".\Release/SDRHelp.pdb"
 				SubSystem="2"
 				TargetMachine="1"

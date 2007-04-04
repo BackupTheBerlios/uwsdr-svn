@@ -24,8 +24,8 @@
 
 const wxString VERSION  = wxT("uWave SDR 0.8.1");
 
-const wxDateTime::wxDateTime_t REL_DATE_DAY   = 8;
-const wxDateTime::Month        REL_DATE_MONTH = wxDateTime::Mar;
+const wxDateTime::wxDateTime_t REL_DATE_DAY   = 9;
+const wxDateTime::Month        REL_DATE_MONTH = wxDateTime::Apr;
 const unsigned int             REL_DATE_YEAR  = 2007;
 
 enum INPIN {

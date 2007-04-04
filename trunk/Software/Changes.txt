@@ -368,9 +368,17 @@ If no configuration name is given, an SDR Name chooser popup box will appear.
 A Makefile for Mac OS X is now included.
 
 
-Version 0.8.1 - 2007
-====================
+Version 0.8.1 - April 2007
+==========================
 
 Added a UWSDR GUI menu option and removed the option to create menu entries.
 
 Added support for Jack on Linux and Mac OS X.
+
+Update to wxWidgets 2.8.3.
+
+Improved error reporting for the CW and Voice keyers.
+
+Added an offset field to the .sdr file for when using converters/transverters.
+
+Updated Build.txt to mention where to get the SP1 runtime files for Windows.
