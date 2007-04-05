@@ -2,12 +2,12 @@
 # settings are not stored here.
 #
 
-name=SoftRock-40TXRX
+name=SoftRock-RXTX-7.015
 
 type=audiotxrx
 
-lowFreq=7.056
-highFreq=7.056
+lowFreq=7.015
+highFreq=7.015
 
 stepSize=0.0
 

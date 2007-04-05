@@ -2,7 +2,7 @@
 # settings are not stored here.
 #
 
-name=SoftRock-80TXRX
+name=SoftRock-RXTX-3.528
 
 type=audiotxrx
 

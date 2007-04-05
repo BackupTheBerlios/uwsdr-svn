@@ -195,12 +195,14 @@ void CTX::setMode(SDRMODE mode)
  
 			case USB:
 			case CWU:
+			case DIGU:
 				m_oscillator2->setFrequency(-INV_FREQ);
 				m_modulator = m_ssbModulator;
 				break;
                
 			case LSB:
 			case CWL:
+			case DIGL:
 				m_oscillator2->setFrequency(INV_FREQ);
 				m_modulator = m_ssbModulator;
 				break;
@@ -222,6 +224,8 @@ void CTX::setMode(SDRMODE mode)
 			case LSB:
 			case CWL:
 			case CWU:
+			case DIGU:
+			case DIGL:
 				m_oscillator2->setFrequency(0.0);
 				m_modulator = m_ssbModulator;
 				break;
@@ -249,7 +253,7 @@ void CTX::setFilter(double lowFreq, double highFreq)
 	m_highFreq = highFreq;
  
 	if (m_zeroIF) {
-		if (m_mode == LSB)
+		if (m_mode == LSB || m_mode == CWL || m_mode == DIGL)
 			m_filter->setFilter(lowFreq + INV_FREQ, highFreq + INV_FREQ);
 		else
 			m_filter->setFilter(lowFreq - INV_FREQ, highFreq - INV_FREQ);
@@ -319,7 +323,7 @@ void CTX::setCompressionLevel(float level)
 float CTX::getOffset() const
 {
 	if (m_zeroIF) {
-		if (m_mode == LSB)
+		if (m_mode == LSB || m_mode == CWL || m_mode == DIGL)
 			return INV_FREQ;
 		else
 			return -INV_FREQ;

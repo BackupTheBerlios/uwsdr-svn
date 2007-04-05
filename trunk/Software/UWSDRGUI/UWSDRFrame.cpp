@@ -576,15 +576,17 @@ wxSizer* CUWSDRFrame::createModeChoice(wxWindow* window)
 
 	m_mode = new wxChoice(window, MODE_CHOICE, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
 
-	m_mode->Append(_("CW (U) Narrow"));
-	m_mode->Append(_("CW (U) Wide"));
-	m_mode->Append(_("USB"));
-	m_mode->Append(_("LSB"));
+	m_mode->Append(_("AM"));
 	m_mode->Append(_("CW (L) Narrow"));
 	m_mode->Append(_("CW (L) Wide"));
-	m_mode->Append(_("AM"));
+	m_mode->Append(_("CW (U) Narrow"));
+	m_mode->Append(_("CW (U) Wide"));
+	m_mode->Append(_("Digital (L)"));
+	m_mode->Append(_("Digital (U)"));
 	m_mode->Append(_("FM Narrow"));
 	m_mode->Append(_("FM Wide"));
+	m_mode->Append(_("LSB"));
+	m_mode->Append(_("USB"));
 
 	sizer->Add(m_mode, 0, wxALL, BORDER_SIZE);
 	sizer->SetSizeHints(window);
@@ -1227,6 +1229,13 @@ void CUWSDRFrame::normaliseMode()
 				filter = m_parameters->m_filterSSB;
 			m_dsp->setAGC(m_parameters->m_agcSSB);
 			speed = m_parameters->m_vfoSpeedSSB;
+			break;
+		case MODE_DIGU:
+		case MODE_DIGL:
+			if (filter == FILTER_AUTO)
+				filter = m_parameters->m_filterDig;
+			m_dsp->setAGC(m_parameters->m_agcDig);
+			speed = m_parameters->m_vfoSpeedDig;
 			break;
 		case MODE_CWUW:
 		case MODE_CWLW:

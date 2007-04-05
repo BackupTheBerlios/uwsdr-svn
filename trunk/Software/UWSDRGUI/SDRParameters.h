@@ -64,6 +64,7 @@ class CSDRParameters {
 	VFOSPEED      m_vfoSpeedSSB;
 	VFOSPEED      m_vfoSpeedCWW;
 	VFOSPEED      m_vfoSpeedCWN;
+	VFOSPEED      m_vfoSpeedDig;
 
 	double        m_stepVeryFast;
 	double        m_stepFast;
@@ -81,6 +82,7 @@ class CSDRParameters {
 	AGCSPEED      m_agcAM;
 	AGCSPEED      m_agcSSB;
 	AGCSPEED      m_agcCW;
+	AGCSPEED      m_agcDig;
 
 	FILTERWIDTH   m_filter;
 	FILTERWIDTH   m_filterFMW;
@@ -89,6 +91,7 @@ class CSDRParameters {
 	FILTERWIDTH   m_filterSSB;
 	FILTERWIDTH   m_filterCWW;
 	FILTERWIDTH   m_filterCWN;
+	FILTERWIDTH   m_filterDig;
 
 	wxString      m_ipAddress;
 	unsigned int  m_controlPort;

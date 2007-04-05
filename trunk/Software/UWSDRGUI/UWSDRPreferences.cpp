@@ -58,17 +58,20 @@ m_deviationFMN(NULL),
 m_agcAM(NULL),
 m_agcSSB(NULL),
 m_agcCW(NULL),
+m_agcDig(NULL),
 m_filterFMW(NULL),
 m_filterFMN(NULL),
 m_filterAM(NULL),
 m_filterSSB(NULL),
 m_filterCWW(NULL),
 m_filterCWN(NULL),
+m_filterDig(NULL),
 m_tuningFM(NULL),
 m_tuningAM(NULL),
 m_tuningSSB(NULL),
 m_tuningCWW(NULL),
 m_tuningCWN(NULL),
+m_tuningDig(NULL),
 m_stepVeryFast(NULL),
 m_stepFast(NULL),
 m_stepMedium(NULL),
@@ -142,6 +145,7 @@ m_swapIQ(NULL)
 	m_agcAM->SetSelection(m_parameters->m_agcAM);
 	m_agcSSB->SetSelection(m_parameters->m_agcSSB);
 	m_agcCW->SetSelection(m_parameters->m_agcCW);
+	m_agcDig->SetSelection(m_parameters->m_agcDig);
 
 	m_deviationFMW->SetSelection(m_parameters->m_deviationFMW);
 	m_deviationFMN->SetSelection(m_parameters->m_deviationFMN);
@@ -152,12 +156,14 @@ m_swapIQ(NULL)
 	m_filterSSB->SetSelection(m_parameters->m_filterSSB);
 	m_filterCWW->SetSelection(m_parameters->m_filterCWW);
 	m_filterCWN->SetSelection(m_parameters->m_filterCWN);
+	m_filterDig->SetSelection(m_parameters->m_filterDig);
 
 	m_tuningFM->SetSelection(m_parameters->m_vfoSpeedFM);
 	m_tuningAM->SetSelection(m_parameters->m_vfoSpeedAM);
 	m_tuningSSB->SetSelection(m_parameters->m_vfoSpeedSSB);
 	m_tuningCWW->SetSelection(m_parameters->m_vfoSpeedCWW);
 	m_tuningCWN->SetSelection(m_parameters->m_vfoSpeedCWN);
+	m_tuningDig->SetSelection(m_parameters->m_vfoSpeedDig);
 
 	text.Printf(wxT("%.1f"), m_parameters->m_stepVeryFast);
 	m_stepVeryFast->SetValue(text);
@@ -482,6 +488,7 @@ void CUWSDRPreferences::onOK(wxCommandEvent& WXUNUSED(event))
 	m_parameters->m_agcAM  = AGCSPEED(m_agcAM->GetSelection());
 	m_parameters->m_agcSSB = AGCSPEED(m_agcSSB->GetSelection());
 	m_parameters->m_agcCW  = AGCSPEED(m_agcCW->GetSelection());
+	m_parameters->m_agcDig = AGCSPEED(m_agcDig->GetSelection());
 
 	m_parameters->m_filterFMW = FILTERWIDTH(m_filterFMW->GetSelection());
 	m_parameters->m_filterFMN = FILTERWIDTH(m_filterFMN->GetSelection());
@@ -489,12 +496,14 @@ void CUWSDRPreferences::onOK(wxCommandEvent& WXUNUSED(event))
 	m_parameters->m_filterSSB = FILTERWIDTH(m_filterSSB->GetSelection());
 	m_parameters->m_filterCWW = FILTERWIDTH(m_filterCWW->GetSelection());
 	m_parameters->m_filterCWN = FILTERWIDTH(m_filterCWN->GetSelection());
+	m_parameters->m_filterDig = FILTERWIDTH(m_filterDig->GetSelection());
 
 	m_parameters->m_vfoSpeedFM  = VFOSPEED(m_tuningFM->GetSelection());
 	m_parameters->m_vfoSpeedAM  = VFOSPEED(m_tuningAM->GetSelection());
 	m_parameters->m_vfoSpeedSSB = VFOSPEED(m_tuningSSB->GetSelection());
 	m_parameters->m_vfoSpeedCWW = VFOSPEED(m_tuningCWW->GetSelection());
 	m_parameters->m_vfoSpeedCWN = VFOSPEED(m_tuningCWN->GetSelection());
+	m_parameters->m_vfoSpeedDig = VFOSPEED(m_tuningDig->GetSelection());
 
 	m_parameters->m_stepVeryFast = stepVeryFast;
 	m_parameters->m_stepFast     = stepFast;
@@ -635,32 +644,8 @@ wxPanel* CUWSDRPreferences::createModeTab(wxNotebook* noteBook)
 	wxStaticText* labelD = new wxStaticText(panel, -1, _("AGC/Deviation"));
 	sizer->Add(labelD, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label2a = new wxStaticText(panel, -1, _("FM Wide"));
-	sizer->Add(label2a, 0, wxALL, BORDER_SIZE);
-
-	m_filterFMW = createFilterChoice(panel);
-	sizer->Add(m_filterFMW, 0, wxALL, BORDER_SIZE);
-
- 	m_tuningFM = createTuningChoice(panel);
-	sizer->Add(m_tuningFM, 0, wxALL, BORDER_SIZE);
-
-	m_deviationFMW = createDeviationChoice(panel);
-	sizer->Add(m_deviationFMW, 0, wxALL, BORDER_SIZE);
-
-	wxStaticText* label2b = new wxStaticText(panel, -1, _("FM Narrow"));
-	sizer->Add(label2b, 0, wxALL, BORDER_SIZE);
-
-	m_filterFMN = createFilterChoice(panel);
-	sizer->Add(m_filterFMN, 0, wxALL, BORDER_SIZE);
-
-	wxStaticText* dummy2b = new wxStaticText(panel, -1, wxEmptyString);
-	sizer->Add(dummy2b, 0, wxALL, BORDER_SIZE);
-
-	m_deviationFMN = createDeviationChoice(panel);
-	sizer->Add(m_deviationFMN, 0, wxALL, BORDER_SIZE);
-
-	wxStaticText* label3 = new wxStaticText(panel, -1, _("AM"));
-	sizer->Add(label3, 0, wxALL, BORDER_SIZE);
+	wxStaticText* label1 = new wxStaticText(panel, -1, _("AM"));
+	sizer->Add(label1, 0, wxALL, BORDER_SIZE);
 
 	m_filterAM = createFilterChoice(panel);
 	sizer->Add(m_filterAM, 0, wxALL, BORDER_SIZE);
@@ -671,8 +656,68 @@ wxPanel* CUWSDRPreferences::createModeTab(wxNotebook* noteBook)
 	m_agcAM = createAGCChoice(panel);
 	sizer->Add(m_agcAM, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label4 = new wxStaticText(panel, -1, _("SSB"));
+	wxStaticText* label2 = new wxStaticText(panel, -1, _("CW Narrow"));
+	sizer->Add(label2, 0, wxALL, BORDER_SIZE);
+
+	m_filterCWN = createFilterChoice(panel);
+	sizer->Add(m_filterCWN, 0, wxALL, BORDER_SIZE);
+
+	m_tuningCWN = createTuningChoice(panel);
+	sizer->Add(m_tuningCWN, 0, wxALL, BORDER_SIZE);
+
+	m_agcCW = createAGCChoice(panel);
+	sizer->Add(m_agcCW, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* label3 = new wxStaticText(panel, -1, _("CW Wide"));
+	sizer->Add(label3, 0, wxALL, BORDER_SIZE);
+
+	m_filterCWW = createFilterChoice(panel);
+	sizer->Add(m_filterCWW, 0, wxALL, BORDER_SIZE);
+
+	m_tuningCWW = createTuningChoice(panel);
+	sizer->Add(m_tuningCWW, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* dummy3 = new wxStaticText(panel, -1, wxEmptyString);
+	sizer->Add(dummy3, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* label4 = new wxStaticText(panel, -1, _("Digital"));
 	sizer->Add(label4, 0, wxALL, BORDER_SIZE);
+
+	m_filterDig = createFilterChoice(panel);
+	sizer->Add(m_filterDig, 0, wxALL, BORDER_SIZE);
+
+	m_tuningDig = createTuningChoice(panel);
+	sizer->Add(m_tuningDig, 0, wxALL, BORDER_SIZE);
+
+	m_agcDig = createAGCChoice(panel);
+	sizer->Add(m_agcDig, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* label5 = new wxStaticText(panel, -1, _("FM Narrow"));
+	sizer->Add(label5, 0, wxALL, BORDER_SIZE);
+
+	m_filterFMN = createFilterChoice(panel);
+	sizer->Add(m_filterFMN, 0, wxALL, BORDER_SIZE);
+
+ 	m_tuningFM = createTuningChoice(panel);
+	sizer->Add(m_tuningFM, 0, wxALL, BORDER_SIZE);
+
+	m_deviationFMN = createDeviationChoice(panel);
+	sizer->Add(m_deviationFMN, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* label6 = new wxStaticText(panel, -1, _("FM Wide"));
+	sizer->Add(label6, 0, wxALL, BORDER_SIZE);
+
+	m_filterFMW = createFilterChoice(panel);
+	sizer->Add(m_filterFMW, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* dummy6 = new wxStaticText(panel, -1, wxEmptyString);
+	sizer->Add(dummy6, 0, wxALL, BORDER_SIZE);
+
+	m_deviationFMW = createDeviationChoice(panel);
+	sizer->Add(m_deviationFMW, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* label7 = new wxStaticText(panel, -1, _("SSB"));
+	sizer->Add(label7, 0, wxALL, BORDER_SIZE);
 
 	m_filterSSB = createFilterChoice(panel);
 	sizer->Add(m_filterSSB, 0, wxALL, BORDER_SIZE);
@@ -682,27 +727,6 @@ wxPanel* CUWSDRPreferences::createModeTab(wxNotebook* noteBook)
 
 	m_agcSSB = createAGCChoice(panel);
 	sizer->Add(m_agcSSB, 0, wxALL, BORDER_SIZE);
-
-	wxStaticText* label5 = new wxStaticText(panel, -1, _("CW Wide"));
-	sizer->Add(label5, 0, wxALL, BORDER_SIZE);
-
-	m_filterCWW = createFilterChoice(panel);
-	sizer->Add(m_filterCWW, 0, wxALL, BORDER_SIZE);
-
-	m_tuningCWW = createTuningChoice(panel);
-	sizer->Add(m_tuningCWW, 0, wxALL, BORDER_SIZE);
-
-	m_agcCW = createAGCChoice(panel);
-	sizer->Add(m_agcCW, 0, wxALL, BORDER_SIZE);
-
-	wxStaticText* label6 = new wxStaticText(panel, -1, _("CW Narrow"));
-	sizer->Add(label6, 0, wxALL, BORDER_SIZE);
-
-	m_filterCWN = createFilterChoice(panel);
-	sizer->Add(m_filterCWN, 0, wxALL, BORDER_SIZE);
-
-	m_tuningCWN = createTuningChoice(panel);
-	sizer->Add(m_tuningCWN, 0, wxALL, BORDER_SIZE);
 
 	mainSizer->Add(sizer, 0, wxTOP, BORDER_SIZE);
 

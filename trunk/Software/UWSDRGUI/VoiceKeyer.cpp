@@ -108,11 +108,18 @@ VOICEERROR CVoiceKeyer::send(const wxString& fileName, VOICESTATUS status)
 			return VOICE_ERROR_FILE;
 		}
 
-		m_file->setCallback(this, 0);
+		VOICEERROR err = ::wxGetApp().sendAudio(wxEmptyString, VOICE_TX_ON);
+		if (err != CW_ERROR_NONE) {
+			m_file->close();
+			m_file = NULL;
+			return err;
+		}
 
 		m_status = status;
 
-		return ::wxGetApp().sendAudio(wxEmptyString, VOICE_TX_ON);
+		m_file->setCallback(this, 0);
+
+		return VOICE_ERROR_NONE;
 	}
 
 	return VOICE_ERROR_TX;
@@ -120,7 +127,8 @@ VOICEERROR CVoiceKeyer::send(const wxString& fileName, VOICESTATUS status)
 
 void CVoiceKeyer::callback(float* buffer, unsigned int nSamples, int WXUNUSED(id))
 {
-	wxASSERT(m_callback != NULL);
+	if (m_callback == NULL)
+		return;
 
 	// EOF in single mode means the end of transmission
 	if (nSamples == 0 && m_status == VOICE_SINGLE) {

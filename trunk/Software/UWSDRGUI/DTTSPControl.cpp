@@ -102,28 +102,34 @@ void CDTTSPControl::setMode(UWSDRMODE mode)
 		return;
 
 	switch (mode) {
-		case MODE_FMW:
-			::SetMode(FMN);
-			break;
-		case MODE_FMN:
-			::SetMode(FMN);
-			break;
 		case MODE_AM:
 			::SetMode(AM);
 			break;
-		case MODE_USB:
-			::SetMode(USB);
-			break;
-		case MODE_LSB:
-			::SetMode(LSB);
+		case MODE_CWLW:
+		case MODE_CWLN:
+			::SetMode(CWL);
 			break;
 		case MODE_CWUW:
 		case MODE_CWUN:
 			::SetMode(CWU);
 			break;
-		case MODE_CWLW:
-		case MODE_CWLN:
-			::SetMode(CWL);
+		case MODE_DIGL:
+			::SetMode(DIGL);
+			break;
+		case MODE_DIGU:
+			::SetMode(DIGU);
+			break;
+		case MODE_FMN:
+			::SetMode(FMN);
+			break;
+		case MODE_FMW:
+			::SetMode(FMN);
+			break;
+		case MODE_LSB:
+			::SetMode(LSB);
+			break;
+		case MODE_USB:
+			::SetMode(USB);
 			break;
 	}
 
@@ -495,6 +501,8 @@ void CDTTSPControl::normaliseFilter()
 
 		case MODE_USB:
 		case MODE_LSB:
+		case MODE_DIGL:
+		case MODE_DIGU:
 			switch (m_filter) {
 				case FILTER_20000:
 				case FILTER_15000:
@@ -595,7 +603,7 @@ void CDTTSPControl::normaliseFilter()
 	}
 
 	// Swap the filter values over
-	if (m_mode == MODE_LSB || m_mode == MODE_CWLN || m_mode == MODE_CWLW) {
+	if (m_mode == MODE_LSB || m_mode == MODE_CWLN || m_mode == MODE_CWLW || m_mode == MODE_DIGL) {
 		double swap;
 
 		swap   = rxLow;

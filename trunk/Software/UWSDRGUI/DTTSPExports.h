@@ -26,7 +26,9 @@ enum SDRMODE {
 	CWU,				//  3
 	FMN,				//  4
 	AM,					//  5
-	SAM					//  6
+	SAM,				//  6
+	DIGL,				//  7
+	DIGU				//  8
 };
 
 enum TRXMODE {

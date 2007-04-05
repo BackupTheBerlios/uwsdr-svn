@@ -150,14 +150,14 @@ CWERROR CCWKeyer::send(unsigned int speed, const wxString& text, CWSTATUS state)
 		return CW_ERROR_NONE;
 	}
 
-	createCW(text, speed);
-
 	if (state == CW_SEND_TEXT) {
 		CWERROR ret = ::wxGetApp().sendCW(0U, wxEmptyString, CW_TX_ON);
 
 		if (ret != CW_ERROR_NONE)
 			return ret;
 	}
+
+	createCW(text, speed);
 
 	m_speed = speed;
 	m_state = state;

@@ -46,6 +46,7 @@ const wxChar* KEY_VFO_SPEED_AM       = wxT("/VfoSpeedAM");
 const wxChar* KEY_VFO_SPEED_SSB      = wxT("/VfoSpeedSSB");
 const wxChar* KEY_VFO_SPEED_CWW      = wxT("/VfoSpeedCWW");
 const wxChar* KEY_VFO_SPEED_CWN      = wxT("/VfoSpeedCWN");
+const wxChar* KEY_VFO_SPEED_DIG      = wxT("/VfoSpeedDigital");
 const wxChar* KEY_STEP_VERY_FAST     = wxT("/StepVeryFast");
 const wxChar* KEY_STEP_FAST          = wxT("/StepFast");
 const wxChar* KEY_STEP_MEDIUM        = wxT("/StepMedium");
@@ -60,6 +61,7 @@ const wxChar* KEY_DEV_FMN            = wxT("/DeviationFMN");
 const wxChar* KEY_AGC_AM             = wxT("/AGCAM");
 const wxChar* KEY_AGC_SSB            = wxT("/AGCSSB");
 const wxChar* KEY_AGC_CW             = wxT("/AGCCW");
+const wxChar* KEY_AGC_DIG            = wxT("/AGCDigital");
 const wxChar* KEY_FILTER             = wxT("/Filter");
 const wxChar* KEY_FILTER_FMW         = wxT("/FilterFMW");
 const wxChar* KEY_FILTER_FMN         = wxT("/FilterFMN");
@@ -67,6 +69,7 @@ const wxChar* KEY_FILTER_AM          = wxT("/FilterAM");
 const wxChar* KEY_FILTER_SSB         = wxT("/FilterSSB");
 const wxChar* KEY_FILTER_CWW         = wxT("/FilterCWW");
 const wxChar* KEY_FILTER_CWN         = wxT("/FilterCWN");
+const wxChar* KEY_FILTER_DIG         = wxT("/FilterDigital");
 const wxChar* KEY_IP_ADDRESS         = wxT("/IPAddress");
 const wxChar* KEY_CONTROL_PORT       = wxT("/ControlPort");
 const wxChar* KEY_DATA_PORT          = wxT("/DataPort");
@@ -325,11 +328,13 @@ bool CUWSDRApp::readConfig()
 	wxString keyVfoSpeedSSB     = wxT("/") + m_parameters->m_name + KEY_VFO_SPEED_SSB;
 	wxString keyVfoSpeedCWW     = wxT("/") + m_parameters->m_name + KEY_VFO_SPEED_CWW;
 	wxString keyVfoSpeedCWN     = wxT("/") + m_parameters->m_name + KEY_VFO_SPEED_CWN;
+	wxString keyVfoSpeedDig     = wxT("/") + m_parameters->m_name + KEY_VFO_SPEED_DIG;
 	wxString keyDevFMW          = wxT("/") + m_parameters->m_name + KEY_DEV_FMW;
 	wxString keyDevFMN          = wxT("/") + m_parameters->m_name + KEY_DEV_FMN;
 	wxString keyAgcAM           = wxT("/") + m_parameters->m_name + KEY_AGC_AM;
 	wxString keyAgcSSB          = wxT("/") + m_parameters->m_name + KEY_AGC_SSB;
 	wxString keyAgcCW           = wxT("/") + m_parameters->m_name + KEY_AGC_CW;
+	wxString keyAgcDig          = wxT("/") + m_parameters->m_name + KEY_AGC_DIG;
 	wxString keyStepVeryFast    = wxT("/") + m_parameters->m_name + KEY_STEP_VERY_FAST;
 	wxString keyStepFast        = wxT("/") + m_parameters->m_name + KEY_STEP_FAST;
 	wxString keyStepMedium      = wxT("/") + m_parameters->m_name + KEY_STEP_MEDIUM;
@@ -346,6 +351,7 @@ bool CUWSDRApp::readConfig()
 	wxString keyFilterSSB       = wxT("/") + m_parameters->m_name + KEY_FILTER_SSB;
 	wxString keyFilterCWW       = wxT("/") + m_parameters->m_name + KEY_FILTER_CWW;
 	wxString keyFilterCWN       = wxT("/") + m_parameters->m_name + KEY_FILTER_CWN;
+	wxString keyFilterDig       = wxT("/") + m_parameters->m_name + KEY_FILTER_DIG;
 	wxString keyIpAddress       = wxT("/") + m_parameters->m_name + KEY_IP_ADDRESS;
 	wxString keyControlPort     = wxT("/") + m_parameters->m_name + KEY_CONTROL_PORT;
 	wxString keyDataPort        = wxT("/") + m_parameters->m_name + KEY_DATA_PORT;
@@ -476,6 +482,8 @@ bool CUWSDRApp::readConfig()
 	m_parameters->m_vfoSpeedCWW = VFOSPEED(num);
 	profile->Read(keyVfoSpeedCWN,      &num, SPEED_VERYSLOW);
 	m_parameters->m_vfoSpeedCWN = VFOSPEED(num);
+	profile->Read(keyVfoSpeedDig,      &num, SPEED_SLOW);
+	m_parameters->m_vfoSpeedDig = VFOSPEED(num);
 
 	profile->Read(keyDevFMW,           &num, DEVIATION_5000);
 	m_parameters->m_deviationFMW = FMDEVIATION(num);
@@ -483,11 +491,13 @@ bool CUWSDRApp::readConfig()
 	m_parameters->m_deviationFMN = FMDEVIATION(num);
 
 	profile->Read(keyAgcAM,            &num, AGC_SLOW);
-	m_parameters->m_agcAM =  AGCSPEED(num);
+	m_parameters->m_agcAM  = AGCSPEED(num);
 	profile->Read(keyAgcSSB,           &num, AGC_SLOW);
 	m_parameters->m_agcSSB = AGCSPEED(num);
 	profile->Read(keyAgcCW,            &num, AGC_FAST);
-	m_parameters->m_agcCW =  AGCSPEED(num);
+	m_parameters->m_agcCW  = AGCSPEED(num);
+	profile->Read(keyAgcDig,           &num, AGC_SLOW);
+	m_parameters->m_agcDig = AGCSPEED(num);
 
 	profile->Read(keyStepVeryFast,     &m_parameters->m_stepVeryFast, FREQ_VERY_FAST_STEP);
 	profile->Read(keyStepFast,         &m_parameters->m_stepFast,     FREQ_FAST_STEP);
@@ -517,6 +527,8 @@ bool CUWSDRApp::readConfig()
 	m_parameters->m_filterCWW = FILTERWIDTH(num);
 	profile->Read(keyFilterCWN,        &num, FILTER_500);
 	m_parameters->m_filterCWN = FILTERWIDTH(num);
+	profile->Read(keyFilterDig,        &num, FILTER_2100);
+	m_parameters->m_filterDig = FILTERWIDTH(num);
 
 	profile->Read(keyIpAddress,        &m_parameters->m_ipAddress);
 
@@ -655,11 +667,13 @@ void CUWSDRApp::writeConfig()
 	wxString keyVfoSpeedSSB   = wxT("/") + m_parameters->m_name + KEY_VFO_SPEED_SSB;
 	wxString keyVfoSpeedCWW   = wxT("/") + m_parameters->m_name + KEY_VFO_SPEED_CWW;
 	wxString keyVfoSpeedCWN   = wxT("/") + m_parameters->m_name + KEY_VFO_SPEED_CWN;
+	wxString keyVfoSpeedDig   = wxT("/") + m_parameters->m_name + KEY_VFO_SPEED_DIG;
 	wxString keyDevFMW        = wxT("/") + m_parameters->m_name + KEY_DEV_FMW;
 	wxString keyDevFMN        = wxT("/") + m_parameters->m_name + KEY_DEV_FMN;
 	wxString keyAgcAM         = wxT("/") + m_parameters->m_name + KEY_AGC_AM;
 	wxString keyAgcSSB        = wxT("/") + m_parameters->m_name + KEY_AGC_SSB;
 	wxString keyAgcCW         = wxT("/") + m_parameters->m_name + KEY_AGC_CW;
+	wxString keyAgcDig        = wxT("/") + m_parameters->m_name + KEY_AGC_DIG;
 	wxString keyStepVeryFast  = wxT("/") + m_parameters->m_name + KEY_STEP_VERY_FAST;
 	wxString keyStepFast      = wxT("/") + m_parameters->m_name + KEY_STEP_FAST;
 	wxString keyStepMedium    = wxT("/") + m_parameters->m_name + KEY_STEP_MEDIUM;
@@ -676,6 +690,7 @@ void CUWSDRApp::writeConfig()
 	wxString keyFilterSSB     = wxT("/") + m_parameters->m_name + KEY_FILTER_SSB;
 	wxString keyFilterCWW     = wxT("/") + m_parameters->m_name + KEY_FILTER_CWW;
 	wxString keyFilterCWN     = wxT("/") + m_parameters->m_name + KEY_FILTER_CWN;
+	wxString keyFilterDig     = wxT("/") + m_parameters->m_name + KEY_FILTER_DIG;
 	wxString keyRitCtrl       = wxT("/") + m_parameters->m_name + KEY_RIT_CTRL;
 	wxString keyRitValue      = wxT("/") + m_parameters->m_name + KEY_RIT_VALUE;
 	wxString keyNbCtrl        = wxT("/") + m_parameters->m_name + KEY_NB_CTRL;
@@ -750,11 +765,13 @@ void CUWSDRApp::writeConfig()
 	profile->Write(keyVfoSpeedSSB,      m_parameters->m_vfoSpeedSSB);
 	profile->Write(keyVfoSpeedCWW,      m_parameters->m_vfoSpeedCWW);
 	profile->Write(keyVfoSpeedCWN,      m_parameters->m_vfoSpeedCWN);
+	profile->Write(keyVfoSpeedDig,      m_parameters->m_vfoSpeedDig);
 	profile->Write(keyDevFMW,           m_parameters->m_deviationFMW);
 	profile->Write(keyDevFMN,           m_parameters->m_deviationFMN);
 	profile->Write(keyAgcAM,            m_parameters->m_agcAM);
 	profile->Write(keyAgcSSB,           m_parameters->m_agcSSB);
 	profile->Write(keyAgcCW,            m_parameters->m_agcCW);
+	profile->Write(keyAgcDig,           m_parameters->m_agcDig);
 	profile->Write(keyStepVeryFast,     m_parameters->m_stepVeryFast);
 	profile->Write(keyStepFast,         m_parameters->m_stepFast);
 	profile->Write(keyStepMedium,       m_parameters->m_stepMedium);
@@ -771,6 +788,7 @@ void CUWSDRApp::writeConfig()
 	profile->Write(keyFilterSSB,        m_parameters->m_filterSSB);
 	profile->Write(keyFilterCWW,        m_parameters->m_filterCWW);
 	profile->Write(keyFilterCWN,        m_parameters->m_filterCWN);
+	profile->Write(keyFilterDig,        m_parameters->m_filterDig);
 	profile->Write(keyRitCtrl,          m_parameters->m_ritOn);
 	profile->Write(keyRitValue,         m_parameters->m_ritFreq);
 	profile->Write(keyNbCtrl,           m_parameters->m_nbOn);

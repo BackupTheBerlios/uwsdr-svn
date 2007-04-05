@@ -382,3 +382,7 @@ Improved error reporting for the CW and Voice keyers.
 Added an offset field to the .sdr file for when using converters/transverters.
 
 Updated Build.txt to mention where to get the SP1 runtime files for Windows.
+
+Re-ordered the modes in the GUI and added USB and LSB data modes.
+
+Added new .sdr files for the SoftRock RXTX.

@@ -1,0 +1,18 @@
+# This file describes the hardware configuration of the SoftRock-80 TXRX. User
+# settings are not stored here.
+#
+
+name=SoftRock-RXTX-3.508
+
+type=audiotxrx
+
+lowFreq=3.508
+highFreq=3.508
+
+stepSize=0.0
+
+sampleRate=96000
+
+receiveOnly=0
+
+#
