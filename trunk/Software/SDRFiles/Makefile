@@ -9,7 +9,7 @@ install:
 	install -g bin -o root -m 0664 SoftRock160.sdr        $(DATADIR)
 	install -g bin -o root -m 0664 SoftRock-RXTX-3508.sdr $(DATADIR)
 	install -g bin -o root -m 0664 SoftRock-RXTX-3528.sdr $(DATADIR)
-	install -g bin -o root -m 0664 SoftRock-RXTX-7016.sdr $(DATADIR)
+	install -g bin -o root -m 0664 SoftRock-RXTX-7015.sdr $(DATADIR)
 	install -g bin -o root -m 0664 SoftRock-RXTX-7056.sdr $(DATADIR)
 	install -g bin -o root -m 0664 Skeleton.sdr           $(DATADIR)
 	install -g bin -o root -m 0664 Readme.txt             $(DATADIR)
