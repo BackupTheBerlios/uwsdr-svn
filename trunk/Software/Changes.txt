@@ -368,8 +368,8 @@ If no configuration name is given, an SDR Name chooser popup box will appear.
 A Makefile for Mac OS X is now included.
 
 
-Version 0.8.1 - April 2007
-==========================
+Version 0.8.1 - 9 April 2007
+============================
 
 Added a UWSDR GUI menu option and removed the option to create menu entries.
 

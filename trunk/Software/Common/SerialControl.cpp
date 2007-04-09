@@ -119,6 +119,8 @@ CSerialControl::~CSerialControl()
 
 bool CSerialControl::open()
 {
+	DWORD errCode;
+
 	if (m_count > 0) {
 		m_count++;
 		return true;
@@ -132,6 +134,7 @@ bool CSerialControl::open()
 
 	DCB dcb;
 	if (::GetCommState(m_handle, &dcb) == 0) {
+		::ClearCommError(m_handle, &errCode, NULL);
 		::CloseHandle(m_handle);
 		::wxLogError(wxT("SerialControl: cannot get the serial port status - %ld"), ::GetLastError());
 		return false;
@@ -143,23 +146,14 @@ bool CSerialControl::open()
 	dcb.fRtsControl  = RTS_CONTROL_DISABLE;
 
 	if (::SetCommState(m_handle, &dcb) == 0) {
+		::ClearCommError(m_handle, &errCode, NULL);
 		::CloseHandle(m_handle);
 		::wxLogError(wxT("SerialControl: cannot set the serial port status - %ld"), ::GetLastError());
 		return false;
 	}
-/*
-	bool ret = setRTS(false);
-	if (!ret) {
-		::CloseHandle(m_handle);
-		return false;
-	}
 
-	ret = setDTR(false);
-	if (!ret) {
-		::CloseHandle(m_handle);
-		return false;
-	}
-*/
+	::ClearCommError(m_handle, &errCode, NULL);
+
 	m_count++;
 
 	Create();
@@ -176,7 +170,9 @@ void* CSerialControl::Entry()
 		m_mutex.Lock();
 
 		DWORD status;
+		DWORD errCode;
 		if (::GetCommModemStatus(m_handle, &status) == 0) {
+			::ClearCommError(m_handle, &errCode, NULL);
 			::wxLogError(wxT("SerialControl: cannot get the serial port status - %ld"), ::GetLastError());
 		} else {
 			m_cts = (status & MS_CTS_ON) == MS_CTS_ON;
@@ -201,8 +197,10 @@ bool CSerialControl::setRTS(bool set)
 		return true;
 
 	DWORD rts = (set) ? SETRTS : CLRRTS;
+	DWORD errCode;
 
 	if (::EscapeCommFunction(m_handle, rts) == 0) {
+		::ClearCommError(m_handle, &errCode, NULL);
 		::wxLogError(wxT("SerialControl: cannot set RTS - %ld"), ::GetLastError());
 		return false;
 	}
@@ -220,8 +218,10 @@ bool CSerialControl::setDTR(bool set)
 		return true;
 
 	DWORD dtr = (set) ? SETDTR : CLRDTR;
+	DWORD errCode;
 
 	if (::EscapeCommFunction(m_handle, dtr) == 0) {
+		::ClearCommError(m_handle, &errCode, NULL);
 		::wxLogError(wxT("SerialControl: cannot set DTR - %ld"), ::GetLastError());
 		return false;
 	}
@@ -289,19 +289,7 @@ bool CSerialControl::open()
 		::wxLogError(wxT("SerialControl: %s is not a serial port"), m_dev.c_str());
 		return false;
 	}
-/*
-	bool ret = setRTS(false);
-	if (!ret) {
-		::close(m_fd);
-		return false;
-	}
 
-	ret = setDTR(false);
-	if (!ret) {
-		::close(m_fd);
-		return false;
-	}
-*/
 	m_count++;
 
 	Create();
