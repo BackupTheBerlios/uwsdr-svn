@@ -31,7 +31,7 @@ class CSDRSetupFrame : public wxFrame {
 
 	void onExecute(wxCommandEvent& event);
 
-	virtual bool setNewSDR(wxSocketClient* socket, const wxIPV4address& control, const wxIPV4address& data) const;
+	virtual bool setNewSDR(wxSocketClient* socket, const wxIPV4address& control) const;
 	virtual bool setNewDSP(wxSocketClient* socket, const wxIPV4address& address) const;
 
 	virtual bool sendCommand(wxSocketClient* socket, const wxString& command) const;
@@ -40,8 +40,7 @@ class CSDRSetupFrame : public wxFrame {
 	wxTextCtrl* m_oldSDRAddress;
 	wxTextCtrl* m_oldSDRControlPort;
 	wxTextCtrl* m_sdrAddress;
-	wxTextCtrl* m_sdrControlPort;
-	wxTextCtrl* m_sdrDataPort;
+	wxTextCtrl* m_sdrPort;
 	wxTextCtrl* m_dspAddress;
 
 	DECLARE_EVENT_TABLE()

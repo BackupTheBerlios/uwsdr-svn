@@ -57,7 +57,6 @@ class CGUISetupFrame : public wxFrame {
 	int            m_sdrAudioOutDev;
 	wxString       m_ipAddress;
 	long           m_controlPort;
-	long           m_dataPort;
 	bool           m_txInEnable;
 	wxString       m_txInDev;
 	INPIN          m_txInPin;

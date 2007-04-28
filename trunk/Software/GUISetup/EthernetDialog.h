@@ -24,23 +24,20 @@
 class CEthernetDialog : public wxDialog {
 
     public:
-	CEthernetDialog(wxWindow* parent, const wxString& title, const wxString& address, long control, long data, int id = -1);
+	CEthernetDialog(wxWindow* parent, const wxString& title, const wxString& address, long control, int id = -1);
 	virtual ~CEthernetDialog();
 
 	void onOK(wxCommandEvent& event);
 
 	virtual wxString getIPAddress() const;
 	virtual long     getControlPort() const;
-	virtual long     getDataPort() const;
 
     private:
 	wxTextCtrl* m_address;
 	wxTextCtrl* m_control;
-	wxTextCtrl* m_data;
 
 	wxString    m_ipAddress;
 	long        m_controlPort;
-	long        m_dataPort;
 
 	DECLARE_EVENT_TABLE()
 };

@@ -19,7 +19,7 @@
          <li> <object type="text/sitemap">
                   <param name="Name" value="Old SDR Control Port">
                   <param name="ID" value=4>
-                  <param name="Local" value="OldSDRControlPort.htm">
+                  <param name="Local" value="OldSDRPort.htm">
               </object>
          <li> <object type="text/sitemap">
                   <param name="Name" value="New SDR IP Address">
@@ -29,12 +29,7 @@
          <li> <object type="text/sitemap">
                   <param name="Name" value="New SDR Control Port">
                   <param name="ID" value=6>
-                  <param name="Local" value="NewSDRControlPort.htm">
-              </object>
-         <li> <object type="text/sitemap">
-                  <param name="Name" value="New SDR Data Port">
-                  <param name="ID" value=7>
-                  <param name="Local" value="NewSDRDataPort.htm">
+                  <param name="Local" value="NewSDRPort.htm">
               </object>
          <li> <object type="text/sitemap">
                   <param name="Name" value="DSP IP Address">

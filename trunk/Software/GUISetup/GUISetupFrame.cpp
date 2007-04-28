@@ -100,7 +100,6 @@ m_sdrAudioInDev(NO_DEV),
 m_sdrAudioOutDev(NO_DEV),
 m_ipAddress(),
 m_controlPort(-1L),
-m_dataPort(-1L),
 m_txInEnable(false),
 m_txInDev(),
 m_txInPin(IN_NONE),
@@ -334,7 +333,7 @@ void CGUISetupFrame::onCreate(wxCommandEvent& WXUNUSED(event))
 	}
 
 	if (featureList[m_sdrType].ethernetButton) {
-		if (m_ipAddress.IsEmpty() || m_controlPort == -1L || m_dataPort == -1L) {
+		if (m_ipAddress.IsEmpty() || m_controlPort == -1L) {
 			::wxMessageBox(_("The Ethernet has not been set"), _("GUISetup Error"), wxICON_ERROR);
 			return;
 		}
@@ -358,7 +357,6 @@ void CGUISetupFrame::onCreate(wxCommandEvent& WXUNUSED(event))
 	wxString sdrAudioInDevKey   = wxT("/") + name + wxT("/SDRAudioInDev");
 	wxString ipAddressKey       = wxT("/") + name + wxT("/IPAddress");
 	wxString controlPortKey     = wxT("/") + name + wxT("/ControlPort");
-	wxString dataPortKey        = wxT("/") + name + wxT("/DataPort");
 	wxString txInEnableKey      = wxT("/") + name + wxT("/TXInEnable");
 	wxString txInDevKey         = wxT("/") + name + wxT("/TXInDev");
 	wxString txInPinKey         = wxT("/") + name + wxT("/TXInPin");
@@ -431,12 +429,6 @@ void CGUISetupFrame::onCreate(wxCommandEvent& WXUNUSED(event))
 		ret = config->Write(controlPortKey, m_controlPort);
 		if (!ret) {
 			::wxMessageBox(_("Unable to write configuration data - ControlPort"), _("GUISetup Error"), wxICON_ERROR);
-			return;
-		}
-
-		ret = config->Write(dataPortKey, m_dataPort);
-		if (!ret) {
-			::wxMessageBox(_("Unable to write configuration data - DataPort"), _("GUISetup Error"), wxICON_ERROR);
 			return;
 		}
 	}
@@ -565,7 +557,6 @@ void CGUISetupFrame::readConfig(const wxString& name)
 	wxString sdrAudioOutDevKey  = wxT("/") + name + wxT("/SDRAudioOutDev");
 	wxString ipAddressKey       = wxT("/") + name + wxT("/IPAddress");
 	wxString controlPortKey     = wxT("/") + name + wxT("/ControlPort");
-	wxString dataPortKey        = wxT("/") + name + wxT("/DataPort");
 	wxString txInEnableKey      = wxT("/") + name + wxT("/TXInEnable");
 	wxString txInDevKey         = wxT("/") + name + wxT("/TXInDev");
 	wxString txInPinKey         = wxT("/") + name + wxT("/TXInPin");
@@ -598,7 +589,6 @@ void CGUISetupFrame::readConfig(const wxString& name)
 
 	config->Read(ipAddressKey,   &m_ipAddress);
 	config->Read(controlPortKey, &m_controlPort);
-	config->Read(dataPortKey,    &m_dataPort);
 
 	config->Read(txInEnableKey,  &m_txInEnable);
 	config->Read(txInDevKey,     &m_txInDev);
@@ -651,13 +641,12 @@ void CGUISetupFrame::onSDRAudio(wxCommandEvent& WXUNUSED(event))
 
 void CGUISetupFrame::onEthernet(wxCommandEvent& WXUNUSED(event))
 {
-	CEthernetDialog dialog(this, _("Ethernet Setup"), m_ipAddress, m_controlPort, m_dataPort);
+	CEthernetDialog dialog(this, _("Ethernet Setup"), m_ipAddress, m_controlPort);
 
 	int ret = dialog.ShowModal();
 	if (ret == wxID_OK) {
 		m_ipAddress   = dialog.getIPAddress();
 		m_controlPort = dialog.getControlPort();
-		m_dataPort    = dialog.getDataPort();
 	}
 }
 

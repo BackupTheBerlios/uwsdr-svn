@@ -74,11 +74,6 @@
                       <param name="ID" value=31>
                       <param name="Local" value="SDRControlPort.htm">
                   </object>
-             <li> <object type="text/sitemap">
-                      <param name="Name" value="SDR Data Port">
-                      <param name="ID" value=32>
-                      <param name="Local" value="SDRDataPort.htm">
-                  </object>
          </ul>
 
          <li> <object type="text/sitemap">

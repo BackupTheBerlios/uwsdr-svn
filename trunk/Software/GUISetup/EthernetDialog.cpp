@@ -27,14 +27,12 @@ BEGIN_EVENT_TABLE(CEthernetDialog, wxDialog)
 END_EVENT_TABLE()
 
 
-CEthernetDialog::CEthernetDialog(wxWindow* parent, const wxString& title, const wxString& address, long control, long data, int id) :
+CEthernetDialog::CEthernetDialog(wxWindow* parent, const wxString& title, const wxString& address, long control, int id) :
 wxDialog(parent, id, title),
 m_address(NULL),
 m_control(NULL),
-m_data(NULL),
 m_ipAddress(address),
-m_controlPort(control),
-m_dataPort(data)
+m_controlPort(control)
 {
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -54,24 +52,12 @@ m_dataPort(data)
 	m_control = new wxTextCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
 	panelSizer->Add(m_control, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label3 = new wxStaticText(panel, -1, _("Data Port:"));
-	panelSizer->Add(label3, 0, wxALL, BORDER_SIZE);
-
-	m_data = new wxTextCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
-	panelSizer->Add(m_data, 0, wxALL, BORDER_SIZE);
-
 	m_address->SetValue(m_ipAddress);
 
 	if (m_controlPort != -1L) {
 		wxString text;
 		text.Printf(wxT("%ld"), m_controlPort);
 		m_control->SetValue(text);
-	}
-
-	if (m_dataPort != -1L) {
-		wxString text;
-		text.Printf(wxT("%ld"), m_dataPort);
-		m_data->SetValue(text);
 	}
 
 	panel->SetSizer(panelSizer);
@@ -108,18 +94,6 @@ void CEthernetDialog::onOK(wxCommandEvent& WXUNUSED(event))
 		::wxMessageBox(_("The Control Port must be between 1 and 65536"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
-	
-	wxString data = m_data->GetValue();
-	if (data.IsEmpty()) {
-		::wxMessageBox(_("The Data Port is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
-		return;
-	}
-
-	data.ToLong(&m_dataPort);
-	if (m_dataPort < 1L || m_dataPort > 65536L) {
-		::wxMessageBox(_("The Data Port must be between 1 and 65536"), _("GUISetup Error"), wxICON_ERROR);
-		return;
-	}
 
 	if (IsModal()) {
 		EndModal(wxID_OK);
@@ -137,9 +111,4 @@ wxString CEthernetDialog::getIPAddress() const
 long CEthernetDialog::getControlPort() const
 {
 	return m_controlPort;
-}
-
-long CEthernetDialog::getDataPort() const
-{
-	return m_dataPort;
 }

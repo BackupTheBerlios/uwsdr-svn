@@ -96,11 +96,6 @@
               </object>
 
          <li> <object type="text/sitemap">
-                  <param name="Name" value="SDR Data Port">
-                  <param name="Local" value="SDRDataPort.htm">
-              </object>
-
-         <li> <object type="text/sitemap">
                   <param name="Name" value="SDR File Name">
                   <param name="Local" value="SDRFileName.htm">
               </object>

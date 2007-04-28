@@ -386,3 +386,9 @@ Updated Build.txt to mention where to get the SP1 runtime files for Windows.
 Re-ordered the modes in the GUI and added USB and LSB data modes.
 
 Added new .sdr files for the SoftRock RXTX.
+
+
+Version 0.8.2 - May 2007
+==============================
+
+Convert all communication to the UWSDR hardware to UDP.
