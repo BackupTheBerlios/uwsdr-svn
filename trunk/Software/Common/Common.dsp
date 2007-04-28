@@ -119,14 +119,6 @@ SOURCE=.\RingBuffer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\SDRDataReader.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\SDRDataWriter.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\SDRDescrFile.cpp
 # End Source File
 # Begin Source File
@@ -172,10 +164,6 @@ SOURCE=.\UDPDataReader.cpp
 # Begin Source File
 
 SOURCE=.\UDPDataWriter.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\UWSDRController.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -239,14 +227,6 @@ SOURCE=.\SDRController.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\SDRDataReader.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SDRDataWriter.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\SDRDescrFile.h
 # End Source File
 # Begin Source File
@@ -296,10 +276,6 @@ SOURCE=.\UDPDataReader.h
 # Begin Source File
 
 SOURCE=.\UDPDataWriter.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\UWSDRController.h
 # End Source File
 # End Group
 # End Target

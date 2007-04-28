@@ -1,9 +1,8 @@
 all:		Common.a
 
 OBJS := 	AudioDevInfo.o Frequency.o JackReaderWriter.o Log.o NullController.o NullReader.o NullWriter.o RingBuffer.o \
-		SDRDataReader.o SDRDataWriter.o SDRDescrFile.o SerialControl.o SignalReader.o SoundCardReaderWriter.o \
-		SoundFileReader.o SoundFileWriter.o SRTXRXController.o ThreadReader.o ThreeToneReader.o TwoToneReader.o \
-		UWSDRController.o
+		SDRDescrFile.o SerialControl.o SignalReader.o SoundCardReaderWriter.o SoundFileReader.o SoundFileWriter.o \
+		SRTXRXController.o ThreadReader.o ThreeToneReader.o TwoToneReader.o UDPDataReader.o UDPDataWriter.o
 
 Common.a:	$(OBJS)
 		ar rcs Common.a $(OBJS)
@@ -31,12 +30,6 @@ NullWriter.o:	NullWriter.cpp NullWriter.h DataWriter.h
 
 RingBuffer.o:	RingBuffer.cpp RingBuffer.h
 		$(CC) $(CFLAGS) -c RingBuffer.cpp
-
-SDRDataReader.o: SDRDataReader.cpp SDRDataReader.h DataReader.h RingBuffer.h
-		$(CC) $(CFLAGS) -c SDRDataReader.cpp
-
-SDRDataWriter.o: SDRDataWriter.cpp SDRDataWriter.h DataWriter.h RingBuffer.h
-		$(CC) $(CFLAGS) -c SDRDataWriter.cpp
 
 SDRDescrFile.o:	SDRDescrFile.cpp SDRDescrFile.h Frequency.h
 		$(CC) $(CFLAGS) -c SDRDescrFile.cpp
@@ -68,8 +61,11 @@ ThreeToneReader.o:	ThreeToneReader.cpp ThreeToneReader.h ThreadReader.h
 TwoToneReader.o:	TwoToneReader.cpp TwoToneReader.h ThreadReader.h
 		$(CC) $(CFLAGS) -c TwoToneReader.cpp
 
-UWSDRController.o:	UWSDRController.cpp UWSDRController.h ControlInterface.h Frequency.h SDRController.h
-		$(CC) $(CFLAGS) -c UWSDRController.cpp
+UDPDataReader.o: UDPDataReader.cpp UDPDataReader.h SocketCallback.h
+		$(CC) $(CFLAGS) -c SDRDataReader.cpp
+
+UDPDataWriter.o: UDPDataWriter.cpp UDPDataWriter.h
+		$(CC) $(CFLAGS) -c SDRDataWriter.cpp
 
 clean:
 		rm -f core Common.a *.o *~ *.bak

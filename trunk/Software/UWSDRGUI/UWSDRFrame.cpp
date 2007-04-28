@@ -29,8 +29,8 @@
 #include "SignalReader.h"
 #include "TwoToneReader.h"
 #include "ThreeToneReader.h"
-#include "SDRDataReader.h"
-#include "SDRDataWriter.h"
+#include "UWSDRDataReader.h"
+#include "UWSDRDataWriter.h"
 #include "SerialControl.h"
 #include "SoundFileReader.h"
 #include "SoundFileWriter.h"
@@ -237,9 +237,15 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_parameters = parameters;
 
+	CUDPDataReader* reader = NULL;
+	CUDPDataWriter* writer = NULL;
+
 	switch (m_parameters->m_hardwareType) {
 		case TYPE_UWSDR1:
-			m_sdr = new CUWSDRController(m_parameters->m_ipAddress, m_parameters->m_controlPort, 1);
+			reader = new CUDPDataReader(m_parameters->m_ipAddress, m_parameters->m_controlPort);
+			writer = new CUDPDataWriter(m_parameters->m_ipAddress, m_parameters->m_controlPort);
+
+			m_sdr = new CUWSDRController(reader, writer, 1);
 			break;
 		case TYPE_AUDIOTXRX:
 			m_sdr = new CSRTXRXController(m_parameters->m_txOutDev, m_parameters->m_txOutPin);
@@ -338,6 +344,9 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			break;
 
 		case TYPE_UWSDR1:
+			wxASSERT(reader != NULL);
+			wxASSERT(writer != NULL);
+
 			if (m_parameters->m_userAudioType == SOUND_JACK) {
 				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" User"), 1U, 2U);
 				m_dsp->setRXWriter(rw);
@@ -360,8 +369,8 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 #endif
 			}
 
-			m_dsp->setTXWriter(new CSDRDataWriter(m_parameters->m_ipAddress, m_parameters->m_controlPort, 1U));
-			m_dsp->setRXReader(new CSDRDataReader(m_parameters->m_ipAddress, m_parameters->m_controlPort, 1U));
+			m_dsp->setTXWriter(new CUWSDRDataWriter(writer, 1U));
+			m_dsp->setRXReader(new CUWSDRDataReader(reader, 1U));
 			break;
 	}
 

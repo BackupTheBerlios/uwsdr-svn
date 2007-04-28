@@ -21,7 +21,7 @@
 
 class ISocketCallback {
     public:
-	virtual void callback(unsigned char* buffer, unsigned int len, int id) = 0;
+	virtual bool callback(char* buffer, unsigned int len, int id) = 0;
 };
 
 #endif

@@ -37,12 +37,15 @@ wxThread(),
 m_address(address),
 m_port(port),
 m_remAddr(),
-m_remAddrLen(0),
-m_id(0),
-m_callback(NULL),
+m_remAddrLen(0U),
+m_id(),
+m_callback(),
 m_fd(-1),
-m_buffer(NULL)
+m_buffer(NULL),
+m_count(0U)
 {
+	for (unsigned int i = 0U; i < MAX_CALLBACKS; i++)
+		m_callback[i] = NULL;
 }
 
 CUDPDataReader::~CUDPDataReader()
@@ -51,12 +54,21 @@ CUDPDataReader::~CUDPDataReader()
 
 void CUDPDataReader::setCallback(ISocketCallback* callback, int id)
 {
-	m_callback = callback;
-	m_id       = id;
+	for (unsigned int i = 0U; i < MAX_CALLBACKS; i++) {
+		if (m_callback[i] == NULL) {
+			m_callback[i] = callback;
+			m_id[i]       = id;
+		}
+	}
 }
 
 bool CUDPDataReader::open()
 {
+	if (m_count >= 1U) {
+		m_count++;
+		return true;
+	}
+
 #if defined(__WINDOWS__)
 	WSAData data;
 
@@ -124,7 +136,8 @@ bool CUDPDataReader::open()
 		return false;
 	}
 
-	m_buffer = new unsigned char[MAX_SOCK_SIZE];
+	m_buffer = new char[MAX_SOCK_SIZE];
+	m_count++;
 
 	::wxLogMessage(wxT("UDPDataReader: started with address %s and port %d"), m_address.c_str(), m_port);
 
@@ -136,6 +149,13 @@ bool CUDPDataReader::open()
 
 void CUDPDataReader::close()
 {
+	if (m_count >= 2U) {
+		m_count--;
+		return;
+	}
+
+	m_count--;
+
 	Delete();
 }
 
@@ -205,7 +225,7 @@ bool CUDPDataReader::readSocket()
 	socklen_t size = sizeof(struct sockaddr);
 #endif
 
-	ssize_t len = ::recvfrom(m_fd, (char *)m_buffer, MAX_SOCK_SIZE, 0, &addr, &size);
+	ssize_t len = ::recvfrom(m_fd, m_buffer, MAX_SOCK_SIZE, 0, &addr, &size);
 	if (len < 0) {
 		::wxLogError(wxT("UDPDataReader: Error %d reading from the datagram socket"),
 #if defined(__WINDOWS__)
@@ -232,8 +252,16 @@ bool CUDPDataReader::readSocket()
 		return true;
 	}
 
-	if (len > 0)
-		m_callback->callback(m_buffer, len, m_id);
+	if (len > 0) {
+		for (unsigned int i = 0U; i < MAX_CALLBACKS; i++) {
+			if (m_callback[i] == NULL)
+				break;
+
+			bool ret = m_callback[i]->callback(m_buffer, len, m_id[i]);
+			if (ret)
+				break;
+		}
+	}
 
 	return true;
 }

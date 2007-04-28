@@ -146,6 +146,18 @@ SOURCE=.\UWSDRApp.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\UWSDRController.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\UWSDRDataReader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\UWSDRDataWriter.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\UWSDRFrame.cpp
 # End Source File
 # Begin Source File
@@ -227,6 +239,18 @@ SOURCE=.\SpectrumDisplay.h
 # Begin Source File
 
 SOURCE=.\UWSDRApp.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\UWSDRController.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\UWSDRDataReader.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\UWSDRDataWriter.h
 # End Source File
 # Begin Source File
 

@@ -36,7 +36,6 @@ class CUDPDataWriter {
 
     public:
 	CUDPDataWriter(const wxString& address, int port);
-	virtual ~CUDPDataWriter();
 
 	virtual bool open();
 
@@ -44,11 +43,15 @@ class CUDPDataWriter {
 
 	virtual void close();
 
+    protected:
+	virtual ~CUDPDataWriter();
+
     private:
 	wxString           m_address;
 	unsigned short     m_port;
 	int                m_fd;
 	struct sockaddr_in m_remAddr;
+	unsigned int       m_count;
 };
 
 #endif

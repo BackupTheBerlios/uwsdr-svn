@@ -23,7 +23,8 @@ CUDPDataWriter::CUDPDataWriter(const wxString& address, int port) :
 m_address(address),
 m_port(port),
 m_fd(-1),
-m_remAddr()
+m_remAddr(),
+m_count(0U)
 {
 }
 
@@ -33,6 +34,11 @@ CUDPDataWriter::~CUDPDataWriter()
 
 bool CUDPDataWriter::open()
 {
+	if (m_count >= 1U) {
+		m_count++;
+		return true;
+	}
+
 #if defined(__WINDOWS__)
 	WSAData data;
 
@@ -86,6 +92,8 @@ bool CUDPDataWriter::open()
 
 	::wxLogMessage(wxT("UDPDataWriter: started with address %s and port %d"), m_address.c_str(), m_port);
 
+	m_count++;
+
 	return true;
 }
 
@@ -114,11 +122,19 @@ bool CUDPDataWriter::write(const void* buffer, unsigned int len)
 
 void CUDPDataWriter::close()
 {
+	if (m_count >= 2U) {
+		m_count--;
+		return;
+	}
+
+	m_count--;
+
 #if defined(__WINDOWS__)
 	::closesocket(m_fd);
 	::WSACleanup();
 #else
 	::close(m_fd);
 #endif
-	m_fd = -1;
+
+	delete this;
 }

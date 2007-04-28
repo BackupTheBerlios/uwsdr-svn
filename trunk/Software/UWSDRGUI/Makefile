@@ -4,9 +4,9 @@ CFLAGS		:= -I../Common $(CFLAGS)
 
 LIBS		:= $(PALIBS) $(JACKLIBS) -lfftw3f $(LIBS)
 
-OBJS :=		ConfigChooser.o CWKeyboard.o CWKeyer.o DSPControl.o DTTSPControl.o FreqDial.o FreqDisplay.o FreqKeypad.o \
-		InfoBox.o SDRParameters.o SMeter.o SpectrumDisplay.o UWSDRApp.o UWSDRFrame.o UWSDRPreferences.o \
-		VoiceKeyboard.o VoiceKeyer.o VolumeDial.o
+OBJS :=		ConfigChooser.o CWKeyboard.o CWKeyer.o DSPControl.o DTTSPControl.o FreqDial.o FreqDisplay.o FreqKeypad.o InfoBox.o \
+		SDRParameters.o SMeter.o SpectrumDisplay.o UWSDRApp.o UWSDRController.o UWSDRDataReader.o UWSDRDataWriter.o \
+		UWSDRFrame.o UWSDRPreferences.o VoiceKeyboard.o VoiceKeyer.o VolumeDial.o
 
 UWSDR:		$(OBJS)
 		$(CC) $(LDFLAGS) -o UWSDR $(OBJS) ../Common/Common.a ../DttSP++/DttSP.a $(LIBS)
@@ -54,12 +54,23 @@ UWSDRApp.o:	UWSDRApp.cpp UWSDRApp.h ConfigChooser.h ../Common/Log.h SDRParameter
 		../Common/SDRDescrFile.h
 		$(CC) $(CFLAGS) -c UWSDRApp.cpp
 
+UWSDRController.o:	UWSDRController.cpp UWSDRController.h ../Common/SDRController.h ../Common/Frequency.h \
+		../Common/ControlInterface.h ../Common/UDPDataReader.h ../Common/UDPDataWriter.h ../Common/SocketCallback.h
+		$(CC) $(CFLAGS) -c UWSDRController.cpp
+
+UWSDRDataReader.o:	UWSDRDataReader.cpp UWSDRDataReader.h ../Common/DataReader.h ../Common/RingBuffer.h  ../Common/UDPDataReader.h \
+		../Common/SocketCallback.h
+		$(CC) $(CFLAGS) -c UWSDRDataReader.cpp
+
+UWSDRDataWriter.o:	UWSDRDataWriter.cpp UWSDRDataWriter.h ../Common/RingBuffer.h ../Common/UDPDataWriter.h ../Common/DataWriter.h
+		$(CC) $(CFLAGS) -c UWSDRDataWriter.cpp
+
 UWSDRFrame.o:	UWSDRFrame.cpp UWSDRFrame.h ../Common/ControlInterface.h CWKeyboard.h DialInterface.h DSPControl.h FreqDial.h \
-		FreqDisplay.h FreqKeypad.h ../Common/Frequency.h InfoBox.h ../Common/NullController.h ../Common/SDRDataReader.h \
-		../Common/SDRDataWriter.h SDRParameters.h ../Common/SerialControl.h SMeter.h ../Common/JackReaderWriter.h \
+		FreqDisplay.h FreqKeypad.h ../Common/Frequency.h InfoBox.h ../Common/NullController.h ../Common/UDPDataReader.h \
+		../Common/UDPDataWriter.h SDRParameters.h ../Common/SerialControl.h SMeter.h ../Common/JackReaderWriter.h \
 		../Common/SoundCardReaderWriter.h ../Common/SoundFileWriter.h SpectrumDisplay.h \
-		../Common/SRTXRXController.h UWSDRApp.h ../Common/UWSDRController.h UWSDRDefs.h UWSDRPreferences.h UWSDR.xpm \
-		../Common/Common.h VoiceKeyboard.h
+		../Common/SRTXRXController.h UWSDRApp.h .UWSDRController.h UWSDRDefs.h UWSDRPreferences.h UWSDR.xpm \
+		../Common/Common.h  UWSDRDataReader.h UWSDRDataWriter.h VoiceKeyboard.h
 		$(CC) $(CFLAGS) -c UWSDRFrame.cpp
 
 UWSDRPreferences.o: UWSDRPreferences.cpp UWSDRPreferences.h DSPControl.h SDRParameters.h UWSDRApp.h UWSDRDefs.h

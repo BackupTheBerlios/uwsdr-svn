@@ -487,6 +487,18 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\UWSDRController.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\UWSDRDataReader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\UWSDRDataWriter.cpp"
+				>
+			</File>
+			<File
 				RelativePath="UWSDRFrame.cpp"
 				>
 				<FileConfiguration
@@ -659,6 +671,18 @@
 			</File>
 			<File
 				RelativePath="UWSDRApp.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UWSDRController.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UWSDRDataReader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UWSDRDataWriter.h"
 				>
 			</File>
 			<File

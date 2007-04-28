@@ -16,44 +16,51 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	UDPDataReader_H
-#define	UDPDataReader_H
+#ifndef	UWSDRDataReader_H
+#define	UWSDRDataReader_H
 
 #include <wx/wx.h>
 
+#include "DataReader.h"
+#include "RingBuffer.h"
+#include "UDPDataReader.h"
 #include "SocketCallback.h"
 
-const unsigned int MAX_CALLBACKS = 5U;
 
-
-class CUDPDataReader : public wxThread {
+class CUWSDRDataReader : public IDataReader, public ISocketCallback {
 
     public:
-	CUDPDataReader(const wxString& address, int port);
+	CUWSDRDataReader(CUDPDataReader* reader, unsigned int version);
 
-	virtual void setCallback(ISocketCallback* callback, int id);
+	virtual bool callback(char* buffer, unsigned int len, int id);
 
-	virtual bool open();
+	virtual void setCallback(IDataCallback* callback, int id);
 
-	virtual void* Entry();
+	virtual bool open(float sampleRate, unsigned int blockSize);
 
 	virtual void close();
 
+	virtual void purge();
+
+	virtual bool hasClock();
+	virtual void clock();
+
     protected:
-	virtual ~CUDPDataReader();
+	virtual ~CUWSDRDataReader();
 
     private:
-	wxString         m_address;
-	unsigned short   m_port;
-	char*            m_remAddr;
-	unsigned int     m_remAddrLen;
-	int              m_id[MAX_CALLBACKS];
-	ISocketCallback* m_callback[MAX_CALLBACKS];
-	int              m_fd;
-	char*            m_buffer;
-	unsigned int     m_count;
-
-	bool readSocket();
+	CUDPDataReader* m_reader;
+	unsigned int    m_version;
+	unsigned int    m_blockSize;
+	unsigned int    m_size;
+	int             m_id;
+	IDataCallback*  m_callback;
+	int             m_sequence;
+	CRingBuffer*    m_ringBuffer;
+	float*          m_sampBuffer;
+	unsigned int    m_missed;
+	unsigned int    m_requests;
+	unsigned int    m_underruns;
 };
 
 #endif
