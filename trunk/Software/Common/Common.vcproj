@@ -317,50 +317,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="SDRDataReader.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="SDRDataWriter.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath=".\SDRDescrFile.cpp"
 				>
 			</File>
@@ -473,26 +429,12 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="UWSDRController.cpp"
+				RelativePath=".\UDPDataReader.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\UDPDataWriter.cpp"
+				>
 			</File>
 		</Filter>
 		<Filter
@@ -556,14 +498,6 @@
 				>
 			</File>
 			<File
-				RelativePath="SDRDataReader.h"
-				>
-			</File>
-			<File
-				RelativePath="SDRDataWriter.h"
-				>
-			</File>
-			<File
 				RelativePath=".\SDRDescrFile.h"
 				>
 			</File>
@@ -573,6 +507,10 @@
 			</File>
 			<File
 				RelativePath="SignalReader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SocketCallback.h"
 				>
 			</File>
 			<File
@@ -604,7 +542,11 @@
 				>
 			</File>
 			<File
-				RelativePath="UWSDRController.h"
+				RelativePath=".\UDPDataReader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UDPDataWriter.h"
 				>
 			</File>
 		</Filter>

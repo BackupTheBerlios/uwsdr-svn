@@ -72,7 +72,6 @@ const wxChar* KEY_FILTER_CWN         = wxT("/FilterCWN");
 const wxChar* KEY_FILTER_DIG         = wxT("/FilterDigital");
 const wxChar* KEY_IP_ADDRESS         = wxT("/IPAddress");
 const wxChar* KEY_CONTROL_PORT       = wxT("/ControlPort");
-const wxChar* KEY_DATA_PORT          = wxT("/DataPort");
 const wxChar* KEY_TX_IN_ENABLE       = wxT("/TXInEnable");
 const wxChar* KEY_TX_IN_DEV          = wxT("/TXInDev");
 const wxChar* KEY_TX_IN_PIN          = wxT("/TXInPin");
@@ -354,7 +353,6 @@ bool CUWSDRApp::readConfig()
 	wxString keyFilterDig       = wxT("/") + m_parameters->m_name + KEY_FILTER_DIG;
 	wxString keyIpAddress       = wxT("/") + m_parameters->m_name + KEY_IP_ADDRESS;
 	wxString keyControlPort     = wxT("/") + m_parameters->m_name + KEY_CONTROL_PORT;
-	wxString keyDataPort        = wxT("/") + m_parameters->m_name + KEY_DATA_PORT;
 	wxString keyTXInEnable      = wxT("/") + m_parameters->m_name + KEY_TX_IN_ENABLE;
 	wxString keyTXInDev         = wxT("/") + m_parameters->m_name + KEY_TX_IN_DEV;
 	wxString keyTXInPin         = wxT("/") + m_parameters->m_name + KEY_TX_IN_PIN;
@@ -534,9 +532,6 @@ bool CUWSDRApp::readConfig()
 
 	profile->Read(keyControlPort,      &num);
 	m_parameters->m_controlPort = num;
-
-	profile->Read(keyDataPort,         &num);
-	m_parameters->m_dataPort = num;
 
 	profile->Read(keyTXInEnable,       &m_parameters->m_txInEnable, false);
 	profile->Read(keyTXInDev,          &m_parameters->m_txInDev,    wxEmptyString);

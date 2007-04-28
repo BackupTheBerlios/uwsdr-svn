@@ -23,18 +23,20 @@
 
 #include "DataReader.h"
 #include "RingBuffer.h"
+#include "UDPDataReader.h"
+#include "SocketCallback.h"
 
 
-class CSDRDataReader : public wxThread, public IDataReader {
+class CSDRDataReader : public IDataReader, public ISocketCallback {
 
     public:
 	CSDRDataReader(const wxString& address, int port, unsigned int version);
 
+	virtual void callback(unsigned char* buffer, unsigned int len, int id);
+
 	virtual void setCallback(IDataCallback* callback, int id);
 
 	virtual bool open(float sampleRate, unsigned int blockSize);
-
-	virtual void* Entry();
 
 	virtual void close();
 
@@ -47,25 +49,20 @@ class CSDRDataReader : public wxThread, public IDataReader {
 	virtual ~CSDRDataReader();
 
     private:
-	wxString       m_address;
-	unsigned short m_port;
-	unsigned int   m_version;
-	unsigned int   m_blockSize;
-	unsigned int   m_size;
-	char*          m_remAddr;
-	unsigned int   m_remAddrLen;
-	int            m_id;
-	IDataCallback* m_callback;
-	int            m_fd;
-	int            m_sequence;
-	CRingBuffer*   m_buffer;
-	unsigned char* m_sockBuffer;
-	float*         m_sampBuffer;
-	unsigned int   m_missed;
-	unsigned int   m_requests;
-	unsigned int   m_underruns;
-
-	bool readSocket();
+	wxString        m_address;
+	int             m_port;
+	CUDPDataReader* m_reader;
+	unsigned int    m_version;
+	unsigned int    m_blockSize;
+	unsigned int    m_size;
+	int             m_id;
+	IDataCallback*  m_callback;
+	int             m_sequence;
+	CRingBuffer*    m_ringBuffer;
+	float*          m_sampBuffer;
+	unsigned int    m_missed;
+	unsigned int    m_requests;
+	unsigned int    m_underruns;
 };
 
 #endif

@@ -239,11 +239,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	switch (m_parameters->m_hardwareType) {
 		case TYPE_UWSDR1:
-#if defined(TOBIAS)
-			m_sdr = new CNullController();
-#else
 			m_sdr = new CUWSDRController(m_parameters->m_ipAddress, m_parameters->m_controlPort, 1);
-#endif
 			break;
 		case TYPE_AUDIOTXRX:
 			m_sdr = new CSRTXRXController(m_parameters->m_txOutDev, m_parameters->m_txOutPin);
@@ -364,8 +360,8 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 #endif
 			}
 
-			m_dsp->setTXWriter(new CSDRDataWriter(m_parameters->m_ipAddress, m_parameters->m_dataPort, 1U));
-			m_dsp->setRXReader(new CSDRDataReader(m_parameters->m_ipAddress, m_parameters->m_dataPort, 1U));
+			m_dsp->setTXWriter(new CSDRDataWriter(m_parameters->m_ipAddress, m_parameters->m_controlPort, 1U));
+			m_dsp->setRXReader(new CSDRDataReader(m_parameters->m_ipAddress, m_parameters->m_controlPort, 1U));
 			break;
 	}
 

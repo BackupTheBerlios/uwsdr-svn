@@ -5,10 +5,10 @@ There is very little configuration to be done, but there are some compiler defin
 
 Name          RX Input     RX Output    TX Input    TX Output    SDR Control    Define
 --------------------------------------------------------------------------------------
-Standard      UDP          Audio Card   Audio Card  UDP          TCP            (none)
-Tobias        UDP          Audio Card   Two-Tone    UDP          None           TOBIAS
+Standard      UDP          Audio Card   Audio Card  UDP          UDP            (none)
+Tobias        UDP          Audio Card   Two-Tone    UDP          UDP            TOBIAS
 
-The Tobias configuration is for testing the back-end hardware for UDP only. It is only enabled when the uwsdr1 type is chosen, all other types e.g. SoftRock are unchanged.
+The Tobias configuration is for testing the back-end hardware. It is only enabled when the uwsdr1 type is chosen, all other types e.g. SoftRock are unchanged.
 
 
 Windows

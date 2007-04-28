@@ -95,7 +95,6 @@ class CSDRParameters {
 
 	wxString      m_ipAddress;
 	unsigned int  m_controlPort;
-	unsigned int  m_dataPort;
 
 	bool          m_txInEnable;
 	wxString      m_txInDev;

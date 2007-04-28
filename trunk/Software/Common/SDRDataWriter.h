@@ -21,19 +21,10 @@
 
 #include <wx/wx.h>
 
+#include "UDPDataWriter.h"
 #include "RingBuffer.h"
 #include "DataWriter.h"
 
-#if !defined(__WXMSW__)
-#include <netdb.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <errno.h>
-#endif
 
 class CSDRDataWriter : public wxThread, public IDataWriter {
 
@@ -55,11 +46,8 @@ class CSDRDataWriter : public wxThread, public IDataWriter {
 	virtual ~CSDRDataWriter();
 
     private:
-	wxString           m_address;
-	unsigned short     m_port;
+	CUDPDataWriter     m_writer;
 	unsigned int       m_version;
-	int                m_fd;
-	struct sockaddr_in m_remAddr;
 	int                m_sequence;
 	unsigned char*     m_sockBuffer;
 	float*             m_dataBuffer;

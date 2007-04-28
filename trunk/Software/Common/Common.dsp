@@ -167,6 +167,14 @@ SOURCE=.\TwoToneReader.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\UDPDataReader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\UDPDataWriter.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\UWSDRController.cpp
 # End Source File
 # End Group
@@ -251,6 +259,10 @@ SOURCE=.\SignalReader.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\SocketCallback.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SoundCardReaderWriter.h
 # End Source File
 # Begin Source File
@@ -276,6 +288,14 @@ SOURCE=.\ThreeToneReader.h
 # Begin Source File
 
 SOURCE=.\TwoToneReader.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\UDPDataReader.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\UDPDataWriter.h
 # End Source File
 # Begin Source File
 

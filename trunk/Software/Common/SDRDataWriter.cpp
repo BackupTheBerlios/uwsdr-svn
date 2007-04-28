@@ -27,11 +27,8 @@ const unsigned int SAMPLE_SIZE = 4;
 
 CSDRDataWriter::CSDRDataWriter(const wxString& address, int port, unsigned int version, unsigned int maxSamples, bool delay) :
 wxThread(),
-m_address(address),
-m_port(port),
+m_writer(address, port),
 m_version(version),
-m_fd(-1),
-m_remAddr(),
 m_sequence(0U),
 m_sockBuffer(NULL),
 m_dataBuffer(NULL),
@@ -56,56 +53,9 @@ bool CSDRDataWriter::open(float sampleRate, unsigned int blockSize)
 {
 	m_enabled = false;
 
-#if defined(__WINDOWS__)
-	WSAData data;
-
-	int ret =  ::WSAStartup(0x101, &data);
-	if (ret != 0) {
-		::wxLogError(wxT("SDRDataWriter: Error %d when initialising Winsock."), ret);
+	bool ret = m_writer.open();
+	if (!ret)
 		return false;
-	}
-#endif
-
-#if defined(__WINDOWS__)
-	unsigned long addr = ::inet_addr(m_address.c_str());
-#else
-	in_addr_t addr = ::inet_addr(m_address.c_str());
-#endif
-	unsigned int length = 4;
-
-	if (addr == INADDR_NONE) {
-		struct hostent* host = ::gethostbyname(m_address.c_str());
-
-		if (host == NULL) {
-			::wxLogError(wxT("SDRDataWriter: Error %d when resolving host: %s"),
-#if defined(__WINDOWS__)
-				::WSAGetLastError(),
-#else
-				h_errno,
-#endif
-				m_address.c_str());
-			return false;
-		}
-
-		::memcpy(&addr, &host->h_addr, host->h_length);
-		length = host->h_length;
-	}
-
-	::memset(&m_remAddr, 0x00, sizeof(struct sockaddr_in));
-	m_remAddr.sin_family = AF_INET;
-	m_remAddr.sin_port   = htons(m_port);
-	::memcpy(&m_remAddr.sin_addr.s_addr, &addr, length);
-
-	m_fd = ::socket(PF_INET, SOCK_DGRAM, 0);
-	if (m_fd < 0) {
-		::wxLogError(wxT("SDRDataWriter: Error %d when creating the writing datagram socket"),
-#if defined(__WINDOWS__)
-			::WSAGetLastError());
-#else
-			errno);
-#endif
-		return false;
-	}
 
 	m_sockBuffer = new unsigned char[HEADER_SIZE + m_maxSamples * SAMPLE_SIZE];
 	m_dataBuffer = new float[m_maxSamples * 2];
@@ -116,8 +66,6 @@ bool CSDRDataWriter::open(float sampleRate, unsigned int blockSize)
 		m_delayTime = (500UL * m_maxSamples) / (unsigned long)sampleRate;
 		::wxLogMessage(wxT("Delay is %lums"), m_delayTime);
 	}
-
-	::wxLogMessage(wxT("SDRDataWriter: started with address %s and port %d"), m_address.c_str(), m_port);
 
 	Create();
 	Run();
@@ -159,13 +107,7 @@ void* CSDRDataWriter::Entry()
 			writePacket();
 	}
 
-#if defined(__WINDOWS__)
-	::closesocket(m_fd);
-	::WSACleanup();
-#else
-	::close(m_fd);
-#endif
-	m_fd = -1;
+	m_writer.close();
 
 	delete[] m_sockBuffer;
 	delete[] m_dataBuffer;
@@ -214,21 +156,9 @@ void CSDRDataWriter::writePacket()
 			m_sockBuffer[len++] = (qData >> 0) & 0xFF;
 		}
 
-		ssize_t ret = ::sendto(m_fd, (char *)m_sockBuffer, len, 0, (struct sockaddr *)&m_remAddr, sizeof(struct sockaddr_in));
-		if (ret < 0) {
-			::wxLogError(wxT("SDRDataWriter: Error %d writing to the datagram socket"),
-#if defined(__WINDOWS__)
-				::WSAGetLastError());
-#else
-				errno);
-#endif
+		bool ret = m_writer.write(m_sockBuffer, len);
+		if (!ret)
 			return;
-		}
-
-		if (ret != int(len)) {
-			::wxLogError(wxT("SDRDataWriter: Error only wrote %d of %u bytes to the datagram socket"), ret, len);
-			return;
-		}
 
 		if (m_delay)
 			::wxMilliSleep(m_delayTime);
