@@ -9,8 +9,6 @@
 
 #define _CODEC_ADDR     0x20
 
-
-
 //******** AD1836A **********
  
 //************************************************************ 
@@ -51,14 +49,21 @@ typedef struct s_codec_hdr {
   u8    type_char1;
   u16   seqNr;
   u16   seqLen;
+  u16   Dummy;
 } t_codec_hdr;
 
-#define CODEC_HEADER_SIZE     sizeof(t_codec_hdr)
-#define CODEC_BUFFERSIZE      400 * 3
-#define CODEC_FRAME_SIZE      400 * 3 // 1200bytes
+#define _CODEC_HEADER_SIZE     sizeof(t_codec_hdr)
+#define _CODEC_SAMPLES_PER_FRAME  400
+#define _CODEC_DATA_SIZE      _CODEC_SAMPLES_PER_FRAME * 3 // 1200bytes
+#define _CODEC_FRAME_SIZE     (_CODEC_DATA_SIZE + _CODEC_HEADER_SIZE)
+
+#define _CODEC_NUM_OF_BUFS     4
+
+
+
 //#define CODEC_BUFFER_SIZE     2048
-#define CODEC_HEADER_SIZE_TX  6
-#define CODEC_HEADER_SIZE_RX  7
+//#define CODEC_HEADER_SIZE_TX  6
+//#define CODEC_HEADER_SIZE_RX  7
 
 #define CODEC_SET_CS() SET_PIN(CODEC_SPICS_PIN)
 #define CODEC_CLR_CS() CLR_PIN(CODEC_SPICS_PIN)
@@ -71,7 +76,7 @@ typedef struct s_codec_hdr {
 
 
 extern u32 codec_status_flag;
-extern u8 codec_buf[8*CODEC_BUFFERSIZE + 2*CODEC_HEADER_SIZE];
+extern u8 codec_buf[_CODEC_NUM_OF_BUFS][_CODEC_FRAME_SIZE];
 extern u8 *codec_inactivebuf;
 
 #define CODEC_SET_BUFFER_FULL(x)    (codec_status_flag |= (1 << x))
@@ -85,20 +90,50 @@ extern u8 *codec_inactivebuf;
 #define CODEC_CLEAR_MODE(x)         (codec_status_flag &= ~x)
 #define CODEC_IS_MODE(x)            (codec_status_flag & x)
 
+//#define CODEC_PERIPH_A \
+//          AT91C_PA21_TF| \
+//          AT91C_PA22_TK| \
+//          AT91C_PA23_TD| \
+//          AT91C_PA24_RD
+
 #define CODEC_PERIPH_A \
-          AT91C_PA15_TF| \
-          AT91C_PA17_TD| \
-          AT91C_PA18_RD| \
-          AT91C_PA19_RK| \
-          AT91C_PA20_RF
+          AT91C_PA23_TD| \
+          AT91C_PA24_RD| \
+          AT91C_PA25_RK| \
+          AT91C_PA26_RF
+          
 
 void CODEC_SSC_ISR(void);
 void CODEC_start_output();
-void UDP_process(void);
+void UDP_process_(void);
 void CODEC_init(void);
 void CODEC_start(void);
 void codec_getpeaks(void);
 void UDP_process_incomming(void);
+
+//****************************************************************************
+// CODEC_startRX
+// starts the RX into the buffer
+//****************************************************************************
+void CODEC_startRX(void);
+
+//****************************************************************************
+// CODEC_startTX
+// starts the RX into the buffer
+//****************************************************************************
+void CODEC_startTX(void);
+
+//****************************************************************************
+// CODEC_sync
+// returns when first channel is being received/transmitted
+//****************************************************************************
+void CODEC_sync(void);
+
+//****************************************************************************
+// CODEC_stop
+// Starts Codec RX and TX
+//****************************************************************************
+void CODEC_stop(void);
 
 #endif //__CODEC_H__
 

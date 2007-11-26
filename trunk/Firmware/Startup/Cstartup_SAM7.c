@@ -1,25 +1,27 @@
-//*----------------------------------------------------------------------------
-//*         ATMEL Microcontroller Software Support  -  ROUSSET  -
-//*----------------------------------------------------------------------------
-//* The software is delivered "AS IS" without warranty or condition of any
-//* kind, either express, implied or statutory. This includes without
-//* limitation any warranty or condition with respect to merchantability or
-//* fitness for any particular purpose, or against the infringements of
-//* intellectual property rights of others.
-//*----------------------------------------------------------------------------
-//* File Name           : Cstartup_SAM7.c
-//* Object              : Low level initializations written in C for Tools
-//* Creation            : 12/Jun/04
-//* 1.2   28/Feb/05 JPP : LIB change AT91C_WDTC_WDDIS & PLL
-//* 1.3   21/Mar/05 JPP : Change PLL Wait time
-//* 1.4   21/Aug/05 JPP : Change MC_FMR Setting
-//*----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//         ATMEL Microcontroller Software Support  -  ROUSSET  -
+//-----------------------------------------------------------------------------
+// DISCLAIMER:  THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
+// DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR ANY DIRECT, INDIRECT,
+// INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+// OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+// LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+// EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//-----------------------------------------------------------------------------
+// File Name           : Cstartup_SAM7.c
+// Object              : Low level initialisations written in C for Tools
+//                       For AT91SAM7X256 with 2 flash plane
+// Creation            : JPP  14-Sep-2006
+//-----------------------------------------------------------------------------
 
-//************************** GOBAL CONFIG INCLUDE ****************************
 #include "config.h"
 
-// The following functions must be write in ARM mode this function called directly
-// by exception vector
+//  The following functions must be write in ARM mode this function called
+// directly by exception vector
 extern void AT91F_Spurious_handler(void);
 extern void AT91F_Default_IRQ_handler(void);
 extern void AT91F_Default_FIQ_handler(void);
@@ -27,57 +29,70 @@ extern void AT91F_Default_FIQ_handler(void);
 //*----------------------------------------------------------------------------
 //* \fn    AT91F_LowLevelInit
 //* \brief This function performs very low level HW initialization
-//*        this function can be use a Stack, depending the compilation
+//*        this function can use a Stack, depending the compilation
 //*        optimization mode
 //*----------------------------------------------------------------------------
-void AT91F_LowLevelInit( void)
+void AT91F_LowLevelInit(void);
+void AT91F_LowLevelInit(void) @ "ICODE"
 {
- int            i;
- AT91PS_PMC     pPMC = AT91C_BASE_PMC;
-    //* Set Flash Waite sate
-	//  Single Cycle Access at Up to 30 MHz, or 40
-	    AT91C_BASE_MC->MC_FMR = AT91C_MC_FWS_1FWS ;
+    unsigned char i;
+    ///////////////////////////////////////////////////////////////////////////
+    // EFC Init
+    ///////////////////////////////////////////////////////////////////////////
+    AT91C_BASE_MC->MC_FMR = AT91C_MC_FWS_1FWS ;
 
-    //* Watchdog Disable
-        AT91C_BASE_WDTC->WDTC_WDMR= AT91C_WDTC_WDDIS;
+    ///////////////////////////////////////////////////////////////////////////
+    // Init PMC Step 1. Enable Main Oscillator
+    // Main Oscillator startup time is board specific:
+    // Main Oscillator Startup Time worst case (3MHz) corresponds to 15ms
+    // (0x40 for AT91C_CKGR_OSCOUNT field)
+    ///////////////////////////////////////////////////////////////////////////
+    AT91C_BASE_PMC->PMC_MOR = (( AT91C_CKGR_OSCOUNT & (0x40 <<8) | AT91C_CKGR_MOSCEN ));
+    // Wait Main Oscillator stabilization
+    while(!(AT91C_BASE_PMC->PMC_SR & AT91C_PMC_MOSCS));
 
-	//* Set MCK at 47 923 200
-    // 1 Enabling the Main Oscillator:
-        // SCK = 1/32768 = 30.51 uSecond
-    	// Start up time = 8 * 6 / SCK = 56 * 30.51 = 1,46484375 ms
-       pPMC->PMC_MOR = (( AT91C_CKGR_OSCOUNT & (0x06 <<8) | AT91C_CKGR_MOSCEN ));
-        // Wait the startup time
-        while(!(pPMC->PMC_SR & AT91C_PMC_MOSCS));
-	// 2 Checking the Main Oscillator Frequency (Optional)
-	// 3 Setting PLL and divider:
-		// - div by 14 Fin = 1.3165 =(18,432 / 14)
-		// - Mul 72+1: Fout =	96.1097 =(3,6864 *73)
-		// for 96 MHz the erroe is 0.11%
-		// Field out NOT USED = 0
-		// PLLCOUNT pll startup time estimate at : 0.844 ms
-		// PLLCOUNT 28 = 0.000844 /(1/32768)
-       pPMC->PMC_PLLR = ((AT91C_CKGR_DIV & 14 ) |
-                         (AT91C_CKGR_PLLCOUNT & (28<<8)) |
-                         (AT91C_CKGR_MUL & (73<<16)));
+    ///////////////////////////////////////////////////////////////////////////
+    // Init PMC Step 2.
+    // Set PLL to 96MHz (96,109MHz) and UDP Clock to 48MHz
+    // PLL Startup time depends on PLL RC filter: worst case is choosen
+    // UDP Clock (48,058MHz) is compliant with the Universal Serial Bus
+    // Specification (+/- 0.25% for full speed)
+    ///////////////////////////////////////////////////////////////////////////
+    AT91C_BASE_PMC->PMC_PLLR = AT91C_CKGR_USBDIV_1           |
+    						   (16 << 8)                     |
+                               (AT91C_CKGR_MUL & (72 << 16)) |
+                               (AT91C_CKGR_DIV & 14);
+    // Wait for PLL stabilization
+    while( !(AT91C_BASE_PMC->PMC_SR & AT91C_PMC_LOCK) );
+    // Wait until the master clock is established for the case we already
+    // turn on the PLL
+    while( !(AT91C_BASE_PMC->PMC_SR & AT91C_PMC_MCKRDY) );
 
-        // Wait the startup time
-        while(!(pPMC->PMC_SR & AT91C_PMC_LOCK));
-        while(!(pPMC->PMC_SR & AT91C_PMC_MCKRDY));
- 	// 4. Selection of Master Clock and Processor Clock
- 	// select the PLL clock divided by 2
- 	    pPMC->PMC_MCKR =  AT91C_PMC_PRES_CLK_2 ;
- 	    while(!(pPMC->PMC_SR & AT91C_PMC_MCKRDY));
+    ///////////////////////////////////////////////////////////////////////////
+    // Init PMC Step 3.
+    // Selection of Master Clock MCK equal to (Processor Clock PCK) PLL/2=48MHz
+    // The PMC_MCKR register must not be programmed in a single write operation
+    // (see. Product Errata Sheet)
+    ///////////////////////////////////////////////////////////////////////////
+    AT91C_BASE_PMC->PMC_MCKR = AT91C_PMC_PRES_CLK_2;
+    // Wait until the master clock is established
+    while( !(AT91C_BASE_PMC->PMC_SR & AT91C_PMC_MCKRDY) );
 
- 	    pPMC->PMC_MCKR |= AT91C_PMC_CSS_PLL_CLK  ;
- 	    while(!(pPMC->PMC_SR & AT91C_PMC_MCKRDY));
+    AT91C_BASE_PMC->PMC_MCKR |= AT91C_PMC_CSS_PLL_CLK;
+    // Wait until the master clock is established
+    while( !(AT91C_BASE_PMC->PMC_SR & AT91C_PMC_MCKRDY) );
 
-	// Set up the default interrupts handler vectors
-	AT91C_BASE_AIC->AIC_SVR[0] = (int) AT91F_Default_FIQ_handler ;
-	for (i=1;i < 31; i++)
-	{
-	    AT91C_BASE_AIC->AIC_SVR[i] = (int) AT91F_Default_IRQ_handler ;
-	}
-	AT91C_BASE_AIC->AIC_SPU  = (int) AT91F_Spurious_handler ;
+    ///////////////////////////////////////////////////////////////////////////
+    //  Disable Watchdog (write once register)
+    ///////////////////////////////////////////////////////////////////////////
+    AT91C_BASE_WDTC->WDTC_WDMR = AT91C_WDTC_WDDIS;
 
+    ///////////////////////////////////////////////////////////////////////////
+    //  Init AIC: assign corresponding handler for each interrupt source
+    ///////////////////////////////////////////////////////////////////////////
+    AT91C_BASE_AIC->AIC_SVR[0] = (int) AT91F_Default_FIQ_handler ;
+    for (i = 1; i < 31; i++) {
+        AT91C_BASE_AIC->AIC_SVR[i] = (int) AT91F_Default_IRQ_handler ;
+    }
+    AT91C_BASE_AIC->AIC_SPU = (unsigned int) AT91F_Spurious_handler;
 }
-

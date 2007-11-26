@@ -61,6 +61,7 @@
 #include "delay.h"
 #include "config.h"
 #include "bit.h"
+#include "I2C.h"
 
 //////////////////////////////////////////////////////////////////////
 // Defines / Macros
@@ -71,12 +72,12 @@
 #define I2C_TRIS    TRISB   // User defined
 
 // Internal macros
-#define I2C_SDA_0  CLR_PIN(I2C_SDA_PIN) //Port = o/p (Drive low).
-#define I2C_SCL_0  CLR_PIN(I2C_SCL_PIN) //Port = o/p (Drive low).
-#define I2C_SDA_1  SET_PIN(I2C_SDA_PIN) //Port = i/p (Res pulls high).
-#define I2C_SCL_1  SET_PIN(I2C_SCL_PIN) //Port = i/p (Res pulls high).
-#define I2C_SDA_IN GET_PIN(I2C_SDA_PIN)
-#define I2C_SCL_IN GET_PIN(I2C_SCL_PIN)
+#define I2C_SDA_0  CLR_PIN(PIOA, I2C_SDA_PIN) //Port = o/p (Drive low).
+#define I2C_SCL_0  CLR_PIN(PIOA, I2C_SCL_PIN) //Port = o/p (Drive low).
+#define I2C_SDA_1  SET_PIN(PIOA, I2C_SDA_PIN) //Port = i/p (Res pulls high).
+#define I2C_SCL_1  SET_PIN(PIOA, I2C_SCL_PIN) //Port = i/p (Res pulls high).
+#define I2C_SDA_IN GET_PIN(PIOA, I2C_SDA_PIN)
+#define I2C_SCL_IN GET_PIN(PIOA, I2C_SCL_PIN)
 
 //////////////////////////////////////////////////////////////////////
 void I2C_Init(unsigned long speed) {
@@ -89,7 +90,7 @@ void I2C_Init(unsigned long speed) {
 //////////////////////////////////////////////////////////////////////
 // 100kHz set here (very approximate). Will be slower  than 100kHz.
 static void I2C_delay(void) {
-   delay_us(1);
+   delay_us(2);
 }
 
 //////////////////////////////////////////////////////////////////////

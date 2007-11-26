@@ -1,12 +1,13 @@
 
 #include "codec.h"
-#include "uip.h"
-#include "string.h"
+#include <string.h>
 #include "delay.h"
 #include "i2c.h"
-#include "ax88796.h"
+#include "ring.h"
 
-u8    codec_buf[8*CODEC_BUFFERSIZE + 2*CODEC_HEADER_SIZE]; // ~6kb = 2000 24bit stereo samples
+#pragma data_alignment=4
+u8    codec_buf[_CODEC_NUM_OF_BUFS][_CODEC_FRAME_SIZE]; // ~6kb = 2000 24bit stereo samples
+
 //u16   codec_send_counter0;
 //u16   codec_send_counter1;
 //u8    codec_buffer0[CODEC_BUFFER_SIZE+8];
@@ -14,10 +15,10 @@ u8    codec_buf[8*CODEC_BUFFERSIZE + 2*CODEC_HEADER_SIZE]; // ~6kb = 2000 24bit 
 //u8    codec_buffer2[CODEC_BUFFER_SIZE+8];
 //u8    codec_buffer3[CODEC_BUFFER_SIZE+8];
 
-u8    codec_active_buffer;
+u8    m_codec_pos;
+u8    m_codec_tx_pos;
 
 u32   codec_status_flag;
-u8*   codec_tx_pointer;
 
 u8 *  codec_inactivebuf;
 volatile u32 max_I;
@@ -31,24 +32,109 @@ volatile u32 max_Q;
 // Returns: void
 //
 //********************************************************
-void CODEC_start_output()
+//void CODEC_start_output()
+//{
+//}
+
+//void codec_getpeaks()
+//{
+//  register u32 i;
+//  
+//  max_I = 0;
+//  max_Q = 0;
+//  
+//  for(i = 0; i < _CODEC_FRAME_SIZE; i += 6) {
+//    if(codec_buf[i] > max_I) 
+//      max_I = codec_buf[i];
+//    if(codec_buf[i+3] > max_Q) 
+//      max_Q = codec_buf[i+3];
+//  }
+//}
+
+
+//****************************************************************************
+// CODEC_startRX
+//
+// Parameters: void
+// Return type: void
+// starts the RX into the buffer
+//
+//****************************************************************************
+void CODEC_startRX(void)
 {
+  //*** DEFINITON ***
+  t_codec_hdr*  pHdr;
+  int i;
+
+  //*** INITIALIZATION ***
+  //*** PARAMETER CHECK ***
+  //*** PROGRAM CODE ***
+
+   //* Disable receiver / transmitter
+  AT91C_BASE_SSC->SSC_CR = AT91C_SSC_RXDIS|AT91C_SSC_TXDIS;
+
+  RING_reset();
+  
+  //Prepare outbuffer headers
+  pHdr = (t_codec_hdr*)&codec_buf;
+  pHdr->type_char0 = 'D';
+  pHdr->type_char1 = 'R';
+  pHdr->seqNr = 0;
+  pHdr->seqLen = _CODEC_SAMPLES_PER_FRAME;
+  pHdr->Dummy = 0x1234;
+  for(i = 1; i < _CODEC_NUM_OF_BUFS; i++) {
+    memcpy(codec_buf[i] , codec_buf, sizeof(t_codec_hdr));
+  }
+  
+  CODEC_SET_MODE(CODEC_MODE_RX);
+
+  AT91C_BASE_SSC->SSC_RPR = (u32)codec_buf + _CODEC_HEADER_SIZE;
+  AT91C_BASE_SSC->SSC_RCR = _CODEC_DATA_SIZE;
+  AT91C_BASE_SSC->SSC_RNPR = (u32)codec_buf + _CODEC_HEADER_SIZE;
+  AT91C_BASE_SSC->SSC_RNCR = _CODEC_DATA_SIZE;
+  //AT91C_BASE_SSC->SSC_TNPR = _CODEC_DATA_SIZE;
+  
+
+  CODEC_sync();
+
+  AT91C_BASE_SSC->SSC_PTCR = AT91C_PDC_RXTEN; // Start PDC RX
+  
 }
 
-void codec_getpeaks()
+//****************************************************************************
+// CODEC_startTX
+//
+// Parameters: void
+// Return type: void
+// starts the TX into the buffer
+//
+//****************************************************************************
+void CODEC_startTX(void)
 {
-  register u32 i;
+  //*** DEFINITON ***
+  //*** INITIALIZATION ***
+  //*** PARAMETER CHECK ***
+  //*** PROGRAM CODE ***
   
-  max_I = 0;
-  max_Q = 0;
+  //* Disable receiver / transmitter
+  AT91C_BASE_SSC->SSC_CR = AT91C_SSC_RXDIS|AT91C_SSC_TXDIS;
+ 
+  RING_reset();
+
+  CODEC_SET_MODE(CODEC_MODE_TX);
+ 
+  // prepare ring TX
+  AT91C_BASE_SSC->SSC_TPR = (u32)codec_buf + _CODEC_HEADER_SIZE;
+  AT91C_BASE_SSC->SSC_TCR = _CODEC_DATA_SIZE;
+  AT91C_BASE_SSC->SSC_TNPR = (u32)codec_buf + _CODEC_HEADER_SIZE;
+  AT91C_BASE_SSC->SSC_TNCR = _CODEC_DATA_SIZE;
+
+  CODEC_sync();
   
-  for(i = 0; i < CODEC_BUFFERSIZE; i += 6) {
-    if(codec_buf[i] > max_I) 
-      max_I = codec_buf[i];
-    if(codec_buf[i+3] > max_Q) 
-      max_Q = codec_buf[i+3];
-  }
+  AT91C_BASE_SSC->SSC_PTCR = AT91C_PDC_TXTEN; // TXTEN
 }
+
+
 
 //********************************************************
 //
@@ -60,17 +146,72 @@ void codec_getpeaks()
 //********************************************************
 void CODEC_init(void)
 {
-  u8 uc;
-  int i;
+  //u8 uc;
+//  int i;
 
-  codec_active_buffer = 0;
-  codec_tx_pointer = codec_buf;
 
-  /****** AD1836A Init *******/
+  //m_codec_rx_pos = 0;
+  m_codec_tx_pos = 0;
+  codec_status_flag = 0;
+
+ /****** SSC *******/
+
+  // configure SSC pins as peripheral
+  AT91F_PIO_CfgPeriph(AT91C_BASE_PIOA, CODEC_PERIPH_A, 0);
   
-  CLR_PIN(CODEC_RST_PIN);
+  //* Disable interrupts
+  AT91C_BASE_SSC->SSC_IDR = (unsigned int) -1;
+  
+  // Enable PMC
+  AT91F_PMC_EnablePeriphClock(AT91C_BASE_PMC, (1 << AT91C_ID_SSC));
+  
+  //* Reset receiver and transmitter
+  AT91C_BASE_SSC->SSC_CR = AT91C_SSC_SWRST | AT91C_SSC_RXDIS | AT91C_SSC_TXDIS ;
+
+  //* Define the Clock Mode Register
+  AT91C_BASE_SSC->SSC_CMR = 0; // internal clock is not active
+
+  //* Write the Receive Clock Mode Register
+//  AT91C_BASE_SSC->SSC_RCMR =  AT91C_SSC_CKS_TK| //clk from RK pin 
+//                              AT91C_SSC_CKO_NONE| //no output
+//                              AT91C_SSC_CKI| // lock inverted (rising edge)
+//                              AT91C_SSC_START_TX| //start at rising frame
+//                              (AT91C_SSC_STTDLY & (1 << 16));
+//                              //(AT91C_SSC_STTDLY & (1<16));
+
+  //* Write the Receive Clock Mode Register
+  AT91C_BASE_SSC->SSC_RCMR =  AT91C_SSC_CKS_RK| //clk from RK pin 
+                              AT91C_SSC_CKO_NONE| //no output
+                              AT91C_SSC_CKI| // lock inverted (rising edge)
+                              AT91C_SSC_START_FALL_RF| //start at rising frame
+                              (AT91C_SSC_STTDLY & (1 << 16));
+                              //(AT91C_SSC_STTDLY & (1<16));
+    
+  //* Write the Receive Frame Mode Register (3x8 bye)
+  AT91C_BASE_SSC->SSC_RFMR =  (AT91C_SSC_DATLEN & (7 << 0))|
+                              AT91C_SSC_MSBF|
+                              (AT91C_SSC_DATNB & (2 << 8));
+
+  //* Write the Transmit Clock Mode Register
+  AT91C_BASE_SSC->SSC_TCMR =  AT91C_SSC_TCMR_RKCLK|
+                              AT91C_SSC_CKO_NONE|
+                              AT91C_SSC_CKI|
+                              AT91C_SSC_TCMR_START_RX;
+                              ; //(AT91C_SSC_STTDLY & (1 << 16));
+
+  //* Write the Transmit Frame Mode Register (3x8 bye)
+  AT91C_BASE_SSC->SSC_TFMR =  (AT91C_SSC_DATLEN & (7 << 0))|
+                              AT91C_SSC_MSBF|
+                              (AT91C_SSC_DATNB & (2 << 8));
+                               //AT91C_SSC_FSEDGE;
+
+  //* Clear Transmit and Receive Counters
+  AT91F_PDC_Open((AT91PS_PDC) &(AT91C_BASE_SSC->SSC_RPR));
+
+  
+//  CLR_PIN(CODEC_RST_PIN);
   delay_us(10000);
-  SET_PIN(CODEC_RST_PIN);
+//  SET_PIN(CODEC_RST_PIN);
   
   /*** Init of the DAC PCM1740 ***/
   I2C_send_byte(0x98, 0x00, 0x00);
@@ -81,7 +222,7 @@ void CODEC_init(void)
   delay_us(100);
   I2C_send_byte(0x98, 0x03, 0x4B);
   delay_us(1000);
-  I2C_send_byte(0x98, 0x04, 0x00);
+  I2C_send_byte(0x98, 0x04, 0x01);
   delay_us(100);
 
   /*** Init of the CS4272 ***/
@@ -186,112 +327,135 @@ void CODEC_init(void)
   
 }
 
-//********************************************************
-//
-// CODEC_start
+//****************************************************************************
+// CODEC_sync
 //
 // Parameters: void
-// Returns: void
+// Return type: void
+// returns when first channel is being received/transmitted
 //
-//********************************************************
-void CODEC_start(void)
+//****************************************************************************
+__inline void CODEC_sync(void)
 {
-  codec_status_flag = 0;
-  t_codec_hdr*  pHdr;
+  //*** DEFINITON ***
+  //*** INITIALIZATION ***
+  //*** PARAMETER CHECK ***
+  //*** PROGRAM CODE ***
+
   
-  pHdr = (t_codec_hdr*)&codec_buf;
-  pHdr->type_char0 = 'D';
-  pHdr->type_char1 = 'A';
-  pHdr->seqNr = 1;
-  pHdr->seqLen = CODEC_BUFFERSIZE;
-  
-  memcpy(codec_buf + (CODEC_BUFFERSIZE + CODEC_HEADER_SIZE), codec_buf, sizeof(t_codec_hdr));
-  
-  CODEC_SET_MODE(CODEC_MODE_RX);
-  
-  //* Enable receiver / transmitter
+  //* Write the Transmit Clock Mode Register
+//  AT91C_BASE_SSC->SSC_TCMR =  AT91C_SSC_TCMR_RKCLK|
+//                              AT91C_SSC_CKO_NONE|
+//                              AT91C_SSC_CKI|
+//                              AT91C_SSC_TCMR_START_RX;
+//                              ; //(AT91C_SSC_STTDLY & (1 << 16));
+  //* Write the Receive Clock Mode Register
+  AT91C_BASE_SSC->SSC_RCMR =  AT91C_SSC_CKS_RK| //clk from RK pin 
+                              AT91C_SSC_CKO_NONE| //no output
+                              AT91C_SSC_CKI| // lock inverted (rising edge)
+                              AT91C_SSC_START_RISE_RF| //start at rising frame
+                              (AT91C_SSC_STTDLY & (1 << 16));
+
+   //* Enable receiver / transmitter
   AT91C_BASE_SSC->SSC_CR = AT91C_SSC_RXEN|AT91C_SSC_TXEN;
-  
+                              
+                              
   //wait for first frame (rising edge)
+
   while(AT91C_BASE_SSC->SSC_SR & AT91C_SSC_TXSYN) {};
   
   // then set to sync to any edge
   AT91C_BASE_SSC->SSC_RCMR =  AT91C_SSC_CKS_RK| //clk from RK pin 
                               AT91C_SSC_CKO_NONE| //no output
                               AT91C_SSC_CKI|
-                              AT91C_SSC_START_EDGE_RF;
-  
-  //CODEC_SSC_ISR(); //start rx/tx streaming
-  
-  //****** setup DMA regsisters ******
-  AT91C_BASE_SSC->SSC_RPR = (u32)codec_buf + CODEC_HEADER_SIZE;
-  AT91C_BASE_SSC->SSC_RCR = CODEC_BUFFERSIZE;
-  
-  AT91C_BASE_SSC->SSC_TPR = (u32)codec_buf + CODEC_HEADER_SIZE;
-  AT91C_BASE_SSC->SSC_TCR = CODEC_BUFFERSIZE;
-  
-  //while(CODEC_GET_ACTIVE_BUFFER() != 1) {}; //wait for first buffer full
-  
-  if(CODEC_IS_MODE(CODEC_MODE_RX)) {
-    AT91C_BASE_SSC->SSC_PTCR = (1 << 0); // RXTEN
-  }
-  
-  if(CODEC_IS_MODE(CODEC_MODE_TX)) {
-    AT91C_BASE_SSC->SSC_PTCR = (1 << 8); // TXTEN
-  }    
-  
-    
+                              AT91C_SSC_START_EDGE_RF|
+                              (AT91C_SSC_STTDLY & (1 << 16));
+
+  //  AT91C_BASE_SSC->SSC_TCMR =  AT91C_SSC_TCMR_TKPIN|
+//                              AT91C_SSC_CKO_NONE|
+//                              AT91C_SSC_CKI|
+//                              AT91C_SSC_START_LEVEL_RF|
+//                              (AT91C_SSC_STTDLY & (1 << 16));
 }
+
 
 
 void CODEC_SSC_ISR() //__irq 
 {
-  u8* pCurrent;
+//  u8* pCurrent;
   u8* pNext;
-  u32 test32;
+//  u32 test32;
 
   //AT91C_BASE_SSC->SSC_CR = AT91C_SSC_RXDIS | AT91C_SSC_TXDIS ;
 
-  if(CODEC_GET_ACTIVE_BUFFER() == 1) {
-    // now use Buffer 0
-    //pCurrent = codec_buf + CODEC_HEADER_SIZE;
-    pNext = codec_buf + (CODEC_BUFFERSIZE + 2*CODEC_HEADER_SIZE);
-    //codec_inactivebuf = codec_buf + CODEC_BUFFERSIZE + CODEC_HEADER_SIZE;
-    codec_inactivebuf = codec_buf + (CODEC_BUFFERSIZE + CODEC_HEADER_SIZE);;
-    CODEC_SET_ACTIVE_BUFFER(0);
-    //codec_send_counter1 = 0;
+  _DBG_STATE_POS(_DBG_STATE_CODEC);
+
+  
+  if(CODEC_IS_MODE(CODEC_MODE_RX)) {
+    pNext = RING_produce();
   }
   else {
-    //pCurrent = codec_buf + CODEC_BUFFERSIZE + 2*CODEC_HEADER_SIZE;
-    pNext = codec_buf + CODEC_HEADER_SIZE;
-//    codec_inactivebuf = codec_buf;
-    codec_inactivebuf = codec_buf;
-    CODEC_SET_ACTIVE_BUFFER(1);
-    //codec_send_counter1 = 0;
+    return;
   }
 
-  // register conf for RX
-  if(CODEC_IS_MODE(CODEC_MODE_RX)) {
-    //AT91C_BASE_SSC->SSC_RPR = (u32)pCurrent;
-    //AT91C_BASE_SSC->SSC_RCR = CODEC_BUFFERSIZE;
+  if(pNext != NULL) {
+    pNext += _CODEC_HEADER_SIZE;
     AT91C_BASE_SSC->SSC_RNPR = (u32)pNext;
-    AT91C_BASE_SSC->SSC_RNCR = CODEC_BUFFERSIZE;
-    AT91C_BASE_SSC->SSC_PTCR = (1 << 0); // RXTEN
+    AT91C_BASE_SSC->SSC_TNPR = (u32)pNext;
   }
   
+  
+  AT91C_BASE_SSC->SSC_RNCR = _CODEC_DATA_SIZE;
+  AT91C_BASE_SSC->SSC_TNCR = _CODEC_DATA_SIZE;
+
+
+  
+  //AT91C_BASE_SSC->SSC_PTCR = (1 << 8); // TXTEN
+    //AT91C_BASE_SSC->SSC_PTCR = (1 << 0); // RXTEN
+
+//  
+//    // now use Buffer 0
+//    DBG_LED1_ON();
+//    //pCurrent = codec_buf + CODEC_HEADER_SIZE;
+//    pNext = codec_buf[m_codec_rx_pos] + (_CODEC_FRAME_SIZE + 2*_CODEC_HEADER_SIZE);
+//    //codec_inactivebuf = codec_buf + CODEC_BUFFERSIZE + CODEC_HEADER_SIZE;
+//    codec_inactivebuf = codec_buf + (_CODEC_FRAME_SIZE + _CODEC_HEADER_SIZE);;
+//    //CODEC_SET_ACTIVE_BUFFER(0);
+//    //codec_send_counter1 = 0;
+//    activeBuffNr = 0;
+//  }
+//  else {
+//    //pCurrent = codec_buf + CODEC_BUFFERSIZE + 2*CODEC_HEADER_SIZE;
+//    pNext = codec_buf + CODEC_HEADER_SIZE;
+////    codec_inactivebuf = codec_buf;
+//    codec_inactivebuf = codec_buf;
+//    //CODEC_SET_ACTIVE_BUFFER(1);
+//    //codec_send_counter1 = 0;
+//    activeBuffNr = 1;
+//  }
+
+  // register conf for RX
+  //if(CODEC_IS_MODE(CODEC_MODE_RX)) {
+    //AT91C_BASE_SSC->SSC_RPR = (u32)pCurrent;
+    //AT91C_BASE_SSC->SSC_RCR = CODEC_BUFFERSIZE;
+//    AT91C_BASE_SSC->SSC_RNPR = (u32)pNext;
+//    AT91C_BASE_SSC->SSC_RNCR = CODEC_BUFFERSIZE;
+//    AT91C_BASE_SSC->SSC_PTCR = (1 << 0); // RXTEN
+  //}
+  
   // register conf for TX
-  if(CODEC_IS_MODE(CODEC_MODE_TX)) {
+  //if(CODEC_IS_MODE(CODEC_MODE_TX)) {
     //AT91C_BASE_SSC->SSC_TPR = (u32)pCurrent;
     //AT91C_BASE_SSC->SSC_TCR = CODEC_BUFFERSIZE;
-    AT91C_BASE_SSC->SSC_TNPR = (u32)pNext;
-    AT91C_BASE_SSC->SSC_TNCR = CODEC_BUFFERSIZE;
-    AT91C_BASE_SSC->SSC_PTCR = (1 << 8); // TXTEN
-  }
+//    AT91C_BASE_SSC->SSC_TNPR = (u32)pNext;
+//    AT91C_BASE_SSC->SSC_TNCR = CODEC_BUFFERSIZE;
+//    AT91C_BASE_SSC->SSC_PTCR = (1 << 8); // TXTEN
+  //}
   //* Enable receiver / transmitter
   //AT91C_BASE_SSC->SSC_CR = AT91C_SSC_RXEN|AT91C_SSC_TXEN;
 }
 
-void UDP_process(void)
+void UDP_process_(void)
 {
   if(CODEC_GET_ACTIVE_BUFFER() == 1) {
     //if(codec_send_counter0 == CODEC_BUFFERSIZE/2) // the buffer is sent
@@ -304,17 +468,37 @@ void UDP_process(void)
 
 void UDP_process_incomming()
 {
+  //*** DEFINITON ***
   u16 us;
   t_codec_hdr hdr_buf;
+
+  //*** INITIALIZATION ***
+  //*** PARAMETER CHECK ***
+  //*** PROGRAM CODE ***
   
-  ax88796RetreivePacketData( (u8*)&hdr_buf, CODEC_HEADER_SIZE );
-    
-  ax88796RetreivePacketData( codec_tx_pointer, CODEC_FRAME_SIZE );
+  if(!CODEC_IS_MODE(CODEC_MODE_TX))
+    return;
   
-  if(codec_tx_pointer >= CODEC_FRAME_SIZE + codec_buf) {
-    codec_tx_pointer = codec_buf;
-  }
-  codec_tx_pointer += CODEC_FRAME_SIZE;
 }
+
+//****************************************************************************
+// CODEC_stop
+//
+// Parameters: void
+// Return type: void
+// Starts Codec RX and TX
+//
+//****************************************************************************
+void CODEC_stop(void)
+{
+  //*** DEFINITON ***
+  //*** INITIALIZATION ***
+  //*** PARAMETER CHECK ***
+  //*** PROGRAM CODE ***
+   //* Disable receiver / transmitter
+  AT91C_BASE_SSC->SSC_CR = AT91C_SSC_RXDIS|AT91C_SSC_TXDIS;
+}
+
+
 
 // end of main

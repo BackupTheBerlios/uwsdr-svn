@@ -1,0 +1,956 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<project>
+  <fileVersion>2</fileVersion>
+  <configuration>
+    <name>Debug</name>
+    <outputs>
+      <file>$PROJ_DIR$\DEBUG\Obj\uip.r79</file>
+      <file>$PROJ_DIR$\ASIX\ax88796-io.c</file>
+      <file>$PROJ_DIR$\UIP-1.0\uip\nic.h</file>
+      <file>$PROJ_DIR$\include\AT91SAM_type.h</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\delay.r79</file>
+      <file>$TOOLKIT_DIR$\inc\string.h</file>
+      <file>$TOOLKIT_DIR$\inc\DLib_Threads.h</file>
+      <file>$PROJ_DIR$\include\ioat91sam7s256.h</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\main.r79</file>
+      <file>$TOOLKIT_DIR$\inc\DLib_Defaults.h</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\uip.pbi</file>
+      <file>$PROJ_DIR$\main.h</file>
+      <file>$PROJ_DIR$\ASIX\ax88796_io.c</file>
+      <file>$PROJ_DIR$\settings\at91SAM7S256_64KRAM.xcl</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\ax88796-io.pbi</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\ax88796.pbi</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\timer.pbi</file>
+      <file>$PROJ_DIR$\DEBUG\List\uip_arp.lst</file>
+      <file>$PROJ_DIR$\DEBUG\List\main.lst</file>
+      <file>$PROJ_DIR$\UIP-1.0\uip\uip.h</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\uip_arp.pbi</file>
+      <file>$PROJ_DIR$\DEBUG\List\ax88796-old.lst</file>
+      <file>$TOOLKIT_DIR$\inc\DLib_Product.h</file>
+      <file>$PROJ_DIR$\DEBUG\Exe\uwsdr-be.d79</file>
+      <file>$PROJ_DIR$\ASIX\ax88796_io.h</file>
+      <file>$PROJ_DIR$\DEBUG\List\delay.lst</file>
+      <file>$PROJ_DIR$\DEBUG\List\Cstartup_SAM7.lst</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\nic.pbi</file>
+      <file>$PROJ_DIR$\DEBUG\List\ax88796-io.lst</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\ax88796-old.r79</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\ax88796_io.pbi</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\I2C.r79</file>
+      <file>$PROJ_DIR$\DEBUG\List\uip.lst</file>
+      <file>$PROJ_DIR$\DEBUG\List\ax88796.lst</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\ax88796-old.pbi</file>
+      <file>$TOOLKIT_DIR$\inc\stdint.h</file>
+      <file>$PROJ_DIR$\DEBUG\List\ax88796_io.lst</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\main.pbi</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\clock-arch.r79</file>
+      <file>$PROJ_DIR$\SYSTEM\bit.h</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\codec.r79</file>
+      <file>$PROJ_DIR$\UIP-1.0\uip\clock-arch.h</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\Cstartup_SAM7.pbi</file>
+      <file>$TOOLKIT_DIR$\inc\xencoding_limits.h</file>
+      <file>$PROJ_DIR$\include\AT91SAM7S256_inc.h</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\control.r79</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\delay.pbi</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\uip_arp.r79</file>
+      <file>$PROJ_DIR$\DEBUG\List\adc.lst</file>
+      <file>$PROJ_DIR$\SYSTEM\control.h</file>
+      <file>$PROJ_DIR$\DEBUG\List\Cstartup.lst</file>
+      <file>$PROJ_DIR$\DEBUG\List\clock-arch.lst</file>
+      <file>$PROJ_DIR$\CONFIG\config.h</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\uwsdr-be.pbd</file>
+      <file>$PROJ_DIR$\UIP-1.0\uip\timer.h</file>
+      <file>$PROJ_DIR$\SYSTEM\types.h</file>
+      <file>$PROJ_DIR$\ASIX\ax88796.h</file>
+      <file>$PROJ_DIR$\DEBUG\List\codec.lst</file>
+      <file>$TOOLKIT_DIR$\lib\dl4tpainl8n.r79</file>
+      <file>$TOOLKIT_DIR$\inc\inttypes.h</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\adc.pbi</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\I2C.pbi</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\ax88796_io.r79</file>
+      <file>$PROJ_DIR$\DEBUG\List\uwsdr-be.map</file>
+      <file>$TOOLKIT_DIR$\inc\intrinsics.h</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\Cstartup.r79</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\nic.r79</file>
+      <file>$PROJ_DIR$\DEBUG\List\control.lst</file>
+      <file>$PROJ_DIR$\UIP-1.0\uip\uip_arch.h</file>
+      <file>$PROJ_DIR$\UIP-1.0\uip\uip_arp.h</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\adc.r79</file>
+      <file>$PROJ_DIR$\ASIX\ax88796-old.c</file>
+      <file>$PROJ_DIR$\ASIX\ax88796-io.h</file>
+      <file>$PROJ_DIR$\ASIX\ax88796-old.h</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\timer.r79</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\clock-arch.pbi</file>
+      <file>$PROJ_DIR$\UIP-1.0\uip\clock.h</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\Cstartup_SAM7.r79</file>
+      <file>$PROJ_DIR$\DEBUG\List\timer.lst</file>
+      <file>$PROJ_DIR$\include\lib_AT91SAM7S256.h</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\control.pbi</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\ax88796-io.r79</file>
+      <file>$PROJ_DIR$\SYSTEM\adc.h</file>
+      <file>$PROJ_DIR$\DEBUG\List\nic.lst</file>
+      <file>$TOOLKIT_DIR$\lib\dl4tpainl8n.h</file>
+      <file>$TOOLKIT_DIR$\inc\yvals.h</file>
+      <file>$PROJ_DIR$\DEBUG\List\I2C.lst</file>
+      <file>$PROJ_DIR$\SYSTEM\I2C.h</file>
+      <file>$TOOLKIT_DIR$\inc\time.h</file>
+      <file>$TOOLKIT_DIR$\inc\ysizet.h</file>
+      <file>$PROJ_DIR$\CODEC\codec.h</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\codec.pbi</file>
+      <file>$PROJ_DIR$\SYSTEM\delay.h</file>
+      <file>$PROJ_DIR$\DEBUG\Obj\ax88796.r79</file>
+      <file>$PROJ_DIR$\ASIX\ax88796.c</file>
+      <file>$PROJ_DIR$\CODEC\codec.c</file>
+      <file>$PROJ_DIR$\CONFIG\uipopt.h</file>
+      <file>$PROJ_DIR$\CONFIG\uip-conf.h</file>
+      <file>$PROJ_DIR$\Startup\Cstartup.s79</file>
+      <file>$PROJ_DIR$\Startup\Cstartup_SAM7.c</file>
+      <file>$PROJ_DIR$\SYSTEM\adc.c</file>
+      <file>$PROJ_DIR$\SYSTEM\control.c</file>
+      <file>$PROJ_DIR$\SYSTEM\debug.h</file>
+      <file>$PROJ_DIR$\SYSTEM\delay.c</file>
+      <file>$PROJ_DIR$\SYSTEM\I2C.c</file>
+      <file>$PROJ_DIR$\UIP-1.0\uip\clock-arch.c</file>
+      <file>$PROJ_DIR$\UIP-1.0\uip\nic.c</file>
+      <file>$PROJ_DIR$\UIP-1.0\uip\timer.c</file>
+      <file>$PROJ_DIR$\UIP-1.0\uip\uip.c</file>
+      <file>$PROJ_DIR$\UIP-1.0\uip\uip_arp.c</file>
+      <file>$PROJ_DIR$\main.c</file>
+    </outputs>
+    <file>
+      <name>$PROJ_DIR$\ASIX\ax88796-io.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 81 28</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 14</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 72 52 79 7 55 3 64</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 72 52 79 7 55 3 64</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\ASIX\ax88796_io.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 62 36</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 30</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 52 79 7 55 3 64 24</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\DEBUG\Exe\uwsdr-be.d79</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 63</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 13 65 77 31 70 81 93 38 40 45 4 8 66 74 0 47 58</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 23 63</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\DEBUG\Obj\uwsdr-be.pbd</name>
+      <inputs>
+        <tool>
+          <name>BILINK</name>
+          <file> 42 61 60 14 15 75 91 80 46 37 27 16 10 20</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\ASIX\ax88796-old.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 29 21</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 34</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 52 79 7 55 3 64 73 19 96 97 59 35 85 9 84 22 43 6 69 2 56 102 92 11 90</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 52 79 7 55 3 64 73 19 96 97 59 35 85 9 22 43 6 69 2 56 102 92 11 90</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\ASIX\ax88796.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 93 33</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 15</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 52 79 7 55 3 64 56 19 96 97 59 35 85 9 84 22 43 6 69 2 102 92 11 90</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 52 79 7 55 3 64 56 19 96 97 59 35 85 9 22 43 6 69 2 102 92 11 90</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\CODEC\codec.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 40 57</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 91</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 90 52 79 7 55 3 64 19 96 97 59 35 85 9 84 22 43 6 5 89 92 87 56</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 90 52 79 7 55 3 64 19 96 97 59 35 85 9 22 43 6 5 89 92 87 56</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Startup\Cstartup.s79</name>
+      <outputs>
+        <tool>
+          <name>AARM</name>
+          <file> 65 50</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>AARM</name>
+          <file> 44</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Startup\Cstartup_SAM7.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 77 26</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 42</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 52 79 7 55 3 64</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 52 79 7 55 3 64</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\SYSTEM\adc.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 70 48</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 60</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 82 52 79 7 55 3 64</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 82 52 79 7 55 3 64</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\SYSTEM\control.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 45 67</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 80</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 49 52 79 7 55 3 64</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 49 52 79 7 55 3 64</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\SYSTEM\delay.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 4 25</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 46</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 52 79 7 55 3 64 92</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 52 79 7 55 3 64 92</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\SYSTEM\I2C.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 31 86</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 61</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 92 55 3 52 79 7 64 39</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 92 55 3 52 79 7 64 39</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\UIP-1.0\uip\clock-arch.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 38 51</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 75</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 41 88 85 9 84 22 43 6 89</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 41 88 85 9 22 43 6 89</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\UIP-1.0\uip\nic.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 66 83</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 27</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 2 19 96 52 79 7 55 3 64 97 59 35 85 9 84 22 43 6 56</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 2 19 96 52 79 7 55 3 64 97 59 35 85 9 22 43 6 56</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\UIP-1.0\uip\timer.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 74 78</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 16</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 76 41 54</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 76 41 54</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\UIP-1.0\uip\uip.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 0 32</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 10</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 52 79 7 55 3 64 19 96 97 59 35 85 9 84 22 43 6 68 90 49 5 89</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 52 79 7 55 3 64 19 96 97 59 35 85 9 22 43 6 68 90 49 5 89</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\UIP-1.0\uip\uip_arp.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 47 17</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 20</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 69 19 96 52 79 7 55 3 64 97 59 35 85 9 84 22 43 6 5 89</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 69 19 96 52 79 7 55 3 64 97 59 35 85 9 22 43 6 5 89</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\main.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 8 18</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 37</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 52 79 7 55 3 64 56 90 19 96 97 59 35 85 9 84 22 43 6 69 2 54 76 41 102 92 87</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 52 79 7 55 3 64 56 90 19 96 97 59 35 85 9 22 43 6 69 2 54 76 41 102 92 87</file>
+        </tool>
+      </inputs>
+    </file>
+  </configuration>
+  <configuration>
+    <name>Release</name>
+    <outputs>
+      <file>$PROJ_DIR$\include\AT91SAM_type.h</file>
+      <file>$PROJ_DIR$\include\ioat91sam7s256.h</file>
+      <file>$PROJ_DIR$\SYSTEM\flashupdate.c</file>
+      <file>$PROJ_DIR$\Funk\CC1000if.h</file>
+      <file>$PROJ_DIR$\Release\Obj\timeout.r79</file>
+      <file>$PROJ_DIR$\USB\cdc_enumerate.h</file>
+      <file>$PROJ_DIR$\USB\cdc_enumerate.c</file>
+      <file>$PROJ_DIR$\Release\Obj\key.r79</file>
+      <file>$PROJ_DIR$\Release\Obj\EBoxV2.pbd</file>
+      <file>$PROJ_DIR$\Release\Obj\timeout.pbi</file>
+      <file>$PROJ_DIR$\Release\Obj\CC1000if.r79</file>
+      <file>$PROJ_DIR$\Release\Obj\lcd.r79</file>
+      <file>$PROJ_DIR$\Release\Obj\adc.r79</file>
+      <file>$PROJ_DIR$\Release\Obj\Cstartup.r79</file>
+      <file>$PROJ_DIR$\Release\Exe\EBoxV2.bin</file>
+      <file>$PROJ_DIR$\SYSTEM\flashupdate.h</file>
+      <file>$PROJ_DIR$\Release\Obj\adc.pbi</file>
+      <file>$PROJ_DIR$\Funk\DLLayer.c</file>
+      <file>$PROJ_DIR$\Release\Obj\Cstartup_SAM7.pbi</file>
+      <file>$PROJ_DIR$\SYSTEM\timeout.h</file>
+      <file>$PROJ_DIR$\include\AT91SAM7S256_inc.h</file>
+      <file>$PROJ_DIR$\Funk\funkbefehle.h</file>
+      <file>$PROJ_DIR$\Release\Obj\delay.pbi</file>
+      <file>$PROJ_DIR$\SYSTEM\flash.c</file>
+      <file>$PROJ_DIR$\Funk\CC1000if.c</file>
+      <file>$PROJ_DIR$\Release\Obj\Cstartup_SAM7.r79</file>
+      <file>$PROJ_DIR$\Release\Exe\EBoxV2.sim</file>
+      <file>$PROJ_DIR$\Release\Obj\cdc_enumerate.pbi</file>
+      <file>$PROJ_DIR$\Release\Obj\DLLayer.pbi</file>
+      <file>$PROJ_DIR$\Release\Obj\flash.pbi</file>
+      <file>$PROJ_DIR$\LCD\lcd.c</file>
+      <file>$PROJ_DIR$\Release\Obj\flashupdate.pbi</file>
+      <file>$PROJ_DIR$\Release\Obj\CC1000if.pbi</file>
+      <file>$PROJ_DIR$\System\config.h</file>
+      <file>$PROJ_DIR$\Release\Obj\cdc_enumerate.r79</file>
+      <file>$PROJ_DIR$\Release\Obj\lcd.pbi</file>
+      <file>$PROJ_DIR$\USB\USB.h</file>
+      <file>$PROJ_DIR$\Release\Obj\delay.r79</file>
+      <file>$PROJ_DIR$\Release\Obj\key.pbi</file>
+      <file>$PROJ_DIR$\SYSTEM\types.h</file>
+      <file>$TOOLKIT_DIR$\lib\dl4tpainl8n.r79</file>
+      <file>$PROJ_DIR$\Release\Obj\DLLayer.r79</file>
+      <file>$PROJ_DIR$\SYSTEM\key.c</file>
+      <file>$PROJ_DIR$\SYSTEM\timeout.c</file>
+      <file>$PROJ_DIR$\Release\Obj\USB.pbi</file>
+      <file>$TOOLKIT_DIR$\inc\intrinsics.h</file>
+      <file>$PROJ_DIR$\include\lib_AT91SAM7S256.h</file>
+      <file>$PROJ_DIR$\SYSTEM\adc.h</file>
+      <file>$PROJ_DIR$\Release\Obj\main.r79</file>
+      <file>$PROJ_DIR$\Release\List\EBoxV2.map</file>
+      <file>$PROJ_DIR$\SYSTEM\flash.h</file>
+      <file>$PROJ_DIR$\settings\at91SAM7S256_NoRemap.xcl</file>
+      <file>$PROJ_DIR$\Funk\DLLayer.h</file>
+      <file>$PROJ_DIR$\USB\USB.c</file>
+      <file>$PROJ_DIR$\LCD\lcd.h</file>
+      <file>$PROJ_DIR$\Release\Obj\USB.r79</file>
+      <file>$PROJ_DIR$\Release\Obj\main.pbi</file>
+      <file>$PROJ_DIR$\Release\Obj\flashupdate.r79</file>
+      <file>$PROJ_DIR$\Release\Obj\flash.r79</file>
+      <file>$PROJ_DIR$\SYSTEM\delay.h</file>
+      <file>$PROJ_DIR$\Startup\Cstartup.s79</file>
+      <file>$PROJ_DIR$\Startup\Cstartup_SAM7.c</file>
+      <file>$PROJ_DIR$\SYSTEM\adc.c</file>
+      <file>$PROJ_DIR$\SYSTEM\delay.c</file>
+      <file>$PROJ_DIR$\main.c</file>
+    </outputs>
+    <file>
+      <name>$PROJ_DIR$\SYSTEM\flashupdate.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 57</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 31</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 15 33 46 1 39 0 47 36 5 19 21 52 3 59 45 50</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 15 33 46 1 39 0 47 36 5 19 21 52 3 59 45 50</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\USB\cdc_enumerate.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 34</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 27</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 5 33 46 1 39 0 47 36 19 21 52 3 59 15 50 45</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 5 33 46 1 39 0 47 36 19 21 52 3 59 15 50 45</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Obj\EBoxV2.pbd</name>
+      <inputs>
+        <tool>
+          <name>BILINK</name>
+          <file> 32 18 28 44 16 27 22 29 31 38 35 56</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Funk\DLLayer.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 41</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 28</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 33 46 1 39 0 47 36 5 19 21 52 3 59 15 50 45</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 33 46 1 39 0 47 36 5 19 21 52 3 59 15 50 45</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 49 14 26</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\SYSTEM\flash.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 58</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 29</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 33 46 1 39 0 47 36 5 19 21 52 3 59 15 50 45</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 33 46 1 39 0 47 36 5 19 21 52 3 59 15 50 45</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Funk\CC1000if.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 10</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 32</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 3 33 46 1 39 0 47 36 5 19 21 52 59 15 50 45</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 3 33 46 1 39 0 47 36 5 19 21 52 59 15 50 45</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\EBoxV2.sim</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 49 14</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 51 10 13 25 41 55 12 34 37 58 57 7 11 48 40</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\LCD\lcd.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 11</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 35</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 33 46 1 39 0 47 36 5 19 21 52 3 59 15 50 45</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 33 46 1 39 0 47 36 5 19 21 52 3 59 15 50 45</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\SYSTEM\key.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 7</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 38</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 33 46 1 39 0 47 36 5 19 21 52 3 59 15 50 45</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 33 46 1 39 0 47 36 5 19 21 52 3 59 15 50 45</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\SYSTEM\timeout.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 4</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 9</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 39 0 19</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 39 0 19</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\USB\USB.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 55</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 44</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 36 39 0 5 33 46 1 47 19 21 52 3 59 15 50 45</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 36 39 0 5 33 46 1 47 19 21 52 3 59 15 50 45</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Startup\Cstartup.s79</name>
+      <outputs>
+        <tool>
+          <name>AARM</name>
+          <file> 13</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>AARM</name>
+          <file> 20</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Startup\Cstartup_SAM7.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 25</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 18</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 33 46 1 39 0 47 36 5 19 21 52 3 59 15 50 45</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 33 46 1 39 0 47 36 5 19 21 52 3 59 15 50 45</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\SYSTEM\adc.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 12</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 16</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 33 46 1 39 0 47 36 5 19 21 52 3 59 15 50 45</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 33 46 1 39 0 47 36 5 19 21 52 3 59 15 50 45</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\SYSTEM\delay.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 37</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 22</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 33 46 1 39 0 47 36 5 19 21 52 3 59 15 50 45</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 33 46 1 39 0 47 36 5 19 21 52 3 59 15 50 45</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\main.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 48</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 56</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 33 46 1 39 0 47 36 5 19 21 52 3 59 15 50 45 54</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 33 46 1 39 0 47 36 5 19 21 52 3 59 15 50 45 54</file>
+        </tool>
+      </inputs>
+    </file>
+    <forcedrebuild>
+      <name>[MULTI_TOOL]</name>
+      <tool>XLINK</tool>
+    </forcedrebuild>
+  </configuration>
+</project>
+
+

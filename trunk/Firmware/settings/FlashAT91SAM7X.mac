@@ -1,0 +1,133 @@
+// ---------------------------------------------------------
+//   ATMEL Microcontroller Software Support  -  ROUSSET  -
+// ---------------------------------------------------------
+// The software is delivered "AS IS" without warranty or
+// condition of any  kind, either express, implied or
+// statutory. This includes without limitation any warranty
+// or condition with respect to merchantability or fitness
+// for any particular purpose, or against the infringements of
+// intellectual property rights of others.
+// ---------------------------------------------------------
+// File Name           : SAM7_RAM.mac
+// Object              : Setup Macro File for IAR
+//  1.0 17/Aug/05 FBr  : Creation
+//  1.1 08/Sep/05 JPP  : Set some comment
+// ---------------------------------------------------------
+
+__var __mac_i;
+/*********************************************************************
+*
+*       _MapRAMAt0()
+*
+* Function description
+*   Maps RAM at 0.
+*/
+_MapRAMAt0(){
+    __message "Changing mapping: RAM mapped to 0";
+    __writeMemory32(0x00000001,0xFFFFFF00,"Memory");
+}
+
+/*********************************************************************
+*
+*       _InitRSTC()
+*
+* Function description
+*   Initializes the RSTC (Reset controller).
+*   This makes sense since the default is to not allow user resets, which makes it impossible to
+*   apply a second RESET via J-Link
+*/
+_InitRSTC() {
+    __writeMemory32(0xA5000001, 0xFFFFFD08,"Memory");    // Allow user reset
+}
+
+/*********************************************************************
+*
+*       _InitFlash()
+*
+* Function description
+*   Initializes the Flash time access (Memory controller).
+*   Set Flash Waite sate Single Cycle Access at Up to 30 MHz,
+*   if MCK = 47923200 I have 72 Cycle for 1 useconde (flied MC_FMR->FMCN)
+*   if MCK = 47923200 I have 48 Cycle for Non Volatile Memory Bits
+*   
+*/
+_InitFlash() {
+
+	// if ((AT91C_BASE_MC->MC_FSR & AT91C_MC_GPNVM2) == AT91C_MC_GPNVM2 )
+	if (__readMemory32(0xFFFFFF68,"Memory") & 0x400)
+	{
+	    __message " ---------------------------------------- GPNVM 2 is already Set";  
+
+	} else {
+	    __writeMemory32(0x00300100,0xFFFFFF60,"Memory");
+
+//          AT91C_BASE_MC->MC_FCR = AT91C_MC_CORRECT_KEY | AT91C_MC_FCMD_SET_GP_NVM | (AT91C_MC_PAGEN & (gpnvm_bit << 8)) ;
+            __writeMemory32(0x5A00020B,0xFFFFFF64,"Memory");
+
+	    __message " ---------------------------------------- SET GPNVM 2 ";  
+//        while ((AT91C_BASE_MC->MC_FSR & AT91C_MC_FRDY) != AT91C_MC_FRDY ) {};
+          while( !(__readMemory32(0xFFFFFF68,"Memory") & 0x1)  );
+
+	}
+
+    __writeMemory32(0x00480100,0xFFFFFF60,"Memory");
+}
+
+/*********************************************************************
+*
+*       _InitPLL()
+* Function description
+*   Initializes the PMC.
+*   1. Enable the Main Oscillator
+*   2. Configure PLL to 96MHz
+*   3. Switch Master Clock (MCK) on PLL/2 = 48MHz
+*/
+    _InitPLL() {
+
+    __message "Set Main Oscillator";
+    __writeMemory32(0x00004001,0xFFFFFc20,"Memory");    // MOSC
+    while( !(__readMemory32(0xFFFFFc68,"Memory") & 0x1)  );
+
+    __message "Set PLL to 96MHz";
+    __writeMemory32(0x10483f0e,0xFFFFFc2c,"Memory");    // LOCK
+    while( !(__readMemory32(0xFFFFFc68,"Memory") & 0x4)  );
+
+    __message "Set Master Clock to 48MHz";
+    __writeMemory32(0x00000004,0xFFFFFc30,"Memory");    // MCKRDY
+    while( !(__readMemory32(0xFFFFFc68,"Memory") & 0x8)  );
+    __writeMemory32(0x00000007,0xFFFFFc30,"Memory");    // MCKRDY
+    while( !(__readMemory32(0xFFFFFc68,"Memory") & 0x8)  );
+}
+
+/*********************************************************************
+*
+*       execUserFlashInit() : JTAG set to 32kHz
+*/
+execUserFlashInit()
+{
+    __message " ---------------------------------------- FLASH Download V1.3";  
+    __message " ---------------------------------------- 14/November/2005";  
+    __hwReset(500);                     // Hardware Reset (JTAG is already configured to 32kHz)
+    _InitPLL();                         // Allows to load Code at JTAG Full Speed
+    _InitFlash();                       // Allows to Read Write Flash
+    _MapRAMAt0();                       // Remap RAM to address 0
+
+//*  Get the Chip ID (AT91C_DBGU_C1R & AT91C_DBGU_C2R
+    __mac_i=__readMemory32(0xFFFFF240,"Memory");
+    __message " ---------------------------------------- Chip ID   0x",__mac_i:%X;  
+    __mac_i=__readMemory32(0xFFFFF244,"Memory");
+    __message " ---------------------------------------- Extention 0x",__mac_i:%X;  
+    __mac_i=__readMemory32(0xFFFFFF6C,"Memory");
+    __message " ---------------------------------------- Flash Version 0x",__mac_i:%X;  
+
+}
+
+/*********************************************************************
+*
+*       execUserFlashReset() : JTAG set to Full Speed
+*/
+execUserFlashReset()
+{
+    __message "execUserFlashReset()";
+    _InitRSTC();
+}

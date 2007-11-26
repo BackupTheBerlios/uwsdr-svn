@@ -2017,11 +2017,11 @@ u16 uip_process(u8_t flag)
   UIP_STAT(++uip_stat.ip.sent);
   /* Return and let the caller do the actual transmission. */
   uip_flags = 0;
-  return;
+  return 0;
  drop:
   uip_len = 0;
   uip_flags = 0;
-  return;
+  return 0;
 }
 /*---------------------------------------------------------------------------*/
 u16_t
