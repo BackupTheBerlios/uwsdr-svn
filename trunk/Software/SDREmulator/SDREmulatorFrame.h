@@ -28,7 +28,7 @@
 class CSDREmulatorFrame : public wxFrame {
 
     public:
-	CSDREmulatorFrame(const wxString& address, unsigned int controlPort, unsigned int dataPort, bool muted, unsigned int maxSamples, bool delay);
+	CSDREmulatorFrame(const wxString& address, unsigned int controlPort, bool muted, unsigned int maxSamples, bool delay);
 	virtual ~CSDREmulatorFrame();
 
 	void onClose(wxCloseEvent& event);

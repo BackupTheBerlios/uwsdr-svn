@@ -14,7 +14,7 @@ The Tobias configuration is for testing the back-end hardware. It is only enable
 Windows
 -------
 
-Everything required to build the software is to be found in the SVN repository, but you will also need Visual C++ 6.0 or Visual C++ Express and wxWidgets 2.8.0 or later. The standard installation of wxWidgets puts it into a folder in the root directory, this folder name is hard coded in the Visual C++ project files. This is easily changed to match your installation.
+Everything required to build the software is to be found in the SVN repository, but you will also need Visual C++ 6.0 or Visual C++ Express 2008 and wxWidgets 2.8.0 or later. The standard installation of wxWidgets puts it into a folder in the root directory, this folder name is hard coded in the Visual C++ project files. This is easily changed to match your installation.
 
 For building using Visual C++ 6.0 you should use the UWSDR.dsw file and for Visual C++ Express you should use the UWSDR.sln file.
 

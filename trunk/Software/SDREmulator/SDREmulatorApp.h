@@ -43,7 +43,6 @@ class CSDREmulatorApp : public wxApp {
 	bool               m_muted;
 	wxString           m_address;
 	unsigned int       m_controlPort;
-	unsigned int       m_dataPort;
 	unsigned int       m_maxSamples;
 	bool               m_delay;
 };

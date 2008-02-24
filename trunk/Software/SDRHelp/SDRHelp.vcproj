@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="SDR Help"
 	ProjectGUID="{1D764F75-AAD5-42D9-A9D3-F2980CD1D42F}"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -46,7 +47,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.3\lib\vc_dll\mswd&quot;;&quot;C:\wxWidgets-2.8.3\include&quot;"
+				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.7\lib\vc_dll\mswd&quot;;&quot;C:\wxWidgets-2.8.7\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;WXUSINGDLL;_WINDOWS;NOPCH"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -78,10 +79,12 @@
 				OutputFile="../Debug/SDRHelp.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="C:\wxWidgets-2.8.3\lib\vc_dll"
+				AdditionalLibraryDirectories="C:\wxWidgets-2.8.7\lib\vc_dll"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/SDRHelp.pdb"
 				SubSystem="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -103,9 +106,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -145,7 +145,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="1"
 				InlineFunctionExpansion="0"
-				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.3\lib\vc_dll\msw&quot;;&quot;C:\wxWidgets-2.8.3\include&quot;"
+				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.7\lib\vc_dll\msw&quot;;&quot;C:\wxWidgets-2.8.7\include&quot;"
 				PreprocessorDefinitions="WIN32;__WXMSW__;WXUSINGDLL;_WINDOWS;NOPCH"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -176,9 +176,11 @@
 				OutputFile="../Release/SDRHelp.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="C:\wxWidgets-2.8.3\lib\vc_dll"
+				AdditionalLibraryDirectories="C:\wxWidgets-2.8.7\lib\vc_dll"
 				ProgramDatabaseFile=".\Release/SDRHelp.pdb"
 				SubSystem="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -200,9 +202,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"

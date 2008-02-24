@@ -38,14 +38,13 @@ m_address(address),
 m_port(port),
 m_remAddr(),
 m_remAddrLen(0U),
-m_id(),
-m_callback(),
+m_id(0),
+m_callback(NULL),
 m_fd(-1),
 m_buffer(NULL),
-m_count(0U)
+m_count(0U),
+m_enabled(false)
 {
-	for (unsigned int i = 0U; i < MAX_CALLBACKS; i++)
-		m_callback[i] = NULL;
 }
 
 CUDPDataReader::~CUDPDataReader()
@@ -54,12 +53,10 @@ CUDPDataReader::~CUDPDataReader()
 
 void CUDPDataReader::setCallback(ISocketCallback* callback, int id)
 {
-	for (unsigned int i = 0U; i < MAX_CALLBACKS; i++) {
-		if (m_callback[i] == NULL) {
-			m_callback[i] = callback;
-			m_id[i]       = id;
-		}
-	}
+	wxASSERT(callback != NULL);
+
+	m_callback = callback;
+	m_id       = id;
 }
 
 bool CUDPDataReader::open()
@@ -137,6 +134,8 @@ bool CUDPDataReader::open()
 	}
 
 	m_buffer = new char[MAX_SOCK_SIZE];
+
+	m_enabled = true;
 	m_count++;
 
 	::wxLogMessage(wxT("UDPDataReader: started with address %s and port %d"), m_address.c_str(), m_port);
@@ -149,6 +148,8 @@ bool CUDPDataReader::open()
 
 void CUDPDataReader::close()
 {
+	m_enabled = false;
+
 	if (m_count >= 2U) {
 		m_count--;
 		return;
@@ -218,6 +219,9 @@ bool CUDPDataReader::readSocket()
 	if (ret == 0)
 		return true;
 
+	if (!m_enabled)
+		return true;
+
 	struct sockaddr addr;
 #if defined(__WINDOWS__)
 	int size = sizeof(struct sockaddr);
@@ -252,16 +256,8 @@ bool CUDPDataReader::readSocket()
 		return true;
 	}
 
-	if (len > 0) {
-		for (unsigned int i = 0U; i < MAX_CALLBACKS; i++) {
-			if (m_callback[i] == NULL)
-				break;
-
-			bool ret = m_callback[i]->callback(m_buffer, len, m_id[i]);
-			if (ret)
-				break;
-		}
-	}
+	if (m_callback != NULL)
+		return m_callback->callback(m_buffer, len, m_id);
 
 	return true;
 }

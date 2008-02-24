@@ -388,7 +388,15 @@ Re-ordered the modes in the GUI and added USB and LSB data modes.
 Added new .sdr files for the SoftRock RXTX.
 
 
-Version 0.8.2 - May 2007
+Version 0.8.2 - March 2008
 ==============================
 
-Convert all communication to the UWSDR hardware to UDP.
+Convert all communication to and from the UWSDR hardware to UDP.
+
+Update to Visual Studio Express 2008.
+
+Update to wxWidgets 2.8.7.
+
+Update to PortAudio 20071207.
+
+Removed SDREmulator from the build until it's fixed.

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,8 +22,15 @@
 #include <wx/wx.h>
 #include <wx/socket.h>
 
+#include "SocketCallback.h"
 
-class CSDRSetupFrame : public wxFrame {
+enum REPLY {
+	REPLY_NONE,
+	REPLY_ACK,
+	REPLY_NAK
+};
+
+class CSDRSetupFrame : public wxFrame, public ISocketCallback {
 
     public:
 	CSDRSetupFrame();
@@ -31,10 +38,9 @@ class CSDRSetupFrame : public wxFrame {
 
 	void onExecute(wxCommandEvent& event);
 
-	virtual bool setNewSDR(wxSocketClient* socket, const wxIPV4address& control) const;
-	virtual bool setNewDSP(wxSocketClient* socket, const wxIPV4address& address) const;
+	bool CSDRSetupFrame::setNew(const wxIPV4address& oldControl, const wxIPV4address& newControl, const wxIPV4address& dsp);
 
-	virtual bool sendCommand(wxSocketClient* socket, const wxString& command) const;
+	virtual bool callback(char* buffer, unsigned int len, int id);
 
     private:
 	wxTextCtrl* m_oldSDRAddress;
@@ -42,6 +48,7 @@ class CSDRSetupFrame : public wxFrame {
 	wxTextCtrl* m_sdrAddress;
 	wxTextCtrl* m_sdrPort;
 	wxTextCtrl* m_dspAddress;
+	REPLY       m_reply;
 
 	DECLARE_EVENT_TABLE()
 };

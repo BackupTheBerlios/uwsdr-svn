@@ -2,8 +2,8 @@
 
 This file is part of a program that implements a Software-Defined Radio.
 
-Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
+Copyright (C) 2004, 2005, 2006, 2007, 2008 by Frank Brickle, AB2KT and Bob McGwier, N4HY
+Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -39,43 +39,19 @@ Bridgewater, NJ 08807
 #include "CXB.h"
 
 
-enum DCBMode {
-	DCB_LOW,
-	DCB_MED,
-	DCB_HIGH,
-	DCB_SUPER
-};
-
-const int BLKMEM = 9;
-
 class CDCBlock {
     public:
-	CDCBlock(DCBMode mode, float sampleRate, CXB* buf);
+	CDCBlock(CXB* buf);
 	~CDCBlock();
+
+	void reset();
 
 	void block();
 
     private:
-	DCBMode m_mode;
-	float   m_sampleRate;
-	CXB*    m_buf;
-	float   m_input[BLKMEM];
-	float   m_output[BLKMEM];
-
-	float butterworthHighpass_100_2_11025(float xin);
-	float butterworthHighpass_100_4_11025(float xin);
-	float butterworthHighpass_100_6_11025(float xin);
-	float butterworthHighpass_100_8_11025(float xin);
-
-	float butterworthHighpass_100_2_48000(float xin);
-	float butterworthHighpass_100_4_48000(float xin);
-	float butterworthHighpass_100_6_48000(float xin);
-	float butterworthHighpass_100_8_48000(float xin);
-
-	float butterworthHighpass_100_2_96000(float xin);
-	float butterworthHighpass_100_4_96000(float xin);
-	float butterworthHighpass_100_6_96000(float xin);
-	float butterworthHighpass_100_8_96000(float xin);
+	CXB*  m_buf;
+	float m_xm1;
+	float m_ym1;
 };
 
 #endif

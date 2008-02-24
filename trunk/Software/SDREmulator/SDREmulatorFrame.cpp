@@ -54,7 +54,7 @@ BEGIN_EVENT_TABLE(CSDREmulatorFrame, wxFrame)
 	EVT_CLOSE(CSDREmulatorFrame::onClose)
 END_EVENT_TABLE()
 
-CSDREmulatorFrame::CSDREmulatorFrame(const wxString& address, unsigned int controlPort, unsigned int dataPort, bool muted, unsigned int maxSamples, bool delay) :
+CSDREmulatorFrame::CSDREmulatorFrame(const wxString& address, unsigned int controlPort, bool muted, unsigned int maxSamples, bool delay) :
 wxFrame(NULL, -1, wxString(wxT("uWave SDR Emulator")), wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX  | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN),
 m_txFreq(),
 m_rxFreq(),

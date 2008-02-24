@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,6 +17,8 @@
  */
 
 #include "SDRSetupFrame.h"
+#include "UDPDataReader.h"
+#include "UDPDataWriter.h"
 
 #include <wx/file.h>
 
@@ -39,7 +41,8 @@ m_oldSDRAddress(NULL),
 m_oldSDRControlPort(NULL),
 m_sdrAddress(NULL),
 m_sdrPort(NULL),
-m_dspAddress(NULL)
+m_dspAddress(NULL),
+m_reply(REPLY_NONE)
 {
 	SetIcon(wxICON(SDRSetup));
 
@@ -167,92 +170,75 @@ void CSDRSetupFrame::onExecute(wxCommandEvent& WXUNUSED(event))
 		return;
 	}
 
-	// Everything is valid now, now to send the data to the SDR
-	wxSocketClient* socket = new wxSocketClient();
-
-	bool ret = socket->Connect(oldControl);
-	if (!ret) {
-		::wxMessageBox(_("Cannot connect to the SDR"), _("SDRSetup Error"), wxICON_ERROR);
-		socket->Destroy();
-		return;
-	}
-
-	socket->SetTimeout(10);
-
-	ret = setNewSDR(socket, newControl);
-	if (!ret) {
-		socket->Destroy();
-		return;
-	}
-
-	ret = setNewDSP(socket, dsp);
-	if (!ret) {
-		socket->Destroy();
-		return;
-	}
-
-	socket->Destroy();
-
-	::wxLogMessage(_("SDR updated succesfully"));
-
-	Close(true);
+	bool ret = setNew(oldControl, newControl, dsp);
+	if (ret)
+		Close(true);
 }
 
-bool CSDRSetupFrame::setNewSDR(wxSocketClient* socket, const wxIPV4address& control) const
+bool CSDRSetupFrame::callback(char* buffer, unsigned int WXUNUSED(len), int WXUNUSED(id))
 {
-	wxString command;
-
-	command.Printf(wxT("SI%s,%u;"), control.IPAddress().c_str(), control.Service());
-
-	return sendCommand(socket, command);
-}
-
-bool CSDRSetupFrame::setNewDSP(wxSocketClient* socket, const wxIPV4address& dsp) const
-{
-	wxString command;
-
-	command.Printf(wxT("SD%s;"), dsp.IPAddress().c_str());
-
-	return sendCommand(socket, command);
-}
-
-bool CSDRSetupFrame::sendCommand(wxSocketClient* socket, const wxString& command) const
-{
-	socket->Write(command.c_str(), command.Length());
-
-	bool ret = socket->Error();
-	if (ret) {
-		::wxMessageBox(_("Error writing to the SDR\n") + command, _("SDRSetup Error"), wxICON_ERROR);
-		return false;
-	}
-
-	ret = socket->WaitForRead();
-	if (!ret) {
-		::wxMessageBox(_("Error when waiting for the SDR"), _("SDRSetup Error"), wxICON_ERROR);
-		return false;
-	}
-
-	char buffer[65];
-	socket->Read(buffer, 64);
-
-	ret = socket->Error();
-	if (ret) {
-		::wxMessageBox(_("Error reading from the SDR"), _("SDRSetup Error"), wxICON_ERROR);
-		return false;
-	}
-
-	int n = socket->LastCount();
-	buffer[n] = '\0';
-
-	if (::strncmp(buffer, "NK", 2) == 0) {
-		::wxMessageBox(_("Received an error from the SDR\n") + wxString(buffer), _("SDRSetup Error"), wxICON_ERROR);
-		return false;
-	}
-
-	if (::strncmp(buffer, "AK", 2) != 0) {
-		::wxMessageBox(_("Received an unknown reply from the SDR\n") + wxString(buffer), _("SDRSetup Error"), wxICON_ERROR);
-		return false;
-	}
+	if (::strncmp(buffer, "AK", 2) == 0)
+		m_reply = REPLY_ACK;
+	else if (::strncmp(buffer, "NK", 2) == 0)
+		m_reply = REPLY_NAK;
+	else if (::strncmp(buffer, "DR", 2) == 0)
+		{ }
 
 	return true;
+}
+
+bool CSDRSetupFrame::setNew(const wxIPV4address& oldControl, const wxIPV4address& newControl, const wxIPV4address& dsp)
+{
+	wxString command;
+
+	command.Printf(wxT("SI%s,%u;SD%s;"), newControl.IPAddress().c_str(), newControl.Service(), dsp.IPAddress().c_str());
+
+	CUDPDataWriter* writer = new CUDPDataWriter(oldControl.IPAddress(), oldControl.Service());
+	CUDPDataReader* reader = new CUDPDataReader(oldControl.IPAddress(), oldControl.Service());
+	reader->setCallback(this, 0);
+
+	bool ret = reader->open();
+	if (!ret)
+		return false;
+
+	ret = writer->open();
+	if (!ret) {
+		reader->close();
+		return false;
+	}
+
+	for (unsigned int i = 0U; i < 20U && m_reply == REPLY_NONE; i++) {
+		if ((i % 4U) == 0U) {
+			ret = writer->write(command.c_str(), command.Length());
+			if (!ret) {
+				reader->close();
+				writer->close();
+				::wxMessageBox(_("Error writing to the SDR"), _("SDRSetup Error"), wxICON_ERROR);
+				return false;
+			}
+		}
+
+		::wxMilliSleep(500UL);
+	}
+
+	reader->close();
+	writer->close();
+
+	switch (m_reply) {
+		case REPLY_ACK:
+			::wxLogMessage(_("SDR updated succesfully"));
+			return true;
+
+		case REPLY_NAK:
+			::wxMessageBox(_("Received an error from the SDR"), _("SDRSetup Error"), wxICON_ERROR);
+			return false;
+
+		case REPLY_NONE:
+			::wxMessageBox(_("Timed out when waiting for the SDR"), _("SDRSetup Error"), wxICON_ERROR);
+			return false;
+
+		default:
+			::wxMessageBox(_("Received an unknown reply from the SDR"), _("SDRSetup Error"), wxICON_ERROR);
+			return false;
+	}
 }

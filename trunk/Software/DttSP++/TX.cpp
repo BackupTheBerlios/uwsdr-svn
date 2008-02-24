@@ -3,7 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ m_tick(0UL)
 
 	m_iq = new CCorrectIQ(m_oBuf);
 
-	m_dcBlock = new CDCBlock(DCB_MED, sampleRate, m_iBuf);
+	m_dcBlock = new CDCBlock(m_iBuf);
 
 	m_oscillator1 = new COscillator(m_oBuf, sampleRate);
 	m_oscillator2 = new COscillator(m_iBuf, sampleRate);

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -109,7 +109,7 @@ VOICEERROR CVoiceKeyer::send(const wxString& fileName, VOICESTATUS status)
 		}
 
 		VOICEERROR err = ::wxGetApp().sendAudio(wxEmptyString, VOICE_TX_ON);
-		if (err != CW_ERROR_NONE) {
+		if (err != VOICE_ERROR_NONE) {
 			m_file->close();
 			m_file = NULL;
 			return err;

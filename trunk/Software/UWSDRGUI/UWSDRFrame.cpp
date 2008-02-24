@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -1450,13 +1450,23 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 	}
 }
 
-void CUWSDRFrame::sdrCommandNAK(const wxString& message, int WXUNUSED(id))
+void CUWSDRFrame::commandAck(const wxString& WXUNUSED(message), int WXUNUSED(id))
+{
+}
+
+void CUWSDRFrame::commandNak(const wxString& message, int WXUNUSED(id))
 {
 	::wxLogError(wxT("Received a NAK from the SDR: ") + message);
 	::wxMessageBox(_("Received a NAK from the SDR\n") + message, _("uWave SDR Error"), wxICON_ERROR);
 }
 
-void CUWSDRFrame::sdrConnectionLost(int WXUNUSED(id))
+void CUWSDRFrame::commandMisc(const wxString& message, int WXUNUSED(id))
+{
+	::wxLogError(wxT("Unknown reply from the SDR: ") + message);
+	::wxMessageBox(_("Unknown reply from the SDR\n") + message, _("uWave SDR Error"), wxICON_ERROR);
+}
+
+void CUWSDRFrame::connectionLost(int WXUNUSED(id))
 {
 	::wxLogError(wxT("Connection to the SDR lost"));
 	::wxMessageBox(_("Connection to the SDR lost"), _("uWave SDR Error"), wxICON_ERROR);

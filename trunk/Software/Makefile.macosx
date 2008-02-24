@@ -19,7 +19,7 @@ export LIBS := $(shell $(WXCONFIG) --libs adv,core,html,net) -L$(PORTAUDIO_LIB) 
 
 export CFLAGS := -O3 -Wall -Wno-non-virtual-dtor -Wno-strict-aliasing  -DDATA_DIR='$(DATADIR)'  $(shell $(WXCONFIG) --cxxflags) -I$(PORTAUDIO_INC) -I$(FFTW3_INC)
 
-all:		GUISetup/GUISetup SDREmulator/SDREmulator SDRHelp/SDRHelp SDRSetup/SDRSetup UWSDRGUI/UWSDR install
+all:		GUISetup/GUISetup SDRHelp/SDRHelp SDRSetup/SDRSetup UWSDRGUI/UWSDR install
 
 GUISetup/GUISetup:	Common/Common.a
 		make -C GUISetup

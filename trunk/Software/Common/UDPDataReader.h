@@ -23,8 +23,6 @@
 
 #include "SocketCallback.h"
 
-const unsigned int MAX_CALLBACKS = 5U;
-
 
 class CUDPDataReader : public wxThread {
 
@@ -47,11 +45,12 @@ class CUDPDataReader : public wxThread {
 	unsigned short   m_port;
 	char*            m_remAddr;
 	unsigned int     m_remAddrLen;
-	int              m_id[MAX_CALLBACKS];
-	ISocketCallback* m_callback[MAX_CALLBACKS];
+	int              m_id;
+	ISocketCallback* m_callback;
 	int              m_fd;
 	char*            m_buffer;
 	unsigned int     m_count;
+	bool             m_enabled;
 
 	bool readSocket();
 };

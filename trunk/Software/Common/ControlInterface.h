@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,8 +24,12 @@
 
 class IControlInterface {
     public:
-	virtual void sdrCommandNAK(const wxString& message, int id) = 0;
-	virtual void sdrConnectionLost(int id) = 0;
+
+    virtual void commandAck(const wxString& message, int id) = 0;
+	virtual void commandNak(const wxString& message, int id) = 0;
+	virtual void commandMisc(const wxString& message, int id) = 0;
+
+	virtual void connectionLost(int id) = 0;
 };
 
 #endif

@@ -19,6 +19,9 @@
 #ifndef	UWSDRController_H
 #define	UWSDRController_H
 
+#include <deque>
+using namespace std;
+
 #include <wx/wx.h>
 
 #include "SDRController.h"
@@ -29,23 +32,27 @@
 #include "SocketCallback.h"
 
 
-class CUWSDRController : public ISDRController, public ISocketCallback {
+class CUWSDRController : public wxThread, public ISDRController, public ISocketCallback {
 
     public:
 	CUWSDRController(CUDPDataReader* reader, CUDPDataWriter* writer, unsigned int version);
-	virtual ~CUWSDRController();
 
 	virtual void setCallback(IControlInterface* callback, int id);
+
+	virtual void* Entry();
 
 	virtual bool open();
 	virtual void enableTX(bool on);
 	virtual void enableRX(bool on);
 	virtual void setTXAndFreq(bool transmit, const CFrequency& freq);
-	virtual void sendCommand(const char* command);
+	virtual bool sendCommand(const wxString& command);
 	virtual void setClockTune(unsigned int clock);
 	virtual void close();
 
 	virtual bool callback(char* buffer, unsigned int len, int id);
+
+    protected:
+	virtual ~CUWSDRController();
 
     private:
 	CUDPDataReader*    m_reader;
@@ -60,6 +67,10 @@ class CUWSDRController : public ISDRController, public ISocketCallback {
 	bool               m_enableRX;
 	bool               m_tx;
 	unsigned int       m_clock;
+	bool               m_replies;
+	unsigned int       m_tries;
+	deque<wxString>    m_commands;
+	wxSemaphore        m_flag;
 };
 
 #endif

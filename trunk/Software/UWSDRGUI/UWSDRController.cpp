@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,8 +18,11 @@
 
 #include "UWSDRController.h"
 
+const unsigned int MAX_TRIES = 3U;
+
 
 CUWSDRController::CUWSDRController(CUDPDataReader* reader, CUDPDataWriter* writer, unsigned int version) :
+wxThread(),
 m_reader(reader),
 m_writer(writer),
 m_id(0),
@@ -30,7 +33,11 @@ m_rxFreq(),
 m_enableTX(false),
 m_enableRX(false),
 m_tx(false),
-m_clock(99999)
+m_clock(99999),
+m_replies(false),
+m_tries(0U),
+m_commands(),
+m_flag()
 {
 	wxASSERT(m_reader != NULL);
 	wxASSERT(m_writer != NULL);
@@ -60,6 +67,9 @@ bool CUWSDRController::open()
 
 	m_reader->setCallback(this, 0);
 
+	Create();
+	Run();
+
 	return true;
 }
 
@@ -69,8 +79,11 @@ void CUWSDRController::enableTX(bool on)
 		return;
 
 	switch (m_version) {
-		case 1:
-			sendCommand(on ? "ET1;" : "ET0;");
+		case 1: {
+				wxString command = on ? wxT("ET1;") : wxT("ET0;");
+				m_commands.push_back(command);
+				m_flag.Post();
+			}
 			break;
 		default:
 			wxASSERT(false);
@@ -86,8 +99,11 @@ void CUWSDRController::enableRX(bool on)
 		return;
 
 	switch (m_version) {
-		case 1:
-			sendCommand(on ? "ER1;" : "ER0;");
+		case 1: {
+				wxString command = on ? wxT("ER1;") : wxT("ER0;");
+				m_commands.push_back(command);
+				m_flag.Post();
+			}
 			break;
 		default:
 			wxASSERT(false);
@@ -106,12 +122,13 @@ void CUWSDRController::setTXAndFreq(bool transmit, const CFrequency& freq)
 		return;
 
 	if (transmit && freq != m_txFreq) {
-		char command[25];
-
 		switch (m_version) {
-			case 1:
-				::sprintf(command, "FT%s;", freq.getString().c_str());
-				sendCommand(command);
+			case 1: {
+					wxString command;
+					command.Printf(wxT("FT%s;"), freq.getString().c_str());
+					m_commands.push_back(command);
+					m_flag.Post();
+				}
 				break;
 			default:
 				wxASSERT(false);
@@ -120,12 +137,13 @@ void CUWSDRController::setTXAndFreq(bool transmit, const CFrequency& freq)
 
 		m_txFreq = freq;
 	} else if (!transmit && freq != m_rxFreq) {
-		char command[25];
-
 		switch (m_version) {
-			case 1:
-				::sprintf(command, "FR%s;", freq.getString().c_str());
-				sendCommand(command);
+			case 1: {
+					wxString command;
+					command.Printf(wxT("FR%s;"), freq.getString().c_str());
+					m_commands.push_back(command);
+					m_flag.Post();
+				}
 				break;
 			default:
 				wxASSERT(false);
@@ -139,8 +157,11 @@ void CUWSDRController::setTXAndFreq(bool transmit, const CFrequency& freq)
 		return;
 
 	switch (m_version) {
-		case 1:
-			sendCommand(transmit ? "TX1;" : "TX0;");
+		case 1: {
+				wxString command = transmit ? wxT("TX1;") : wxT("TX0;");
+				m_commands.push_back(command);
+				m_flag.Post();
+			}
 			break;
 		default:
 			wxASSERT(false);
@@ -159,11 +180,12 @@ void CUWSDRController::setClockTune(unsigned int clock)
 
 	switch (m_version) {
 		case 1: {
-			char command[25];
-			::sprintf(command, "CF%u;", clock);
-			sendCommand(command);
+				wxString command;
+				command.Printf(wxT("CF%u;"), clock);
+				m_commands.push_back(command);
+				m_flag.Post();
+			}
 			break;
-		}
 		default:
 			wxASSERT(false);
 			break;
@@ -172,31 +194,97 @@ void CUWSDRController::setClockTune(unsigned int clock)
 	m_clock = clock;
 }
 
-void CUWSDRController::sendCommand(const char* command)
+bool CUWSDRController::sendCommand(const wxString& command)
 {
-	m_writer->write(command, ::strlen(command));
+	bool ret = m_writer->write(command.c_str(), command.Length());
+	if (!ret)
+		::wxLogError(wxT("Error sending command to the SDR - ") + command);
+
+	return ret;
+}
+
+void* CUWSDRController::Entry()
+{
+	wxASSERT(m_callback != NULL);
+
+	while (!TestDestroy()) {
+		wxSemaError ret = m_flag.WaitTimeout(100UL);
+
+		switch (ret) {
+			case wxSEMA_TIMEOUT:
+				// No replies, so retransmit the last command
+				if (m_commands.size() > 0U && !m_replies) {
+					if (m_tries >= MAX_TRIES) {
+						::wxLogError(wxT("No reply from the SDR for a command after %u tries"), MAX_TRIES);
+						m_callback->connectionLost(m_id);
+					} else {
+						sendCommand(m_commands.front());
+						m_tries++;
+					}
+
+					break;
+				}
+
+				// We have an Ack or Nak, clear the last command
+				if (m_commands.size() > 0U && m_replies) {
+					m_replies = false;
+					m_tries   = 0U;
+
+					m_commands.pop_front();
+
+					if (m_commands.size() > 0U) {
+						sendCommand(m_commands.front());
+						m_tries = 1U;
+					}
+
+					break;
+				}
+				break;
+
+			// Triggered by an incoming command
+			case wxSEMA_NO_ERROR:
+				if (m_commands.size() == 1U) {
+					sendCommand(m_commands.front());
+					m_replies = false;
+					m_tries   = 1U;
+				}
+				break;
+
+			default:
+				break;
+		}
+	}
+
+	m_reader->close();
+	m_writer->close();
+
+	return (void*)0;
 }
 
 void CUWSDRController::close()
 {
-	m_reader->close();
-	m_writer->close();
+	Delete();
 }
 
-bool CUWSDRController::callback(char* buffer, unsigned int len, int id)
+bool CUWSDRController::callback(char* buffer, unsigned int len, int WXUNUSED(id))
 {
 	wxASSERT(m_callback != NULL);
 
+	buffer[len] = '\0';
+
 	switch (m_version) {
 		case 1:
-			if (::strncmp(buffer, "AK", 2) == 0)
-				return true;
-			if (::strncmp(buffer, "NK", 2) == 0) {
-				buffer[len] = '\0';
-				m_callback->sdrCommandNAK(buffer, m_id);
-				return true;
+			if (::strncmp(buffer, "AK", 2) == 0) {
+				m_replies = true;
+				m_callback->commandAck(buffer, m_id);
+			} else if (::strncmp(buffer, "NK", 2) == 0) {
+				m_replies = true;
+				m_callback->commandNak(buffer, m_id);
+			} else {
+				m_callback->commandMisc(buffer, m_id);
 			}
-			return false;
+
+			return true;
 
 		default:
 			return false;

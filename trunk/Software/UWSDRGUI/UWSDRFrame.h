@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -64,8 +64,10 @@ class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterf
 
 	virtual void dialMoved(int id, int value);
 
-	virtual void sdrCommandNAK(const wxString& message, int id);
-	virtual void sdrConnectionLost(int id);
+	virtual void commandAck(const wxString& message, int id);
+	virtual void commandNak(const wxString& message, int id);
+	virtual void commandMisc(const wxString& message, int id);
+	virtual void connectionLost(int id);
 
 	virtual CWERROR    sendCW(unsigned int speed, const wxString& text, CWSTATUS state);
 	virtual VOICEERROR sendAudio(const wxString& fileName, VOICESTATUS state);

@@ -55,7 +55,6 @@ Section "UWSDR Program Files" SecProgram
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\GUISetup.exe"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\SDRHelp.exe"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\SDRSetup.exe"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\SDREmulator.exe"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\libfftw3f-3.dll"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\portaudio_x86.dll"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxbase28_vc_custom.dll"

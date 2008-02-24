@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="DttSP"
 	ProjectGUID="{7606DF70-7013-4060-8734-324741947083}"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -41,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.3\lib\vc_dll\mswd&quot;;&quot;C:\wxWidgets-2.8.3\include&quot;;..\Common;..\FFTW"
+				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.7\lib\vc_dll\mswd&quot;;&quot;C:\wxWidgets-2.8.7\include&quot;;..\Common;..\FFTW"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;__WXMSW__;__WXDEBUG__;WXUSINGDLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -119,7 +120,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="0"
-				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.3\lib\vc_dll\msw&quot;;&quot;C:\wxWidgets-2.8.3\include&quot;;..\Common;..\FFTW"
+				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.7\lib\vc_dll\msw&quot;;&quot;C:\wxWidgets-2.8.7\include&quot;;..\Common;..\FFTW"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;__WXMSW__;WXUSINGDLL"
 				StringPooling="true"
 				RuntimeLibrary="2"
