@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -263,11 +263,11 @@ void CSMeter::createBackground()
 
 	rxDC.SetBrush(*wxBLACK_BRUSH);
 	rxDC.SetPen(*wxBLACK_PEN);
-	rxDC.DrawEllipticArc(5, 25, SMETER_WIDTH - 10, SMETER_WIDTH - 10, 40.0, 140.0);
+	rxDC.DrawEllipse(0, 25, SMETER_WIDTH, SMETER_WIDTH);
 
 	txDC.SetBrush(*wxBLACK_BRUSH);
 	txDC.SetPen(*wxBLACK_PEN);
-	txDC.DrawEllipticArc(5, 25, SMETER_WIDTH - 10, SMETER_WIDTH - 10, 40.0, 140.0);
+	txDC.DrawEllipse(0, 25, SMETER_WIDTH, SMETER_WIDTH);
 
 	rxDC.SelectObject(wxNullBitmap);
 	txDC.SelectObject(wxNullBitmap);

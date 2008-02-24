@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2002-2004,2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2002-2004,2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -324,7 +324,7 @@ void CSoundFileWriter::write(const float* buffer, unsigned int length)
 	}
 
 	if (n != bytes)
-		::wxLogError(wxT("SoundFileWriter: error from wxFFile::Write(), wanted %u available %u"), bytes, n);
+		::wxLogError(wxT("SoundFileWriter: error from wxFFile::Write(), wanted %u available %lu"), bytes, n);
 
 	m_length += n;
 }

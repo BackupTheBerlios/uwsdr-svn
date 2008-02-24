@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2002-2004,2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2002-2004,2007,2008 by Jonathan Naylor G4KLX
  *   Copyright (C) 1999-2001 by Thomas Sailor HB9JNX
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -21,6 +21,15 @@
 
 #include <sys/types.h>
 
+#if defined(__APPLE__) && defined(__MACH__)
+#include <CoreFoundation/CoreFoundation.h>
+#include <IOKit/IOTypes.h>
+#include <IOKit/IOKitLib.h>
+#include <IOKit/serial/IOSerialKeys.h>
+#include <IOKit/IOBSD.h>
+#include <sys/param.h>
+#endif
+
 wxMutex CSerialControl::s_mutex;
 
 wxArrayString CSerialControl::getDevs()
@@ -29,8 +38,47 @@ wxArrayString CSerialControl::getDevs()
 
 	devices.Alloc(10);
 
+#if defined(__APPLE__) && defined(__MACH__)
+	mach_port_t masterPort;
+	kern_return_t ret = ::IOMasterPort(MACH_PORT_NULL, &masterPort);
+	if (ret != KERN_SUCCESS) {
+		::wxLogError(wxT("IOMasterPort() returned %d"), ret);
+		return devices;
+	}
+
+	CFMutableDictionaryRef match = ::IOServiceMatching(kIOSerialBSDServiceValue);
+	if (match == NULL)
+		::wxLogWarning(wxT("IOServiceMatching() returned NULL"));
+	else
+		::CFDictionarySetValue(match, CFSTR(kIOSerialBSDTypeKey), CFSTR(kIOSerialBSDRS232Type));
+
+	io_iterator_t services;
+	ret = ::IOServiceGetMatchingServices(masterPort, match, &services);
+	if (ret != KERN_SUCCESS) {
+		::wxLogError(wxT("IOServiceGetMatchingServices() returned %d"), ret);
+		return devices;
+	}
+
+	io_object_t modem;
+	while ((modem = ::IOIteratorNext(services))) {
+		CFTypeRef filePath = ::IORegistryEntryCreateCFProperty(modem, CFSTR(kIOCalloutDeviceKey), kCFAllocatorDefault, 0);
+		if (filePath != NULL) {
+			char port[MAXPATHLEN];
+			Boolean result = ::CFStringGetCString((const __CFString*)filePath, port, MAXPATHLEN, kCFStringEncodingASCII);
+			::CFRelease(filePath);
+
+			if (result)
+				devices.Add(port);
+
+			::IOObjectRelease(modem);
+		}
+	}
+
+	::IOObjectRelease(services);
+#else
 	for (unsigned int i = 0; s_serialList[i].name != NULL; i++)
 		devices.Add(s_serialList[i].name);
+#endif
 
 	return devices;
 }

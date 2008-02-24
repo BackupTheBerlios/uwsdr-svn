@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -61,10 +61,10 @@ const int VOICETEXT_WIDTH  = 200;
 const int VOICEKEYB_WIDTH  = 350;
 
 #elif defined(__WXMAC__)
-const int BUTTON_HEIGHT    = -1;
+const int BUTTON_HEIGHT    = 30;
 
-const int FREQDIAL_WIDTH   = 240;
-const int FREQDIAL_HEIGHT  = 240;
+const int FREQDIAL_WIDTH   = 200;
+const int FREQDIAL_HEIGHT  = 200;
 
 const int VOLSQL_WIDTH     = 90;
 const int VOLSQL_HEIGHT    = 90;
@@ -86,7 +86,7 @@ const int FREQUENCY_HEIGHT = 85;
 
 const int CONTROL_WIDTH    = 100;
 
-const int SMETER_WIDTH     = 260;
+const int SMETER_WIDTH     = 245;
 const int SMETER_HEIGHT    = 85;
 
 const int CWTEXT_WIDTH     = 650;

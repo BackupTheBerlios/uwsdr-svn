@@ -69,7 +69,7 @@ UWSDRFrame.o:	UWSDRFrame.cpp UWSDRFrame.h ../Common/ControlInterface.h CWKeyboar
 		FreqDisplay.h FreqKeypad.h ../Common/Frequency.h InfoBox.h ../Common/NullController.h ../Common/UDPDataReader.h \
 		../Common/UDPDataWriter.h SDRParameters.h ../Common/SerialControl.h SMeter.h ../Common/JackReaderWriter.h \
 		../Common/SoundCardReaderWriter.h ../Common/SoundFileWriter.h SpectrumDisplay.h \
-		../Common/SRTXRXController.h UWSDRApp.h .UWSDRController.h UWSDRDefs.h UWSDRPreferences.h UWSDR.xpm \
+		../Common/SRTXRXController.h UWSDRApp.h UWSDRController.h UWSDRDefs.h UWSDRPreferences.h UWSDR.xpm \
 		../Common/Common.h  UWSDRDataReader.h UWSDRDataWriter.h VoiceKeyboard.h
 		$(CC) $(CFLAGS) -c UWSDRFrame.cpp
 

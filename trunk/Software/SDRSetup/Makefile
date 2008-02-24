@@ -1,9 +1,11 @@
 all:		SDRSetup
 
+CFLAGS :=	-I../Common $(CFLAGS)
+
 OBJS :=		SDRSetupApp.o SDRSetupFrame.o
 
 SDRSetup:	$(OBJS)
-		$(CC) $(LDFLAGS) -o SDRSetup $(OBJS) $(LIBS)
+		$(CC) $(LDFLAGS) -o SDRSetup $(OBJS) ../Common/Common.a $(LIBS)
 
 SDRSetupApp.o:	SDRSetupApp.cpp SDRSetupApp.h SDRSetupFrame.h
 		$(CC) $(CFLAGS) -c SDRSetupApp.cpp

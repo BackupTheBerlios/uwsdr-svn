@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -146,6 +146,11 @@ bool CUWSDRDataReader::callback(char* buffer, unsigned int len, int WXUNUSED(id)
 		float floatBuffer[2];
 		floatBuffer[0] = float(iData) / 8388607.0F - 1.0F;
 		floatBuffer[1] = float(qData) / 8388607.0F - 1.0F;
+
+		if (agc > 1U) {
+			floatBuffer[0] *= float(agc);
+			floatBuffer[1] *= float(agc);
+		}
 
 		m_ringBuffer->addData(floatBuffer, 1);
 	}

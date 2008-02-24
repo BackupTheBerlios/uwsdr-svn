@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2007,2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -20,9 +20,15 @@
 
 #include "SerialControl.h"
 
+#if defined(__WXMAC__)
 const int BORDER_SIZE = 5;
-const int DEV_WIDTH   = 130;   
+const int DEV_WIDTH   = 300;
 const int PIN_WIDTH   = 110;
+#else
+const int BORDER_SIZE = 5;
+const int DEV_WIDTH   = 130;
+const int PIN_WIDTH   = 110;
+#endif
 
 const int CHECK_TXIN  = 14286;
 const int CHECK_KEYIN = 14287;

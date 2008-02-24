@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -113,7 +113,7 @@ bool CUDPDataWriter::write(const void* buffer, unsigned int len)
 	}
 
 	if (ret != int(len)) {
-		::wxLogError(wxT("UDPDataWriter: Error only wrote %d of %u bytes to the datagram socket"), ret, len);
+		::wxLogError(wxT("UDPDataWriter: Error only wrote %ld of %u bytes to the datagram socket"), ret, len);
 		return false;
 	}
 

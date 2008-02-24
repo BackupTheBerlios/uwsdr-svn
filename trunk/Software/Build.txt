@@ -75,4 +75,5 @@ Building UWSDR on Mac OS X is very similar to doing so under Linux. In each case
 
 Building the basic UWSDR is the same as for Linux except that instead of using Makefile.linux, use Makefile.macosx instead.
 
-The Mac OS X version is still not as complete as the other versions, in particular the Control Port choices are incorrect and should be switched off. This means that currently it cannot be used with a SoftRock RXTX. This should be remedied in a future release. Likewise the creation of menu and desktop entries is not supported either.
+The Mac OS X version is still not as complete as the other versions.
+

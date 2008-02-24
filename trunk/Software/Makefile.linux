@@ -59,7 +59,7 @@ install:	all
 		install -g bin -o root -m 0664 SoftRock.txt $(DATADIR)
 
 		make -C GUISetup install
-		make -C SDREmulator install
+#		make -C SDREmulator install
 		make -C SDRFiles install
 		make -C SDRHelp install
 		make -C SDRSetup install
@@ -72,7 +72,7 @@ clean:
 		make -C Common clean
 		make -C DttSP++ clean
 		make -C GUISetup clean
-		make -C SDREmulator clean
+#		make -C SDREmulator clean
 		make -C SDRHelp clean
 		make -C SDRSetup clean
 		make -C UWSDRGUI clean

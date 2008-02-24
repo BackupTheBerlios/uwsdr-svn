@@ -62,10 +62,10 @@ TwoToneReader.o:	TwoToneReader.cpp TwoToneReader.h ThreadReader.h
 		$(CC) $(CFLAGS) -c TwoToneReader.cpp
 
 UDPDataReader.o: UDPDataReader.cpp UDPDataReader.h SocketCallback.h
-		$(CC) $(CFLAGS) -c SDRDataReader.cpp
+		$(CC) $(CFLAGS) -c UDPDataReader.cpp
 
 UDPDataWriter.o: UDPDataWriter.cpp UDPDataWriter.h
-		$(CC) $(CFLAGS) -c SDRDataWriter.cpp
+		$(CC) $(CFLAGS) -c UDPDataWriter.cpp
 
 clean:
 		rm -f core Common.a *.o *~ *.bak
