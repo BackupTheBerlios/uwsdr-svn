@@ -65,7 +65,7 @@ bool CUWSDRController::open()
 	if (!ret)
 		return false;
 
-	m_reader->setCallback(this, 0);
+	m_reader->setCallback(this, 1);
 
 	Create();
 	Run();
@@ -270,21 +270,25 @@ bool CUWSDRController::callback(char* buffer, unsigned int len, int WXUNUSED(id)
 {
 	wxASSERT(m_callback != NULL);
 
-	buffer[len] = '\0';
-
 	switch (m_version) {
 		case 1:
 			if (::strncmp(buffer, "AK", 2) == 0) {
 				m_replies = true;
+				buffer[len] = '\0';
 				m_callback->commandAck(buffer, m_id);
+				return true;
 			} else if (::strncmp(buffer, "NK", 2) == 0) {
 				m_replies = true;
+				buffer[len] = '\0';
 				m_callback->commandNak(buffer, m_id);
-			} else {
+				return true;
+			} else if (::strncmp(buffer, "DR", 2) != 0) {
+				buffer[len] = '\0';
 				m_callback->commandMisc(buffer, m_id);
+				return true;
 			}
 
-			return true;
+			return false;
 
 		default:
 			return false;

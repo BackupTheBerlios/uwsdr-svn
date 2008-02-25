@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,11 +24,7 @@
 #include "SignalReader.h"
 #include "NullWriter.h"
 #include "SoundFileReader.h"
-#include "SDRDataReader.h"
-#include "SDRDataWriter.h"
 
-const int SOCKET_PARENT   = 17549;
-const int SOCKET_CHILD    = 17550;
 const int MENU_INTERNAL_1 = 17551;
 const int MENU_INTERNAL_2 = 17552;
 const int MENU_FILE       = 17553;
@@ -44,8 +40,6 @@ const CFrequency maxFreq = CFrequency(2451, 0.0);
 const CFrequency minFreq = CFrequency(2299, 0.0);
 
 BEGIN_EVENT_TABLE(CSDREmulatorFrame, wxFrame)
-	EVT_SOCKET(SOCKET_PARENT, CSDREmulatorFrame::onParentSocket)
-	EVT_SOCKET(SOCKET_CHILD,  CSDREmulatorFrame::onChildSocket)
 	EVT_MENU(wxID_EXIT,       CSDREmulatorFrame::onExit)
 	EVT_MENU(MENU_INTERNAL_1, CSDREmulatorFrame::onInternal1)
 	EVT_MENU(MENU_INTERNAL_2, CSDREmulatorFrame::onInternal2)
@@ -54,7 +48,7 @@ BEGIN_EVENT_TABLE(CSDREmulatorFrame, wxFrame)
 	EVT_CLOSE(CSDREmulatorFrame::onClose)
 END_EVENT_TABLE()
 
-CSDREmulatorFrame::CSDREmulatorFrame(const wxString& address, unsigned int controlPort, bool muted, unsigned int maxSamples, bool delay) :
+CSDREmulatorFrame::CSDREmulatorFrame(const wxString& address, unsigned int port, bool muted) :
 wxFrame(NULL, -1, wxString(wxT("uWave SDR Emulator")), wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX  | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN),
 m_txFreq(),
 m_rxFreq(),
@@ -63,7 +57,6 @@ m_rxEnable(false),
 m_txOn(false),
 m_data(NULL),
 m_started(false),
-m_server(NULL),
 m_messages(NULL)
 {
 	wxMenu* fileMenu = new wxMenu();
@@ -149,8 +142,8 @@ m_messages(NULL)
 	SetMenuBar(m_menuBar);
 
 	CSoundCardDialog soundCard(this);
-	int ret1 = soundCard.ShowModal();
-	if (ret1 != wxID_OK) {
+	int ret = soundCard.ShowModal();
+	if (ret != wxID_OK) {
 		Close(true);
 		return;
 	}
@@ -158,17 +151,9 @@ m_messages(NULL)
 	int inDev  = soundCard.getInDev();
 	int outDev = soundCard.getOutDev();
 
-	// Start the listening port for the emulator
-	bool ret2 = createListener(controlPort);
-	if (!ret2) {
-		::wxMessageBox(wxT("Cannot open the I/O ports.\nSee Emulator.log for details"));
-		Close(true);
-		return;
-	}
-
 	// Start the data reading and writing thread
-	ret2 = createDataThread(address, dataPort, inDev, outDev, muted, maxSamples, delay);
-	if (!ret2) {
+	ret = createDataThread(address, port, inDev, outDev, muted);
+	if (!ret) {
 		::wxMessageBox(wxT("Cannot open the control port.\nSee Emulator.log for details"));
 		Close(true);
 	}
@@ -176,31 +161,13 @@ m_messages(NULL)
 
 CSDREmulatorFrame::~CSDREmulatorFrame()
 {
-	if (m_server != NULL)
-		m_server->Destroy();
 }
 
-bool CSDREmulatorFrame::createListener(unsigned int port)
+bool CSDREmulatorFrame::createDataThread(const wxString& address, unsigned int port, int inDev, int outDev, bool muted)
 {
-	wxIPV4address address;
-	address.Service((unsigned short)port);
+	m_data = new CDataControl(48000.0F, address, port, inDev, outDev);
 
-	m_server = new wxSocketServer(address);
-	if (!m_server->Ok()) {
-		::wxMessageBox(wxT("problem creating the server socket"));
-		return false;
-	}
-
-	m_server->SetEventHandler(*this, SOCKET_PARENT);
-	m_server->SetNotify(wxSOCKET_CONNECTION_FLAG);
-	m_server->Notify(true);
-
-	return true;
-}
-
-bool CSDREmulatorFrame::createDataThread(const wxString& address, unsigned int port, int inDev, int outDev, bool muted, unsigned int maxSamples, bool delay)
-{
-	m_data = new CDataControl(48000.0F, address, port, inDev, outDev, maxSamples, delay);
+	m_data->setCallback(this, 0);
 
 	bool ret = m_data->open();
 	if (!ret)
@@ -213,63 +180,13 @@ bool CSDREmulatorFrame::createDataThread(const wxString& address, unsigned int p
 	return true;
 }
 
-void CSDREmulatorFrame::onParentSocket(wxSocketEvent& WXUNUSED(event))
+bool CSDREmulatorFrame::callback(char* buffer, unsigned int len, int WXUNUSED(id))
 {
-	wxSocketBase* child = m_server->Accept();
-	if (child == NULL) {
-		m_server->Close();
-		::wxMessageBox(wxT("Error on accepting the socket"));
-		return;
-	}
 
-	child->SetEventHandler(*this, SOCKET_CHILD);
-	child->SetNotify(wxSOCKET_INPUT_FLAG | wxSOCKET_LOST_FLAG);
-	child->Notify(true);
-
-	wxIPV4address peer;
-	child->GetPeer(peer);
-
-	wxString text;
-	text.Printf(wxT("Connected to %s:%u"), peer.Hostname().c_str(), peer.Service());
-
-	m_connectLabel->SetLabel(text);
+	return true;
 }
 
-void CSDREmulatorFrame::onChildSocket(wxSocketEvent& event)
-{
-	wxSocketBase* socket = event.GetSocket();
-
-	switch (event.GetSocketEvent()) {
-		case wxSOCKET_INPUT: {
-				char buffer[201];
-				socket->Read(buffer, 200);
-				if (socket->Error()) {
-					socket->Close();
-					return;
-				}
-
-				int n = socket->LastCount();
-				buffer[n] = wxT('\0');
-
-				processCommand(*socket, buffer);
-			}
-			break;
-		case wxSOCKET_LOST:
-			m_connectLabel->SetLabel(wxT("Not connected"));
-			m_txOn = false;
-			m_data->setTX(false);
-			m_txEnable = false;
-			m_rxEnable = false;
-			m_data->setMute(true);
-			socket->Destroy();
-			break;
-		default:
-			wxASSERT(false);
-			break;
-	}
-}
-
-void CSDREmulatorFrame::processCommand(wxSocketBase& socket, wxChar* buffer)
+void CSDREmulatorFrame::processCommand(char* buffer)
 {
 	wxString messages = buffer;
 
@@ -279,15 +196,14 @@ void CSDREmulatorFrame::processCommand(wxSocketBase& socket, wxChar* buffer)
 		messages = messages.Mid(pos + 1);
 
 		if (message.length() < 3) {
-			::sprintf(buffer, wxT("NK%s;"), message.c_str());
-			socket.Write(buffer, ::strlen(buffer));
+			m_data->sendNAK(message);
 
 			wxString text;
 
 			text.Printf(wxT("==> %s;"), message.c_str());
 			m_messages->Append(text);
 
-			text.Printf(wxT("<== %s"), buffer);
+			text.Printf(wxT("<== NK%s;"), message.c_str());
 			m_messages->Append(text);
 
 			pos = messages.Find(wxT(";"));
@@ -362,8 +278,7 @@ void CSDREmulatorFrame::processCommand(wxSocketBase& socket, wxChar* buffer)
 		}
 
 		if (ack) {
-			::sprintf(buffer, "AK%s;", command.c_str());
-			socket.Write(buffer, ::strlen(buffer));
+			m_data->sendACK(command.c_str());
 
 			wxString text;
 
@@ -371,7 +286,7 @@ void CSDREmulatorFrame::processCommand(wxSocketBase& socket, wxChar* buffer)
 				text.Printf(wxT("==> %s;"), message.c_str());
 				m_messages->Append(text);
 
-				text.Printf(wxT("<== %s"), buffer);
+				text.Printf(wxT("<== AK%s;"), command.c_str());
 				m_messages->Append(text);
 			}
 
@@ -389,15 +304,14 @@ void CSDREmulatorFrame::processCommand(wxSocketBase& socket, wxChar* buffer)
 
 			m_data->setTX(m_txOn);
 		} else {
-			::sprintf(buffer, "NK%s;", command.c_str());
-			socket.Write(buffer, ::strlen(buffer));
+			m_data->sendNAK(command.c_str());
 
 			wxString text;
 
 			text.Printf(wxT("==> %s;"), message.c_str());
 			m_messages->Append(text);
 
-			text.Printf(wxT("<== %s"), buffer);
+			text.Printf(wxT("<== NK%s;"), command.c_str());
 			m_messages->Append(text);
 		}
 

@@ -28,9 +28,7 @@ CSDREmulatorApp::CSDREmulatorApp() :
 wxApp(),
 m_frame(NULL),
 m_address(),
-m_controlPort(0),
-m_maxSamples(2048),
-m_delay(false)
+m_port(0)
 {
 }
 
@@ -42,12 +40,8 @@ void CSDREmulatorApp::OnInitCmdLine(wxCmdLineParser& parser)
 {
 	parser.AddSwitch(wxT("s"), wxEmptyString, wxT("Disable_Receiver_Mute"), wxCMD_LINE_PARAM_OPTIONAL);
 
-	parser.AddSwitch(wxT("d"), wxEmptyString, wxT("Insert_Delay"), wxCMD_LINE_PARAM_OPTIONAL);
-
-	parser.AddParam(wxT("IP_Address"),   wxCMD_LINE_VAL_STRING, wxCMD_LINE_OPTION_MANDATORY);
-	parser.AddParam(wxT("Control_Port"), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_OPTION_MANDATORY);
-
-	parser.AddParam(wxT("UDP_Size"),     wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL);
+	parser.AddParam(wxT("Address"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_OPTION_MANDATORY);
+	parser.AddParam(wxT("Port"),    wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_OPTION_MANDATORY);
 
 	wxApp::OnInitCmdLine(parser);
 }
@@ -59,8 +53,6 @@ bool CSDREmulatorApp::OnCmdLineParsed(wxCmdLineParser& parser)
 
 	m_muted = !parser.Found(wxT("s"));
 
-	m_delay = parser.Found(wxT("d"));
-
 	m_address = parser.GetParam(0);
 
 	long temp;
@@ -68,24 +60,11 @@ bool CSDREmulatorApp::OnCmdLineParsed(wxCmdLineParser& parser)
 	parser.GetParam(1).ToLong(&temp);
 
 	if (temp < 1L || temp >= 65536L) {
-		::wxMessageBox(wxT("The Control Port number must be between 1 and 65536"));
+		::wxMessageBox(wxT("The Port number must be between 1 and 65536"));
 		return false;
 	}
 
-	m_controlPort = temp;
-
-	size_t count = parser.GetParamCount();
-	if (count < 3)
-		return true;
-
-	parser.GetParam(2).ToLong(&temp);
-
-	if (temp < 210L || temp > 2048L) {
-		::wxMessageBox(wxT("The UDP Size number must be between 210 and 2048"));
-		return false;
-	}
-
-	m_maxSamples = temp;
+	m_port = temp;
 
 	return true;
 }
@@ -99,9 +78,9 @@ bool CSDREmulatorApp::OnInit()
 	wxLog::SetActiveTarget(logger);
 
 	::wxLogMessage(wxT("Starting the SDREmulator"));
-	::wxLogMessage(wxT("GUI is at address: %s, control port: %u, max samples: %u"), m_address.c_str(), m_controlPort, m_maxSamples);
+	::wxLogMessage(wxT("GUI is at address: %s, control port: %u"), m_address.c_str(), m_port);
 
-	m_frame = new CSDREmulatorFrame(m_address, m_controlPort, m_muted, m_maxSamples, m_delay);
+	m_frame = new CSDREmulatorFrame(m_address, m_port, m_muted);
 	m_frame->Show();
 
 	SetTopWindow(m_frame);

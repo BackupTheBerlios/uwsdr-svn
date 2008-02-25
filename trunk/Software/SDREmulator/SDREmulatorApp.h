@@ -42,9 +42,7 @@ class CSDREmulatorApp : public wxApp {
 	CSDREmulatorFrame* m_frame;
 	bool               m_muted;
 	wxString           m_address;
-	unsigned int       m_controlPort;
-	unsigned int       m_maxSamples;
-	bool               m_delay;
+	unsigned int       m_port;
 };
 
 DECLARE_APP(CSDREmulatorApp)

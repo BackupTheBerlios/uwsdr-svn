@@ -13,8 +13,8 @@
 ;Configuration
 
   ;General
-  Name "UWSDR 0.8.2"
-  OutFile "UWSDR-0.8.2.exe"
+  Name "UWSDR 0.9"
+  OutFile "UWSDR-0.9.exe"
 
   ;Folder selection page
   InstallDir "$PROGRAMFILES\UWSDR"
@@ -53,6 +53,7 @@ Section "UWSDR Program Files" SecProgram
   
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\UWSDR.exe"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\GUISetup.exe"
+  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\SDREmulator.exe"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\SDRHelp.exe"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\SDRSetup.exe"
   File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\libfftw3f-3.dll"

@@ -24,11 +24,9 @@
 
 class IControlInterface {
     public:
-
-    virtual void commandAck(const wxString& message, int id) = 0;
+	virtual void commandAck(const wxString& message, int id) = 0;
 	virtual void commandNak(const wxString& message, int id) = 0;
 	virtual void commandMisc(const wxString& message, int id) = 0;
-
 	virtual void connectionLost(int id) = 0;
 };
 

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 
 #include "SocketCallback.h"
 
+const unsigned int MAX_CALLBACKS = 5U;
 
 class CUDPDataReader : public wxThread {
 
@@ -45,8 +46,8 @@ class CUDPDataReader : public wxThread {
 	unsigned short   m_port;
 	char*            m_remAddr;
 	unsigned int     m_remAddrLen;
-	int              m_id;
-	ISocketCallback* m_callback;
+	int              m_id[MAX_CALLBACKS];
+	ISocketCallback* m_callback[MAX_CALLBACKS];
 	int              m_fd;
 	char*            m_buffer;
 	unsigned int     m_count;

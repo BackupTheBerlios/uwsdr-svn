@@ -58,6 +58,8 @@ bool CUWSDRDataReader::open(float WXUNUSED(sampleRate), unsigned int blockSize)
 	if (!ret)
 		return false;
 
+	m_reader->setCallback(this, 0);
+
 	m_size = HEADER_SIZE + m_blockSize * SAMPLE_SIZE;
 
 	m_ringBuffer = new CRingBuffer(m_blockSize * 10, 2);

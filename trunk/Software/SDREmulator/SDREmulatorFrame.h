@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -20,15 +20,15 @@
 #define	SDREmulatorFrame_H
 
 #include <wx/wx.h>
-#include <wx/socket.h>
 
+#include "SocketCallback.h"
 #include "Frequency.h"
 #include "DataControl.h"
 
-class CSDREmulatorFrame : public wxFrame {
+class CSDREmulatorFrame : public wxFrame, public ISocketCallback {
 
     public:
-	CSDREmulatorFrame(const wxString& address, unsigned int controlPort, bool muted, unsigned int maxSamples, bool delay);
+	CSDREmulatorFrame(const wxString& address, unsigned int port, bool muted);
 	virtual ~CSDREmulatorFrame();
 
 	void onClose(wxCloseEvent& event);
@@ -38,8 +38,9 @@ class CSDREmulatorFrame : public wxFrame {
 	void onSoundFile(wxCommandEvent& event);
 	void onSoundCard(wxCommandEvent& event);
 
-	void onParentSocket(wxSocketEvent& event);
-	void onChildSocket(wxSocketEvent& event);
+	virtual void processCommand(char* buffer);
+
+	virtual bool callback(char* buffer, unsigned int len, int id);
 
     private:
 	CFrequency    m_txFreq;
@@ -50,23 +51,19 @@ class CSDREmulatorFrame : public wxFrame {
 	CDataControl* m_data;
 	bool          m_started;
 
-	wxSocketServer* m_server;
-	wxMenuBar*      m_menuBar;
-	wxStaticText*   m_sourceLabel;
-	wxStaticText*   m_connectLabel;
-	wxStaticText*   m_txFreqLabel;
-	wxStaticText*   m_rxFreqLabel;
-	wxStaticText*   m_txEnabledLabel;
-	wxStaticText*   m_rxEnabledLabel;
-	wxStaticText*   m_txOnLabel;
-	wxListBox*      m_messages;
+	wxMenuBar*    m_menuBar;
+	wxStaticText* m_sourceLabel;
+	wxStaticText* m_connectLabel;
+	wxStaticText* m_txFreqLabel;
+	wxStaticText* m_rxFreqLabel;
+	wxStaticText* m_txEnabledLabel;
+	wxStaticText* m_rxEnabledLabel;
+	wxStaticText* m_txOnLabel;
+	wxListBox*    m_messages;
 
 	DECLARE_EVENT_TABLE()
 
-	bool createListener(unsigned int port);
-	bool createDataThread(const wxString& address, unsigned int port, int inDev, int outDev, bool muted, unsigned int maxSamples, bool delay);
-
-	void processCommand(wxSocketBase& socket, wxChar* buffer);
+	bool createDataThread(const wxString& address, unsigned int port, int inDev, int outDev, bool muted);
 };
 
 #endif

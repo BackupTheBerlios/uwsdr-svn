@@ -4,10 +4,6 @@ List of Bugs and Jobs for the UWSDR Software
 BUGS
 ----
 
-Control Port doesn't work on Mac OS X
-
-Can't create desktop or menu entries on Mac OS X
-
 GUI is too large on Mac OS X
 
 

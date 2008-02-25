@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -38,13 +38,15 @@ m_address(address),
 m_port(port),
 m_remAddr(),
 m_remAddrLen(0U),
-m_id(0),
-m_callback(NULL),
+m_id(),
+m_callback(),
 m_fd(-1),
 m_buffer(NULL),
 m_count(0U),
 m_enabled(false)
 {
+	for (unsigned int i = 0U; i < MAX_CALLBACKS; i++)
+		m_callback[i] = NULL;
 }
 
 CUDPDataReader::~CUDPDataReader()
@@ -55,8 +57,13 @@ void CUDPDataReader::setCallback(ISocketCallback* callback, int id)
 {
 	wxASSERT(callback != NULL);
 
-	m_callback = callback;
-	m_id       = id;
+	if (id < 0 || id >= MAX_CALLBACKS) {
+		m_callback[0] = callback;
+		m_id[0]       = id;
+	} else {
+		m_callback[id] = callback;
+		m_id[id]       = id;
+	}
 }
 
 bool CUDPDataReader::open()
@@ -190,6 +197,8 @@ void* CUDPDataReader::Entry()
 
 bool CUDPDataReader::readSocket()
 {
+	wxASSERT(m_fd != -1);
+
 	// Check that the readfrom() won't block
 	fd_set readFds;
 	FD_ZERO(&readFds);
@@ -251,13 +260,20 @@ bool CUDPDataReader::readSocket()
 	if (::memcmp(m_remAddr, &inaddr->sin_addr.s_addr, m_remAddrLen) != 0) {
 		unsigned char* p = (unsigned char *)&inaddr->sin_addr.s_addr;
 		unsigned char* q = (unsigned char *)m_remAddr;
-		::wxLogWarning(wxT("UDPDataReader: UDP Data received from an invalid IP address: %u.%u.%u.%u, wanted: %u.%u.%u.%u"),
-			p[0], p[1], p[2], p[3], q[0], q[1], q[2], q[3]);
+		::wxLogWarning(wxT("UDPDataReader: UDP Data received from an invalid IP address: %u.%u.%u.%u, wanted: %u.%u.%u.%u"), p[0], p[1], p[2], p[3], q[0], q[1], q[2], q[3]);
 		return true;
 	}
 
-	if (m_callback != NULL)
-		return m_callback->callback(m_buffer, len, m_id);
+	if (len == 0)
+		return true;
+
+	for (unsigned int i = 0U; i < MAX_CALLBACKS; i++) {
+		if (m_callback[i] != NULL) {
+			bool ret = m_callback[i]->callback(m_buffer, len, m_id[i]);
+			if (ret)
+				break;
+		}
+	}
 
 	return true;
 }

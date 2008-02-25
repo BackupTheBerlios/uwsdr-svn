@@ -131,7 +131,6 @@ clean:
 	make -C Common clean
 	make -C DttSP++ clean
 	make -C GUISetup clean
-#	make -C SDREmulator clean
 	make -C SDRHelp clean
 	make -C SDRSetup clean
 	make -C UWSDRGUI clean
