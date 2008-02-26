@@ -55,7 +55,7 @@ m_alc(NULL),
 m_speechProc(NULL),
 m_speechProcFlag(false),
 m_mode(USB),
-m_zeroIF(true),
+m_weaver(true),
 m_freq(0.0),
 m_lowFreq(0.0),
 m_highFreq(0.0),
@@ -180,7 +180,7 @@ void CTX::setMode(SDRMODE mode)
 {
 	m_mode = mode;
  
-	if (m_zeroIF) {
+	if (m_weaver) {
 		switch (mode) {
 			case AM:
 			case SAM:
@@ -238,9 +238,9 @@ void CTX::setDCBlockFlag(bool flag)
 	m_dcBlockFlag = flag;
 }
 
-void CTX::setZeroIF(bool flag)
+void CTX::setWeaver(bool flag)
 {
-	m_zeroIF = flag;
+	m_weaver = flag;
 
 	setFrequency(m_freq);
 	setFilter(m_lowFreq, m_highFreq);
@@ -252,7 +252,7 @@ void CTX::setFilter(double lowFreq, double highFreq)
 	m_lowFreq  = lowFreq;
 	m_highFreq = highFreq;
  
-	if (m_zeroIF) {
+	if (m_weaver) {
 		if (m_mode == LSB || m_mode == CWL || m_mode == DIGL)
 			m_filter->setFilter(lowFreq + INV_FREQ, highFreq + INV_FREQ);
 		else
@@ -322,7 +322,7 @@ void CTX::setCompressionLevel(float level)
 
 float CTX::getOffset() const
 {
-	if (m_zeroIF) {
+	if (m_weaver) {
 		if (m_mode == LSB || m_mode == CWL || m_mode == DIGL)
 			return INV_FREQ;
 		else

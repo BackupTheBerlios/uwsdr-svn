@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ class CDTTSPControl : public wxThread {
 
 	virtual void setFilter(FILTERWIDTH filter);
 	virtual void setMode(UWSDRMODE mode);
-	virtual void setZeroIF(bool onOff);
+	virtual void setWeaver(bool onOff);
 	virtual void setTXAndFreq(bool transmit, float freq);
 	virtual void setAGC(AGCSPEED agc);
 	virtual void setDeviation(FMDEVIATION value);
@@ -72,7 +72,7 @@ class CDTTSPControl : public wxThread {
 	unsigned int m_blockSize;
 	FILTERWIDTH  m_filter;
 	UWSDRMODE    m_mode;
-	bool         m_zeroIF;
+	bool         m_weaver;
 	float        m_rxFreq;
 	float        m_txFreq;
 	bool         m_transmit;

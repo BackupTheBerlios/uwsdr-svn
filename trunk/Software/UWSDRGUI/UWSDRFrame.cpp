@@ -470,7 +470,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	normaliseMode();
 
 	// Must be after normaliseMode
-	m_dsp->setZeroIF(m_parameters->m_zeroIF);
+	m_dsp->setWeaver(m_parameters->m_weaver);
 
 	normaliseFreq();
 
@@ -1301,7 +1301,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 
 					m_dsp->setALCValue(m_parameters->m_alcAttack, m_parameters->m_alcDecay, m_parameters->m_alcHang);
 
-					m_dsp->setZeroIF(m_parameters->m_zeroIF);
+					m_dsp->setWeaver(m_parameters->m_weaver);
 					m_dsp->swapIQ(m_parameters->m_swapIQ);
 
 					normaliseFreq();
@@ -1491,7 +1491,7 @@ void CUWSDRFrame::onTimer(wxTimerEvent& WXUNUSED(event))
 			m_sMeter->setLevel(val);
 
 			float offset = 0.0F;
-			if (m_parameters->m_zeroIF)
+			if (m_parameters->m_weaver)
 				offset = m_dsp->getTXOffset();
 
 			m_dsp->getSpectrum(m_spectrum, m_parameters->m_spectrumPos);
@@ -1509,7 +1509,7 @@ void CUWSDRFrame::onTimer(wxTimerEvent& WXUNUSED(event))
 			m_sMeter->setLevel(val);
 
 			float offset = 0.0F;
-			if (m_parameters->m_zeroIF)
+			if (m_parameters->m_weaver)
 				offset = m_dsp->getRXOffset();
 
 			m_dsp->getSpectrum(m_spectrum, m_parameters->m_spectrumPos);

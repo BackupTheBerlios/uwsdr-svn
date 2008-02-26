@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -199,7 +199,7 @@ m_swapIQ(NULL)
 	m_txIQPhase->SetValue(m_parameters->m_txIQphase);
 	m_txIQGain->SetValue(m_parameters->m_txIQgain);
 
-	m_method->SetSelection(m_parameters->m_zeroIF ? 1 : 0);
+	m_method->SetSelection(m_parameters->m_weaver ? 1 : 0);
 	m_swapIQ->SetValue(m_parameters->m_swapIQ);
 
 	m_clockTune->SetValue(m_parameters->m_clockTune);
@@ -534,7 +534,7 @@ void CUWSDRPreferences::onOK(wxCommandEvent& WXUNUSED(event))
 	m_parameters->m_rxIQphase = m_rxIQPhase->GetValue();
 	m_parameters->m_rxIQgain  = m_rxIQGain->GetValue();
 
-	m_parameters->m_zeroIF = m_method->GetSelection() == 1;
+	m_parameters->m_weaver = m_method->GetSelection() == 1;
 	m_parameters->m_swapIQ = m_swapIQ->GetValue();
 
 	m_parameters->m_clockTune = m_clockTune->GetValue();
@@ -1027,8 +1027,8 @@ wxPanel* CUWSDRPreferences::createIQTab(wxNotebook* noteBook)
 	sizer->Add(label5, 0, wxALL, BORDER_SIZE);
 
 	m_method = new wxChoice(panel, -1, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
-	m_method->Append(_("Fs/4"));
-	m_method->Append(_("Zero-IF"));
+	m_method->Append(_("Hilbert"));
+	m_method->Append(_("Weaver"));
 	sizer->Add(m_method, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label6 = new wxStaticText(panel, -1, _("Clock tune"));

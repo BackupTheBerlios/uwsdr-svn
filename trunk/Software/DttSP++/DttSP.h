@@ -3,7 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ class CDttSP {
 	void  ringBufferReset();
 
 	void  setMode(SDRMODE m);
-	void  setZeroIF(bool flag);
+	void  setWeaver(bool flag);
 	void  setDCBlockFlag(bool flag);
 	void  setRXFilter(double lowFreq, double highFreq);
 	void  setTXFilter(double lowFreq, double highFreq);

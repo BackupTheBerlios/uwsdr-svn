@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ m_sampleRate(0.0F),
 m_blockSize(0),
 m_filter(FILTER_2100),
 m_mode(MODE_USB),
-m_zeroIF(true),
+m_weaver(true),
 m_rxFreq(99999.9F),
 m_txFreq(99999.9F),
 m_transmit(false),
@@ -138,14 +138,14 @@ void CDTTSPControl::setMode(UWSDRMODE mode)
 	normaliseFilter();
 }
 
-void CDTTSPControl::setZeroIF(bool onOff)
+void CDTTSPControl::setWeaver(bool onOff)
 {
-	if (onOff == m_zeroIF)
+	if (onOff == m_weaver)
 		return;
 
-	::SetZeroIF(onOff);
+	::SetWeaver(onOff);
 
-	m_zeroIF = onOff;
+	m_weaver = onOff;
 }
 
 void CDTTSPControl::setTXAndFreq(bool transmit, float freq)

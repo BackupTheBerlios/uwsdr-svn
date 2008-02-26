@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ m_stepMedium(0.0),
 m_stepSlow(0.0),
 m_stepVerySlow(0.0),
 m_mode(MODE_USB),
-m_zeroIF(false),
+m_weaver(true),
 m_swapIQ(false),
 m_clockTune(99999),
 m_deviationFMW(DEVIATION_5000),

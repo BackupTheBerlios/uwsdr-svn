@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -86,7 +86,7 @@ enum SPECTRUMtype {
 extern void    Setup_SDR(float sampleRate, unsigned int audioSize);
 extern void    Destroy_SDR();
 extern void    SetMode(SDRMODE m);
-extern void    SetZeroIF(bool setit);
+extern void    SetWeaver(bool setit);
 extern void    SetDCBlock(bool setit);
 extern void    SetFilter(double low_frequency, double high_frequency, int taps, TRXMODE trx);
 extern void    Release_Update();

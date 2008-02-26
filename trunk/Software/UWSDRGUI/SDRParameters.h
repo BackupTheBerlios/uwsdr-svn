@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -73,7 +73,7 @@ class CSDRParameters {
 	double        m_stepVerySlow;
 
 	UWSDRMODE     m_mode;
-	bool          m_zeroIF;
+	bool          m_weaver;
 	bool          m_swapIQ;
 	unsigned int  m_clockTune;
 

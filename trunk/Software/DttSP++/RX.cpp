@@ -3,7 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ m_ssbDemodulator(NULL),
 m_squelch(NULL),
 m_mode(USB),
 m_binFlag(false),
-m_zeroIF(true),
+m_weaver(true),
 m_freq(0.0),
 m_lowFreq(0.0),
 m_highFreq(0.0),
@@ -267,7 +267,7 @@ void CRX::setMode(SDRMODE mode)
 {
 	m_mode = mode;
  
-	if (m_zeroIF) {
+	if (m_weaver) {
 		switch (mode) {
 			case AM:
 				m_amDemodulator->setMode(AMdet);
@@ -332,9 +332,9 @@ void CRX::setMode(SDRMODE mode)
 	}
 }
 
-void CRX::setZeroIF(bool flag)
+void CRX::setWeaver(bool flag)
 {
-	m_zeroIF = flag;
+	m_weaver = flag;
 
 	setFrequency(m_freq);
 	setFilter(m_lowFreq, m_highFreq);
@@ -346,7 +346,7 @@ void CRX::setFilter(double lowFreq, double highFreq)
 	m_lowFreq  = lowFreq;
 	m_highFreq = highFreq;
  
-	if (m_zeroIF) {
+	if (m_weaver) {
 		if (m_mode == LSB || m_mode == CWL || m_mode == DIGL)
 			m_filter->setFilter(lowFreq + INV_FREQ, highFreq + INV_FREQ);
 		else
@@ -470,7 +470,7 @@ void CRX::setSpectrumType(SPECTRUMtype type)
 
 float CRX::getOffset() const
 {
-	if (m_zeroIF) {
+	if (m_weaver) {
 		if (m_mode == LSB || m_mode == CWL || m_mode == DIGL)
 			return -INV_FREQ;
 		else
