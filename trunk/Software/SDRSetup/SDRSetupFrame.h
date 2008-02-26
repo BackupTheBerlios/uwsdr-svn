@@ -38,7 +38,7 @@ class CSDRSetupFrame : public wxFrame, public ISocketCallback {
 
 	void onExecute(wxCommandEvent& event);
 
-	bool CSDRSetupFrame::setNew(const wxIPV4address& oldControl, const wxIPV4address& newControl, const wxIPV4address& dsp);
+	bool setNew(const wxIPV4address& oldControl, const wxIPV4address& newControl, const wxIPV4address& dsp);
 
 	virtual bool callback(char* buffer, unsigned int len, int id);
 
