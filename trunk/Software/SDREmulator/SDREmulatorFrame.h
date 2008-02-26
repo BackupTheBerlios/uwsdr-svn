@@ -28,7 +28,7 @@
 class CSDREmulatorFrame : public wxFrame, public ISocketCallback {
 
     public:
-	CSDREmulatorFrame(const wxString& address, unsigned int port, bool muted);
+	CSDREmulatorFrame(const wxString& address, unsigned int port);
 	virtual ~CSDREmulatorFrame();
 
 	void onClose(wxCloseEvent& event);
@@ -37,8 +37,7 @@ class CSDREmulatorFrame : public wxFrame, public ISocketCallback {
 	void onInternal2(wxCommandEvent& event);
 	void onSoundFile(wxCommandEvent& event);
 	void onSoundCard(wxCommandEvent& event);
-
-	virtual void processCommand(char* buffer);
+	void onCommand(wxEvent& event);
 
 	virtual bool callback(char* buffer, unsigned int len, int id);
 
@@ -50,7 +49,7 @@ class CSDREmulatorFrame : public wxFrame, public ISocketCallback {
 	bool          m_txOn;
 	CDataControl* m_data;
 	bool          m_started;
-
+	wxString      m_message;
 	wxMenuBar*    m_menuBar;
 	wxStaticText* m_sourceLabel;
 	wxStaticText* m_connectLabel;
@@ -63,7 +62,7 @@ class CSDREmulatorFrame : public wxFrame, public ISocketCallback {
 
 	DECLARE_EVENT_TABLE()
 
-	bool createDataThread(const wxString& address, unsigned int port, int inDev, int outDev, bool muted);
+	bool createDataThread(const wxString& address, unsigned int port, int inDev, int outDev);
 };
 
 #endif

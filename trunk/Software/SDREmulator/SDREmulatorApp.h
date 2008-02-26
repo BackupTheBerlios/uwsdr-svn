@@ -40,7 +40,6 @@ class CSDREmulatorApp : public wxApp {
 
     private:
 	CSDREmulatorFrame* m_frame;
-	bool               m_muted;
 	wxString           m_address;
 	unsigned int       m_port;
 };

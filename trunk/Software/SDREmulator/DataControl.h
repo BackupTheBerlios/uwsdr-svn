@@ -44,7 +44,6 @@ enum {
 class CDataControl : public wxThread, public IDataCallback, public ISocketCallback {
     public:
 	CDataControl(float sampleRate, const wxString& address, int port, int inDev, int outDev);
-	virtual ~CDataControl();
 
 	virtual bool  setSoundFileReader(const wxString& fileName);
 
@@ -64,6 +63,9 @@ class CDataControl : public wxThread, public IDataCallback, public ISocketCallba
 	virtual void  sendACK(const wxString& command);
 	virtual void  sendNAK(const wxString& command);
 	virtual void  sendData(const float* buffer, unsigned int nSamples);
+
+    protected:
+	virtual ~CDataControl();
 
     private:
 	float             m_sampleRate;

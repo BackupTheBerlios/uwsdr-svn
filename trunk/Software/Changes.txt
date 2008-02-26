@@ -400,3 +400,5 @@ Update to wxWidgets 2.8.7.
 Update to PortAudio 20071207.
 
 Changes to build and operate on Mac OS X better.
+
+Removed Visual C++ 6.0 build files.

@@ -39,6 +39,8 @@ const int MESSAGES_HEIGHT = 200;
 const CFrequency maxFreq = CFrequency(2451, 0.0);
 const CFrequency minFreq = CFrequency(2299, 0.0);
 
+DEFINE_EVENT_TYPE(COMMAND_EVENT)
+
 BEGIN_EVENT_TABLE(CSDREmulatorFrame, wxFrame)
 	EVT_MENU(wxID_EXIT,       CSDREmulatorFrame::onExit)
 	EVT_MENU(MENU_INTERNAL_1, CSDREmulatorFrame::onInternal1)
@@ -46,9 +48,10 @@ BEGIN_EVENT_TABLE(CSDREmulatorFrame, wxFrame)
 	EVT_MENU(MENU_FILE,       CSDREmulatorFrame::onSoundFile)
 	EVT_MENU(MENU_CARD,       CSDREmulatorFrame::onSoundCard)
 	EVT_CLOSE(CSDREmulatorFrame::onClose)
+	EVT_CUSTOM(COMMAND_EVENT, wxID_ANY, CSDREmulatorFrame::onCommand)
 END_EVENT_TABLE()
 
-CSDREmulatorFrame::CSDREmulatorFrame(const wxString& address, unsigned int port, bool muted) :
+CSDREmulatorFrame::CSDREmulatorFrame(const wxString& address, unsigned int port) :
 wxFrame(NULL, -1, wxString(wxT("uWave SDR Emulator")), wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX  | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN),
 m_txFreq(),
 m_rxFreq(),
@@ -57,6 +60,7 @@ m_rxEnable(false),
 m_txOn(false),
 m_data(NULL),
 m_started(false),
+m_message(),
 m_messages(NULL)
 {
 	wxMenu* fileMenu = new wxMenu();
@@ -117,7 +121,7 @@ m_messages(NULL)
 	wxStaticText* label5 = new wxStaticText(panel, -1, wxT("RX Enabled:"));
 	panelSizer->Add(label5, 0, wxALL, BORDER_SIZE);
 
-	m_rxEnabledLabel = new wxStaticText(panel, -1, muted ? wxT("No") : wxT("Yes"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	m_rxEnabledLabel = new wxStaticText(panel, -1, wxT("No"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
 	panelSizer->Add(m_rxEnabledLabel, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label6 = new wxStaticText(panel, -1, wxT("Transmitting:"));
@@ -152,7 +156,7 @@ m_messages(NULL)
 	int outDev = soundCard.getOutDev();
 
 	// Start the data reading and writing thread
-	ret = createDataThread(address, port, inDev, outDev, muted);
+	ret = createDataThread(address, port, inDev, outDev);
 	if (!ret) {
 		::wxMessageBox(wxT("Cannot open the control port.\nSee Emulator.log for details"));
 		Close(true);
@@ -163,7 +167,7 @@ CSDREmulatorFrame::~CSDREmulatorFrame()
 {
 }
 
-bool CSDREmulatorFrame::createDataThread(const wxString& address, unsigned int port, int inDev, int outDev, bool muted)
+bool CSDREmulatorFrame::createDataThread(const wxString& address, unsigned int port, int inDev, int outDev)
 {
 	m_data = new CDataControl(48000.0F, address, port, inDev, outDev);
 
@@ -173,7 +177,7 @@ bool CSDREmulatorFrame::createDataThread(const wxString& address, unsigned int p
 	if (!ret)
 		return false;
 
-	m_data->setMute(muted);
+	m_data->setMute(true);
 
 	m_started = true;
 
@@ -182,140 +186,134 @@ bool CSDREmulatorFrame::createDataThread(const wxString& address, unsigned int p
 
 bool CSDREmulatorFrame::callback(char* buffer, unsigned int len, int WXUNUSED(id))
 {
+	buffer[len] = '\0';
+	m_message = buffer;
+
+	wxCommandEvent event(COMMAND_EVENT);
+	AddPendingEvent(event);
 
 	return true;
 }
 
-void CSDREmulatorFrame::processCommand(char* buffer)
+void CSDREmulatorFrame::onCommand(wxEvent& WXUNUSED(event))
 {
-	wxString messages = buffer;
+	int pos = m_message.Find(wxT(';'));
 
-	int pos = messages.Find(wxT(';'));
-	while (pos != -1) {
-		wxString message = messages.Left(pos);
-		messages = messages.Mid(pos + 1);
+	if (pos == -1 || m_message.length() < 3) {
+		m_data->sendNAK(m_message);
 
-		if (message.length() < 3) {
-			m_data->sendNAK(message);
+		wxString text;
 
-			wxString text;
+		text.Printf(wxT("==> %s;"), m_message.c_str());
+		m_messages->Append(text);
 
-			text.Printf(wxT("==> %s;"), message.c_str());
-			m_messages->Append(text);
+		text.Printf(wxT("<== NK%s;"), m_message.c_str());
+		m_messages->Append(text);
 
-			text.Printf(wxT("<== NK%s;"), message.c_str());
-			m_messages->Append(text);
+		return;
+	}
 
-			pos = messages.Find(wxT(";"));
+	bool ack  = false;
+	bool echo = true;
+	wxString command = m_message.Left(2);
 
-			continue;
-		}
+	if (command.Cmp(wxT("CF")) == 0) {
+		long n;
+		m_message.Mid(2).ToLong(&n);
 
-		bool ack  = false;
-		bool echo = true;
-		wxString command = message.Left(2);
-
-		if (command.Cmp(wxT("CF")) == 0) {
-			long n;
-			message.Mid(2).ToLong(&n);
-
-			if (n >= 0L && n <= 65536L)
-				ack = true;
-
-			echo = true;
-		} else if (command.Cmp(wxT("FR")) == 0) {
-			wxString freqText = message.Mid(2);
-			CFrequency freq = CFrequency(freqText);
-
-			if (freq >= minFreq && freq < maxFreq) {
-				m_rxFreq = freq;
-				ack = true;
-			}
-
-			echo = false;
-		} else if (command.Cmp(wxT("FT")) == 0) {
-			wxString freqText = message.Mid(2);
-			CFrequency freq = CFrequency(freqText);
-
-			if (freq >= minFreq && freq < maxFreq) {
-				m_txFreq = freq;
-				ack = true;
-			}	
-
-			echo = false;
-		} else if (command.Cmp(wxT("ET")) == 0) {
-			long n;
-			message.Mid(2).ToLong(&n);
-
-			if (n == 0L || n == 1L) {
-				m_txEnable = (n == 1L);
-				ack = true;
-			}
-		} else if (command.Cmp(wxT("ER")) == 0) {
-			long n;
-			message.Mid(2).ToLong(&n);
-
-			if (n == 0L || n == 1L) {
-				m_rxEnable = (n == 1L);
-				ack = true;
-
-				m_data->setMute(!m_rxEnable);
-			}
-		} else if (command.Cmp(wxT("TX")) == 0) {
-			long n;
-			message.Mid(2).ToLong(&n);
-
-			if (m_txEnable && (n == 0L || n == 1L)) {
-				m_txOn = (n == 1L);
-				ack = true;
-
-				m_data->setTX(m_txOn);
-			}
-		} else if (command.Cmp(wxT("SI")) == 0) {
+		if (n >= 0L && n <= 65536L)
 			ack = true;
-		} else if (command.Cmp(wxT("SD")) == 0) {
+
+		echo = true;
+	} else if (command.Cmp(wxT("FR")) == 0) {
+		wxString freqText = m_message.Mid(2);
+		CFrequency freq = CFrequency(freqText);
+
+		if (freq >= minFreq && freq < maxFreq) {
+			m_rxFreq = freq;
 			ack = true;
 		}
 
-		if (ack) {
-			m_data->sendACK(command.c_str());
+		echo = false;
+	} else if (command.Cmp(wxT("FT")) == 0) {
+		wxString freqText = m_message.Mid(2);
+		CFrequency freq = CFrequency(freqText);
 
-			wxString text;
+		if (freq >= minFreq && freq < maxFreq) {
+			m_txFreq = freq;
+			ack = true;
+		}	
 
-			if (echo) {
-				text.Printf(wxT("==> %s;"), message.c_str());
-				m_messages->Append(text);
+		echo = false;
+	} else if (command.Cmp(wxT("ET")) == 0) {
+		long n;
+		m_message.Mid(2).ToLong(&n);
 
-				text.Printf(wxT("<== AK%s;"), command.c_str());
-				m_messages->Append(text);
-			}
+		if (n == 0L || n == 1L) {
+			m_txEnable = (n == 1L);
+			ack = true;
+		}
+	} else if (command.Cmp(wxT("ER")) == 0) {
+		long n;
+		m_message.Mid(2).ToLong(&n);
 
-			text.Printf(wxT("%s MHz"), m_txFreq.getString().c_str());
-			m_txFreqLabel->SetLabel(text);
+		if (n == 0L || n == 1L) {
+			m_rxEnable = (n == 1L);
+			ack = true;
 
-			text.Printf(wxT("%s MHz"), m_rxFreq.getString().c_str());
-			m_rxFreqLabel->SetLabel(text);
+			m_data->setMute(!m_rxEnable);
+		}
+	} else if (command.Cmp(wxT("TX")) == 0) {
+		long n;
+		m_message.Mid(2).ToLong(&n);
 
-			m_txEnabledLabel->SetLabel(m_txEnable ? wxT("Yes") : wxT("No"));
-
-			m_rxEnabledLabel->SetLabel(m_rxEnable ? wxT("Yes") : wxT("No"));
-
-			m_txOnLabel->SetLabel(m_txOn ? wxT("Yes") : wxT("No"));
+		if (m_txEnable && (n == 0L || n == 1L)) {
+			m_txOn = (n == 1L);
+			ack = true;
 
 			m_data->setTX(m_txOn);
-		} else {
-			m_data->sendNAK(command.c_str());
+		}
+	} else if (command.Cmp(wxT("SI")) == 0) {
+		ack = true;
+	} else if (command.Cmp(wxT("SD")) == 0) {
+		ack = true;
+	}
 
-			wxString text;
+	if (ack) {
+		m_data->sendACK(command.c_str());
 
-			text.Printf(wxT("==> %s;"), message.c_str());
+		wxString text;
+
+		if (echo) {
+			text.Printf(wxT("==> %s;"), m_message.c_str());
 			m_messages->Append(text);
 
-			text.Printf(wxT("<== NK%s;"), command.c_str());
+			text.Printf(wxT("<== AK%s;"), command.c_str());
 			m_messages->Append(text);
 		}
 
-		pos = messages.Find(wxT(';'));
+		text.Printf(wxT("%s MHz"), m_txFreq.getString().c_str());
+		m_txFreqLabel->SetLabel(text);
+
+		text.Printf(wxT("%s MHz"), m_rxFreq.getString().c_str());
+		m_rxFreqLabel->SetLabel(text);
+
+		m_txEnabledLabel->SetLabel(m_txEnable ? wxT("Yes") : wxT("No"));
+		m_rxEnabledLabel->SetLabel(m_rxEnable ? wxT("Yes") : wxT("No"));
+
+		m_txOnLabel->SetLabel(m_txOn ? wxT("Yes") : wxT("No"));
+
+		m_data->setTX(m_txOn);
+	} else {
+		m_data->sendNAK(command.c_str());
+
+		wxString text;
+
+		text.Printf(wxT("==> %s;"), m_message.c_str());
+		m_messages->Append(text);
+
+		text.Printf(wxT("<== NK%s;"), command.c_str());
+		m_messages->Append(text);
 	}
 }
 

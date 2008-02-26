@@ -1609,7 +1609,6 @@ void CUWSDRFrame::setTransmit(bool txOn)
 	wxEventType type = (txOn) ? TRANSMIT_ON_EVENT : TRANSMIT_OFF_EVENT;
 
 	wxCommandEvent event(type);
-
 	AddPendingEvent(event);
 }
 
