@@ -73,6 +73,7 @@ class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterf
 	virtual VOICEERROR sendAudio(const wxString& fileName, VOICESTATUS state);
 
 	virtual void setTransmit(bool txOn);
+	virtual void setKey(bool keyOn);
 
     private:
 	wxTimer           m_timer;

@@ -37,6 +37,11 @@ const unsigned char HPSDR_48KHZ = 0x00;
 const unsigned char HPSDR_CTRL1 = 0x00;
 const unsigned char HPSDR_CTRL2 = 0x02;
 
+const unsigned char HPSDR_PTT = 0x01;
+const unsigned char HPSDR_KEY = 0x02;
+
+const unsigned char HPSDR_OVERFLOW = 0x01;
+
 const unsigned int C0_POS = 3U;
 const unsigned int C1_POS = 4U;
 const unsigned int C2_POS = 5U;
@@ -55,8 +60,10 @@ m_dataBuffer(NULL),
 m_audioBuffer(NULL),
 m_dataCallback(NULL),
 m_audioCallback(NULL),
+m_controlCallback(NULL),
 m_dataId(0),
 m_audioId(0),
+m_controlId(0),
 m_transmit(false),
 m_frequency(0U),
 m_robin(0U),
@@ -64,7 +71,9 @@ m_c0(c0),
 m_c1(c1),
 m_c2(c2),
 m_c3(c3),
-m_c4(c4)
+m_c4(c4),
+m_ptt(false),
+m_key(false)
 {
 	m_dataRingBuffer  = new CRingBuffer(2048U, 2U);
 	m_audioRingBuffer = new CRingBuffer(2048U, 2U);
@@ -94,8 +103,12 @@ bool CHPSDRReaderWriter::open()
 	return m_usb->open(HPSDR_VENDOR_ID, HPSDR_PRODUCT_ID, HPSDR_IN_ENDPOINT, HPSDR_OUT_ENDPOINT);
 }
 
-void CHPSDRReaderWriter::setCallback(IControlInterface* WXUNUSED(callback), int WXUNUSED(id))
+void CHPSDRReaderWriter::setCallback(IControlInterface* callback, int id)
 {
+	wxASSERT(callback != NULL);
+
+	m_controlCallback = callback;
+	m_controlId       = id;
 }
 
 void CHPSDRReaderWriter::setDataCallback(IDataCallback* callback, int id)
@@ -141,8 +154,10 @@ bool CHPSDRReaderWriter::callback(char* buffer, unsigned int len, int WXUNUSED(i
 		return true;
 	}
 
-	bool ptt = (buffer[C0_POS] & 0x01) == 0x01;
-	bool key = (buffer[C0_POS] & 0x02) == 0x02;
+	bool ptt = (buffer[C0_POS] & HPSDR_PTT) == HPSDR_PTT;
+	bool key = (buffer[C0_POS] & HPSDR_KEY) == HPSDR_KEY;
+
+	// bool overflow = (buffer[C1_POS] & HPSDR_OVERFLOW) == HPSDR_OVERFLOW;
 
 	unsigned int pos = C4_POS + 1U;
 	for (unsigned int i = 0U; i < HPSDR_RXMAX_SAMPLES; i++) {
@@ -177,6 +192,16 @@ bool CHPSDRReaderWriter::callback(char* buffer, unsigned int len, int WXUNUSED(i
 	if (n >= m_blockSize && m_audioCallback != NULL) {
 		m_audioRingBuffer->getData(m_cbBuffer, m_blockSize);
 		m_audioCallback->callback(m_cbBuffer, m_blockSize, m_audioId);
+	}
+
+	if (ptt != m_ptt && m_controlCallback != NULL) {
+		m_controlCallback->setTransmit(ptt);
+		m_ptt = ptt;
+	}
+
+	if (key != m_key && m_controlCallback != NULL) {
+		m_controlCallback->setKey(key);
+		m_key = key;
 	}
 
 	return true;

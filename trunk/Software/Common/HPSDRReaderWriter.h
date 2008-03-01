@@ -64,8 +64,10 @@ class CHPSDRReaderWriter : public ISocketCallback, public ISDRController  {
 	float*                m_audioBuffer;
 	IDataCallback*        m_dataCallback;
 	IDataCallback*        m_audioCallback;
+	IControlInterface*    m_controlCallback;
 	int                   m_dataId;
 	int                   m_audioId;
+	int                   m_controlId;
 	bool                  m_transmit;
 	unsigned int          m_frequency;
 	unsigned int          m_robin;
@@ -74,6 +76,8 @@ class CHPSDRReaderWriter : public ISocketCallback, public ISDRController  {
 	int                   m_c2;
 	int                   m_c3;
 	int                   m_c4;
+	bool                  m_ptt;
+	bool                  m_key;
 
 	void writeUSB();
 };

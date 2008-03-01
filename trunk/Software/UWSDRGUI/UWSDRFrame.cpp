@@ -1633,6 +1633,11 @@ void CUWSDRFrame::setTransmit(bool txOn)
 	AddPendingEvent(event);
 }
 
+void CUWSDRFrame::setKey(bool keyOn)
+{
+	m_dsp->setKey(keyOn);
+}
+
 void CUWSDRFrame::onTransmitOn(wxEvent& WXUNUSED(event))
 {
 	normaliseTransmit(true);

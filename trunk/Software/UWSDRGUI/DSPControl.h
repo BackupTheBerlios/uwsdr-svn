@@ -47,6 +47,8 @@ class CDSPControl : public wxThread, public IDataCallback {
 	virtual void  setTXInControl(CSerialControl* control, INPIN pin);
 	virtual void  setKeyInControl(CSerialControl* control, INPIN pin);
 
+	virtual void  setKey(bool keyOn);
+
 	virtual bool  open();
 	virtual void* Entry();
 	virtual void  close();

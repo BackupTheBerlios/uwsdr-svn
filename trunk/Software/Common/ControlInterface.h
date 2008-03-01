@@ -24,6 +24,9 @@
 
 class IControlInterface {
     public:
+	virtual void setTransmit(bool txOn) = 0;
+	virtual void setKey(bool keyOn) = 0;
+
 	virtual void commandAck(const wxString& message, int id) = 0;
 	virtual void commandNak(const wxString& message, int id) = 0;
 	virtual void commandMisc(const wxString& message, int id) = 0;

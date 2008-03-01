@@ -523,6 +523,14 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 	}
 }
 
+void CDSPControl::setKey(bool keyOn)
+{
+	if (keyOn != m_lastKeyIn) {
+		m_cwKeyer->key(keyOn);
+		m_lastKeyIn = keyOn;
+	}
+}
+
 void CDSPControl::setMode(UWSDRMODE mode)
 {
 	// We need a copy too ...
