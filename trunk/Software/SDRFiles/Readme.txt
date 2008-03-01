@@ -6,5 +6,7 @@ The SoftRock .sdr files should be usable with the SoftRock receivers. All of the
 
 The 13cms and 23cms .sdr files will be the basis of the real hardware description files. They require the SDR Emulator to be running on another PC to be usable.
 
+There are two HPSDR files, one for a receiver only HPSDR system, and another for a full transmit/receiver HPSDR.
+
 The Skeleton.sdr is a copy of Demo.sdr with many comments included so that anyone wishing to create or edit an .sdr file can understand the meaning of the various entries.
 

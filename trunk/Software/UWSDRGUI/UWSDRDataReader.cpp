@@ -138,12 +138,12 @@ bool CUWSDRDataReader::callback(char* buffer, unsigned int len, int WXUNUSED(id)
 	unsigned int n = HEADER_SIZE;
 	for (unsigned int i = 0; i < nSamples && n < len; n += SAMPLE_SIZE, i++) {
 		unsigned int iData = (buffer[n + 0] << 16) & 0xFF0000;
-		iData += (buffer[n + 1] << 8) & 0xFF00;
-		iData += (buffer[n + 2] << 0) & 0xFF;
+		iData |= (buffer[n + 1] << 8) & 0xFF00;
+		iData |= (buffer[n + 2] << 0) & 0xFF;
 
 		unsigned int qData = (buffer[n + 3] << 16) & 0xFF0000;
-		qData += (buffer[n + 4] << 8) & 0xFF00;
-		qData += (buffer[n + 5] << 0) & 0xFF;
+		qData |= (buffer[n + 4] << 8) & 0xFF00;
+		qData |= (buffer[n + 5] << 0) & 0xFF;
 
 		float floatBuffer[2];
 		floatBuffer[0] = float(iData) / 8388607.0F - 1.0F;

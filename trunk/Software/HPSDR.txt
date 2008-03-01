@@ -1,0 +1,8 @@
+Using UWSDR with HPSDR Hardware
+===============================
+
+From version 0.9 of the UWSDR GUI, there has been support for HPSDR, both in the transceive and receive only configurations. Setting up is exactly the same as for a SoftRock or UWSDR hardware in that GUISetup must be used to create a new GUI. Unlike the others, only the name and the appropriate .sdr file need to be specified. There are no settings for the audio, or control ports. The two .sdr files are HPSDR.sdr for transceive and HPSDR-RX.sdr for receive only.
+
+There are limitations when using HPSDR hardware with the UWSDR GUI, and they are listed below:
+1. The sample rate is fixed at 48kHz.
+2. When keying, the dot input is expected to be a straight key, there is no iambic keyer in UWSDR.

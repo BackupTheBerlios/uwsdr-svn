@@ -31,6 +31,10 @@
 #include "ThreeToneReader.h"
 #include "UWSDRDataReader.h"
 #include "UWSDRDataWriter.h"
+#include "HPSDRAudioReader.h"
+#include "HPSDRAudioWriter.h"
+#include "HPSDRDataReader.h"
+#include "HPSDRDataWriter.h"
 #include "SerialControl.h"
 #include "SoundFileReader.h"
 #include "SoundFileWriter.h"
@@ -116,6 +120,9 @@ BEGIN_EVENT_TABLE(CUWSDRFrame, wxFrame)
 	EVT_CUSTOM(TRANSMIT_ON_EVENT, wxID_ANY, CUWSDRFrame::onTransmitOn)
 	EVT_CUSTOM(TRANSMIT_OFF_EVENT, wxID_ANY, CUWSDRFrame::onTransmitOff)
 END_EVENT_TABLE()
+
+
+const unsigned int BLOCK_SIZE      = 2048;		// XXXX
 
 
 CUWSDRFrame::CUWSDRFrame(const wxString& title) :
@@ -237,6 +244,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_parameters = parameters;
 
+	CHPSDRReaderWriter* hpsdr = NULL;
 	CUDPDataReader* reader = NULL;
 	CUDPDataWriter* writer = NULL;
 
@@ -249,6 +257,9 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			break;
 		case TYPE_AUDIOTXRX:
 			m_sdr = new CSRTXRXController(m_parameters->m_txOutDev, m_parameters->m_txOutPin);
+			break;
+		case TYPE_HPSDR:
+			m_sdr = hpsdr = new CHPSDRReaderWriter(BLOCK_SIZE, m_parameters->m_c0, m_parameters->m_c1, m_parameters->m_c2, m_parameters->m_c3, m_parameters->m_c4);
 			break;
 		default:
 			m_sdr = new CNullController();
@@ -278,7 +289,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_spectrumDisplay->setDB(m_parameters->m_spectrumDB);
 	m_spectrumDisplay->setBandwidth(m_parameters->m_hardwareSampleRate);
 
-	m_dsp = new CDSPControl(m_parameters->m_hardwareSampleRate);
+	m_dsp = new CDSPControl(m_parameters->m_hardwareSampleRate, BLOCK_SIZE);
 
 	switch (m_parameters->m_hardwareType) {
 		case TYPE_AUDIORX:
@@ -371,6 +382,16 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 			m_dsp->setTXWriter(new CUWSDRDataWriter(writer, 1U));
 			m_dsp->setRXReader(new CUWSDRDataReader(reader, 1U));
+			break;
+
+		case TYPE_HPSDR:
+			wxASSERT(hpsdr != NULL);
+
+			m_dsp->setTXReader(new CHPSDRAudioReader(hpsdr));
+			m_dsp->setTXWriter(new CHPSDRDataWriter(hpsdr));
+
+			m_dsp->setRXReader(new CHPSDRDataReader(hpsdr));
+			m_dsp->setRXWriter(new CHPSDRAudioWriter(hpsdr));
 			break;
 	}
 

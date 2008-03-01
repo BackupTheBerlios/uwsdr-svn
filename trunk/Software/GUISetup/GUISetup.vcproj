@@ -266,6 +266,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\HPSDRDialog.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\PortDialog.cpp"
 				>
 			</File>
@@ -288,6 +292,10 @@
 			</File>
 			<File
 				RelativePath="GUISetupFrame.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HPSDRDialog.h"
 				>
 			</File>
 			<File

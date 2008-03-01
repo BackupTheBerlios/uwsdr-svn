@@ -11,6 +11,11 @@
               </object>
 
          <li> <object type="text/sitemap">
+                  <param name="Name" value="Atlas (HPSDR)">
+                  <param name="Local" value="Atlas.htm">
+              </object>
+
+         <li> <object type="text/sitemap">
                   <param name="Name" value="Audio API">
                   <param name="Local" value="AudioAPI.htm">
               </object>
@@ -61,8 +66,23 @@
               </object>
 
          <li> <object type="text/sitemap">
+                  <param name="Name" value="HPSDR">
+                  <param name="Local" value="HPSDR.htm">
+              </object>
+
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="Janus (HPSDR)">
+                  <param name="Local" value="Janus.htm">
+              </object>
+
+         <li> <object type="text/sitemap">
                   <param name="Name" value="Key In">
                   <param name="Local" value="KeyIn.htm">
+              </object>
+
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="Mercury (HPSDR)">
+                  <param name="Local" value="Mercury.htm">
               </object>
 
          <li> <object type="text/sitemap">
@@ -83,6 +103,11 @@
          <li> <object type="text/sitemap">
                   <param name="Name" value="Overview">
                   <param name="Local" value="Overview.htm">
+              </object>
+
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="Penelope (HPSDR)">
+                  <param name="Local" value="Penelope.htm">
               </object>
 
          <li> <object type="text/sitemap">

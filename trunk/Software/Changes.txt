@@ -404,3 +404,5 @@ Changes to build and operate on Mac OS X better.
 Removed Visual C++ 6.0 build files.
 
 The choice between Hilbert and Weaver methods are now explicit in the Preferences.
+
+Added support for HPSDR.

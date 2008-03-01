@@ -68,7 +68,8 @@ UWSDRDataWriter.o:	UWSDRDataWriter.cpp UWSDRDataWriter.h ../Common/RingBuffer.h 
 UWSDRFrame.o:	UWSDRFrame.cpp UWSDRFrame.h ../Common/ControlInterface.h CWKeyboard.h DialInterface.h DSPControl.h FreqDial.h \
 		FreqDisplay.h FreqKeypad.h ../Common/Frequency.h InfoBox.h ../Common/NullController.h ../Common/UDPDataReader.h \
 		../Common/UDPDataWriter.h SDRParameters.h ../Common/SerialControl.h SMeter.h ../Common/JackReaderWriter.h \
-		../Common/SoundCardReaderWriter.h ../Common/SoundFileWriter.h SpectrumDisplay.h \
+		../Common/SoundCardReaderWriter.h ../Common/SoundFileWriter.h SpectrumDisplay.h ../Common/HPSDRDataReader.h \
+		../Common/HPSDRDataWriter.h ../Common/HPSDRAudioReader.h ../Common/HPSDRAudioWriter.h ../Common/HPSDRReaderWriter.h \
 		../Common/SRTXRXController.h UWSDRApp.h UWSDRController.h UWSDRDefs.h UWSDRPreferences.h UWSDR.xpm \
 		../Common/Common.h  UWSDRDataReader.h UWSDRDataWriter.h VoiceKeyboard.h
 		$(CC) $(CFLAGS) -c UWSDRFrame.cpp

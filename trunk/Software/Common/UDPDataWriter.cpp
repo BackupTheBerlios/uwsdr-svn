@@ -113,7 +113,7 @@ bool CUDPDataWriter::write(const void* buffer, unsigned int len)
 	}
 
 	if (ret != int(len)) {
-		::wxLogError(wxT("UDPDataWriter: Error only wrote %ld of %u bytes to the datagram socket"), ret, len);
+		::wxLogError(wxT("UDPDataWriter: Error only wrote %ld of %u bytes to the datagram socket"), (unsigned long)ret, len);
 		return false;
 	}
 

@@ -11,8 +11,9 @@ name=Skeleton SDR
 #
 # The control of the hardware may be via a number of different hardware interfaces,
 # the valid values are "audiorx" for something like a SoftRock, "demo" for a working
-# transmit and receive GUI but no hardware connected, and "uwsdr1" for the first
-# version of the uwsdr hardware (using the Ethernet port).
+# transmit and receive GUI but no hardware connected, "uwsdr1" for the first
+# version of the uwsdr hardware (using the Ethernet port), and "hpsdr" for talking
+# to a HPSDR.
 #
 type=demo
 
@@ -38,7 +39,8 @@ stepSize=10000.0
 #
 # This is the sample rate of the CODEC, this is somewhat important. The value
 # is in samples per second. For the "audiorx" type it is the sample rate of the
-# sound card, the higher the sample rate, the greater the tuning range.
+# sound card, the higher the sample rate, the greater the tuning range. This
+# value is 48000 for HPSDR.
 #
 sampleRate=48000
 

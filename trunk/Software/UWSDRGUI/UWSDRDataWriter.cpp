@@ -22,8 +22,6 @@
 const unsigned int HEADER_SIZE = 6;
 const unsigned int SAMPLE_SIZE = 4;
 
-// const unsigned int MAX_SAMPLES = 210;
-
 
 CUWSDRDataWriter::CUWSDRDataWriter(CUDPDataWriter* writer, unsigned int version, unsigned int maxSamples, bool delay) :
 wxThread(),

@@ -43,7 +43,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.7\lib\vc_dll\mswd&quot;;&quot;C:\wxWidgets-2.8.7\include&quot;;..\PA19"
+				AdditionalIncludeDirectories="..\USB;&quot;C:\wxWidgets-2.8.7\lib\vc_dll\mswd&quot;;&quot;C:\wxWidgets-2.8.7\include&quot;;..\PA19"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;__WXMSW__;__WXDEBUG__;WXUSINGDLL;USE_PORTAUDIO"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -122,7 +122,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="0"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.7\lib\vc_dll\msw&quot;;&quot;C:\wxWidgets-2.8.7\include&quot;;..\PA19"
+				AdditionalIncludeDirectories="..\USB;&quot;C:\wxWidgets-2.8.7\lib\vc_dll\msw&quot;;&quot;C:\wxWidgets-2.8.7\include&quot;;..\PA19"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;__WXMSW__;WXUSINGDLL;USE_PORTAUDIO"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -202,6 +202,26 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\HPSDRAudioReader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\HPSDRAudioWriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\HPSDRDataReader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\HPSDRDataWriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\HPSDRReaderWriter.cpp"
+				>
 			</File>
 			<File
 				RelativePath=".\JackReaderWriter.cpp"
@@ -437,6 +457,10 @@
 				RelativePath=".\UDPDataWriter.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\USBBulkReaderWriter.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -468,6 +492,26 @@
 			</File>
 			<File
 				RelativePath="Frequency.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HPSDRAudioReader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HPSDRAudioWriter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HPSDRDataReader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HPSDRDataWriter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HPSDRReaderWriter.h"
 				>
 			</File>
 			<File
@@ -548,6 +592,10 @@
 			</File>
 			<File
 				RelativePath=".\UDPDataWriter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\USBBulkReaderWriter.h"
 				>
 			</File>
 		</Filter>

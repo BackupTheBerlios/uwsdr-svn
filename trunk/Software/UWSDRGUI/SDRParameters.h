@@ -150,6 +150,12 @@ class CSDRParameters {
 	unsigned int  m_micGain;
 	unsigned int  m_power;
 
+	int           m_c0;
+	int           m_c1;
+	int           m_c2;
+	int           m_c3;
+	int           m_c4;
+
 	unsigned int  m_cwSpeed;
 	wxString      m_cwLocal;
 	wxString      m_cwRemote;

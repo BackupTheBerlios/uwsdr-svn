@@ -113,6 +113,11 @@ const wxChar* KEY_RF_GAIN            = wxT("/RFGain");
 const wxChar* KEY_SQUELCH            = wxT("/Squelch");
 const wxChar* KEY_MIC_GAIN           = wxT("/MicGain");
 const wxChar* KEY_POWER              = wxT("/Power");
+const wxChar* KEY_HPSDRC0            = wxT("/HPSDRC0");
+const wxChar* KEY_HPSDRC1            = wxT("/HPSDRC1");
+const wxChar* KEY_HPSDRC2            = wxT("/HPSDRC2");
+const wxChar* KEY_HPSDRC3            = wxT("/HPSDRC3");
+const wxChar* KEY_HPSDRC4            = wxT("/HPSDRC4");
 const wxChar* KEY_CW_SPEED           = wxT("/CWSpeed");
 const wxChar* KEY_CW_LOCAL           = wxT("/CWLocalCallsign");
 const wxChar* KEY_CW_REMOTE          = wxT("/CWRemoteCallsign");
@@ -394,6 +399,11 @@ bool CUWSDRApp::readConfig()
 	wxString keySquelch         = wxT("/") + m_parameters->m_name + KEY_SQUELCH;
 	wxString keyMicGain         = wxT("/") + m_parameters->m_name + KEY_MIC_GAIN;
 	wxString keyPower           = wxT("/") + m_parameters->m_name + KEY_POWER;
+	wxString keyHpsdrC0         = wxT("/") + m_parameters->m_name + KEY_HPSDRC0;
+	wxString keyHpsdrC1         = wxT("/") + m_parameters->m_name + KEY_HPSDRC1;
+	wxString keyHpsdrC2         = wxT("/") + m_parameters->m_name + KEY_HPSDRC2;
+	wxString keyHpsdrC3         = wxT("/") + m_parameters->m_name + KEY_HPSDRC3;
+	wxString keyHpsdrC4         = wxT("/") + m_parameters->m_name + KEY_HPSDRC4;
 	wxString keyCwSpeed         = wxT("/") + m_parameters->m_name + KEY_CW_SPEED;
 	wxString keyCwLocal         = wxT("/") + m_parameters->m_name + KEY_CW_LOCAL;
 	wxString keyCwRemote        = wxT("/") + m_parameters->m_name + KEY_CW_REMOTE;
@@ -617,6 +627,21 @@ bool CUWSDRApp::readConfig()
 
 	profile->Read(keyPower,            &num, 0);
 	m_parameters->m_power = num;
+
+	profile->Read(keyHpsdrC0,          &num, 0x00);
+	m_parameters->m_c0 = num;
+
+	profile->Read(keyHpsdrC1,          &num, 0x00);
+	m_parameters->m_c1 = num;
+
+	profile->Read(keyHpsdrC2,          &num, 0x00);
+	m_parameters->m_c2 = num;
+
+	profile->Read(keyHpsdrC3,          &num, 0x00);
+	m_parameters->m_c3 = num;
+
+	profile->Read(keyHpsdrC4,          &num, 0x00);
+	m_parameters->m_c4 = num;
 
 	profile->Read(keyCwSpeed,          &num, KEYER_SPEED);
 	m_parameters->m_cwSpeed = num;

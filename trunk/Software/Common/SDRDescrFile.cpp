@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -61,6 +61,8 @@ m_valid(false)
 					m_type = TYPE_DEMO;
 				else if (type.Cmp(wxT("uwsdr1")) == 0)
 					m_type = TYPE_UWSDR1;
+				else if (type.Cmp(wxT("hpsdr")) == 0)
+					m_type = TYPE_HPSDR;
 				else {
 					::wxLogError(wxT("Unknown type - %s in the .sdr file"), type.c_str());
 					return;

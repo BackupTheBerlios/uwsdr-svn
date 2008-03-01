@@ -28,14 +28,14 @@ const int CW_READER    = 66;
 const int VOICE_READER = 77;
 
 const unsigned int RINGBUFFER_SIZE = 100001;
-const unsigned int BLOCK_SIZE      = 2048;		// XXXX
 
-CDSPControl::CDSPControl(float sampleRate) :
+CDSPControl::CDSPControl(float sampleRate, unsigned int blockSize) :
 wxThread(),
 m_dttsp(NULL),
 m_cwKeyer(NULL),
 m_voiceKeyer(NULL),
 m_sampleRate(sampleRate),
+m_blockSize(blockSize),
 m_txReader(NULL),
 m_txWriter(NULL),
 m_rxReader(NULL),
@@ -68,20 +68,20 @@ m_txUnderruns(0U),
 m_txOverruns(0U)
 {
 	m_dttsp = new CDTTSPControl();
-	m_dttsp->open(m_sampleRate, BLOCK_SIZE);
+	m_dttsp->open(m_sampleRate, m_blockSize);
 
 	m_cwKeyer = new CCWKeyer();
 	m_cwKeyer->setCallback(this, CW_READER);
-	m_cwKeyer->open(m_sampleRate, BLOCK_SIZE);
+	m_cwKeyer->open(m_sampleRate, m_blockSize);
 
 	m_voiceKeyer = new CVoiceKeyer();
 	m_voiceKeyer->setCallback(this, VOICE_READER);
-	m_voiceKeyer->open(m_sampleRate, BLOCK_SIZE);
+	m_voiceKeyer->open(m_sampleRate, m_blockSize);
 
-	m_txBuffer = new float[BLOCK_SIZE * 2];
-	m_rxBuffer = new float[BLOCK_SIZE * 2];
+	m_txBuffer = new float[m_blockSize * 2];
+	m_rxBuffer = new float[m_blockSize * 2];
 
-	m_outBuffer = new float[BLOCK_SIZE * 2];
+	m_outBuffer = new float[m_blockSize * 2];
 }
 
 CDSPControl::~CDSPControl()
@@ -164,8 +164,8 @@ void* CDSPControl::Entry()
 
 		if (ret == wxSEMA_NO_ERROR) {
 			if (m_transmit) {
-				unsigned int nSamples = m_txRingBuffer.getData(m_txBuffer, BLOCK_SIZE);
-				if (nSamples != BLOCK_SIZE)
+				unsigned int nSamples = m_txRingBuffer.getData(m_txBuffer, m_blockSize);
+				if (nSamples != m_blockSize)
 					m_txUnderruns++;
 
 				if (nSamples > 0) {
@@ -174,15 +174,15 @@ void* CDSPControl::Entry()
 				}
 			}
 
-			unsigned int nSamples = m_rxRingBuffer.getData(m_rxBuffer, BLOCK_SIZE);
+			unsigned int nSamples = m_rxRingBuffer.getData(m_rxBuffer, m_blockSize);
 
 			// Create silence on transmit if no sidetone is being transmitted
 			if (nSamples == 0 && m_transmit) {
-				::memset(m_rxBuffer, 0x00, BLOCK_SIZE * 2 * sizeof(float));
-				nSamples = BLOCK_SIZE;
+				::memset(m_rxBuffer, 0x00, m_blockSize * 2 * sizeof(float));
+				nSamples = m_blockSize;
 			}
 
-			if (nSamples != BLOCK_SIZE)
+			if (nSamples != m_blockSize)
 				m_rxUnderruns++;
 
 			scaleBuffer(m_rxBuffer, nSamples, m_afGain);
@@ -217,11 +217,11 @@ bool CDSPControl::openIO()
 	m_txReader->setCallback(this, TX_READER);
 	m_rxReader->setCallback(this, RX_READER);
 
-	bool ret = m_txWriter->open(m_sampleRate, BLOCK_SIZE);
+	bool ret = m_txWriter->open(m_sampleRate, m_blockSize);
 	if (!ret)
 		return false;
 
-	ret = m_txReader->open(m_sampleRate, BLOCK_SIZE);
+	ret = m_txReader->open(m_sampleRate, m_blockSize);
 	if (!ret) {
 		m_dttsp->close();
 		m_cwKeyer->close();
@@ -233,7 +233,7 @@ bool CDSPControl::openIO()
 	if (m_txReader->hasClock())
 		m_clockId = TX_READER;
 
-	ret = m_rxWriter->open(m_sampleRate, BLOCK_SIZE);
+	ret = m_rxWriter->open(m_sampleRate, m_blockSize);
 	if (!ret) {
 		m_dttsp->close();
 		m_cwKeyer->close();
@@ -242,7 +242,7 @@ bool CDSPControl::openIO()
 		return false;
 	}
 
-	ret = m_rxReader->open(m_sampleRate, BLOCK_SIZE);
+	ret = m_rxReader->open(m_sampleRate, m_blockSize);
 	if (!ret) {
 		m_dttsp->close();
 		m_cwKeyer->close();
@@ -690,7 +690,7 @@ bool CDSPControl::setRecord(bool record)
 
 		CSoundFileWriter* sdfw = new CSoundFileWriter(fileName, 1U);
 
-		bool ret = sdfw->open(m_sampleRate, BLOCK_SIZE);
+		bool ret = sdfw->open(m_sampleRate, m_blockSize);
 		if (!ret) {
 			::wxLogError(wxT("Cannot open file %s for recording"), fileName.c_str());
 			return false;

@@ -1,8 +1,10 @@
 all:		Common.a
 
-OBJS := 	AudioDevInfo.o Frequency.o JackReaderWriter.o Log.o NullController.o NullReader.o NullWriter.o RingBuffer.o \
+OBJS := 	AudioDevInfo.o Frequency.o HPSDRAudioReader.o HPSDRAudioWriter.o HPSDRDataReader.o HPSDRDataWriter.o \
+		HPSDRReaderWriter.o JackReaderWriter.o Log.o NullController.o NullReader.o NullWriter.o RingBuffer.o \
 		SDRDescrFile.o SerialControl.o SignalReader.o SoundCardReaderWriter.o SoundFileReader.o SoundFileWriter.o \
-		SRTXRXController.o ThreadReader.o ThreeToneReader.o TwoToneReader.o UDPDataReader.o UDPDataWriter.o
+		SRTXRXController.o ThreadReader.o ThreeToneReader.o TwoToneReader.o UDPDataReader.o UDPDataWriter.o \
+		USBBulkReaderWriter.o
 
 Common.a:	$(OBJS)
 		ar rcs Common.a $(OBJS)
@@ -12,6 +14,22 @@ AudioDevInfo.o:	AudioDevInfo.cpp AudioDevInfo.h Common.h
 
 Frequency.o:	Frequency.cpp Frequency.h
 		$(CC) $(CFLAGS) -c Frequency.cpp
+
+HPSDRAudioReader.o:	HPSDRAudioReader.cpp HPSDRAudioReader.h DataCallback.h DataReader.h HPSDRReaderWriter.h
+		$(CC) $(CFLAGS) -c HPSDRAudioReader.cpp
+
+HPSDRAudioWriter.o:	HPSDRAudioWriter.cpp HPSDRAudioWriter.h DataWriter.h HPSDRReaderWriter.h
+		$(CC) $(CFLAGS) -c HPSDRAudioWriter.cpp
+
+HPSDRDataReader.o:	HPSDRDataReader.cpp HPSDRDataReader.h DataCallback.h DataReader.h HPSDRReaderWriter.h
+		$(CC) $(CFLAGS) -c HPSDRDataReader.cpp
+
+HPSDRDataWriter.o:	HPSDRDataWriter.cpp HPSDRDataWriter.h DataWriter.h HPSDRReaderWriter.h
+		$(CC) $(CFLAGS) -c HPSDRDataWriter.cpp
+
+HPSDRReaderWriter.o:	HPSDRReaderWriter.cpp HPSDRReaderWriter.h ControlInterface.h DataCallback.h Frequency.h SDRController.h \
+			SocketCallback.h
+		$(CC) $(CFLAGS) -c HPSDRReaderWriter.cpp
 
 JackReaderWriter.o: JackReaderWriter.cpp JackReaderWriter.h DataCallback.h DataReader.h DataWriter.h RingBuffer.h
 		$(CC) $(CFLAGS) -c JackReaderWriter.cpp
@@ -66,6 +84,9 @@ UDPDataReader.o: UDPDataReader.cpp UDPDataReader.h SocketCallback.h
 
 UDPDataWriter.o: UDPDataWriter.cpp UDPDataWriter.h
 		$(CC) $(CFLAGS) -c UDPDataWriter.cpp
+
+USBBulkReaderWriter.o:	USBBulkReaderWriter.cpp USBBulkReaderWriter.h SocketCallback.h
+		$(CC) $(CFLAGS) -c USBBulkReaderWriter.cpp
 
 clean:
 		rm -f core Common.a *.o *~ *.bak
