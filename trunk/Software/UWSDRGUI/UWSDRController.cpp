@@ -35,6 +35,7 @@ m_tx(false),
 m_clock(99999),
 m_replies(false),
 m_tries(0U),
+m_connected(true),
 m_commands(),
 m_flag()
 {
@@ -213,8 +214,11 @@ void* CUWSDRController::Entry()
 				// No replies, so retransmit the last command
 				if (m_commands.size() > 0U && !m_replies) {
 					if (m_tries >= MAX_TRIES) {
-						::wxLogError(wxT("No reply from the SDR for a command after %u tries"), MAX_TRIES);
-						m_callback->connectionLost();
+						if (m_connected) {
+							::wxLogError(wxT("No reply from the SDR for a command after %u tries"), MAX_TRIES);
+							m_callback->connectionLost();
+							m_connected = false;
+						}
 					} else {
 						sendCommand(m_commands.front());
 						m_tries++;

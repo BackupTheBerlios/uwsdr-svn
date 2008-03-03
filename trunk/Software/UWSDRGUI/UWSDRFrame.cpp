@@ -1414,6 +1414,9 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 					case TYPE_UWSDR1:
 						type = _("UWSDR v1.0");
 						break;
+					case TYPE_HPSDR:
+						type = _("HPSDR");
+						break;
 				}
 
 				wxString transmit = (m_parameters->m_hardwareReceiveOnly) ? _("No") : _("Yes");

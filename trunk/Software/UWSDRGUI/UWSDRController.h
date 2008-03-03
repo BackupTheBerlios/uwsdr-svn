@@ -68,6 +68,7 @@ class CUWSDRController : public wxThread, public ISDRController, public ISocketC
 	unsigned int       m_clock;
 	bool               m_replies;
 	unsigned int       m_tries;
+	bool               m_connected;
 	deque<wxString>    m_commands;
 	wxSemaphore        m_flag;
 };
