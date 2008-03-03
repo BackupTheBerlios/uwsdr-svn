@@ -275,8 +275,6 @@ void CSDREmulatorFrame::onCommand(wxEvent& WXUNUSED(event))
 		}
 	} else if (command.Cmp(wxT("SI")) == 0) {
 		ack = true;
-	} else if (command.Cmp(wxT("SD")) == 0) {
-		ack = true;
 	}
 
 	if (ack) {

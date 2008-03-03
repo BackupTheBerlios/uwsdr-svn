@@ -27,10 +27,10 @@ class IControlInterface {
 	virtual void setTransmit(bool txOn) = 0;
 	virtual void setKey(bool keyOn) = 0;
 
-	virtual void commandAck(const wxString& message, int id) = 0;
-	virtual void commandNak(const wxString& message, int id) = 0;
-	virtual void commandMisc(const wxString& message, int id) = 0;
-	virtual void connectionLost(int id) = 0;
+	virtual void commandAck(const wxString& message) = 0;
+	virtual void commandNak(const wxString& message) = 0;
+	virtual void commandMisc(const wxString& message) = 0;
+	virtual void connectionLost() = 0;
 };
 
 #endif

@@ -58,16 +58,19 @@ class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterf
 	void onClose(wxCloseEvent& event);
 	void onTransmitOn(wxEvent& event);
 	void onTransmitOff(wxEvent& event);
+	void onCommandNak(wxEvent& event);
+	void onCommandMisc(wxEvent& event);
+	void onConnectionLost(wxEvent& event);
 
 	virtual void            setParameters(CSDRParameters* parameters);
 	virtual CSDRParameters* getParameters();
 
 	virtual void dialMoved(int id, int value);
 
-	virtual void commandAck(const wxString& message, int id);
-	virtual void commandNak(const wxString& message, int id);
-	virtual void commandMisc(const wxString& message, int id);
-	virtual void connectionLost(int id);
+	virtual void commandAck(const wxString& message);
+	virtual void commandNak(const wxString& message);
+	virtual void commandMisc(const wxString& message);
+	virtual void connectionLost();
 
 	virtual CWERROR    sendCW(unsigned int speed, const wxString& text, CWSTATUS state);
 	virtual VOICEERROR sendAudio(const wxString& fileName, VOICESTATUS state);

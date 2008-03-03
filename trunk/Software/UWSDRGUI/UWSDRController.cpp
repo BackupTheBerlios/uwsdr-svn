@@ -25,7 +25,6 @@ CUWSDRController::CUWSDRController(CUDPDataReader* reader, CUDPDataWriter* write
 wxThread(),
 m_reader(reader),
 m_writer(writer),
-m_id(0),
 m_callback(NULL),
 m_version(version),
 m_txFreq(),
@@ -47,12 +46,11 @@ CUWSDRController::~CUWSDRController()
 {
 }
 
-void CUWSDRController::setCallback(IControlInterface* callback, int id)
+void CUWSDRController::setCallback(IControlInterface* callback)
 {
 	wxASSERT(callback != NULL);
 
 	m_callback = callback;
-	m_id       = id;
 }
 
 bool CUWSDRController::open()
@@ -216,7 +214,7 @@ void* CUWSDRController::Entry()
 				if (m_commands.size() > 0U && !m_replies) {
 					if (m_tries >= MAX_TRIES) {
 						::wxLogError(wxT("No reply from the SDR for a command after %u tries"), MAX_TRIES);
-						m_callback->connectionLost(m_id);
+						m_callback->connectionLost();
 					} else {
 						sendCommand(m_commands.front());
 						m_tries++;
@@ -275,16 +273,16 @@ bool CUWSDRController::callback(char* buffer, unsigned int len, int WXUNUSED(id)
 			if (::strncmp(buffer, "AK", 2) == 0) {
 				m_replies = true;
 				buffer[len] = '\0';
-				m_callback->commandAck(buffer, m_id);
+				m_callback->commandAck(buffer);
 				return true;
 			} else if (::strncmp(buffer, "NK", 2) == 0) {
 				m_replies = true;
 				buffer[len] = '\0';
-				m_callback->commandNak(buffer, m_id);
+				m_callback->commandNak(buffer);
 				return true;
 			} else if (::strncmp(buffer, "DR", 2) != 0) {
 				buffer[len] = '\0';
-				m_callback->commandMisc(buffer, m_id);
+				m_callback->commandMisc(buffer);
 				return true;
 			}
 

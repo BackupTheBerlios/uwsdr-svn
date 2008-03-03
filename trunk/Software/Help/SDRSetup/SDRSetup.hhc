@@ -32,11 +32,6 @@
                   <param name="Local" value="NewSDRPort.htm">
               </object>
          <li> <object type="text/sitemap">
-                  <param name="Name" value="DSP IP Address">
-                  <param name="ID" value=8>
-                  <param name="Local" value="DSPIPAddress.htm">
-              </object>
-         <li> <object type="text/sitemap">
                   <param name="Name" value="Execute Button">
                   <param name="ID" value=9>
                   <param name="Local" value="ExecuteButton.htm">

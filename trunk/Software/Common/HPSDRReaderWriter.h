@@ -32,7 +32,7 @@ class CHPSDRReaderWriter : public ISocketCallback, public ISDRController  {
 	CHPSDRReaderWriter(unsigned int blockSize, int c0, int c1, int c2, int c3, int c4);
 	virtual ~CHPSDRReaderWriter();
 
-	virtual void setCallback(IControlInterface* callback, int id);
+	virtual void setCallback(IControlInterface* callback);
 	virtual void setDataCallback(IDataCallback* callback, int id);
 	virtual void setAudioCallback(IDataCallback* callback, int id);
 
@@ -67,7 +67,6 @@ class CHPSDRReaderWriter : public ISocketCallback, public ISDRController  {
 	IControlInterface*    m_controlCallback;
 	int                   m_dataId;
 	int                   m_audioId;
-	int                   m_controlId;
 	bool                  m_transmit;
 	unsigned int          m_frequency;
 	unsigned int          m_robin;

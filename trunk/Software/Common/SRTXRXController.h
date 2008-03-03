@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2007,2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ class CSRTXRXController : public ISDRController {
 	CSRTXRXController(const wxString& device, int pin);
 	virtual ~CSRTXRXController();
 
-	virtual void setCallback(IControlInterface* callback, int id);
+	virtual void setCallback(IControlInterface* callback);
 
 	virtual bool open();
 	virtual void enableTX(bool on);

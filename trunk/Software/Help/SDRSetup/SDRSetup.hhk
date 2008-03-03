@@ -1,11 +1,6 @@
 <ul>
 
          <li> <object type="text/sitemap">
-                  <param name="Name" value="DSP IP Address">
-                  <param name="Local" value="DSPIPAddress.htm">
-              </object>
-
-         <li> <object type="text/sitemap">
                   <param name="Name" value="Execute Button">
                   <param name="Local" value="ExecuteButton.htm">
               </object>

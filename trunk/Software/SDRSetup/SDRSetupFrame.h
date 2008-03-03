@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ class CSDRSetupFrame : public wxFrame, public ISocketCallback {
 
 	void onExecute(wxCommandEvent& event);
 
-	bool setNew(const wxIPV4address& oldControl, const wxIPV4address& newControl, const wxIPV4address& dsp);
+	bool setNew(const wxIPV4address& oldControl, const wxIPV4address& newControl);
 
 	virtual bool callback(char* buffer, unsigned int len, int id);
 
@@ -47,7 +47,6 @@ class CSDRSetupFrame : public wxFrame, public ISocketCallback {
 	wxTextCtrl* m_oldSDRControlPort;
 	wxTextCtrl* m_sdrAddress;
 	wxTextCtrl* m_sdrPort;
-	wxTextCtrl* m_dspAddress;
 	REPLY       m_reply;
 
 	DECLARE_EVENT_TABLE()

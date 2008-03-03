@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -41,7 +41,6 @@ m_oldSDRAddress(NULL),
 m_oldSDRControlPort(NULL),
 m_sdrAddress(NULL),
 m_sdrPort(NULL),
-m_dspAddress(NULL),
 m_reply(REPLY_NONE)
 {
 	SetIcon(wxICON(SDRSetup));
@@ -76,12 +75,6 @@ m_reply(REPLY_NONE)
 	m_sdrPort = new wxTextCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
 	panelSizer->Add(m_sdrPort, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label7 = new wxStaticText(panel, -1, _("DSP IP Address:"));
-	panelSizer->Add(label7, 0, wxALL, BORDER_SIZE);
-
-	m_dspAddress = new wxTextCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
-	panelSizer->Add(m_dspAddress, 0, wxALL, BORDER_SIZE);
-
 	wxButton* execute = new wxButton(panel, EXECUTE_BUTTON, _("Execute"));
 	panelSizer->Add(execute, 0, wxALL, BORDER_SIZE);
 
@@ -102,7 +95,6 @@ void CSDRSetupFrame::onExecute(wxCommandEvent& WXUNUSED(event))
 {
 	wxIPV4address oldControl;
 	wxIPV4address newControl;
-	wxIPV4address dsp;
 
 	wxString addressString = m_oldSDRAddress->GetValue();
 	if (addressString.IsEmpty()) {
@@ -156,21 +148,8 @@ void CSDRSetupFrame::onExecute(wxCommandEvent& WXUNUSED(event))
 	}
 
 	newControl.Service(port);
-	dsp.Service(port);
 
-	addressString = m_dspAddress->GetValue();
-	if (addressString.IsEmpty()) {
-		::wxMessageBox(_("The DSP IP address is not allowed to be empty"), _("SDRSetup Error"), wxICON_ERROR);
-		return;
-	}
-
-	valid = dsp.Hostname(addressString);
-	if (!valid) {
-		::wxMessageBox(_("The DSP IP address is not valid"), _("SDRSetup Error"), wxICON_ERROR);
-		return;
-	}
-
-	bool ret = setNew(oldControl, newControl, dsp);
+	bool ret = setNew(oldControl, newControl);
 	if (ret)
 		Close(true);
 }
@@ -187,11 +166,11 @@ bool CSDRSetupFrame::callback(char* buffer, unsigned int WXUNUSED(len), int WXUN
 	return true;
 }
 
-bool CSDRSetupFrame::setNew(const wxIPV4address& oldControl, const wxIPV4address& newControl, const wxIPV4address& dsp)
+bool CSDRSetupFrame::setNew(const wxIPV4address& oldControl, const wxIPV4address& newControl)
 {
 	wxString command;
 
-	command.Printf(wxT("SI%s,%u;SD%s;"), newControl.IPAddress().c_str(), newControl.Service(), dsp.IPAddress().c_str());
+	command.Printf(wxT("SI%s,%u;"), newControl.IPAddress().c_str(), newControl.Service());
 
 	CUDPDataWriter* writer = new CUDPDataWriter(oldControl.IPAddress(), oldControl.Service());
 	CUDPDataReader* reader = new CUDPDataReader(oldControl.IPAddress(), oldControl.Service());

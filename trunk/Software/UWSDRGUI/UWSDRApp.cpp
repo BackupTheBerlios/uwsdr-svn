@@ -876,6 +876,11 @@ void CUWSDRApp::setTransmit(bool txOn)
 	m_frame->setTransmit(txOn);
 }
 
+void CUWSDRApp::setKey(bool keyOn)
+{
+	m_frame->setKey(keyOn);
+}
+
 wxString CUWSDRApp::getHelpDir()
 {
 #if defined(__WXMSW__)

@@ -41,6 +41,7 @@
 #include "JackReaderWriter.h"
 #include "SoundCardReaderWriter.h"
 
+
 #if defined(__WXGTK__) || defined(__WXMAC__)
 #include "UWSDR.xpm"
 #endif
@@ -89,6 +90,9 @@ enum {
 
 DEFINE_EVENT_TYPE(TRANSMIT_ON_EVENT)
 DEFINE_EVENT_TYPE(TRANSMIT_OFF_EVENT)
+DEFINE_EVENT_TYPE(COMMAND_NAK_EVENT)
+DEFINE_EVENT_TYPE(COMMAND_MISC_EVENT)
+DEFINE_EVENT_TYPE(CONNECTION_LOST_EVENT)
 
 BEGIN_EVENT_TABLE(CUWSDRFrame, wxFrame)
 	EVT_BUTTON(MENU_BUTTON, CUWSDRFrame::onMenuButton)
@@ -119,6 +123,9 @@ BEGIN_EVENT_TABLE(CUWSDRFrame, wxFrame)
 	EVT_CLOSE(CUWSDRFrame::onClose)
 	EVT_CUSTOM(TRANSMIT_ON_EVENT, wxID_ANY, CUWSDRFrame::onTransmitOn)
 	EVT_CUSTOM(TRANSMIT_OFF_EVENT, wxID_ANY, CUWSDRFrame::onTransmitOff)
+	EVT_CUSTOM(COMMAND_NAK_EVENT, wxID_ANY, CUWSDRFrame::onCommandNak)
+	EVT_CUSTOM(COMMAND_MISC_EVENT, wxID_ANY, CUWSDRFrame::onCommandMisc)
+	EVT_CUSTOM(CONNECTION_LOST_EVENT, wxID_ANY, CUWSDRFrame::onConnectionLost)
 END_EVENT_TABLE()
 
 
@@ -266,7 +273,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			break;
 	}
 
-	m_sdr->setCallback(this, -1);
+	m_sdr->setCallback(this);
 
 	bool ret = m_sdr->open();
 	if (!ret) {
@@ -1471,30 +1478,6 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 	}
 }
 
-void CUWSDRFrame::commandAck(const wxString& WXUNUSED(message), int WXUNUSED(id))
-{
-}
-
-void CUWSDRFrame::commandNak(const wxString& message, int WXUNUSED(id))
-{
-	::wxLogError(wxT("Received a NAK from the SDR: ") + message);
-	::wxMessageBox(_("Received a NAK from the SDR\n") + message, _("uWave SDR Error"), wxICON_ERROR);
-}
-
-void CUWSDRFrame::commandMisc(const wxString& message, int WXUNUSED(id))
-{
-	::wxLogError(wxT("Unknown reply from the SDR: ") + message);
-	::wxMessageBox(_("Unknown reply from the SDR\n") + message, _("uWave SDR Error"), wxICON_ERROR);
-}
-
-void CUWSDRFrame::connectionLost(int WXUNUSED(id))
-{
-	::wxLogError(wxT("Connection to the SDR lost"));
-	::wxMessageBox(_("Connection to the SDR lost"), _("uWave SDR Error"), wxICON_ERROR);
-
-	Close(true);
-}
-
 void CUWSDRFrame::onTimer(wxTimerEvent& WXUNUSED(event))
 {
 	m_parameters->m_spectrumPos   = m_spectrumDisplay->getPosition();
@@ -1646,4 +1629,57 @@ void CUWSDRFrame::onTransmitOn(wxEvent& WXUNUSED(event))
 void CUWSDRFrame::onTransmitOff(wxEvent& WXUNUSED(event))
 {
 	normaliseTransmit(false);
+}
+
+void CUWSDRFrame::commandAck(const wxString& WXUNUSED(message))
+{
+}
+
+void CUWSDRFrame::commandNak(const wxString& message)
+{
+	wxCommandEvent event(COMMAND_NAK_EVENT);
+	event.SetString(message);
+
+	AddPendingEvent(event);
+}
+
+void CUWSDRFrame::commandMisc(const wxString& message)
+{
+	wxCommandEvent event(COMMAND_MISC_EVENT);
+	event.SetString(message);
+
+	AddPendingEvent(event);
+}
+
+void CUWSDRFrame::connectionLost()
+{
+	wxCommandEvent event(CONNECTION_LOST_EVENT);
+
+	AddPendingEvent(event);
+}
+
+void CUWSDRFrame::onCommandNak(wxEvent& event1)
+{
+	wxCommandEvent& event2 = dynamic_cast<wxCommandEvent&>(event1);
+	wxString message = event2.GetString();
+
+	::wxLogError(wxT("Received a NAK from the SDR: ") + message);
+	::wxMessageBox(_("Received a NAK from the SDR\n") + message, _("uWave SDR Error"), wxICON_ERROR);
+}
+
+void CUWSDRFrame::onCommandMisc(wxEvent& event1)
+{
+	wxCommandEvent& event2 = dynamic_cast<wxCommandEvent&>(event1);
+	wxString message = event2.GetString();
+
+	::wxLogError(wxT("Unknown reply from the SDR: ") + message);
+	::wxMessageBox(_("Unknown reply from the SDR\n") + message, _("uWave SDR Error"), wxICON_ERROR);
+}
+
+void CUWSDRFrame::onConnectionLost(wxEvent& WXUNUSED(event))
+{
+	::wxLogError(wxT("Connection to the SDR lost"));
+	::wxMessageBox(_("Connection to the SDR lost"), _("uWave SDR Error"), wxICON_ERROR);
+
+	Close(true);
 }

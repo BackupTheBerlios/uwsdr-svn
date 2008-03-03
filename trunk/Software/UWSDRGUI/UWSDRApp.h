@@ -47,6 +47,7 @@ class CUWSDRApp : public wxApp {
 	virtual VOICEERROR sendAudio(const wxString& fileName, VOICESTATUS state);
 
 	virtual void setTransmit(bool txOn);
+	virtual void setKey(bool keyOn);
 
 #if defined(__WXDEBUG__)
 	virtual void OnAssertFailure(const wxChar* file, int line, const wxChar* func, const wxChar* cond, const wxChar* msg);

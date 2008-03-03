@@ -63,7 +63,6 @@ m_audioCallback(NULL),
 m_controlCallback(NULL),
 m_dataId(0),
 m_audioId(0),
-m_controlId(0),
 m_transmit(false),
 m_frequency(0U),
 m_robin(0U),
@@ -103,12 +102,11 @@ bool CHPSDRReaderWriter::open()
 	return m_usb->open(HPSDR_VENDOR_ID, HPSDR_PRODUCT_ID, HPSDR_IN_ENDPOINT, HPSDR_OUT_ENDPOINT);
 }
 
-void CHPSDRReaderWriter::setCallback(IControlInterface* callback, int id)
+void CHPSDRReaderWriter::setCallback(IControlInterface* callback)
 {
 	wxASSERT(callback != NULL);
 
 	m_controlCallback = callback;
-	m_controlId       = id;
 }
 
 void CHPSDRReaderWriter::setDataCallback(IDataCallback* callback, int id)

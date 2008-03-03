@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ class CUWSDRController : public wxThread, public ISDRController, public ISocketC
     public:
 	CUWSDRController(CUDPDataReader* reader, CUDPDataWriter* writer, unsigned int version);
 
-	virtual void setCallback(IControlInterface* callback, int id);
+	virtual void setCallback(IControlInterface* callback);
 
 	virtual void* Entry();
 
@@ -58,7 +58,6 @@ class CUWSDRController : public wxThread, public ISDRController, public ISocketC
 	CUDPDataReader*    m_reader;
 	CUDPDataWriter*    m_writer;
 	int                m_port;
-	int                m_id;
 	IControlInterface* m_callback;
 	unsigned int       m_version;
 	CFrequency         m_txFreq;
