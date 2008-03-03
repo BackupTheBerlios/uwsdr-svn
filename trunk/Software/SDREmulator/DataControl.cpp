@@ -28,7 +28,7 @@ const int SOUNDFILE_READER  = 80;
 const unsigned int RINGBUFFER_SIZE = 100001;
 const unsigned int BLOCK_SIZE      = 2048;		// XXXX
 
-const unsigned int RXHEADER_SIZE = 7U;
+const unsigned int RXHEADER_SIZE = 8U;
 const unsigned int RXSAMPLE_SIZE = 6U;
 
 const unsigned int TXHEADER_SIZE = 6U;
@@ -420,10 +420,11 @@ void CDataControl::sendData(const float* buffer, unsigned int nSamples)
 			m_rxSequence = 0;
 	}
 
-	m_rxSockBuffer[4] = 0x00;		// AGC value
+	m_rxSockBuffer[4] = (nSamples >> 0) & 0xFF;
+	m_rxSockBuffer[5] = (nSamples >> 8) & 0xFF;
 
-	m_rxSockBuffer[5] = (nSamples >> 0) & 0xFF;
-	m_rxSockBuffer[6] = (nSamples >> 8) & 0xFF;
+	m_rxSockBuffer[6] = 0x00;		// AGC value
+	m_rxSockBuffer[7] = 0x00;		// Filler
 
 	unsigned int len = RXHEADER_SIZE;
 	for (unsigned int i = 0; i < nSamples; i++) {

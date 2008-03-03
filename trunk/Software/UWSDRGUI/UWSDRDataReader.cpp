@@ -18,8 +18,8 @@
 
 #include "UWSDRDataReader.h"
 
-const unsigned int HEADER_SIZE = 7;
-const unsigned int SAMPLE_SIZE = 6;
+const unsigned int HEADER_SIZE = 8U;
+const unsigned int SAMPLE_SIZE = 6U;
 
 
 CUWSDRDataReader::CUWSDRDataReader(CUDPDataReader* reader, unsigned int version) :
@@ -131,9 +131,9 @@ bool CUWSDRDataReader::callback(char* buffer, unsigned int len, int WXUNUSED(id)
 			m_sequence = 0;
 	}
 
-	unsigned int agc = buffer[4];
+	unsigned int nSamples = (buffer[5] << 8) + buffer[4];
 
-	unsigned int nSamples = (buffer[6] << 8) + buffer[5];
+	unsigned int agc = buffer[6];
 
 	unsigned int n = HEADER_SIZE;
 	for (unsigned int i = 0; i < nSamples && n < len; n += SAMPLE_SIZE, i++) {
