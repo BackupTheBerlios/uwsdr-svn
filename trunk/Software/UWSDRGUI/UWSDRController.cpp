@@ -215,7 +215,6 @@ void* CUWSDRController::Entry()
 				if (m_commands.size() > 0U && !m_replies) {
 					if (m_tries >= MAX_TRIES) {
 						if (m_connected) {
-							::wxLogError(wxT("No reply from the SDR for a command after %u tries"), MAX_TRIES);
 							m_callback->connectionLost();
 							m_connected = false;
 						}
