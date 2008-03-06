@@ -222,7 +222,7 @@ void CDataControl::closeIO()
 		m_soundFileReader->close();
 }
 
-void CDataControl::setCallback(ISocketCallback* callback, int id)
+void CDataControl::setCallback(IRawDataCallback* callback, int id)
 {
 	wxASSERT(callback != NULL);
 
@@ -428,8 +428,8 @@ void CDataControl::sendData(const float* buffer, unsigned int nSamples)
 
 	unsigned int len = RXHEADER_SIZE;
 	for (unsigned int i = 0; i < nSamples; i++) {
-		unsigned int iData = (unsigned int)((buffer[i * 2 + 0] + 1.0F) * 8388607.0F + 0.5F);
-		unsigned int qData = (unsigned int)((buffer[i * 2 + 1] + 1.0F) * 8388607.0F + 0.5F);
+		wxInt32 iData = wxInt32(buffer[i * 2 + 0] * float(0x7FFFFFFF));
+		wxInt32 qData = wxInt32(buffer[i * 2 + 1] * float(0x7FFFFFFF));
 
 		m_rxSockBuffer[len++] = (iData >> 16) & 0xFF;
 		m_rxSockBuffer[len++] = (iData >> 8)  & 0xFF;
@@ -452,7 +452,7 @@ bool CDataControl::callback(char* buffer, unsigned int len, int WXUNUSED(id))
 	if (len < TXHEADER_SIZE || buffer[0] != 'D' || buffer[1] != 'T')
 		return m_callback->callback(buffer, len, m_id);
 
-	int seqNo = (buffer[3] << 8) + buffer[2];
+	int seqNo = (wxUint8(buffer[3]) << 8) + wxUint8(buffer[2]);
 
 	if (m_txSequence != -1 && seqNo != m_txSequence) {
 		if (seqNo < m_txSequence && (seqNo % 2) == (m_txSequence % 2)) {
@@ -474,15 +474,15 @@ bool CDataControl::callback(char* buffer, unsigned int len, int WXUNUSED(id))
 	if (!m_transmit)
 		return true;
 
-	unsigned int nSamples = (buffer[5] << 8) + buffer[4];
+	unsigned int nSamples = (wxUint8(buffer[5]) << 8) + wxUint8(buffer[4]);
 
 	unsigned int n = TXHEADER_SIZE;
 	for (unsigned int i = 0; i < nSamples && n < len; n += TXSAMPLE_SIZE, i++) {
-		unsigned int iData = (buffer[n + 0] << 8) & 0xFF00 + (buffer[n + 1] << 0) & 0xFF;
-		unsigned int qData = (buffer[n + 2] << 8) & 0xFF00 + (buffer[n + 3] << 0) & 0xFF;
+		wxInt16 iData = (buffer[n + 0] << 8) & 0xFF00 + (buffer[n + 1] << 0) & 0xFF;
+		wxInt16 qData = (buffer[n + 2] << 8) & 0xFF00 + (buffer[n + 3] << 0) & 0xFF;
 
-		m_txSockBuffer[i * 2 + 0] = float(iData) / 32767.0F - 1.0F;
-		m_txSockBuffer[i * 2 + 1] = float(qData) / 32767.0F - 1.0F;
+		m_txSockBuffer[i * 2 + 0] = float(iData) / float(0x7FFF);
+		m_txSockBuffer[i * 2 + 1] = float(qData) / float(0x7FFF);
 	}
 
 	n = m_txRingBuffer.addData(m_txSockBuffer, nSamples);

@@ -21,7 +21,7 @@
 
 #include <wx/wx.h>
 
-#include "SocketCallback.h"
+#include "RawDataCallback.h"
 
 const unsigned int MAX_CALLBACKS = 5U;
 
@@ -30,7 +30,7 @@ class CUDPDataReader : public wxThread {
     public:
 	CUDPDataReader(const wxString& address, int port);
 
-	virtual void setCallback(ISocketCallback* callback, int id);
+	virtual void setCallback(IRawDataCallback* callback, int id);
 
 	virtual bool open();
 
@@ -42,16 +42,16 @@ class CUDPDataReader : public wxThread {
 	virtual ~CUDPDataReader();
 
     private:
-	wxString         m_address;
-	unsigned short   m_port;
-	char*            m_remAddr;
-	unsigned int     m_remAddrLen;
-	int              m_id[MAX_CALLBACKS];
-	ISocketCallback* m_callback[MAX_CALLBACKS];
-	int              m_fd;
-	char*            m_buffer;
-	unsigned int     m_count;
-	bool             m_enabled;
+	wxString          m_address;
+	unsigned short    m_port;
+	char*             m_remAddr;
+	unsigned int      m_remAddrLen;
+	int               m_id[MAX_CALLBACKS];
+	IRawDataCallback* m_callback[MAX_CALLBACKS];
+	int               m_fd;
+	char*             m_buffer;
+	unsigned int      m_count;
+	bool              m_enabled;
 
 	bool readSocket();
 };

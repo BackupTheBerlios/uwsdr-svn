@@ -110,7 +110,7 @@ bool CUWSDRDataReader::callback(char* buffer, unsigned int len, int WXUNUSED(id)
 	if (len < HEADER_SIZE || buffer[0] != 'D' || buffer[1] != 'R')
 		return false;
 
-	int seqNo = (buffer[3] << 8) + buffer[2];
+	int seqNo = (wxUint8(buffer[3]) << 8) + wxUint8(buffer[2]);
 
 	if (m_sequence != -1 && seqNo != m_sequence) {
 		m_missed++;
@@ -131,17 +131,17 @@ bool CUWSDRDataReader::callback(char* buffer, unsigned int len, int WXUNUSED(id)
 			m_sequence = 0;
 	}
 
-	unsigned int nSamples = (buffer[5] << 8) + buffer[4];
+	unsigned int nSamples = (wxUint8(buffer[5]) << 8) + wxUint8(buffer[4]);
 
 	unsigned int agc = buffer[6];
 
 	unsigned int n = HEADER_SIZE;
 	for (unsigned int i = 0; i < nSamples && n < len; n += SAMPLE_SIZE, i++) {
-		int iData = (buffer[n + 0] << 24) & 0xFF000000;
+		wxInt32 iData = (buffer[n + 0] << 24) & 0xFF000000;
 		iData |= (buffer[n + 1] << 16) & 0xFF0000;
 		iData |= (buffer[n + 2] << 8) & 0xFF00;
 
-		int qData = (buffer[n + 3] << 24) & 0xFF000000;
+		wxInt32 qData = (buffer[n + 3] << 24) & 0xFF000000;
 		qData |= (buffer[n + 4] << 16) & 0xFF0000;
 		qData |= (buffer[n + 5] << 8) & 0xFF00;
 

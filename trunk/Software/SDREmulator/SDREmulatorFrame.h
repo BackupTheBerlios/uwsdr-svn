@@ -21,11 +21,11 @@
 
 #include <wx/wx.h>
 
-#include "SocketCallback.h"
+#include "RawDataCallback.h"
 #include "Frequency.h"
 #include "DataControl.h"
 
-class CSDREmulatorFrame : public wxFrame, public ISocketCallback {
+class CSDREmulatorFrame : public wxFrame, public IRawDataCallback {
 
     public:
 	CSDREmulatorFrame(const wxString& address, unsigned int port);

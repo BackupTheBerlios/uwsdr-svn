@@ -22,7 +22,7 @@
 #include <wx/wx.h>
 #include <wx/socket.h>
 
-#include "SocketCallback.h"
+#include "RawDataCallback.h"
 
 enum REPLY {
 	REPLY_NONE,
@@ -30,7 +30,7 @@ enum REPLY {
 	REPLY_NAK
 };
 
-class CSDRSetupFrame : public wxFrame, public ISocketCallback {
+class CSDRSetupFrame : public wxFrame, public IRawDataCallback {
 
     public:
 	CSDRSetupFrame();

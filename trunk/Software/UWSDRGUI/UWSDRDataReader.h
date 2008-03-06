@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,10 +24,10 @@
 #include "DataReader.h"
 #include "RingBuffer.h"
 #include "UDPDataReader.h"
-#include "SocketCallback.h"
+#include "RawDataCallback.h"
 
 
-class CUWSDRDataReader : public IDataReader, public ISocketCallback {
+class CUWSDRDataReader : public IDataReader, public IRawDataCallback {
 
     public:
 	CUWSDRDataReader(CUDPDataReader* reader, unsigned int version);

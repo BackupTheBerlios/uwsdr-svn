@@ -42,7 +42,7 @@ CUSBBulkReaderWriter::~CUSBBulkReaderWriter()
 	delete[] m_buffer;
 }
 
-void CUSBBulkReaderWriter::setCallback(ISocketCallback* callback, int id)
+void CUSBBulkReaderWriter::setCallback(IRawDataCallback* callback, int id)
 {
 	wxASSERT(callback != NULL);
 

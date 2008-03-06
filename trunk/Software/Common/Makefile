@@ -28,7 +28,7 @@ HPSDRDataWriter.o:	HPSDRDataWriter.cpp HPSDRDataWriter.h DataWriter.h HPSDRReade
 		$(CC) $(CFLAGS) -c HPSDRDataWriter.cpp
 
 HPSDRReaderWriter.o:	HPSDRReaderWriter.cpp HPSDRReaderWriter.h ControlInterface.h DataCallback.h Frequency.h SDRController.h \
-			SocketCallback.h
+			RawDataCallback.h
 		$(CC) $(CFLAGS) -c HPSDRReaderWriter.cpp
 
 JackReaderWriter.o: JackReaderWriter.cpp JackReaderWriter.h DataCallback.h DataReader.h DataWriter.h RingBuffer.h
@@ -79,13 +79,13 @@ ThreeToneReader.o:	ThreeToneReader.cpp ThreeToneReader.h ThreadReader.h
 TwoToneReader.o:	TwoToneReader.cpp TwoToneReader.h ThreadReader.h
 		$(CC) $(CFLAGS) -c TwoToneReader.cpp
 
-UDPDataReader.o: UDPDataReader.cpp UDPDataReader.h SocketCallback.h
+UDPDataReader.o: UDPDataReader.cpp UDPDataReader.h RawDataCallback.h
 		$(CC) $(CFLAGS) -c UDPDataReader.cpp
 
 UDPDataWriter.o: UDPDataWriter.cpp UDPDataWriter.h
 		$(CC) $(CFLAGS) -c UDPDataWriter.cpp
 
-USBBulkReaderWriter.o:	USBBulkReaderWriter.cpp USBBulkReaderWriter.h SocketCallback.h
+USBBulkReaderWriter.o:	USBBulkReaderWriter.cpp USBBulkReaderWriter.h RawDataCallback.h
 		$(CC) $(CFLAGS) -c USBBulkReaderWriter.cpp
 
 clean:

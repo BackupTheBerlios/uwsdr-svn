@@ -23,13 +23,13 @@
 
 #include "usb.h"
 
-#include "SocketCallback.h"
+#include "RawDataCallback.h"
 
 class CUSBBulkReaderWriter : public wxThread {
     public:
 	CUSBBulkReaderWriter();
 
-	virtual void setCallback(ISocketCallback* callback, int id);
+	virtual void setCallback(IRawDataCallback* callback, int id);
 
 	virtual struct usb_device* find(unsigned int vendor, unsigned int product) const;
 
@@ -49,7 +49,7 @@ class CUSBBulkReaderWriter : public wxThread {
 	unsigned int           m_outEndPoint;
 	struct usb_dev_handle* m_handle;
 	char*                  m_buffer;
-	ISocketCallback*       m_callback;
+	IRawDataCallback*      m_callback;
 	int                    m_id;
 };
 

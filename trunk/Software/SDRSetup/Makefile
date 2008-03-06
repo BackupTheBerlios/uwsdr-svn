@@ -1,4 +1,4 @@
-all:		SDRSetup
+RawDataCallall:		SDRSetup
 
 CFLAGS :=	-I../Common $(CFLAGS)
 

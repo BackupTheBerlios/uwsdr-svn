@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2007,2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,10 +16,10 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	SocketCallback_H
-#define	SocketCallback_H
+#ifndef	RawDataCallback_H
+#define	RawDataCallback_H
 
-class ISocketCallback {
+class IRawDataCallback {
     public:
 	virtual bool callback(char* buffer, unsigned int len, int id) = 0;
 };

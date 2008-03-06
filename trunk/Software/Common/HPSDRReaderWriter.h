@@ -22,12 +22,12 @@
 
 #include "USBBulkReaderWriter.h"
 #include "SDRController.h"
-#include "SocketCallback.h"
+#include "RawDataCallback.h"
 #include "RingBuffer.h"
 #include "DataCallback.h"
 
 
-class CHPSDRReaderWriter : public ISocketCallback, public ISDRController  {
+class CHPSDRReaderWriter : public IRawDataCallback, public ISDRController  {
     public:
 	CHPSDRReaderWriter(unsigned int blockSize, int c0, int c1, int c2, int c3, int c4);
 	virtual ~CHPSDRReaderWriter();

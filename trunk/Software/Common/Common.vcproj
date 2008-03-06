@@ -535,6 +535,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\RawDataCallback.h"
+				>
+			</File>
+			<File
 				RelativePath="RingBuffer.h"
 				>
 			</File>
@@ -552,10 +556,6 @@
 			</File>
 			<File
 				RelativePath="SignalReader.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SocketCallback.h"
 				>
 			</File>
 			<File

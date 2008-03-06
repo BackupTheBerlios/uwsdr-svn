@@ -55,11 +55,11 @@ UWSDRApp.o:	UWSDRApp.cpp UWSDRApp.h ConfigChooser.h ../Common/Log.h SDRParameter
 		$(CC) $(CFLAGS) -c UWSDRApp.cpp
 
 UWSDRController.o:	UWSDRController.cpp UWSDRController.h ../Common/SDRController.h ../Common/Frequency.h \
-		../Common/ControlInterface.h ../Common/UDPDataReader.h ../Common/UDPDataWriter.h ../Common/SocketCallback.h
+		../Common/ControlInterface.h ../Common/UDPDataReader.h ../Common/UDPDataWriter.h ../Common/RawDataCallback.h
 		$(CC) $(CFLAGS) -c UWSDRController.cpp
 
 UWSDRDataReader.o:	UWSDRDataReader.cpp UWSDRDataReader.h ../Common/DataReader.h ../Common/RingBuffer.h  ../Common/UDPDataReader.h \
-		../Common/SocketCallback.h
+		../Common/RawDataCallback.h
 		$(CC) $(CFLAGS) -c UWSDRDataReader.cpp
 
 UWSDRDataWriter.o:	UWSDRDataWriter.cpp UWSDRDataWriter.h ../Common/RingBuffer.h ../Common/UDPDataWriter.h ../Common/DataWriter.h

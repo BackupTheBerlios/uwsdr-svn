@@ -13,12 +13,12 @@ SDREmulatorApp.o:	SDREmulatorApp.cpp SDREmulatorApp.h SDREmulatorFrame.h ../Comm
 		$(CC) $(CFLAGS) -c SDREmulatorApp.cpp
 
 SDREmulatorFrame.o:	SDREmulatorFrame.cpp SDREmulatorFrame.h DataControl.h ../Common/Frequency.h SoundCardDialog.h \
-		../Common/SoundFileReader.h ../Common/SocketCallback.h
+		../Common/SoundFileReader.h ../Common/RawDataCallback.h
 		$(CC) $(CFLAGS) -c SDREmulatorFrame.cpp
 
 DataControl.o:	DataControl.cpp DataControl.h ../Common/DataReader.h ../Common/DataWriter.h ../Common/NullWriter.h \
 		../Common/SignalReader.h ../Common/RingBuffer.h ../Common/UDPDataReader.h ../Common/UDPDataWriter.h \
-		../Common/SoundCardReaderWriter.h ../Common/SoundFileReader.h ../Common/SocketCallback.h
+		../Common/SoundCardReaderWriter.h ../Common/SoundFileReader.h ../Common/RawDataCallback.h
 		$(CC) $(CFLAGS) -c DataControl.cpp
 
 SoundCardDialog.o:	SoundCardDialog.cpp SoundCardDialog.h ../Common/AudioDevInfo.h

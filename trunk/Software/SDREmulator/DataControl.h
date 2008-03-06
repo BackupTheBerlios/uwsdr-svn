@@ -24,7 +24,7 @@
 #include "DataReader.h"
 #include "DataWriter.h"
 #include "DataCallback.h"
-#include "SocketCallback.h"
+#include "RawDataCallback.h"
 #include "RingBuffer.h"
 #include "SignalReader.h"
 #include "SoundFileReader.h"
@@ -41,7 +41,7 @@ enum {
 	SOURCE_SOUNDCARD
 };
 
-class CDataControl : public wxThread, public IDataCallback, public ISocketCallback {
+class CDataControl : public wxThread, public IDataCallback, public IRawDataCallback {
     public:
 	CDataControl(float sampleRate, const wxString& address, int port, int inDev, int outDev);
 
@@ -51,7 +51,7 @@ class CDataControl : public wxThread, public IDataCallback, public ISocketCallba
 	virtual void* Entry();
 	virtual void  close();
 
-	virtual void  setCallback(ISocketCallback* callback, int id);
+	virtual void  setCallback(IRawDataCallback* callback, int id);
 
 	virtual void  callback(float* buffer, unsigned int nSamples, int id);
 	virtual bool  callback(char* buffer, unsigned int len, int id);
@@ -90,7 +90,7 @@ class CDataControl : public wxThread, public IDataCallback, public ISocketCallba
 	float*            m_rxBuffer;
 	float*            m_txSockBuffer;
 	unsigned char*    m_rxSockBuffer;
-	ISocketCallback*  m_callback;
+	IRawDataCallback* m_callback;
 	int               m_id;
 	int               m_source;
 	bool              m_transmit;

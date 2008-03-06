@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -145,8 +145,8 @@ void CUWSDRDataWriter::writePacket()
 
 		unsigned int len = HEADER_SIZE;
 		for (unsigned int i = 0; i < nSamples; i++) {
-			unsigned int iData = (unsigned int)((m_dataBuffer[i * 2 + 0] + 1.0F) * 32767.0F + 0.5F);
-			unsigned int qData = (unsigned int)((m_dataBuffer[i * 2 + 1] + 1.0F) * 32767.0F + 0.5F);
+			wxInt16 iData = wxInt16(m_dataBuffer[i * 2 + 0] * 32767.0F);
+			wxInt16 qData = wxInt16(m_dataBuffer[i * 2 + 1] * 32767.0F);
 
 			m_sockBuffer[len++] = (iData >> 8) & 0xFF;
 			m_sockBuffer[len++] = (iData >> 0) & 0xFF;

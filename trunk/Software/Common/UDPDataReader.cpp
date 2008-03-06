@@ -53,7 +53,7 @@ CUDPDataReader::~CUDPDataReader()
 {
 }
 
-void CUDPDataReader::setCallback(ISocketCallback* callback, int id)
+void CUDPDataReader::setCallback(IRawDataCallback* callback, int id)
 {
 	wxASSERT(callback != NULL);
 

@@ -29,10 +29,10 @@ using namespace std;
 #include "ControlInterface.h"
 #include "UDPDataReader.h"
 #include "UDPDataWriter.h"
-#include "SocketCallback.h"
+#include "RawDataCallback.h"
 
 
-class CUWSDRController : public wxThread, public ISDRController, public ISocketCallback {
+class CUWSDRController : public wxThread, public ISDRController, public IRawDataCallback {
 
     public:
 	CUWSDRController(CUDPDataReader* reader, CUDPDataWriter* writer, unsigned int version);

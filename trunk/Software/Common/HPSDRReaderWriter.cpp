@@ -159,24 +159,23 @@ bool CHPSDRReaderWriter::callback(char* buffer, unsigned int len, int WXUNUSED(i
 
 	unsigned int pos = C4_POS + 1U;
 	for (unsigned int i = 0U; i < HPSDR_RXMAX_SAMPLES; i++) {
-		float f[2];
-
-		unsigned int iData = (buffer[pos++] << 16) & 0xFF0000;
+		wxInt32 iData = (buffer[pos++] << 24) & 0xFF000000;
+		iData |= (buffer[pos++] << 16) & 0xFF0000;
 		iData |= (buffer[pos++] << 8) & 0xFF00;
-		iData |= (buffer[pos++] << 0) & 0xFF;
 
-		unsigned int qData = (buffer[pos++] << 16) & 0xFF0000;
+		wxInt32 qData = (buffer[pos++] << 24) & 0xFF000000;
+		qData |= (buffer[pos++] << 16) & 0xFF0000;
 		qData |= (buffer[pos++] << 8) & 0xFF00;
-		qData |= (buffer[pos++] << 0) & 0xFF;
 
-		f[0] = float(iData) / 8388607.0F - 1.0F;
-		f[1] = float(qData) / 8388607.0F - 1.0F;
+		float f[2];
+		f[0] = float(iData) / float(0x7FFFFFFF);
+		f[1] = float(qData) / float(0x7FFFFFFF);
 		m_dataRingBuffer->addData(f, 1U);
 
-		unsigned int audio = (buffer[pos++] << 8) & 0xFF00;
+		wxInt16 audio = (buffer[pos++] << 8) & 0xFF00;
 		audio |= (buffer[pos++] << 0) & 0xFF;
 
-		f[0] = f[1] = float(audio) / 32767.0F - 1.0F;
+		f[0] = f[1] = float(audio) / float(0x7FFF);
 		m_audioRingBuffer->addData(f, 1U);
 	}
 
@@ -269,8 +268,8 @@ void CHPSDRReaderWriter::writeUSB()
 
 		unsigned int pos = C4_POS + 1U;
 		for (unsigned int i = 0U; i < HPSDR_TXMAX_SAMPLES; i++) {
-			unsigned int iData = (unsigned int)((m_audioBuffer[i * 2 + 0] + 1.0F) * 32767.0F + 0.5F);
-			unsigned int qData = (unsigned int)((m_audioBuffer[i * 2 + 1] + 1.0F) * 32767.0F + 0.5F);
+			wxInt16 iData = wxInt16(m_audioBuffer[i * 2 + 0] * 32767.0F);
+			wxInt16 qData = wxInt16(m_audioBuffer[i * 2 + 1] * 32767.0F);
 
 			m_usbBuffer[pos++] = (iData >> 8) & 0xFF;
 			m_usbBuffer[pos++] = (iData >> 0) & 0xFF;
@@ -278,8 +277,8 @@ void CHPSDRReaderWriter::writeUSB()
 			m_usbBuffer[pos++] = (qData >> 8) & 0xFF;
 			m_usbBuffer[pos++] = (qData >> 0) & 0xFF;
 
-			iData = (unsigned int)((m_dataBuffer[i * 2 + 0] + 1.0F) * 32767.0F + 0.5F);
-			qData = (unsigned int)((m_dataBuffer[i * 2 + 1] + 1.0F) * 32767.0F + 0.5F);
+			iData = wxInt16(m_dataBuffer[i * 2 + 0] * 32767.0F);
+			qData = wxInt16(m_dataBuffer[i * 2 + 1] * 32767.0F);
 
 			m_usbBuffer[pos++] = (iData >> 8) & 0xFF;
 			m_usbBuffer[pos++] = (iData >> 0) & 0xFF;
