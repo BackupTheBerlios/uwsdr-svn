@@ -49,6 +49,9 @@ class CHPSDRReaderWriter : public IRawDataCallback, public ISDRController  {
 	virtual void enableRX(bool on);
 	virtual void setTXAndFreq(bool transmit, const CFrequency& freq);
 
+	virtual bool getPTT() const;
+	virtual bool getKey() const;
+
 	virtual void setClockTune(unsigned int clock);
 
 	virtual bool callback(char* buffer, unsigned int len, int id);

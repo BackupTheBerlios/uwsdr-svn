@@ -35,7 +35,9 @@
 #include "HPSDRAudioWriter.h"
 #include "HPSDRDataReader.h"
 #include "HPSDRDataWriter.h"
-#include "SerialControl.h"
+#include "HPSDRPTTInterface.h"
+#include "HPSDRKeyInterface.h"
+#include "SerialInterface.h"
 #include "SoundFileReader.h"
 #include "SoundFileWriter.h"
 #include "JackReaderWriter.h"
@@ -90,6 +92,8 @@ enum {
 
 DEFINE_EVENT_TYPE(TRANSMIT_ON_EVENT)
 DEFINE_EVENT_TYPE(TRANSMIT_OFF_EVENT)
+DEFINE_EVENT_TYPE(KEY_ON_EVENT)
+DEFINE_EVENT_TYPE(KEY_OFF_EVENT)
 DEFINE_EVENT_TYPE(COMMAND_NAK_EVENT)
 DEFINE_EVENT_TYPE(COMMAND_MISC_EVENT)
 DEFINE_EVENT_TYPE(CONNECTION_LOST_EVENT)
@@ -123,6 +127,8 @@ BEGIN_EVENT_TABLE(CUWSDRFrame, wxFrame)
 	EVT_CLOSE(CUWSDRFrame::onClose)
 	EVT_CUSTOM(TRANSMIT_ON_EVENT, wxID_ANY, CUWSDRFrame::onTransmitOn)
 	EVT_CUSTOM(TRANSMIT_OFF_EVENT, wxID_ANY, CUWSDRFrame::onTransmitOff)
+	EVT_CUSTOM(KEY_ON_EVENT, wxID_ANY, CUWSDRFrame::onKeyOn)
+	EVT_CUSTOM(KEY_OFF_EVENT, wxID_ANY, CUWSDRFrame::onKeyOff)
 	EVT_CUSTOM(COMMAND_NAK_EVENT, wxID_ANY, CUWSDRFrame::onCommandNak)
 	EVT_CUSTOM(COMMAND_MISC_EVENT, wxID_ANY, CUWSDRFrame::onCommandMisc)
 	EVT_CUSTOM(CONNECTION_LOST_EVENT, wxID_ANY, CUWSDRFrame::onConnectionLost)
@@ -343,6 +349,16 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 				m_dsp->setTXReader(rw);
 				m_dsp->setRXWriter(rw);
 			}
+
+			if (m_parameters->m_txInEnable) {
+				CSerialInterface* control = new CSerialInterface(m_parameters->m_txInDev, m_parameters->m_txInPin);
+				m_dsp->setTXInControl(control);
+			}
+
+			if (m_parameters->m_keyInEnable) {
+				CSerialInterface* control = new CSerialInterface(m_parameters->m_keyInDev, m_parameters->m_keyInPin);
+				m_dsp->setKeyInControl(control);
+			}
 			break;
 
 		case TYPE_DEMO:
@@ -359,6 +375,16 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 			m_dsp->setTXWriter(new CNullWriter());
 			m_dsp->setRXReader(new CSignalReader(1000.5F, 0.0003F, 0.0004F));
+
+			if (m_parameters->m_txInEnable) {
+				CSerialInterface* control = new CSerialInterface(m_parameters->m_txInDev, m_parameters->m_txInPin);
+				m_dsp->setTXInControl(control);
+			}
+
+			if (m_parameters->m_keyInEnable) {
+				CSerialInterface* control = new CSerialInterface(m_parameters->m_keyInDev, m_parameters->m_keyInPin);
+				m_dsp->setKeyInControl(control);
+			}
 			break;
 
 		case TYPE_UWSDR1:
@@ -389,6 +415,18 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 			m_dsp->setTXWriter(new CUWSDRDataWriter(writer, 1U));
 			m_dsp->setRXReader(new CUWSDRDataReader(reader, 1U));
+
+			if (!m_parameters->m_hardwareReceiveOnly) {
+				if (m_parameters->m_txInEnable) {
+					CSerialInterface* control = new CSerialInterface(m_parameters->m_txInDev, m_parameters->m_txInPin);
+					m_dsp->setTXInControl(control);
+				}
+
+				if (m_parameters->m_keyInEnable) {
+					CSerialInterface* control = new CSerialInterface(m_parameters->m_keyInDev, m_parameters->m_keyInPin);
+					m_dsp->setKeyInControl(control);
+				}
+			}
 			break;
 
 		case TYPE_HPSDR:
@@ -399,17 +437,12 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 			m_dsp->setRXReader(new CHPSDRDataReader(hpsdr));
 			m_dsp->setRXWriter(new CHPSDRAudioWriter(hpsdr));
+
+			if (!m_parameters->m_hardwareReceiveOnly) {
+				m_dsp->setTXInControl(new CHPSDRPTTInterface(hpsdr));
+				m_dsp->setKeyInControl(new CHPSDRKeyInterface(hpsdr));
+			}
 			break;
-	}
-
-	if (m_parameters->m_txInEnable) {
-		CSerialControl* control = CSerialControl::getInstance(m_parameters->m_txInDev);
-		m_dsp->setTXInControl(control, m_parameters->m_txInPin);
-	}
-
-	if (m_parameters->m_keyInEnable) {
-		CSerialControl* control = CSerialControl::getInstance(m_parameters->m_keyInDev);
-		m_dsp->setKeyInControl(control, m_parameters->m_keyInPin);
 	}
 
 	m_infoBox->setVFO(m_parameters->m_vfoChoice);
@@ -1621,7 +1654,10 @@ void CUWSDRFrame::setTransmit(bool txOn)
 
 void CUWSDRFrame::setKey(bool keyOn)
 {
-	m_dsp->setKey(keyOn);
+	wxEventType type = (keyOn) ? KEY_ON_EVENT : KEY_OFF_EVENT;
+
+	wxCommandEvent event(type);
+	AddPendingEvent(event);
 }
 
 void CUWSDRFrame::onTransmitOn(wxEvent& WXUNUSED(event))
@@ -1632,6 +1668,16 @@ void CUWSDRFrame::onTransmitOn(wxEvent& WXUNUSED(event))
 void CUWSDRFrame::onTransmitOff(wxEvent& WXUNUSED(event))
 {
 	normaliseTransmit(false);
+}
+
+void CUWSDRFrame::onKeyOn(wxEvent& WXUNUSED(event))
+{
+	m_dsp->setKey(true);
+}
+
+void CUWSDRFrame::onKeyOff(wxEvent& WXUNUSED(event))
+{
+	m_dsp->setKey(false);
 }
 
 void CUWSDRFrame::commandAck(const wxString& WXUNUSED(message))

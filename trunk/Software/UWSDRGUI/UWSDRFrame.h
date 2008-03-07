@@ -58,6 +58,8 @@ class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterf
 	void onClose(wxCloseEvent& event);
 	void onTransmitOn(wxEvent& event);
 	void onTransmitOff(wxEvent& event);
+	void onKeyOn(wxEvent& event);
+	void onKeyOff(wxEvent& event);
 	void onCommandNak(wxEvent& event);
 	void onCommandMisc(wxEvent& event);
 	void onConnectionLost(wxEvent& event);

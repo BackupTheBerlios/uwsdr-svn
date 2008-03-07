@@ -220,6 +220,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\HPSDRKeyInterface.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\HPSDRPTTInterface.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\HPSDRReaderWriter.cpp"
 				>
 			</File>
@@ -346,6 +354,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SerialInterface.cpp"
+				>
+			</File>
+			<File
 				RelativePath="SignalReader.cpp"
 				>
 				<FileConfiguration
@@ -461,6 +473,18 @@
 				RelativePath=".\USBBulkReaderWriter.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\UWSDRController.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\UWSDRDataReader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\UWSDRDataWriter.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -491,6 +515,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ExternalInterface.h"
+				>
+			</File>
+			<File
 				RelativePath="Frequency.h"
 				>
 			</File>
@@ -508,6 +536,14 @@
 			</File>
 			<File
 				RelativePath=".\HPSDRDataWriter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HPSDRKeyInterface.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HPSDRPTTInterface.h"
 				>
 			</File>
 			<File
@@ -555,6 +591,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SerialInterface.h"
+				>
+			</File>
+			<File
 				RelativePath="SignalReader.h"
 				>
 			</File>
@@ -596,6 +636,18 @@
 			</File>
 			<File
 				RelativePath=".\USBBulkReaderWriter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UWSDRController.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UWSDRDataReader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UWSDRDataWriter.h"
 				>
 			</File>
 		</Filter>

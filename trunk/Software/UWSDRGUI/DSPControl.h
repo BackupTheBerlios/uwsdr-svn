@@ -27,7 +27,7 @@
 #include "DTTSPControl.h"
 #include "CWKeyer.h"
 #include "VoiceKeyer.h"
-#include "SerialControl.h"
+#include "ExternalInterface.h"
 #include "DataReader.h"
 #include "DataWriter.h"
 #include "RingBuffer.h"
@@ -44,8 +44,8 @@ class CDSPControl : public wxThread, public IDataCallback {
 	virtual void  setRXReader(IDataReader* reader);
 	virtual void  setRXWriter(IDataWriter* writer);
 
-	virtual void  setTXInControl(CSerialControl* control, INPIN pin);
-	virtual void  setKeyInControl(CSerialControl* control, INPIN pin);
+	virtual void  setTXInControl(IExternalInterface* control);
+	virtual void  setKeyInControl(IExternalInterface* control);
 
 	virtual void  setKey(bool keyOn);
 
@@ -112,10 +112,8 @@ class CDSPControl : public wxThread, public IDataCallback {
 	IDataReader*    m_rxReader;
 	IDataWriter*    m_rxWriter;
 
-	CSerialControl* m_txInControl;
-	INPIN           m_txInPin;
-	CSerialControl* m_keyInControl;
-	INPIN           m_keyInPin;
+	IExternalInterface* m_txInControl;
+	IExternalInterface* m_keyInControl;
 
 	wxSemaphore     m_waiting;
 

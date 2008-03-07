@@ -295,6 +295,16 @@ void CHPSDRReaderWriter::enableTX(bool WXUNUSED(on))
 {
 }
 
+bool CHPSDRReaderWriter::getPTT() const
+{
+	return m_ptt;
+}
+
+bool CHPSDRReaderWriter::getKey() const
+{
+	return m_key;
+}
+
 void CHPSDRReaderWriter::enableRX(bool WXUNUSED(on))
 {
 }

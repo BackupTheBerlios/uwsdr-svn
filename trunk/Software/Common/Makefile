@@ -1,10 +1,11 @@
 all:		Common.a
 
 OBJS := 	AudioDevInfo.o Frequency.o HPSDRAudioReader.o HPSDRAudioWriter.o HPSDRDataReader.o HPSDRDataWriter.o \
-		HPSDRReaderWriter.o JackReaderWriter.o Log.o NullController.o NullReader.o NullWriter.o RingBuffer.o \
-		SDRDescrFile.o SerialControl.o SignalReader.o SoundCardReaderWriter.o SoundFileReader.o SoundFileWriter.o \
-		SRTXRXController.o ThreadReader.o ThreeToneReader.o TwoToneReader.o UDPDataReader.o UDPDataWriter.o \
-		USBBulkReaderWriter.o
+		HPSDRKeyInterface.o HPSDRPTTInterface.o HPSDRReaderWriter.o JackReaderWriter.o Log.o NullController.o \
+		NullReader.o NullWriter.o RingBuffer.o SDRDescrFile.o SerialControl.o SerialInterface.o SignalReader.o \
+		SoundCardReaderWriter.o SoundFileReader.o SoundFileWriter.o SRTXRXController.o ThreadReader.o \
+		ThreeToneReader.o TwoToneReader.o UDPDataReader.o UDPDataWriter.o USBBulkReaderWriter.o UWSDRController.o \
+		UWSDRDataReader.o UWSDRDataWriter.o
 
 Common.a:	$(OBJS)
 		ar rcs Common.a $(OBJS)
@@ -26,6 +27,12 @@ HPSDRDataReader.o:	HPSDRDataReader.cpp HPSDRDataReader.h DataCallback.h DataRead
 
 HPSDRDataWriter.o:	HPSDRDataWriter.cpp HPSDRDataWriter.h DataWriter.h HPSDRReaderWriter.h
 		$(CC) $(CFLAGS) -c HPSDRDataWriter.cpp
+
+HPSDRKeyInterface.o:	HPSDRKeyInterface.cpp HPSDRKeyInterface.h ExternalInterface.h HPSDRReaderWriter.h
+		$(CC) $(CFLAGS) -c HPSDRKeyInterface.cpp
+
+HPSDRPTTInterface.o:	HPSDRPTTInterface.cpp HPSDRPTTInterface.h ExternalInterface.h HPSDRReaderWriter.h
+		$(CC) $(CFLAGS) -c HPSDRPTTInterface.cpp
 
 HPSDRReaderWriter.o:	HPSDRReaderWriter.cpp HPSDRReaderWriter.h ControlInterface.h DataCallback.h Frequency.h SDRController.h \
 			RawDataCallback.h
@@ -54,6 +61,9 @@ SDRDescrFile.o:	SDRDescrFile.cpp SDRDescrFile.h Frequency.h
 
 SerialControl.o:	SerialControl.cpp SerialControl.h
 		$(CC) $(CFLAGS) -c SerialControl.cpp
+
+SerialInterface.o:	SerialInterface.cpp SerialInterface.h Common.h ExternalInterface.h SerialControl.h
+		$(CC) $(CFLAGS) -c SerialInterface.cpp
 
 SignalReader.o:	SignalReader.cpp SignalReader.h ThreadReader.h
 		$(CC) $(CFLAGS) -c SignalReader.cpp
@@ -87,6 +97,16 @@ UDPDataWriter.o: UDPDataWriter.cpp UDPDataWriter.h
 
 USBBulkReaderWriter.o:	USBBulkReaderWriter.cpp USBBulkReaderWriter.h RawDataCallback.h
 		$(CC) $(CFLAGS) -c USBBulkReaderWriter.cpp
+
+UWSDRController.o:	UWSDRController.cpp UWSDRController.h SDRController.h Frequency.h ControlInterface.h UDPDataReader.h \
+			UDPDataWriter.h RawDataCallback.h
+		$(CC) $(CFLAGS) -c UWSDRController.cpp
+
+UWSDRDataReader.o:	UWSDRDataReader.cpp UWSDRDataReader.h DataReader.h RingBuffer.h  UDPDataReader.h RawDataCallback.h
+		$(CC) $(CFLAGS) -c UWSDRDataReader.cpp
+
+UWSDRDataWriter.o:	UWSDRDataWriter.cpp UWSDRDataWriter.h RingBuffer.h UDPDataWriter.h DataWriter.h
+		$(CC) $(CFLAGS) -c UWSDRDataWriter.cpp
 
 clean:
 		rm -f core Common.a *.o *~ *.bak
