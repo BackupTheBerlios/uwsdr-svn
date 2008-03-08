@@ -28,9 +28,20 @@
 #include <IOKit/serial/IOSerialKeys.h>
 #include <IOKit/IOBSD.h>
 #include <sys/param.h>
+#elif defined(__WINDOWS__)
+#include <setupapi.h>
+#include <winioctl.h>
+#else
+#include <sys/ioctl.h>
+#include <sys/stat.h>
+#include <cerrno>
+#include <fcntl.h>
+#include <unistd.h>
 #endif
 
 wxMutex CSerialControl::s_mutex;
+
+std::vector<SSerialList*> CSerialControl::s_serialList;
 
 wxArrayString CSerialControl::getDevs()
 {
@@ -75,9 +86,53 @@ wxArrayString CSerialControl::getDevs()
 	}
 
 	::IOObjectRelease(services);
+#elif defined(__WINDOWS__)
+	HDEVINFO devInfo = ::SetupDiGetClassDevs(&GUID_CLASS_COMPORT, NULL, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
+	if (devInfo == INVALID_HANDLE_VALUE) {
+		::wxLogError(wxT("SetupDiGetClassDevs() failed, err=0x%lx"), ::GetLastError());
+		return devices;
+	}
+
+	SP_DEVICE_INTERFACE_DATA ifcData;
+	ifcData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
+
+	DWORD detDataSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA) + 256;
+	char* charData = new char[detDataSize];
+
+	SP_DEVICE_INTERFACE_DETAIL_DATA* detData = (SP_DEVICE_INTERFACE_DETAIL_DATA *)charData;
+	detData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
+
+	for (DWORD i = 0; ::SetupDiEnumDeviceInterfaces(devInfo, NULL, &GUID_CLASS_COMPORT, i, &ifcData); i++) {
+		SP_DEVINFO_DATA devData;
+		devData.cbSize = sizeof(SP_DEVINFO_DATA);
+
+		BOOL ret = ::SetupDiGetDeviceInterfaceDetail(devInfo, &ifcData, detData, detDataSize, NULL, &devData);
+		if (!ret) {
+			::wxLogError(wxT("SetupDiGetDeviceInterfaceDetail() failed, err=0x%lx"), ::GetLastError());
+			return devices;
+		}
+
+		devices.Add(detData->DevicePath);
+	}
+
+	if (::GetLastError() != NO_ERROR && ::GetLastError() != ERROR_NO_MORE_ITEMS) {
+		::wxLogError(wxT("SetupDiEnumDeviceInterfaces() failed, err=0x%lx"), ::GetLastError());
+		return devices;
+	}
+
+	delete[] charData;
+	::SetupDiDestroyDeviceInfoList(devInfo);
 #else
-	for (unsigned int i = 0; s_serialList[i].name != NULL; i++)
-		devices.Add(s_serialList[i].name);
+	devices.Add(wxT("/dev/ttyS0"));
+	devices.Add(wxT("/dev/ttyS1"));
+	devices.Add(wxT("/dev/ttyS2"));
+	devices.Add(wxT("/dev/ttyS3"));
+	devices.Add(wxT("/dev/ttyS4"));
+	devices.Add(wxT("/dev/ttyUSB0"));
+	devices.Add(wxT("/dev/ttyUSB1"));
+	devices.Add(wxT("/dev/ttyUSB2"));
+	devices.Add(wxT("/dev/ttyUSB3"));
+	devices.Add(wxT("/dev/ttyUSB4"));
 #endif
 
 	return devices;
@@ -88,17 +143,19 @@ CSerialControl* CSerialControl::getInstance(const wxString& dev)
 	wxMutexLocker lock(s_mutex);
 
 	SSerialList* p = NULL;
-	for (unsigned int i = 0; s_serialList[i].name != NULL; i++) {
-		if (dev.IsSameAs(s_serialList[i].name)) {
-			p = &s_serialList[i];
+	for (std::vector<SSerialList*>::iterator it = s_serialList.begin(); it != s_serialList.end(); it++) {
+		if (dev.IsSameAs((*it)->name)) {
+			p = *it;
 			break;
 		}
 	}
 
-	wxASSERT(p != NULL);
-
-	if (p->ptr == NULL)
-		p->ptr = new CSerialControl(dev);
+	if (p == NULL) {
+		p = new SSerialList;
+		p->name = dev,
+		p->ptr  = new CSerialControl(dev);
+		s_serialList.push_back(p);
+	}
 
 	return p->ptr;
 }
@@ -131,20 +188,6 @@ bool CSerialControl::getDSR() const
 }
 
 #if defined(__WINDOWS__)
-
-SSerialList CSerialControl::s_serialList[] = {
-	{wxT("\\\\.\\COM1"), NULL},
-	{wxT("\\\\.\\COM2"), NULL},
-	{wxT("\\\\.\\COM3"), NULL},
-	{wxT("\\\\.\\COM4"), NULL},
-	{wxT("\\\\.\\COM5"), NULL},
-	{wxT("\\\\.\\COM6"), NULL},
-	{wxT("\\\\.\\COM7"), NULL},
-	{wxT("\\\\.\\COM8"), NULL},
-	{NULL,               NULL}
-};
-
-#include <winioctl.h>
 
 CSerialControl::CSerialControl(const wxString& dev) :
 wxThread(),
@@ -280,25 +323,6 @@ bool CSerialControl::setDTR(bool set)
 }
 
 #else
-
-#include <sys/ioctl.h>
-#include <sys/stat.h>
-
-#include <cerrno>
-#include <fcntl.h>
-#include <unistd.h>
-
-SSerialList CSerialControl::s_serialList[] = {
-	{wxT("/dev/ttyS0"),   NULL},
-	{wxT("/dev/ttyS1"),   NULL},
-	{wxT("/dev/ttyS2"),   NULL},
-	{wxT("/dev/ttyS3"),   NULL},
-	{wxT("/dev/ttyUSB0"), NULL},
-	{wxT("/dev/ttyUSB1"), NULL},
-	{wxT("/dev/ttyUSB2"), NULL},
-	{wxT("/dev/ttyUSB3"), NULL},
-	{NULL,                NULL}
-};
 
 CSerialControl::CSerialControl(const wxString& dev) :
 wxThread(),

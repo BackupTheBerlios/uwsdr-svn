@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2002-2004,2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2002-2004,2007,2008 by Jonathan Naylor G4KLX
  *   Copyright (C) 1999-2001 by Thomas Sailor HB9JNX
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -21,6 +21,7 @@
 #define	SerialControl_H
 
 #include <wx/wx.h>
+#include <vector>
 
 #if defined(__WINDOWS__)
 #include <windows.h>
@@ -28,8 +29,10 @@
 
 class CSerialControl;
 
+const unsigned int MAX_DEVICE_NAME = 255U;
+
 struct SSerialList {
-	wxChar*         name;
+	wxString        name;
 	CSerialControl* ptr;
 };
 
@@ -59,8 +62,8 @@ class CSerialControl : public wxThread {
 	virtual ~CSerialControl();
 
     private:
-	static SSerialList s_serialList[];
-	static wxMutex     s_mutex;
+	static std::vector<SSerialList*> s_serialList;
+	static wxMutex                   s_mutex;
 
 	wxString     m_dev;
 	unsigned int m_count;

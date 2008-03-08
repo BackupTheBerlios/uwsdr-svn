@@ -77,7 +77,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxbase28d.lib wxmsw28d_core.lib wxmsw28d_html.lib wxbase28d_net.lib dttsp.lib winmm.lib wsock32.lib libfftw3f-3.lib portaudio_x86.lib libusb.lib"
+				AdditionalDependencies="wxbase28d.lib wxmsw28d_core.lib wxmsw28d_html.lib wxbase28d_net.lib dttsp.lib winmm.lib wsock32.lib setupapi.lib libfftw3f-3.lib portaudio_x86.lib libusb.lib"
 				OutputFile="../Debug/UWSDR.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -174,7 +174,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxbase28.lib wxmsw28_core.lib wxmsw28_html.lib wxbase28_net.lib DttSP.lib winmm.lib wsock32.lib libfftw3f-3.lib portaudio_x86.lib libusb.lib"
+				AdditionalDependencies="wxbase28.lib wxmsw28_core.lib wxmsw28_html.lib wxbase28_net.lib setupapi.lib DttSP.lib winmm.lib wsock32.lib libfftw3f-3.lib portaudio_x86.lib libusb.lib"
 				OutputFile="../Release/UWSDR.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

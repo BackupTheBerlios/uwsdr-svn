@@ -76,7 +76,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxbase28d.lib wxmsw28d_core.lib portaudio_x86.lib"
+				AdditionalDependencies="wxbase28d.lib wxmsw28d_core.lib portaudio_x86.lib setupapi.lib"
 				OutputFile="../Debug/GUISetup.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -174,7 +174,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxbase28.lib wxmsw28_core.lib portaudio_x86.lib"
+				AdditionalDependencies="wxbase28.lib wxmsw28_core.lib portaudio_x86.lib setupapi.lib"
 				OutputFile="../Release/GUISetup.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
