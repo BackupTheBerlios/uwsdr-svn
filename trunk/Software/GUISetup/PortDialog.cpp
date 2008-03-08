@@ -303,11 +303,13 @@ void CPortDialog::setTXInDev(const wxString& dev)
 {
 	m_txInDev = dev;
 
-	if (m_txInDev.IsEmpty()) {
+	bool ret = false;
+	if (!m_txInDev.IsEmpty())
+		ret = m_txInDevChoice->SetStringSelection(dev);
+
+	if (!ret) {
 		m_txInDevChoice->SetSelection(0);
 		m_txInDev = m_txInDevChoice->GetStringSelection();
-	} else {
-		m_txInDevChoice->SetStringSelection(dev);
 	}
 }
 
@@ -349,11 +351,13 @@ void CPortDialog::setKeyInDev(const wxString& dev)
 {
 	m_keyInDev = dev;
 
-	if (m_keyInDev.IsEmpty()) {
+	bool ret = false;
+	if (!m_keyInDev.IsEmpty())
+		ret = m_keyInDevChoice->SetStringSelection(dev);
+
+	if (!ret) {
 		m_keyInDevChoice->SetSelection(0);
 		m_keyInDev = m_keyInDevChoice->GetStringSelection();
-	} else {
-		m_keyInDevChoice->SetStringSelection(dev);
 	}
 }
 
@@ -386,11 +390,13 @@ void CPortDialog::setTXOutDev(const wxString& dev)
 {
 	m_txOutDev = dev;
 
-	if (m_txOutDev.IsEmpty()) {
+	bool ret = false;
+	if (!m_txOutDev.IsEmpty())
+		ret = m_txOutDevChoice->SetStringSelection(dev);
+
+	if (!ret) {
 		m_txOutDevChoice->SetSelection(0);
 		m_txOutDev = m_txOutDevChoice->GetStringSelection();
-	} else {
-		m_txOutDevChoice->SetStringSelection(dev);
 	}
 }
 

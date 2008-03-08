@@ -45,7 +45,7 @@ m_buffer(NULL),
 m_count(0U),
 m_enabled(false)
 {
-	for (unsigned int i = 0U; i < MAX_CALLBACKS; i++)
+	for (int i = 0U; i < MAX_CALLBACKS; i++)
 		m_callback[i] = NULL;
 }
 
@@ -267,7 +267,7 @@ bool CUDPDataReader::readSocket()
 	if (len == 0)
 		return true;
 
-	for (unsigned int i = 0U; i < MAX_CALLBACKS; i++) {
+	for (int i = 0U; i < MAX_CALLBACKS; i++) {
 		if (m_callback[i] != NULL) {
 			bool ret = m_callback[i]->callback(m_buffer, len, m_id[i]);
 			if (ret)

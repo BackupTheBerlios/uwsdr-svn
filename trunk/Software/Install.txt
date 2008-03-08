@@ -31,6 +31,6 @@ The SDREmulator will first ask you for the Audio API and Device of an audio devi
 
 Then the main emulator window where you can see interaction with the GUI will appear. At the top of the window is a menu under "Source" which control the source of the data used by the emulator. The startup default is "Internal" which is the simple noisy carrier which has been available up until now within the GUI. The other options are "Sound Card" which expects the input of an I/Q receiver using the sound card that you specified at the beginning, or "Sound File" which allows you to choose a WAV file containing I/Q audio samples.
 
-Now run the SDR GUI itself, this is named UWSDR/UWSDR.exe and now takes a mandatory argument. This is the name that you entered into the Name entry in GUISetup above. You may have a desktop icon or menu entry for it.
+Now run the SDR GUI itself, this is named UWSDR/UWSDR.exe which takes an optional argument. This is the name that you entered into the Name entry in GUISetup above. You may have a desktop icon or menu entry for it. If this argument is not given then a dialog box will appear asking you to choose the name of the GUI, from a list of previously created ones bu GUISetup.
 
 Note that running the GUI from the command line does not work on Mac OS X, and for similar reasons the SDR Emulator is not built for Mac OS X.

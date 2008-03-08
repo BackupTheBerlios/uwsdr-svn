@@ -23,7 +23,7 @@
 
 #include "RawDataCallback.h"
 
-const unsigned int MAX_CALLBACKS = 5U;
+const int MAX_CALLBACKS = 5;
 
 class CUDPDataReader : public wxThread {
 

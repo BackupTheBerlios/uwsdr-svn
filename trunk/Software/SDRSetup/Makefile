@@ -11,7 +11,7 @@ SDRSetupApp.o:	SDRSetupApp.cpp SDRSetupApp.h SDRSetupFrame.h
 		$(CC) $(CFLAGS) -c SDRSetupApp.cpp
 
 SDRSetupFrame.o: SDRSetupFrame.cpp SDRSetupFrame.h SDRSetup.xpm ../Common/UDPDataReader.h ../Common/UDPDataWriter.h \
-		../Common/SocketCallback.h
+		../Common/RawDataCallback.h
 		$(CC) $(CFLAGS) -c SDRSetupFrame.cpp
 
 install:	SDRSetup

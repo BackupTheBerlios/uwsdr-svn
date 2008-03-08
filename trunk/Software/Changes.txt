@@ -405,4 +405,8 @@ Removed Visual C++ 6.0 build files.
 
 The choice between Hilbert and Weaver methods are now explicit in the Preferences.
 
-Added support for HPSDR.
+Added (untested) support for HPSDR.
+
+On Windows and Mac OS X, the list of serial ports is got from the OS. Linux is a fixed list.
+
+No longer set the DSP IP address is SDRSetup, this is done dynamically when the GUI first talks to the back-end.

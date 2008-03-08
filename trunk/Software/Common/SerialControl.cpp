@@ -87,7 +87,7 @@ wxArrayString CSerialControl::getDevs()
 
 	::IOObjectRelease(services);
 #elif defined(__WINDOWS__)
-	HDEVINFO devInfo = ::SetupDiGetClassDevs(&GUID_CLASS_COMPORT, NULL, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
+	HDEVINFO devInfo = ::SetupDiGetClassDevs(&GUID_DEVINTERFACE_COMPORT, NULL, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
 	if (devInfo == INVALID_HANDLE_VALUE) {
 		::wxLogError(wxT("SetupDiGetClassDevs() failed, err=0x%lx"), ::GetLastError());
 		return devices;
@@ -102,7 +102,7 @@ wxArrayString CSerialControl::getDevs()
 	SP_DEVICE_INTERFACE_DETAIL_DATA* detData = (SP_DEVICE_INTERFACE_DETAIL_DATA *)charData;
 	detData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
 
-	for (DWORD i = 0; ::SetupDiEnumDeviceInterfaces(devInfo, NULL, &GUID_CLASS_COMPORT, i, &ifcData); i++) {
+	for (DWORD i = 0; ::SetupDiEnumDeviceInterfaces(devInfo, NULL, &GUID_DEVINTERFACE_COMPORT, i, &ifcData); i++) {
 		SP_DEVINFO_DATA devData;
 		devData.cbSize = sizeof(SP_DEVINFO_DATA);
 
