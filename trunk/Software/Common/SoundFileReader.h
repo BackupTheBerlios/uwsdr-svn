@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2002-2004,2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2002-2004,2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -27,11 +27,6 @@
 #else
 #include <wx/ffile.h>
 #endif
-
-typedef unsigned char uint8;
-typedef signed short  sint16;
-typedef float         float32;
-typedef double        float64;
 
 enum {
 	FORMAT_8BIT,
@@ -65,9 +60,9 @@ class CSoundFileReader : public CThreadReader {
 	float*         m_buffer;
 	unsigned int   m_format;
 	unsigned int   m_channels;
-	uint8*         m_buffer8;
-	sint16*        m_buffer16;
-	float32*       m_buffer32;
+	wxUint8*       m_buffer8;
+	wxInt16*       m_buffer16;
+	wxFloat32*     m_buffer32;
 #if defined(__WINDOWS__)
 	HMMIO          m_handle;
 	MMCKINFO       m_parent;

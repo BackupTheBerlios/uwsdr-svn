@@ -80,6 +80,7 @@ class CUWSDRPreferences : public wxDialog {
 	wxSlider*       m_nb2Value;
 	wxCheckBox*     m_spButton;
 	wxSlider*       m_spValue;
+	wxChoice*       m_recordRaw;
 	wxSlider*       m_carrierLevel;
 	wxSlider*       m_alcAttack;
 	wxSlider*       m_alcDecay;

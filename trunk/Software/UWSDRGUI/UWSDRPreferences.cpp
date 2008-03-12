@@ -83,6 +83,7 @@ m_nb2Button(NULL),
 m_nb2Value(NULL),
 m_spButton(NULL),
 m_spValue(NULL),
+m_recordRaw(NULL),
 m_carrierLevel(NULL),
 m_alcAttack(NULL),
 m_alcDecay(NULL),
@@ -180,6 +181,8 @@ m_swapIQ(NULL)
 	m_nbValue->SetValue(m_parameters->m_nbValue);
 	m_nb2Button->SetValue(m_parameters->m_nb2On);
 	m_nb2Value->SetValue(m_parameters->m_nb2Value);
+
+	m_recordRaw->SetSelection(m_parameters->m_recordRaw ? 1 : 0);
 
 	// Map 500 -> 1000 to -30 -> 0
 	unsigned int val = (unsigned int)(20.0 * ::log10(double(m_parameters->m_rfGain) / 1000.0) + 0.5);
@@ -515,6 +518,8 @@ void CUWSDRPreferences::onOK(wxCommandEvent& WXUNUSED(event))
 	m_parameters->m_nbValue  = m_nbValue->GetValue();
 	m_parameters->m_nb2On    = m_nb2Button->IsChecked();
 	m_parameters->m_nb2Value = m_nb2Value->GetValue();
+
+	m_parameters->m_recordRaw = m_recordRaw->GetSelection() == 1;
 
 	// Map -30 -> 0 to 1 -> 1000
 	double gainDb = double(m_rfValue->GetValue());
@@ -889,6 +894,17 @@ wxPanel* CUWSDRPreferences::createReceiveTab(wxNotebook* noteBook)
 
 	m_rfValue = new wxSlider(panel, RXRF_GAIN, 0, -30, 0, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
 	sizer->Add(m_rfValue, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* rawLabel1 = new wxStaticText(panel, -1, _("Record"));
+	sizer->Add(rawLabel1, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* dummy2 = new wxStaticText(panel, -1, wxEmptyString);
+	sizer->Add(dummy2, 0, wxALL, BORDER_SIZE);
+
+	m_recordRaw = new wxChoice(panel, -1, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1));
+	m_recordRaw->Append(_("16-bit Audio"));
+	m_recordRaw->Append(_("32-bit Raw I and Q"));
+	sizer->Add(m_recordRaw, 0, wxALL, BORDER_SIZE);
 
 	mainSizer->Add(sizer, 0, wxTOP, BORDER_SIZE);
 

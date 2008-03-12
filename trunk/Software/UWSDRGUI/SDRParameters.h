@@ -150,6 +150,8 @@ class CSDRParameters {
 	unsigned int  m_micGain;
 	unsigned int  m_power;
 
+	bool          m_recordRaw;
+
 	int           m_c0;
 	int           m_c1;
 	int           m_c2;

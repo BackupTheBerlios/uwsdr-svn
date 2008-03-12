@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2002-2004,2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2002-2004,2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -28,16 +28,12 @@
 #include <wx/ffile.h>
 #endif
 
-typedef unsigned char uint8;
-typedef signed short  sint16;
-
-
 #include "DataWriter.h"
 
 class CSoundFileWriter : public IDataWriter {
 
     public:
-    CSoundFileWriter(const wxString& fileName, unsigned int channels, unsigned int sampleWidth = 16);
+	CSoundFileWriter(const wxString& fileName, unsigned int channels, unsigned int sampleWidth);
 
 	virtual bool open(float sampleRate, unsigned int blockSize);
 
@@ -56,8 +52,9 @@ class CSoundFileWriter : public IDataWriter {
 	unsigned int m_channels;
 	unsigned int m_sampleWidth;
 	unsigned int m_blockSize;
-	uint8*       m_buffer8;
-	sint16*      m_buffer16;
+	wxUint8*     m_buffer8;
+	wxInt16*     m_buffer16;
+	wxFloat32*   m_buffer32;
 	bool         m_enabled;
 #if defined(__WINDOWS__)
 	HMMIO        m_handle;

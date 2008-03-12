@@ -82,7 +82,7 @@ class CDSPControl : public wxThread, public IDataCallback {
 	virtual void setRXIAndQ(int phase, int gain);
 	virtual void setTXIAndQ(int phase, int gain);
 
-	virtual bool setRecord(bool record);
+	virtual bool setRecord(bool record, bool raw);
 
 	virtual void setAFGain(unsigned int value);
 	virtual void setRFGain(unsigned int value);
@@ -133,6 +133,7 @@ class CDSPControl : public wxThread, public IDataCallback {
 	float           m_power;
 	UWSDRMODE       m_mode;
 	bool            m_swap;
+	bool            m_recordRaw;
 
 	int             m_clockId;
 

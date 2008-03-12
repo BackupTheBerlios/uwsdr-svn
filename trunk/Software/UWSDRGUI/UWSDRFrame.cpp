@@ -1416,7 +1416,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 			break;
 		case MENU_RECORD: {
 				m_record = !m_record;
-				bool ret = m_dsp->setRecord(m_record);
+				bool ret = m_dsp->setRecord(m_record, m_parameters->m_recordRaw);
 				if (!ret) {
 					m_record = false;
 					::wxMessageBox(_("Cannot open the sound file for recording"), _("uWave SDR Error"), wxICON_ERROR);

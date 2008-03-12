@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2002-2004,2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2002-2004,2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -119,11 +119,11 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 		return false;
 	}
 
-	if (format.wBitsPerSample == 8 && format.wFormatTag == WAVE_FORMAT_PCM) {
+	if (format.wBitsPerSample == 8U && format.wFormatTag == WAVE_FORMAT_PCM) {
 		m_format = FORMAT_8BIT;
-	} else if (format.wBitsPerSample == 16 && format.wFormatTag == WAVE_FORMAT_PCM) {
+	} else if (format.wBitsPerSample == 16U && format.wFormatTag == WAVE_FORMAT_PCM) {
 		m_format = FORMAT_16BIT;
-	} else if (format.wBitsPerSample == 32 && format.wFormatTag == WAVE_FORMAT_IEEE_FLOAT) {
+	} else if (format.wBitsPerSample == 32U && format.wFormatTag == WAVE_FORMAT_IEEE_FLOAT) {
 		m_format = FORMAT_32BIT;
 	} else {
 		::wxLogError(wxT("SoundFileReader: %s has sample width %u and format %u."), m_fileName.c_str(), format.wBitsPerSample, format.wFormatTag);
@@ -151,13 +151,13 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 
 	switch (m_format) {
 		case FORMAT_8BIT:
-			m_buffer8 =  new uint8[m_blockSize * m_channels];
+			m_buffer8 =  new wxUint8[m_blockSize * m_channels];
 			break;
 		case FORMAT_16BIT:
-			m_buffer16 = new sint16[m_blockSize * m_channels];
+			m_buffer16 = new wxInt16[m_blockSize * m_channels];
 			break;
 		case FORMAT_32BIT:
-			m_buffer32 = new float32[m_blockSize * m_channels];
+			m_buffer32 = new wxFloat32[m_blockSize * m_channels];
 			break;
 	}
 
@@ -176,22 +176,22 @@ bool CSoundFileReader::create()
 
 	switch (m_format) {
 		case FORMAT_8BIT:
-			n = ::mmioRead(m_handle, (char *)m_buffer8, m_blockSize * m_channels * sizeof(uint8));
+			n = ::mmioRead(m_handle, (char *)m_buffer8, m_blockSize * m_channels * sizeof(wxUint8));
 
 			if (n <= 0L) {
 				m_callback->callback(m_buffer, 0U, m_id);
 				return false;
 			}
 
-			n /= (sizeof(uint8) * m_channels);
+			n /= (sizeof(wxUint8) * m_channels);
 
 			switch (m_channels) {
 				case 1U:
-					for (i = 0; i < n; i++)
+					for (i = 0L; i < n; i++)
 						m_buffer[i * 2U + 0U] = m_buffer[i * 2U + 1U] = (float(m_buffer8[i]) - 127.0F) / 128.0F;
 					break;
 				case 2U:
-					for (i = 0; i < n; i++) {
+					for (i = 0L; i < n; i++) {
 						m_buffer[i * 2U + 0U] = (float(m_buffer8[i * 2U + 0U]) - 127.0F) / 128.0F;
 						m_buffer[i * 2U + 1U] = (float(m_buffer8[i * 2U + 1U]) - 127.0F) / 128.0F;
 					}
@@ -200,22 +200,22 @@ bool CSoundFileReader::create()
 			break;
 
 		case FORMAT_16BIT:
-			n = ::mmioRead(m_handle, (char *)m_buffer16, m_blockSize * m_channels * sizeof(sint16));
+			n = ::mmioRead(m_handle, (char *)m_buffer16, m_blockSize * m_channels * sizeof(wxInt16));
 
 			if (n <= 0L) {
 				m_callback->callback(m_buffer, 0U, m_id);
 				return false;
 			}
 
-			n /= (sizeof(sint16) * m_channels);
+			n /= (sizeof(wxInt16) * m_channels);
 
 			switch (m_channels) {
 				case 1U:
-					for (i = 0; i < n; i++)
+					for (i = 0L; i < n; i++)
 						m_buffer[i * 2U + 0U] = m_buffer[i * 2U + 1U] = float(m_buffer16[i]) / 32768.0F;
 					break;
 				case 2U:
-					for (i = 0; i < n; i++) {
+					for (i = 0L; i < n; i++) {
 						m_buffer[i * 2U + 0U] = float(m_buffer16[i * 2U + 0U]) / 32768.0F;
 						m_buffer[i * 2U + 1U] = float(m_buffer16[i * 2U + 1U]) / 32768.0F;
 					}
@@ -224,23 +224,23 @@ bool CSoundFileReader::create()
 			break;
 
 		case FORMAT_32BIT:
-			n = ::mmioRead(m_handle, (char *)m_buffer32, m_blockSize * m_channels * sizeof(float32));
+			n = ::mmioRead(m_handle, (char *)m_buffer32, m_blockSize * m_channels * sizeof(wxFloat32));
 
 			if (n <= 0L) {
 				m_callback->callback(m_buffer, 0U, m_id);
 				return false;
 			}
 
-			n /= (sizeof(float32) * m_channels);
+			n /= (sizeof(wxFloat32) * m_channels);
 
 			switch (m_channels) {
 				case 1U:
-					for (i = 0U; i < n; i++)
+					for (i = 0L; i < n; i++)
 						m_buffer[i * 2U + 0U] = m_buffer32[i * 2U + 1U];
 					break;
 				case 2U:
 					// Swap I and Q for SDR-1000 data
-					for (i = 0U; i < n; i++) {
+					for (i = 0L; i < n; i++) {
 						m_buffer[i * 2U + 0U] = m_buffer32[i * 2U + 1U];
 						m_buffer[i * 2U + 1U] = m_buffer32[i * 2U + 0U];
 					}
@@ -262,8 +262,8 @@ void CSoundFileReader::rewind()
 
 #else
 
-const int WAVE_FORMAT_PCM        = 1;
-const int WAVE_FORMAT_IEEE_FLOAT = 3;
+const int FORMAT_PCM        = 1;
+const int FORMAT_IEEE_FLOAT = 3;
 
 CSoundFileReader::CSoundFileReader(const wxString& fileName, IDataReader* reader) :
 CThreadReader(reader),
@@ -300,7 +300,7 @@ CSoundFileReader::~CSoundFileReader()
 bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 {
 	m_blockSize = blockSize;
-	m_read      = 0;
+	m_read      = 0U;
 
 	m_file = new wxFFile(m_fileName, "rb");
 
@@ -317,25 +317,25 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 	unsigned char buffer[4];
 
 	unsigned int n = m_file->Read(buffer, 4);
-	if (n != 4 || ::memcmp(buffer, "RIFF", 4) != 0) {
+	if (n != 4U || ::memcmp(buffer, "RIFF", 4) != 0) {
 		::wxLogError(wxT("SoundFileReader: %s has no \"RIFF\" signature."), m_fileName.c_str());
 		return false;
 	}
 
 	n = m_file->Read(buffer, 4);
-	if (n != 4) {
+	if (n != 4U) {
 		::wxLogError(wxT("SoundFileReader: %s is corrupt, cannot read the file length."), m_fileName.c_str());
 		return false;
 	}
 
 	n = m_file->Read(buffer, 4);
-	if (n != 4 || ::memcmp(buffer, "WAVE", 4) != 0) {
+	if (n != 4U || ::memcmp(buffer, "WAVE", 4) != 0) {
 		::wxLogError(wxT("SoundFileReader: %s has no \"WAVE\" header."), m_fileName.c_str());
 		return false;
 	}
 
 	n = m_file->Read(buffer, 4);
-	if (n != 4 || ::memcmp(buffer, "fmt ", 4) != 0) {
+	if (n != 4U || ::memcmp(buffer, "fmt ", 4) != 0) {
 		::wxLogError(wxT("SoundFileReader: %s has no \"fmt \" chunk."), m_fileName.c_str());
 		return false;
 	}
@@ -344,7 +344,7 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 	n = m_file->Read(&uint32, sizeof(wxUint32));
 
 	wxUint32 length = wxUINT32_SWAP_ON_BE(uint32);
-	if (n != sizeof(wxUint32) || length < 16) {
+	if (n != sizeof(wxUint32) || length < 16U) {
 		::wxLogError(wxT("SoundFileReader: %s is corrupt, cannot read the WAVEFORMATEX structure length."), m_fileName.c_str());
 		return false;
 	}
@@ -353,7 +353,7 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 	n = m_file->Read(&uint16, sizeof(wxUint16));
 
 	wxUint16 compCode = wxUINT16_SWAP_ON_BE(uint16);
-	if (n != sizeof(wxUint16) || (compCode != WAVE_FORMAT_PCM && compCode != WAVE_FORMAT_IEEE_FLOAT)) {
+	if (n != sizeof(wxUint16) || (compCode != FORMAT_PCM && compCode != FORMAT_IEEE_FLOAT)) {
 		::wxLogError(wxT("SoundFileReader: %s is not PCM or IEEE Float format, is %u."), m_fileName.c_str(), compCode);
 		return false;
 	}
@@ -398,11 +398,11 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 
 	wxUint16 bitsPerSample = wxUINT16_SWAP_ON_BE(uint16);
 
-	if (bitsPerSample == 8 && compCode == WAVE_FORMAT_PCM) {
+	if (bitsPerSample == 8U && compCode == FORMAT_PCM) {
 		m_format = FORMAT_8BIT;
-	} else if (bitsPerSample == 16 && compCode == WAVE_FORMAT_PCM) {
+	} else if (bitsPerSample == 16U && compCode == FORMAT_PCM) {
 		m_format = FORMAT_16BIT;
-	} else if (bitsPerSample == 32 && compCode == WAVE_FORMAT_IEEE_FLOAT) {
+	} else if (bitsPerSample == 32U && compCode == FORMAT_IEEE_FLOAT) {
 		m_format = FORMAT_32BIT;
 	} else {
 		::wxLogError(wxT("SoundFileReader: %s has sample width %u and format %u."), m_fileName.c_str(), bitsPerSample, compCode);
@@ -410,12 +410,12 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 	}
 
 	// Now drain any extra bytes of data
-	if (length > 16)
-		m_file->Seek(length - 16, wxFromCurrent);
+	if (length > 16U)
+		m_file->Seek(length - 16U, wxFromCurrent);
 
 	n = m_file->Read(buffer, 4);
 
-	if (n != 4 || ::memcmp(buffer, "data", 4) != 0) {
+	if (n != 4U || ::memcmp(buffer, "data", 4) != 0) {
 		::wxLogError(wxT("SoundFileReader: %s has no \"data\" chunk."), m_fileName.c_str());
 		return false;
 	}
@@ -434,13 +434,13 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 
 	switch (m_format) {
 		case FORMAT_8BIT:
-			m_buffer8 =  new uint8[m_blockSize * m_channels];
+			m_buffer8 =  new wxUint8[m_blockSize * m_channels];
 			break;
 		case FORMAT_16BIT:
-			m_buffer16 = new sint16[m_blockSize * m_channels];
+			m_buffer16 = new wxInt16[m_blockSize * m_channels];
 			break;
 		case FORMAT_32BIT:
-			m_buffer32 = new float32[m_blockSize * m_channels];
+			m_buffer32 = new wxFloat32[m_blockSize * m_channels];
 			break;
 	}
 
@@ -460,10 +460,10 @@ bool CSoundFileReader::create()
 
 	switch (m_format) {
 		case FORMAT_8BIT:
-			readSize = m_blockSize * m_channels * sizeof(uint8);
+			readSize = m_blockSize * m_channels * sizeof(wxUint8);
 
 			if (readSize > (m_length - m_read))
-				readSize = (m_length - m_read) / (m_channels * sizeof(uint8));
+				readSize = (m_length - m_read) / (m_channels * sizeof(wxUint8));
 
 			n = m_file->Read(m_buffer8, readSize);
 
@@ -474,15 +474,15 @@ bool CSoundFileReader::create()
 
 			m_read += n;
 
-			n /= (sizeof(uint8) * m_channels);
+			n /= (sizeof(wxUint8) * m_channels);
 
 			switch (m_channels) {
 				case 1U:
-					for (i = 0; i < n; i++)
+					for (i = 0U; i < n; i++)
 						m_buffer[i * 2U + 0U] = m_buffer[i * 2U + 1U] = (float(m_buffer8[i]) - 127.0F) / 128.0F;
 					break;
 				case 2U:
-					for (i = 0; i < n; i++) {
+					for (i = 0U; i < n; i++) {
 						m_buffer[i * 2U + 0U] = (float(m_buffer8[i * 2U + 0U]) - 127.0F) / 128.0F;
 						m_buffer[i * 2U + 1U] = (float(m_buffer8[i * 2U + 1U]) - 127.0F) / 128.0F;
 					}
@@ -491,10 +491,10 @@ bool CSoundFileReader::create()
 			break;
 
 		case FORMAT_16BIT:
-			readSize = m_blockSize * m_channels * sizeof(sint16);
+			readSize = m_blockSize * m_channels * sizeof(wxInt16);
 
 			if (readSize > (m_length - m_read))
-				readSize = (m_length - m_read) / (m_channels * sizeof(sint16));
+				readSize = (m_length - m_read) / (m_channels * sizeof(wxInt16));
 
 			n = m_file->Read(m_buffer16, readSize);
 
@@ -505,15 +505,15 @@ bool CSoundFileReader::create()
 
 			m_read += n;
 
-			n /= (sizeof(sint16) * m_channels);
+			n /= (sizeof(wxInt16) * m_channels);
 
 			switch (m_channels) {
 				case 1U:
-					for (i = 0; i < n; i++)
+					for (i = 0U; i < n; i++)
 						m_buffer[i * 2U + 0U] = m_buffer[i * 2U + 1U] = float(m_buffer16[i]) / 32768.0F;
 					break;
 				case 2U:
-					for (i = 0; i < n; i++) {
+					for (i = 0U; i < n; i++) {
 						m_buffer[i * 2U + 0U] = float(m_buffer16[i * 2U + 0U]) / 32768.0F;
 						m_buffer[i * 2U + 1U] = float(m_buffer16[i * 2U + 1U]) / 32768.0F;
 					}
@@ -522,10 +522,10 @@ bool CSoundFileReader::create()
 			break;
 
 		case FORMAT_32BIT:
-			readSize = m_blockSize * m_channels * sizeof(float32);
+			readSize = m_blockSize * m_channels * sizeof(wxFloat32);
 
 			if (readSize > (m_length - m_read))
-				readSize = (m_length - m_read) / (m_channels * sizeof(float32));
+				readSize = (m_length - m_read) / (m_channels * sizeof(wxFloat32));
 
 			n = m_file->Read(m_buffer32, readSize);
 
@@ -536,7 +536,7 @@ bool CSoundFileReader::create()
 
 			m_read += n;
 
-			n /= (sizeof(float32) * m_channels);
+			n /= (sizeof(wxFloat32) * m_channels);
 
 			switch (m_channels) {
 				case 1U:
@@ -565,7 +565,7 @@ void CSoundFileReader::rewind()
 
 	m_file->Seek(m_offset);
 
-	m_read = 0;
+	m_read = 0U;
 }
 
 #endif

@@ -113,6 +113,7 @@ const wxChar* KEY_RF_GAIN            = wxT("/RFGain");
 const wxChar* KEY_SQUELCH            = wxT("/Squelch");
 const wxChar* KEY_MIC_GAIN           = wxT("/MicGain");
 const wxChar* KEY_POWER              = wxT("/Power");
+const wxChar* KEY_RECORD_RAW         = wxT("/RecordRaw");
 const wxChar* KEY_HPSDRC0            = wxT("/HPSDRC0");
 const wxChar* KEY_HPSDRC1            = wxT("/HPSDRC1");
 const wxChar* KEY_HPSDRC2            = wxT("/HPSDRC2");
@@ -399,6 +400,7 @@ bool CUWSDRApp::readConfig()
 	wxString keySquelch         = wxT("/") + m_parameters->m_name + KEY_SQUELCH;
 	wxString keyMicGain         = wxT("/") + m_parameters->m_name + KEY_MIC_GAIN;
 	wxString keyPower           = wxT("/") + m_parameters->m_name + KEY_POWER;
+	wxString keyRecordRaw       = wxT("/") + m_parameters->m_name + KEY_RECORD_RAW;
 	wxString keyHpsdrC0         = wxT("/") + m_parameters->m_name + KEY_HPSDRC0;
 	wxString keyHpsdrC1         = wxT("/") + m_parameters->m_name + KEY_HPSDRC1;
 	wxString keyHpsdrC2         = wxT("/") + m_parameters->m_name + KEY_HPSDRC2;
@@ -628,6 +630,8 @@ bool CUWSDRApp::readConfig()
 	profile->Read(keyPower,            &num, 0);
 	m_parameters->m_power = num;
 
+	profile->Read(keyRecordRaw,        &m_parameters->m_recordRaw, false);
+
 	profile->Read(keyHpsdrC0,          &num, 0x00);
 	m_parameters->m_c0 = num;
 
@@ -738,6 +742,7 @@ void CUWSDRApp::writeConfig()
 	wxString keySquelch       = wxT("/") + m_parameters->m_name + KEY_SQUELCH;
 	wxString keyMicGain       = wxT("/") + m_parameters->m_name + KEY_MIC_GAIN;
 	wxString keyPower         = wxT("/") + m_parameters->m_name + KEY_POWER;
+	wxString keyRecordRaw     = wxT("/") + m_parameters->m_name + KEY_RECORD_RAW;
 	wxString keyCwSpeed       = wxT("/") + m_parameters->m_name + KEY_CW_SPEED;
 	wxString keyCwLocal       = wxT("/") + m_parameters->m_name + KEY_CW_LOCAL;
 	wxString keyCwRemote      = wxT("/") + m_parameters->m_name + KEY_CW_REMOTE;
@@ -836,6 +841,7 @@ void CUWSDRApp::writeConfig()
 	profile->Write(keySquelch,          int(m_parameters->m_squelch));
 	profile->Write(keyMicGain,          int(m_parameters->m_micGain));
 	profile->Write(keyPower,            int(m_parameters->m_power));
+	profile->Write(keyRecordRaw,        m_parameters->m_recordRaw);
 	profile->Write(keyCwSpeed,          int(m_parameters->m_cwSpeed));
 	profile->Write(keyCwLocal,          m_parameters->m_cwLocal);
 	profile->Write(keyCwRemote,         m_parameters->m_cwRemote);

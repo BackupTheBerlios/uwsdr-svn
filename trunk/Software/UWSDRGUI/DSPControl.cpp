@@ -57,6 +57,7 @@ m_micGain(0.0F),
 m_power(0.0F),
 m_mode(MODE_USB),
 m_swap(false),
+m_recordRaw(false),
 m_clockId(-1),
 m_lastTXIn(false),
 m_lastKeyIn(false),
@@ -183,7 +184,7 @@ void* CDSPControl::Entry()
 			m_rxWriter->write(m_rxBuffer, nSamples);
 
 			// Don't record when transmitting
-			if (m_record != NULL && !m_transmit)
+			if (m_record != NULL && !m_recordRaw && !m_transmit)
 				m_record->write(m_rxBuffer, nSamples);
 		}
 	}
@@ -288,7 +289,7 @@ bool CDSPControl::openIO()
 
 void CDSPControl::closeIO()
 {
-	setRecord(false);
+	setRecord(false, false);
 
 	m_rxReader->close();
 	m_txReader->close();
@@ -345,6 +346,10 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 		case RX_READER: {
 				if (m_transmit)
 					return;
+
+				// Don't record when transmitting
+				if (m_record != NULL && m_recordRaw)
+					m_record->write(m_rxBuffer, nSamples);
 
 				scaleBuffer(inBuffer, nSamples, m_rfGain, m_swap);
 
@@ -622,13 +627,17 @@ void CDSPControl::setSquelch(unsigned int value)
 	m_dttsp->setSquelch(value);
 }
 
-bool CDSPControl::setRecord(bool record)
+bool CDSPControl::setRecord(bool record, bool raw)
 {
 	if (record && m_record == NULL) {
 		wxDateTime now = wxDateTime::Now();
 		wxString fileName = now.Format(wxT("%Y%m%d-%H%M%S.wav"));
 
-		CSoundFileWriter* sdfw = new CSoundFileWriter(fileName, 1U);
+		CSoundFileWriter* sdfw;
+		if (raw)
+			sdfw = new CSoundFileWriter(fileName, 2U, 32U);
+		else
+			sdfw = new CSoundFileWriter(fileName, 1U, 16U);
 
 		bool ret = sdfw->open(m_sampleRate, m_blockSize);
 		if (!ret) {
@@ -636,7 +645,8 @@ bool CDSPControl::setRecord(bool record)
 			return false;
 		}
 
-		m_record = sdfw;
+		m_recordRaw = raw;
+		m_record    = sdfw;
 
 		::wxLogMessage(wxT("Opened file %s for recording"), fileName.c_str());
 	} else if (!record && m_record != NULL) {
