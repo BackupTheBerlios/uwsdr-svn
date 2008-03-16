@@ -178,12 +178,12 @@ void SetTXALCHang(float hang)
 
 void SetCorrectIQ(double phase, double gain)
 {
-	dttsp->setRXCorrectIQ(float(0.001F * phase), float(1.0F + 0.001F * gain));
+	dttsp->setRXCorrectIQ(phase, gain);
 }
 
 void SetCorrectTXIQ(double phase, double gain)
 {
-	dttsp->setTXCorrectIQ(float(0.001F * phase), float(1.0F + 0.001F * gain));
+	dttsp->setTXCorrectIQ(phase, gain);
 }
 
 void SetPWSmode(SPECTRUMtype type)
