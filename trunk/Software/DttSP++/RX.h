@@ -98,7 +98,7 @@ class CRX {
 
 	void setAzim(float azim);
 
-	void setSpectrumType(SPECTRUMtype type);
+	void setSpectrumType(RXSPECTRUMtype type);
 
 	float getOffset() const;
 
@@ -107,7 +107,7 @@ class CRX {
 
 	CMeter*        m_meter;
 	CSpectrum*     m_spectrum;
-	SPECTRUMtype   m_type;
+	RXSPECTRUMtype m_type;
 
 	CXB*           m_iBuf;
 	CXB*           m_oBuf;
@@ -160,7 +160,7 @@ class CRX {
 	unsigned long  m_tick;
 
 	void meter(CXB* buf, RXMETERTAP tap);
-	void spectrum(CXB* buf, SPECTRUMtype type);
+	void spectrum(CXB* buf, RXSPECTRUMtype type);
 };
 
 #endif

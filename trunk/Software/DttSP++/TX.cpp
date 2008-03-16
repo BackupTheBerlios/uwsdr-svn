@@ -39,6 +39,7 @@ CTX::CTX(unsigned int bufLen, unsigned int bits, float sampleRate, CMeter* meter
 m_sampleRate(sampleRate),
 m_meter(meter),
 m_spectrum(spectrum),
+m_type(SPEC_TX_POST_FILT),
 m_iBuf(NULL),
 m_oBuf(NULL),
 m_iq(NULL),
@@ -123,15 +124,18 @@ void CTX::process()
 	if (m_dcBlockFlag && (m_mode == USB || m_mode == LSB))
 		m_dcBlock->block();
 
+	spectrum(m_iBuf, SPEC_TX_MIC);
 	meter(m_iBuf, TX_MIC);
 
 	if (m_speechProcFlag && (m_mode == USB || m_mode == LSB))
 		m_speechProc->process();
 
+	spectrum(m_iBuf, SPEC_TX_POST_COMP);
 	meter(m_iBuf, TX_COMP);
 
 	m_alc->process();
 
+	spectrum(m_iBuf, SPEC_TX_POST_ALC);
 	meter(m_iBuf, TX_ALC);
 
 	m_modulator->modulate();
@@ -145,7 +149,7 @@ void CTX::process()
 	m_filter->filter();
 	CXBhave(m_oBuf) = CXBhave(m_iBuf);
 
-	m_spectrum->setData(m_oBuf);
+	spectrum(m_oBuf, SPEC_TX_POST_FILT);
 
 	m_oscillator1->mix();
 
@@ -159,6 +163,12 @@ void CTX::process()
 void CTX::meter(CXB* buf, TXMETERTYPE type)
 {
 	m_meter->setTXMeter(type, buf, m_alc->getGain());
+}
+
+void CTX::spectrum(CXB* buf, TXSPECTRUMtype type)
+{
+	if (type == m_type)
+		m_spectrum->setData(buf);
 }
 
 CXB* CTX::getIBuf()
@@ -318,6 +328,11 @@ void CTX::setCompressionFlag(bool flag)
 void CTX::setCompressionLevel(float level)
 {
 	m_speechProc->setCompression(level);
+}
+
+void CTX::setSpectrumType(TXSPECTRUMtype type)
+{
+	m_type = type;
 }
 
 float CTX::getOffset() const

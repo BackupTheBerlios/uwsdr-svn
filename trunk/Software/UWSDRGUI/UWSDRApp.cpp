@@ -100,7 +100,6 @@ const wxChar* KEY_ALC_DECAY          = wxT("/ALCDecayValue");
 const wxChar* KEY_ALC_HANG           = wxT("/ALCHangValue");
 const wxChar* KEY_RX_METER           = wxT("/ReceiveMeter");
 const wxChar* KEY_TX_METER           = wxT("/TransmitMeter");
-const wxChar* KEY_SPECTRUM_POS       = wxT("/SpectrumPos");
 const wxChar* KEY_SPECTRUM_TYPE      = wxT("/SpectrumType");
 const wxChar* KEY_SPECTRUM_SPEED     = wxT("/SpectrumSpeed");
 const wxChar* KEY_SPECTRUM_DB        = wxT("/SpectrumDB");
@@ -387,7 +386,6 @@ bool CUWSDRApp::readConfig()
 	wxString keyAlcHang         = wxT("/") + m_parameters->m_name + KEY_ALC_HANG;
 	wxString keyRxMeter         = wxT("/") + m_parameters->m_name + KEY_RX_METER;
 	wxString keyTxMeter         = wxT("/") + m_parameters->m_name + KEY_TX_METER;
-	wxString keySpectrumPos     = wxT("/") + m_parameters->m_name + KEY_SPECTRUM_POS;
 	wxString keySpectrumType    = wxT("/") + m_parameters->m_name + KEY_SPECTRUM_TYPE;
 	wxString keySpectrumSpeed   = wxT("/") + m_parameters->m_name + KEY_SPECTRUM_SPEED;
 	wxString keySpectrumDB      = wxT("/") + m_parameters->m_name + KEY_SPECTRUM_DB;
@@ -601,8 +599,6 @@ bool CUWSDRApp::readConfig()
 	profile->Read(keyTxMeter,          &num, METER_POWER);
 	m_parameters->m_txMeter = METERPOS(num);
 
-	profile->Read(keySpectrumPos,      &num, SPECTRUM_PRE_FILTER);
-	m_parameters->m_spectrumPos =   SPECTRUMPOS(num);
 	profile->Read(keySpectrumType,     &num, SPECTRUM_PANADAPTER1);
 	m_parameters->m_spectrumType =  SPECTRUMTYPE(num);
 	profile->Read(keySpectrumSpeed,    &num, SPECTRUM_100MS);
@@ -729,7 +725,6 @@ void CUWSDRApp::writeConfig()
 	wxString keyAlcHang       = wxT("/") + m_parameters->m_name + KEY_ALC_HANG;
 	wxString keyRxMeter       = wxT("/") + m_parameters->m_name + KEY_RX_METER;
 	wxString keyTxMeter       = wxT("/") + m_parameters->m_name + KEY_TX_METER;
-	wxString keySpectrumPos   = wxT("/") + m_parameters->m_name + KEY_SPECTRUM_POS;
 	wxString keySpectrumType  = wxT("/") + m_parameters->m_name + KEY_SPECTRUM_TYPE;
 	wxString keySpectrumSpeed = wxT("/") + m_parameters->m_name + KEY_SPECTRUM_SPEED;
 	wxString keySpectrumDB    = wxT("/") + m_parameters->m_name + KEY_SPECTRUM_DB;
@@ -828,7 +823,6 @@ void CUWSDRApp::writeConfig()
 	profile->Write(keyAlcHang,          int(m_parameters->m_alcHang));
 	profile->Write(keyRxMeter,          m_parameters->m_rxMeter);
 	profile->Write(keyTxMeter,          m_parameters->m_txMeter);
-	profile->Write(keySpectrumPos,      m_parameters->m_spectrumPos);
 	profile->Write(keySpectrumType,     m_parameters->m_spectrumType);
 	profile->Write(keySpectrumSpeed,    m_parameters->m_spectrumSpeed);
 	profile->Write(keySpectrumDB,       m_parameters->m_spectrumDB);

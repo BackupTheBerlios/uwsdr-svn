@@ -58,7 +58,9 @@ class CDTTSPControl : public wxThread {
 	virtual void setTXIAndQ(int phase, int gain);
 
 	virtual float getMeter(METERPOS type);
-	virtual void  getSpectrum(float* spectrum, SPECTRUMPOS pos);
+	virtual void  getSpectrum(float* spectrum);
+	virtual void  getPhase(float* spectrum);
+	virtual void  getScope(float* spectrum);
 
 	virtual float getTXOffset();
 	virtual float getRXOffset();

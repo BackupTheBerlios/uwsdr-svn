@@ -297,7 +297,16 @@ void CDttSP::setTXCorrectIQ(float phase, float gain)
 
 void CDttSP::setSpectrumType(SPECTRUMtype type)
 {
-	m_rx->setSpectrumType(type);
+	switch (type) {
+		case SPEC_AUDIO:
+			m_rx->setSpectrumType(SPEC_RX_POST_DET);
+			m_tx->setSpectrumType(SPEC_TX_POST_ALC);
+			break;
+		case SPEC_IQ:
+			m_rx->setSpectrumType(SPEC_RX_PRE_FILT);
+			m_tx->setSpectrumType(SPEC_TX_POST_FILT);
+			break;
+	}
 }
 
 void CDttSP::setSpectrumWindowType(Windowtype window)

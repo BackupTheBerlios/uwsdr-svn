@@ -406,28 +406,37 @@ float CDTTSPControl::getMeter(METERPOS type)
 	return val;
 }
 
-void CDTTSPControl::getSpectrum(float* spectrum, SPECTRUMPOS pos)
+void CDTTSPControl::getSpectrum(float* spectrum)
 {
 	wxASSERT(spectrum != NULL);
 
 	if (!m_started)
 		return;
 
-	if (!m_transmit) {
-		switch (pos) {
-			case SPECTRUM_PRE_FILTER:
-				::Process_Panadapter(spectrum);
-				break;
-			case SPECTRUM_POST_FILTER:
-				::Process_Spectrum(spectrum);
-				break;
-			case SPECTRUM_POST_AGC:
-				::Process_Scope(spectrum, SPECTRUM_SIZE);
-				break;
-		}
-	} else {
+	if (!m_transmit)
+		::Process_Panadapter(spectrum);
+	else
 		::Process_Spectrum(spectrum);
-	}
+}
+
+void CDTTSPControl::getScope(float* spectrum)
+{
+	wxASSERT(spectrum != NULL);
+
+	if (!m_started)
+		return;
+
+	::Process_Scope(spectrum, SPECTRUM_SIZE);
+}
+
+void CDTTSPControl::getPhase(float* spectrum)
+{
+	wxASSERT(spectrum != NULL);
+
+	if (!m_started)
+		return;
+
+	::Process_Phase(spectrum, SPECTRUM_SIZE);
 }
 
 void CDTTSPControl::dataIO(const float* input, float* output, unsigned int nSamples)

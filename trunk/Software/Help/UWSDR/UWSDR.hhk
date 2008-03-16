@@ -140,11 +140,6 @@
        </object>
 
   <li> <object type="text/sitemap">
-           <param name="Name" value="Position Menu (Spectrum Display)">
-           <param name="Local" value="SDPosition.htm">
-       </object>
-
-  <li> <object type="text/sitemap">
            <param name="Name" value="Power">
            <param name="Local" value="Power.htm">
        </object>

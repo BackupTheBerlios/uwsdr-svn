@@ -134,7 +134,6 @@ class CSDRParameters {
 	METERPOS      m_rxMeter;
 	METERPOS      m_txMeter;
 
-	SPECTRUMPOS   m_spectrumPos;
 	SPECTRUMTYPE  m_spectrumType;
 	SPECTRUMSPEED m_spectrumSpeed;
 	SPECTRUMRANGE m_spectrumDB;

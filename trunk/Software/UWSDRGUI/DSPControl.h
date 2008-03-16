@@ -91,7 +91,9 @@ class CDSPControl : public wxThread, public IDataCallback {
 	virtual void setSquelch(unsigned int value);
 
 	virtual float getMeter(METERPOS type);
-	virtual void  getSpectrum(float* spectrum, SPECTRUMPOS pos);
+	virtual void  getSpectrum(float* spectrum);
+	virtual void  getPhase(float* spectrum);
+	virtual void  getScope(float* spectrum);
 
 	virtual float getTXOffset();
 	virtual float getRXOffset();

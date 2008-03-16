@@ -597,9 +597,19 @@ float CDSPControl::getRXOffset()
 	return m_dttsp->getRXOffset();
 }
 
-void CDSPControl::getSpectrum(float* spectrum, SPECTRUMPOS pos)
+void CDSPControl::getSpectrum(float* spectrum)
 {
-	m_dttsp->getSpectrum(spectrum, pos);
+	m_dttsp->getSpectrum(spectrum);
+}
+
+void CDSPControl::getScope(float* spectrum)
+{
+	m_dttsp->getScope(spectrum);
+}
+
+void CDSPControl::getPhase(float* spectrum)
+{
+	m_dttsp->getPhase(spectrum);
 }
 
 void CDSPControl::setAFGain(unsigned int value)

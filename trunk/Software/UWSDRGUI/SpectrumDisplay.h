@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -35,12 +35,10 @@ class CSpectrumDisplay : public wxPanel {
 
 	virtual void showSpectrum(const float* spectrum, float bottom = 0.0F, float offset = 0.0F);
 
-	virtual void setPosition(SPECTRUMPOS pos);
 	virtual void setType(SPECTRUMTYPE type);
 	virtual void setSpeed(SPECTRUMSPEED speed);
 	virtual void setDB(SPECTRUMRANGE db);
 
-	virtual SPECTRUMPOS   getPosition() const;
 	virtual SPECTRUMTYPE  getType() const;
 	virtual SPECTRUMSPEED getSpeed() const;
 	virtual SPECTRUMRANGE getDB() const;
@@ -62,12 +60,10 @@ class CSpectrumDisplay : public wxPanel {
 	float         m_bandwidth;
 	wxMenu*       m_menu;
 	wxMenu*       m_speedMenu;
-	wxMenu*       m_posMenu;
 	wxMenu*       m_typeMenu;
 	wxMenu*       m_dbMenu;
 	SPECTRUMTYPE  m_type;
 	SPECTRUMSPEED m_speed;
-	SPECTRUMPOS   m_position;
 	SPECTRUMRANGE m_db;
 	int           m_factor;
 	unsigned int  m_ticks;
@@ -80,10 +76,14 @@ class CSpectrumDisplay : public wxPanel {
 
 	void createPanadapter();
 	void createWaterfall();
+	void createPhase();
+	void createScope();
 
 	void drawPanadapter1(const float* spectrum, float bottom);
 	void drawPanadapter2(const float* spectrum, float bottom);
 	void drawWaterfall(const float* spectrum, float bottom);
+	void drawPhase(const float* spectrum);
+	void drawScope(const float* spectrum);
 };
 
 #endif

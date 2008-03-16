@@ -39,7 +39,7 @@ CRX::CRX(unsigned int bufLen, unsigned int bits, float sampleRate, CMeter* meter
 m_sampleRate(sampleRate),
 m_meter(meter),
 m_spectrum(spectrum),
-m_type(SPEC_POST_FILT),
+m_type(SPEC_RX_POST_FILT),
 m_iBuf(NULL),
 m_oBuf(NULL),
 m_iq(NULL),
@@ -184,7 +184,7 @@ void CRX::process()
 
 	m_oscillator1->mix();
 
-	spectrum(m_iBuf, SPEC_PRE_FILT);
+	spectrum(m_iBuf, SPEC_RX_PRE_FILT);
 
 	if (m_tick == 0UL)
 		m_filter->reset();
@@ -193,7 +193,7 @@ void CRX::process()
 	CXBhave(m_oBuf) = CXBhave(m_iBuf);
 
 	meter(m_oBuf, RXMETER_POST_FILT);
-	spectrum(m_oBuf, SPEC_POST_FILT);
+	spectrum(m_oBuf, SPEC_RX_POST_FILT);
 
 	// Only active for the third method/zero-IF
 	m_oscillator2->mix();
@@ -204,7 +204,7 @@ void CRX::process()
 		m_agc->process();
 
 	meter(m_oBuf,RXMETER_POST_AGC);
-	spectrum(m_oBuf, SPEC_POST_AGC);
+	spectrum(m_oBuf, SPEC_RX_POST_AGC);
 
 	m_demodulator->demodulate();
 
@@ -237,7 +237,7 @@ void CRX::process()
 	if (!m_squelch->isSet())
 		m_squelch->noSquelch();
 
-	spectrum(m_oBuf, SPEC_POST_DET);
+	spectrum(m_oBuf, SPEC_RX_POST_DET);
 
 	m_tick++;
 }
@@ -247,7 +247,7 @@ void CRX::meter(CXB* buf, RXMETERTAP tap)
 	m_meter->setRXMeter(tap, buf, m_agc->getGain());
 }
 
-void CRX::spectrum(CXB* buf, SPECTRUMtype type)
+void CRX::spectrum(CXB* buf, RXSPECTRUMtype type)
 {
 	if (type == m_type)
 		m_spectrum->setData(buf);
@@ -463,7 +463,7 @@ void CRX::setAzim(float azim)
 	m_azim = Cmplx((float)::cos(theta), (float)::sin(theta));
 }
 
-void CRX::setSpectrumType(SPECTRUMtype type)
+void CRX::setSpectrumType(RXSPECTRUMtype type)
 {
 	m_type = type;
 }

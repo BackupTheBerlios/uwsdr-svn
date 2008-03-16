@@ -231,7 +231,13 @@ void CSpectrum::computeScopeReal(float* results, unsigned int numpoints)
 	ASSERT(results != NULL);
 	ASSERT(numpoints <= m_size);
 
-	for (unsigned int i = 0; i < numpoints; i++)
+	::memset(results, 0x00, numpoints * sizeof(float));
+
+	unsigned int len = numpoints;
+	if (len > m_size)
+		len = m_size;
+
+	for (unsigned int i = 0; i < len; i++)
 		results[i] = CXBreal(m_timebuf, i);
 }
 
@@ -240,10 +246,15 @@ void CSpectrum::computeScopeComplex(float* results, unsigned int numpoints)
 	ASSERT(results != NULL);
 	ASSERT(numpoints <= m_size);
 
-	unsigned int i, j;
-	for (i = 0, j = 0; i < numpoints; i++, j += 2) {
-		results[j + 0] = CXBreal(m_timebuf, i);
-		results[j + 1] = CXBimag(m_timebuf, i);
+	::memset(results, 0x00, numpoints * sizeof(float));
+
+	unsigned int len = numpoints / 2U;
+	if (len > m_size)
+		len = m_size;
+
+	for (unsigned int i = 0; i < len; i++) {
+		*results++ = CXBreal(m_timebuf, i);
+		*results++ = CXBimag(m_timebuf, i);
 	}
 }
 

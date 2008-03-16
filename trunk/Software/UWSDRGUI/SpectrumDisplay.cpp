@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,9 +24,8 @@ enum {
 	MENU_PANADAPTER1 = 16531,
 	MENU_PANADAPTER2,
 	MENU_WATERFALL,
-	MENU_PRE_FILT,
-	MENU_POST_FILT,
-	MENU_POST_AGC,
+	MENU_PHASE,
+	MENU_AUDIO,
 	MENU_100MS,
 	MENU_200MS,
 	MENU_300MS,
@@ -48,9 +47,8 @@ BEGIN_EVENT_TABLE(CSpectrumDisplay, wxPanel)
 	EVT_MENU(MENU_PANADAPTER1, CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_PANADAPTER2, CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_WATERFALL,   CSpectrumDisplay::onMenu)
-	EVT_MENU(MENU_PRE_FILT,    CSpectrumDisplay::onMenu)
-	EVT_MENU(MENU_POST_FILT,   CSpectrumDisplay::onMenu)
-	EVT_MENU(MENU_POST_AGC,    CSpectrumDisplay::onMenu)
+	EVT_MENU(MENU_PHASE,       CSpectrumDisplay::onMenu)
+	EVT_MENU(MENU_AUDIO,       CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_100MS,       CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_200MS,       CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_300MS,       CSpectrumDisplay::onMenu)
@@ -77,12 +75,10 @@ m_sampleRate(0.0F),
 m_bandwidth(0.0F),
 m_menu(NULL),
 m_speedMenu(NULL),
-m_posMenu(NULL),
 m_typeMenu(NULL),
 m_dbMenu(NULL),
 m_type(SPECTRUM_PANADAPTER1),
 m_speed(SPECTRUM_100MS),
-m_position(SPECTRUM_PRE_FILTER),
 m_db(SPECTRUM_40DB),
 m_factor(1),
 m_ticks(0),
@@ -108,18 +104,14 @@ m_offset(0.0F)
 	m_dbMenu->AppendRadioItem(MENU_50DB, _("50 dB"));
 	m_dbMenu->AppendRadioItem(MENU_60DB, _("60 dB"));
 
-	m_posMenu = new wxMenu();
-	m_posMenu->AppendRadioItem(MENU_PRE_FILT,  _("Pre Filter"));
-	m_posMenu->AppendRadioItem(MENU_POST_FILT, _("Post Filter"));
-	m_posMenu->AppendRadioItem(MENU_POST_AGC,  _("Post AGC"));
-
 	m_typeMenu = new wxMenu();
 	m_typeMenu->AppendRadioItem(MENU_PANADAPTER1, _("Panadapter 1"));
 	m_typeMenu->AppendRadioItem(MENU_PANADAPTER2, _("Panadapter 2"));
 	m_typeMenu->AppendRadioItem(MENU_WATERFALL,   _("Waterfall"));
+	m_typeMenu->AppendRadioItem(MENU_PHASE,       _("IQ Phase"));
+	m_typeMenu->AppendRadioItem(MENU_AUDIO,       _("Audio"));
 
 	m_menu = new wxMenu();
-	m_menu->Append(-1, _("Position"), m_posMenu);
 	m_menu->Append(-1, _("Type"),     m_typeMenu);
 	m_menu->Append(-1, _("Refresh"),  m_speedMenu);
 	m_menu->Append(-1, _("dB Range"), m_dbMenu);
@@ -149,6 +141,12 @@ void CSpectrumDisplay::setBandwidth(float bandwidth)
 		case SPECTRUM_WATERFALL:
 			createWaterfall();
 			break;
+		case SPECTRUM_PHASE:
+			createPhase();
+			break;
+		case SPECTRUM_AUDIO:
+			createScope();
+			break;
 		default:
 			::wxLogError(wxT("Unknown spectrum type = %d"), m_type);
 			break;
@@ -174,6 +172,12 @@ void CSpectrumDisplay::showSpectrum(const float* spectrum, float bottom, float o
 				break;
 			case SPECTRUM_WATERFALL:
 				drawWaterfall(spectrum, bottom);
+				break;
+			case SPECTRUM_PHASE:
+				drawPhase(spectrum);
+				break;
+			case SPECTRUM_AUDIO:
+				drawScope(spectrum);
 				break;
 			default:
 				break;
@@ -321,6 +325,60 @@ void CSpectrumDisplay::createWaterfall()
 	dc.GetTextExtent(text, &width, &height);
 	dc.DrawText(text, right - width, bottom);
 
+	dc.SelectObject(wxNullBitmap);
+}
+
+void CSpectrumDisplay::createPhase()
+{
+	// Flood the graph area with black to start with
+	wxMemoryDC dc;
+	dc.SelectObject(*m_background);
+
+	dc.SetBackground(*wxBLACK_BRUSH);
+	dc.Clear();
+
+	int left   = 0;
+	int right  = m_width;
+	int top    = 2;
+	int bottom = m_height - 3;
+	int mid    = (bottom - top) / 2;
+
+	dc.SetPen(*wxCYAN_PEN);
+	dc.DrawLine(left, mid, right, mid);
+
+	wxMemoryDC dcScreen;
+	dcScreen.SelectObject(*m_bitmap);
+
+	dcScreen.Blit(0, 0, m_width, m_height, &dc, 0, 0);
+
+	dcScreen.SelectObject(wxNullBitmap);
+	dc.SelectObject(wxNullBitmap);
+}
+
+void CSpectrumDisplay::createScope()
+{
+	// Flood the graph area with black to start with
+	wxMemoryDC dc;
+	dc.SelectObject(*m_background);
+
+	dc.SetBackground(*wxBLACK_BRUSH);
+	dc.Clear();
+
+	int left   = 0;
+	int right  = m_width;
+	int top    = 2;
+	int bottom = m_height - 3;
+	int mid    = (bottom - top) / 2;
+
+	dc.SetPen(*wxCYAN_PEN);
+	dc.DrawLine(left, mid, right, mid);
+
+	wxMemoryDC dcScreen;
+	dcScreen.SelectObject(*m_bitmap);
+
+	dcScreen.Blit(0, 0, m_width, m_height, &dc, 0, 0);
+
+	dcScreen.SelectObject(wxNullBitmap);
 	dc.SelectObject(wxNullBitmap);
 }
 
@@ -505,17 +563,129 @@ void CSpectrumDisplay::drawWaterfall(const float* spectrum, float bottom)
 	m_bitmap = new wxBitmap(image);
 }
 
+void CSpectrumDisplay::drawPhase(const float* spectrum)
+{
+	wxMemoryDC dc, dcBack;
+
+	dc.SelectObject(*m_bitmap);
+	dcBack.SelectObject(*m_background);
+
+	dc.Blit(0, 0, m_width, m_height, &dcBack, 0, 0);
+
+	int left   = 0;
+	int right  = m_width;
+	int top    = 2;
+	int bottom = m_height - 3;
+	int mid    = (bottom - top) / 2;
+
+	float max = 0.0F;
+	for (int i = 0; i < (right - left); i++) {
+		float data1 = ::fabs(spectrum[i * 2 + 0]);		// I
+		float data2 = ::fabs(spectrum[i * 2 + 1]);		// Q
+
+		if (data1 > max)
+			max = data1;
+		if (data2 > max)
+			max = data2;
+	}
+
+	float scale = float(mid) / max;
+
+	int lastX1 = 0, lastY1 = 0;
+	int lastX2 = 0, lastY2 = 0;
+	for (int i = 0; i < (right - left); i++) {
+		float data1 = spectrum[i * 2 + 0];		// I
+		float data2 = spectrum[i * 2 + 1];		// Q
+
+		if (data1 >= 1.0F)
+			data1 = 1.0F;
+		else if (data1 <= -1.0F)
+			data1 = -1.0F;
+
+		if (data2 >= 1.0F)
+			data2 = 1.0F;
+		else if (data2 <= -1.0F)
+			data2 = -1.0F;
+
+		int x = i + left;
+
+		int y1 = mid + int(data1 * scale);
+		int y2 = mid + int(data2 * scale);
+
+		if (i > 0) {
+			dc.SetPen(*wxGREEN_PEN);
+			dc.DrawLine(lastX1, lastY1, x, y1);
+
+			dc.SetPen(*wxCYAN_PEN);
+			dc.DrawLine(lastX2, lastY2, x, y2);
+		}
+
+		lastX1 = x;
+		lastY1 = y1;
+
+		lastX2 = x;
+		lastY2 = y2;
+	}
+
+	dcBack.SelectObject(wxNullBitmap);
+	dc.SelectObject(wxNullBitmap);
+}
+
+void CSpectrumDisplay::drawScope(const float* spectrum)
+{
+	wxMemoryDC dc, dcBack;
+
+	dc.SelectObject(*m_bitmap);
+	dcBack.SelectObject(*m_background);
+
+	dc.Blit(0, 0, m_width, m_height, &dcBack, 0, 0);
+
+	dc.SetPen(*wxGREEN_PEN);
+
+	int left   = 0;
+	int right  = m_width;
+	int top    = 2;
+	int bottom = m_height -  3;
+	int mid    = (bottom - top) / 2;
+
+	int lastX = 0, lastY = 0;
+	for (int i = 0; i < (right - left); i++) {
+		float data = spectrum[i];
+
+		if (data >= 1.0F)
+			data = 1.0F;
+		else if (data <= -1.0F)
+			data = -1.0F;
+
+		int x = i + left;
+
+		int y = mid + int(data * float(mid));
+
+		if (i > 0)
+			dc.DrawLine(lastX, lastY, x, y);
+
+		lastX = x;
+		lastY = y;
+	}
+
+	dcBack.SelectObject(wxNullBitmap);
+	dc.SelectObject(wxNullBitmap);
+}
+
 void CSpectrumDisplay::onLeftMouse(wxMouseEvent& event)
 {
-   float x     = float(event.GetX() - 2);
-   float width = float(m_width - 5);
+	if (m_type == SPECTRUM_PHASE || m_type == SPECTRUM_AUDIO)
+		return;
 
-   m_pick = m_bandwidth / 2.0F - m_bandwidth * x / width;
+	float x     = float(event.GetX() - 2);
+	float width = float(m_width - 5);
 
-   if (m_pick < -m_bandwidth / 2.0F)
-      m_pick = 0.0F;
-   else if (m_pick > m_bandwidth / 2.0F)
-      m_pick = 0.0F;
+	m_pick = m_bandwidth / 2.0F - m_bandwidth * x / width;
+
+	if (m_pick < -m_bandwidth / 2.0F)
+		m_pick = 0.0F;
+	else if (m_pick > m_bandwidth / 2.0F)
+		m_pick = 0.0F;
 }
 
 void CSpectrumDisplay::onRightMouse(wxMouseEvent& event)
@@ -530,23 +700,14 @@ void CSpectrumDisplay::onRightMouse(wxMouseEvent& event)
 		case SPECTRUM_WATERFALL:
 			m_typeMenu->Check(MENU_WATERFALL, true);
 			break;
+		case SPECTRUM_PHASE:
+			m_typeMenu->Check(MENU_PHASE, true);
+			break;
+		case SPECTRUM_AUDIO:
+			m_typeMenu->Check(MENU_AUDIO, true);
+			break;
 		default:
 			::wxLogError(wxT("Unknown spectrum type = %d"), m_type);
-			break;
-	}
-
-	switch (m_position) {
-		case SPECTRUM_PRE_FILTER:
-			m_posMenu->Check(MENU_PRE_FILT, true);
-			break;
-		case SPECTRUM_POST_FILTER:
-			m_posMenu->Check(MENU_POST_FILT, true);
-			break;
-		case SPECTRUM_POST_AGC:
-			m_posMenu->Check(MENU_POST_AGC, true);
-			break;
-		default:
-			::wxLogError(wxT("Unknown spectrum position = %d"), m_type);
 			break;
 	}
 
@@ -616,14 +777,11 @@ void CSpectrumDisplay::onMenu(wxCommandEvent& event)
 		case MENU_WATERFALL:
 			setType(SPECTRUM_WATERFALL);
 			break;
-		case MENU_PRE_FILT:
-			setPosition(SPECTRUM_PRE_FILTER);
+		case MENU_PHASE:
+			setType(SPECTRUM_PHASE);
 			break;
-		case MENU_POST_FILT:
-			setPosition(SPECTRUM_POST_FILTER);
-			break;
-		case MENU_POST_AGC:
-			setPosition(SPECTRUM_POST_AGC);
+		case MENU_AUDIO:
+			setType(SPECTRUM_AUDIO);
 			break;
 		case MENU_100MS:
 			setSpeed(SPECTRUM_100MS);
@@ -680,6 +838,12 @@ void CSpectrumDisplay::setType(SPECTRUMTYPE type)
 		case SPECTRUM_WATERFALL:
 			createWaterfall();
 			break;
+		case SPECTRUM_PHASE:
+			createPhase();
+			break;
+		case SPECTRUM_AUDIO:
+			createScope();
+			break;
 	}
 
 	m_type = type;
@@ -719,7 +883,7 @@ void CSpectrumDisplay::setSpeed(SPECTRUMSPEED speed)
 
 void CSpectrumDisplay::setDB(SPECTRUMRANGE db)
 {
-	if (db == m_db)
+	if (db == m_db || m_type == SPECTRUM_PHASE || m_type == SPECTRUM_AUDIO)
 		return;
 
 	switch (db) {
@@ -758,11 +922,6 @@ void CSpectrumDisplay::setDB(SPECTRUMRANGE db)
 	show(clientDC);
 }
 
-void CSpectrumDisplay::setPosition(SPECTRUMPOS position)
-{
-	m_position = position;
-}
-
 SPECTRUMTYPE CSpectrumDisplay::getType() const
 {
 	return m_type;
@@ -771,11 +930,6 @@ SPECTRUMTYPE CSpectrumDisplay::getType() const
 SPECTRUMSPEED CSpectrumDisplay::getSpeed() const
 {
 	return m_speed;
-}
-
-SPECTRUMPOS CSpectrumDisplay::getPosition() const
-{
-	return m_position;
 }
 
 SPECTRUMRANGE CSpectrumDisplay::getDB() const

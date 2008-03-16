@@ -233,25 +233,25 @@ void SetTXALCLimit(float limit)
 
 void Process_Spectrum(float *results)
 {
-	dttsp->setSpectrumType(SPEC_POST_FILT);
+	dttsp->setSpectrumType(SPEC_IQ);
 	dttsp->getSpectrum(results);
 }
 
 void Process_Panadapter(float *results)
 {
-	dttsp->setSpectrumType(SPEC_PRE_FILT);
+	dttsp->setSpectrumType(SPEC_IQ);
 	dttsp->getSpectrum(results);
 }
 
 void Process_Phase(float *results, unsigned int numpoints)
 {
-	dttsp->setSpectrumType(SPEC_POST_AGC);
+	dttsp->setSpectrumType(SPEC_IQ);
 	dttsp->getPhase(results, numpoints);
 }
 
 void Process_Scope(float *results, unsigned int numpoints)
 {
-	dttsp->setSpectrumType(SPEC_POST_AGC);
+	dttsp->setSpectrumType(SPEC_AUDIO);
 	dttsp->getScope(results, numpoints);
 }
 

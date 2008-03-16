@@ -20,10 +20,6 @@ Future
 
 I + Q storage for different frequencies
 
-Frequency database with display on the spectrum.
-
-Shading of the receive bandwidth on the spectrum display
-
 Internationalisation
 
 Learn how to create a binary distribution for Ubuntu.

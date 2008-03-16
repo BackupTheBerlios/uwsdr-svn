@@ -89,47 +89,51 @@ class CTX {
 	void setCompressionFlag(bool flag);
 	void setCompressionLevel(float level);
 
+	void setSpectrumType(TXSPECTRUMtype type);
+
 	float getOffset() const;
 
     private:
-	float         m_sampleRate;
+	float          m_sampleRate;
 
-	CMeter*       m_meter;
-	CSpectrum*    m_spectrum;
+	CMeter*        m_meter;
+	CSpectrum*     m_spectrum;
+	TXSPECTRUMtype m_type;
 
-    CXB*          m_iBuf;
-	CXB*          m_oBuf;
+    CXB*           m_iBuf;
+	CXB*           m_oBuf;
 
-	CCorrectIQ*   m_iq;
+	CCorrectIQ*    m_iq;
 
-	CDCBlock*     m_dcBlock;
-	bool          m_dcBlockFlag;
+	CDCBlock*      m_dcBlock;
+	bool           m_dcBlockFlag;
 
-	COscillator*  m_oscillator1;
-	COscillator*  m_oscillator2;
+	COscillator*   m_oscillator1;
+	COscillator*   m_oscillator2;
 
-	CFilterOVSV*  m_filter;
+	CFilterOVSV*   m_filter;
 
-	IMod*         m_modulator;
-	CAMMod*       m_amModulator;
-	CFMMod*       m_fmModulator;
-	CSSBMod*      m_ssbModulator;
+	IMod*          m_modulator;
+	CAMMod*        m_amModulator;
+	CFMMod*        m_fmModulator;
+	CSSBMod*       m_ssbModulator;
 
-	CAGC*         m_alc;
+	CAGC*          m_alc;
 
-	CSpeechProc*  m_speechProc;
-	bool          m_speechProcFlag;
+	CSpeechProc*   m_speechProc;
+	bool           m_speechProcFlag;
 
-	SDRMODE       m_mode;
-	bool          m_weaver;
+	SDRMODE        m_mode;
+	bool           m_weaver;
 
-	double        m_freq;
-	double        m_lowFreq;
-	double        m_highFreq;
+	double         m_freq;
+	double         m_lowFreq;
+	double         m_highFreq;
 
-	unsigned long m_tick;
+	unsigned long  m_tick;
 
 	void meter(CXB* buf, TXMETERTYPE type);
+	void spectrum(CXB* buf, TXSPECTRUMtype type);
 };
 
 #endif

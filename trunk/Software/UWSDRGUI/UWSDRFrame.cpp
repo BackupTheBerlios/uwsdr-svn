@@ -296,7 +296,6 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_sdr->setClockTune(m_parameters->m_clockTune);
 
 	m_spectrumDisplay->setSampleRate(m_parameters->m_hardwareSampleRate);
-	m_spectrumDisplay->setPosition(m_parameters->m_spectrumPos);
 	m_spectrumDisplay->setType(m_parameters->m_spectrumType);
 	m_spectrumDisplay->setSpeed(m_parameters->m_spectrumSpeed);
 	m_spectrumDisplay->setDB(m_parameters->m_spectrumDB);
@@ -1479,6 +1478,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 				"A Software Define Radio for Microwaves\n\n"
 				"Hardware:\tChris Bartram, GW4DGU\n"
 				"\t\tGrant Hodgson, G8UBN\n"
+				"\t\tDavid Wrigley, G6GXK\n"
 				"\t\tNeil Whiting, G4BRK\n"
 				"Firmware:\tTobias Weber, DG3YEV\n"
 				"Software:\tJonathan Naylor, ON/G4KLX\n"
@@ -1494,10 +1494,10 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 				info.SetDescription(_("A software defined radio for microwaves"));
 
 				info.AddDeveloper(wxT("Jonathan Naylor, ON/G4KLX"));
-				info.AddDeveloper(wxT("Michael White, G3WOE"));
 				info.AddDeveloper(wxT("Chris Bartram, GW4DGU"));
 				info.AddDeveloper(wxT("Grant Hodgson, G8UBN"));
 				info.AddDeveloper(wxT("Tobias Weber, DG3YEV"));
+				info.AddDeveloper(wxT("David Wrigley, G6GXK"));
 				info.AddDeveloper(wxT("Neil Whiting, G4BRK"));
 				info.AddDeveloper(wxT("Bob McGwier, N4HY"));
 				info.AddDeveloper(wxT("Frank Brickle, AB2KT"));
@@ -1516,7 +1516,6 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 
 void CUWSDRFrame::onTimer(wxTimerEvent& WXUNUSED(event))
 {
-	m_parameters->m_spectrumPos   = m_spectrumDisplay->getPosition();
 	m_parameters->m_spectrumType  = m_spectrumDisplay->getType();
 	m_parameters->m_spectrumSpeed = m_spectrumDisplay->getSpeed();
 	m_parameters->m_spectrumDB    = m_spectrumDisplay->getDB();
@@ -1534,7 +1533,17 @@ void CUWSDRFrame::onTimer(wxTimerEvent& WXUNUSED(event))
 			if (m_parameters->m_weaver)
 				offset = m_dsp->getTXOffset();
 
-			m_dsp->getSpectrum(m_spectrum, m_parameters->m_spectrumPos);
+			switch (m_parameters->m_spectrumType) {
+				case SPECTRUM_PHASE:
+					m_dsp->getPhase(m_spectrum);
+					break;
+				case SPECTRUM_AUDIO:
+					m_dsp->getScope(m_spectrum);
+					break;
+				default:
+					m_dsp->getSpectrum(m_spectrum);
+					break;
+			}
 
 			m_spectrumDisplay->showSpectrum(m_spectrum, 0.0F, offset);
 			m_spectrumDisplay->getFreqPick();
@@ -1552,7 +1561,17 @@ void CUWSDRFrame::onTimer(wxTimerEvent& WXUNUSED(event))
 			if (m_parameters->m_weaver)
 				offset = m_dsp->getRXOffset();
 
-			m_dsp->getSpectrum(m_spectrum, m_parameters->m_spectrumPos);
+			switch (m_parameters->m_spectrumType) {
+				case SPECTRUM_PHASE:
+					m_dsp->getPhase(m_spectrum);
+					break;
+				case SPECTRUM_AUDIO:
+					m_dsp->getScope(m_spectrum);
+					break;
+				default:
+					m_dsp->getSpectrum(m_spectrum);
+					break;
+			}
 
 			m_spectrumDisplay->showSpectrum(m_spectrum, -35.0F, offset);
 

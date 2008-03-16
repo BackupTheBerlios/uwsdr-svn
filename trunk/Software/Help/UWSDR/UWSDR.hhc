@@ -40,23 +40,18 @@
               </object>
          <ul>
            <li> <object type="text/sitemap">
-                    <param name="Name" value="Position Menu">
-                    <param name="ID" value=201>
-                    <param name="Local" value="SDPosition.htm">
-                </object>
-           <li> <object type="text/sitemap">
                     <param name="Name" value="Type Menu">
-                    <param name="ID" value=202>
+                    <param name="ID" value=201>
                     <param name="Local" value="SDType.htm">
                 </object>
            <li> <object type="text/sitemap">
                     <param name="Name" value="Refresh Menu">
-                    <param name="ID" value=203>
+                    <param name="ID" value=202>
                     <param name="Local" value="SDRefresh.htm">
                 </object>
            <li> <object type="text/sitemap">
                     <param name="Name" value="dB Range Menu">
-                    <param name="ID" value=204>
+                    <param name="ID" value=203>
                     <param name="Local" value="SDRange.htm">
                 </object>
          </ul>
