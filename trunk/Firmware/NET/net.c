@@ -101,11 +101,7 @@ s32 NET_process()
     return _NET_INVALID_FRAME;
   }
   
-  if(ret == _NET_TX_REPLY) {
-     ARP_createReturnFrame(pTX8, pRX8);
-  }
-  
-  // do we need to send anything?
+  // do we need to send anything ?
   if (ret > 0 && m_TxLen > 0)
     EMACSend(m_TxLen);
   

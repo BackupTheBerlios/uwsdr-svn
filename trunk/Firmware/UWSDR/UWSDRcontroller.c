@@ -15,26 +15,32 @@
 #include "ring.h"
 #include "delay.h"
 #include <stdio.h>
+#include <string.h>
 
 //************************* DEFINES ******************************************
+
+#define 
 
 //************************* MODULE VARIABLES *********************************
 
 int m_datasock;
+int m_ctrlsock;
+
 u16 m_framecounter;
 u32 hostIP;
+u32 m_state
 
 //************************* FUNKTIONS ****************************************
 
 //****************************************************************************
-// USDR_init
+// UWSDR_init
 //
 // Parameters: void
 // Return type: void
 // Inits the UWSDR controller
 //
 //****************************************************************************
-void USDR_init(void)
+void UWSDR_init(void)
 {
   //*** DEFINITON ***
   //*** INITIALIZATION ***
@@ -43,10 +49,19 @@ void USDR_init(void)
 
   hostIP = 0;
   m_framecounter = 0;
+  m_state = 0;
+  m_ctrlsock = UDP_create(0, _UDP_CTRL_PORT, _UDP_MODE_LISTENING, UWSDR_dispatch);
   m_datasock = UDP_create(0, _UDP_DATA_PORT, _UDP_MODE_DUPLEX, UWSDR_dispatch);
 
 }
 
+static s32 USWDR_ackn(u8* pFrame, u8* pCmd)
+{
+  static u8 cmdBuf[6] = {'A', 'K', 'x', 'x', ';', 0};
+  
+  memcpy(cmdBuf + 2, pCmd, 2);
+  return UDP_reply(pFrame, cmdBuf, sizeof(cmdBuf));
+}
 
 
 //****************************************************************************
@@ -57,21 +72,46 @@ void USDR_init(void)
 // Processes incomming UWSDR packets
 //
 //****************************************************************************
-void UWSDR_dispatch(u8* pData, u32 length)
+s32 UWSDR_dispatch(u8* pFrame, u32 length)
 {
   //*** DEFINITON ***
   int ip[4];
+  u16 us;
+  u8* pNext;
+  u8* pData;
   
   //*** INITIALIZATION ***
+  pData = pFrame + _UDP_HDR_PAYLOAD;
+  
   //*** PARAMETER CHECK ***
   //*** PROGRAM CODE ***
   
-  
   switch(pData[0]) {
+    /******* C **********/
+    case 'C': switch(pData[1]) { 
+      /***** CF ******/
+      case 'F':
+        return USWDR_ackn(pFrame, pData);
+        
+    }
     /******* D **********/
     case 'D': switch(pData[1]) {
+      /***** DT ******/
       case 'T': {
+        // get sequence number
+        us = GET_LE16(&pData[2]);
+        if(us < m_framecounter - 4) {
+          m_framecounter = us;
+        }
+        else if(us < 4) {
+          m_framecounter = us;
+        }
+        else break;
         
+        pNext = RING_produce();
+        if(pNext != NULL) {
+          memcpy(pNext, &pData[6], length - 6);
+        }
       }
     }
     break;
@@ -79,17 +119,27 @@ void UWSDR_dispatch(u8* pData, u32 length)
     /******* E **********/
     case 'E': switch(pData[1]) {
       case 'R': 
-        /***** ET ******/
+        /***** ER ******/
         if(pData[2] == '1') {
-          delay_us(200000);
-          m_framecounter = 0;
-          CODEC_startRX();
+          return USWDR_ackn(pFrame, pData);
         }
         if(pData[2] == '0') {
           CODEC_stop();
         }
-      }
       break;
+      case 'T': 
+        /***** ET ******/
+        if(pData[2] == '1') {
+          return USWDR_ackn(pFrame, pData);
+        }
+      break;
+    }
+    /******* F **********/
+    case 'F': switch(pData[1]) {
+      case 'R': 
+        /***** FR ******/
+        return USWDR_ackn(pFrame, pData);
+    }
     /******* S **********/
     case 'S': switch(pData[1]) {
       case 'D':
@@ -109,7 +159,9 @@ void UWSDR_dispatch(u8* pData, u32 length)
         }
     }
   }
+  return _NET_ARP_ERROR;
 }
+
 
 
 //****************************************************************************

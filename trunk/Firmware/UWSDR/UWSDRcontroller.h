@@ -15,17 +15,21 @@
 
 //************************* DEFINES ******************************************
 
+#define _UWSDR_AKET "AKET;"
+#define _UWSDR_AKER "AKER;"
+#define _UWSDR_AKCF "AKCF;"
+
 //****************************************************************************
-// USDR_init
+// UWSDR_init
 // Inits the UWSDR controller
 //****************************************************************************
-void USDR_init(void);
+void UWSDR_init(void);
 
 //****************************************************************************
 // UWSDR_dispatch
 // Processes incomming UWSDR packets
 //****************************************************************************
-void UWSDR_dispatch(u8* pData, u32 length);
+s32 UWSDR_dispatch(u8* pData, u32 length);
 
 //****************************************************************************
 // UWSDR_upload
