@@ -1,6 +1,6 @@
 all:		UWSDR
 
-CFLAGS		:= -I../Common $(CFLAGS)
+CFLAGS		:= -I../Common -I ../DttSP++ $(CFLAGS)
 
 LIBS		:= $(PALIBS) $(JACKLIBS) -lfftw3f -lusb $(LIBS)
 
@@ -25,7 +25,7 @@ DSPControl.o:	DSPControl.cpp DSPControl.h CWKeyer.h ../Common/DataCallback.h ../
 		../Common/SoundFileWriter.h UWSDRApp.h UWSDRDefs.h VoiceKeyer.h
 		$(CC) $(CFLAGS) -c DSPControl.cpp
 
-DTTSPControl.o:	DTTSPControl.cpp DTTSPControl.h DTTSPExports.h UWSDRDefs.h ../Common/Common.h
+DTTSPControl.o:	DTTSPControl.cpp DTTSPControl.h UWSDRDefs.h ../Common/Common.h ../DttSP++/DttSP.h
 		$(CC) $(CFLAGS) -c DTTSPControl.cpp
 
 FreqDial.o:	FreqDial.cpp FreqDial.h DialInterface.h UWSDRDefs.h

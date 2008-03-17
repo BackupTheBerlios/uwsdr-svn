@@ -407,7 +407,7 @@ The choice between Hilbert and Weaver methods are now explicit in the Preference
 
 Added (untested) support for HPSDR.
 
-On Windows and Mac OS X, the list of serial ports is got from the OS. Linux is a fixed list.
+On Windows and Mac OS X, the list of serial ports is taken from the OS. Linux is a fixed list.
 
 No longer set the DSP IP address is SDRSetup, this is done dynamically when the GUI first talks to the back-end.
 

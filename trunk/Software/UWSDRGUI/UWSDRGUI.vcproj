@@ -48,7 +48,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				InlineFunctionExpansion="0"
-				AdditionalIncludeDirectories="..\USB;&quot;C:\wxWidgets-2.8.7\lib\vc_dll\mswd&quot;;&quot;C:\wxWidgets-2.8.7\include&quot;;..\Common;..\PA19"
+				AdditionalIncludeDirectories="..\USB;&quot;C:\wxWidgets-2.8.7\lib\vc_dll\mswd&quot;;&quot;C:\wxWidgets-2.8.7\include&quot;;..\FFTW;..\Common;&quot;..\DttSP++&quot;;..\PA19"
 				PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;WXUSINGDLL;_WINDOWS;NOPCH;USE_PORTAUDIO"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -147,7 +147,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="0"
-				AdditionalIncludeDirectories="..\USB;&quot;C:\wxWidgets-2.8.7\lib\vc_dll\msw&quot;;&quot;C:\wxWidgets-2.8.7\include&quot;;..\Common;..\PA19"
+				AdditionalIncludeDirectories="..\USB;&quot;C:\wxWidgets-2.8.7\lib\vc_dll\msw&quot;;&quot;C:\wxWidgets-2.8.7\include&quot;;..\Common;..\FFTW;&quot;..\DttSP++&quot;;..\PA19"
 				PreprocessorDefinitions="WIN32;__WXMSW__;WXUSINGDLL;_WINDOWS;NOPCH;USE_PORTAUDIO"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -622,10 +622,6 @@
 			</File>
 			<File
 				RelativePath="DTTSPControl.h"
-				>
-			</File>
-			<File
-				RelativePath="DTTSPExports.h"
 				>
 			</File>
 			<File

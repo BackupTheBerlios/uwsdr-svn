@@ -511,7 +511,7 @@ float CDttSP::getRXOffset() const
 	return m_rx->getOffset();
 }
 
-void CDttSP::audioEntry(float* input_i, float* input_q, float* output_i, float* output_q, unsigned int nframes)
+void CDttSP::audioEntry(const float* input_i, const float* input_q, float* output_i, float* output_q, unsigned int nframes)
 {
 	ASSERT(input_i != NULL);
 	ASSERT(input_q != NULL);
@@ -569,7 +569,7 @@ void CDttSP::audioEntry(float* input_i, float* input_q, float* output_i, float* 
 		SEM_POST(m_buffer);
 }
 
-void CDttSP::audioEntry(float* input, float* output, unsigned int nframes)
+void CDttSP::audioEntry(const float* input, float* output, unsigned int nframes)
 {
 	ASSERT(input != NULL);
 	ASSERT(output != NULL);

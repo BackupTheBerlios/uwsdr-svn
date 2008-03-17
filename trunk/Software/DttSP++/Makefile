@@ -4,7 +4,7 @@ CFLAGS :=	-I../Common $(CFLAGS)
 
 OBJS :=		AGC.o AMDemod.o AMMod.o BlockLMS.o CorrectIQ.o CXB.o DCBlock.o DttSP.o FIR.o FMDemod.o \
 		FMMod.o FilterOVSV.o LMS.o Meter.o NoiseBlanker.o Oscillator.o RX.o Spectrum.o \
-		SpeechProc.o Squelch.o TX.o Window.o SSBDemod.o SSBMod.o Utils.o update.o
+		SpeechProc.o Squelch.o TX.o Window.o SSBDemod.o SSBMod.o Utils.o
 
 DttSP.a:	$(OBJS)
 		ar rcs DttSP.a $(OBJS)
@@ -79,9 +79,6 @@ SSBMod.o:	SSBMod.cpp SSBMod.h Complex.h CXB.h FromSys.h Mod.h
 TX.o:		TX.cpp TX.h AGC.h AMMod.h CorrectIQ.h CXB.h DCBlock.h Defs.h FilterOVSV.h FMMod.h \
 		Meter.h Mod.h Oscillator.h Spectrum.h SpeechProc.h Squelch.h SSBMod.h
 		$(CC) $(CFLAGS) -c TX.cpp
-
-update.o:	update.cpp DttSP.h
-		$(CC) $(CFLAGS) -c update.cpp
 
 Utils.o:	Utils.cpp Utils.h CXB.h FromSys.h
 		$(CC) $(CFLAGS) -c Utils.cpp

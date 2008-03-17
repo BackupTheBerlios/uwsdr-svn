@@ -18,10 +18,10 @@
 
 #include "DTTSPControl.h"
 
-#include "DTTSPExports.h"
 
 CDTTSPControl::CDTTSPControl() :
 wxThread(),
+m_dttsp(NULL),
 m_sampleRate(0.0F),
 m_blockSize(0),
 m_filter(FILTER_2100),
@@ -60,15 +60,11 @@ void CDTTSPControl::open(float sampleRate, unsigned int blockSize)
 	m_sampleRate = sampleRate;
 	m_blockSize  = blockSize;
 
-	::Setup_SDR(sampleRate, blockSize);
-
-	::Release_Update();
-
-	::SetDCBlock(true);
-
-	::SetSquelchState(true);
-
-	::SetWindow(HANN_WINDOW);
+	m_dttsp = new CDttSP(sampleRate, blockSize);
+	m_dttsp->releaseUpdate();
+	m_dttsp->setDCBlockFlag(true);
+	m_dttsp->setRXSquelchFlag(true);
+	m_dttsp->setSpectrumWindowType(HANN_WINDOW);
 
 	Create();
 
@@ -81,7 +77,7 @@ void* CDTTSPControl::Entry()
 {
 	m_started = true;
 
-	::process_samples_thread();
+	m_dttsp->process();
 
 	m_started = false;
 
@@ -103,33 +99,33 @@ void CDTTSPControl::setMode(UWSDRMODE mode)
 
 	switch (mode) {
 		case MODE_AM:
-			::SetMode(AM);
+			m_dttsp->setMode(AM);
 			break;
 		case MODE_CWLW:
 		case MODE_CWLN:
-			::SetMode(CWL);
+			m_dttsp->setMode(CWL);
 			break;
 		case MODE_CWUW:
 		case MODE_CWUN:
-			::SetMode(CWU);
+			m_dttsp->setMode(CWU);
 			break;
 		case MODE_DIGL:
-			::SetMode(DIGL);
+			m_dttsp->setMode(DIGL);
 			break;
 		case MODE_DIGU:
-			::SetMode(DIGU);
+			m_dttsp->setMode(DIGU);
 			break;
 		case MODE_FMN:
-			::SetMode(FMN);
+			m_dttsp->setMode(FMN);
 			break;
 		case MODE_FMW:
-			::SetMode(FMN);
+			m_dttsp->setMode(FMN);
 			break;
 		case MODE_LSB:
-			::SetMode(LSB);
+			m_dttsp->setMode(LSB);
 			break;
 		case MODE_USB:
-			::SetMode(USB);
+			m_dttsp->setMode(USB);
 			break;
 	}
 
@@ -143,7 +139,7 @@ void CDTTSPControl::setWeaver(bool onOff)
 	if (onOff == m_weaver)
 		return;
 
-	::SetWeaver(onOff);
+	m_dttsp->setWeaver(onOff);
 
 	m_weaver = onOff;
 }
@@ -152,19 +148,19 @@ void CDTTSPControl::setTXAndFreq(bool transmit, float freq)
 {
 	if (transmit) {
 		if (freq != m_txFreq)
-			::SetTXOsc(freq);
+			m_dttsp->setTXFrequency(freq);
 
 		if (transmit != m_transmit)
-			::SetTRX(TX);
+			m_dttsp->setTRX(TX);
 
 		m_txFreq   = freq;
 		m_transmit = true;
 	} else {
 		if (freq != m_rxFreq)
-			::SetOsc(freq);
+			m_dttsp->setRXFrequency(freq);
 
 		if (transmit != m_transmit)
-			::SetTRX(RX);
+			m_dttsp->setTRX(RX);
 
 		m_rxFreq   = freq;
 		m_transmit = false;
@@ -178,16 +174,16 @@ void CDTTSPControl::setAGC(AGCSPEED agc)
 
 	switch (agc) {
 		case AGC_FAST:
-			::SetRXAGC(agcFAST);
+			m_dttsp->setAGCMode(agcFAST);
 			break;
 		case AGC_MEDIUM:
-			::SetRXAGC(agcMED);
+			m_dttsp->setAGCMode(agcMED);
 			break;
 		case AGC_SLOW:
-			::SetRXAGC(agcSLOW);
+			m_dttsp->setAGCMode(agcSLOW);
 			break;
 		case AGC_NONE:
-			::SetRXAGC(agcOFF);
+			m_dttsp->setAGCMode(agcOFF);
 			break;
 	}
 
@@ -201,19 +197,19 @@ void CDTTSPControl::setDeviation(FMDEVIATION dev)
 
 	switch (dev) {
 		case DEVIATION_6000:
-			::SetDeviation(6000.0F);
+			m_dttsp->setDeviation(6000.0F);
 			break;
 		case DEVIATION_5000:
-			::SetDeviation(5000.0F);
+			m_dttsp->setDeviation(5000.0F);
 			break;
 		case DEVIATION_3000:
-			::SetDeviation(3000.0F);
+			m_dttsp->setDeviation(3000.0F);
 			break;
 		case DEVIATION_2500:
-			::SetDeviation(2500.0F);
+			m_dttsp->setDeviation(2500.0F);
 			break;
 		case DEVIATION_2000:
-			::SetDeviation(2000.0F);
+			m_dttsp->setDeviation(2000.0F);
 			break;
 	}
 
@@ -225,7 +221,7 @@ void CDTTSPControl::setNB(bool onOff)
 	if (onOff == m_nb)
 		return;
 
-	::SetNB(onOff);
+	m_dttsp->setNBFlag(onOff);
 
 	m_nb = onOff;
 }
@@ -235,7 +231,7 @@ void CDTTSPControl::setNBValue(unsigned int value)
 	if (value == m_nbValue)
 		return;
 
-	::SetNBvals(float(value));
+	m_dttsp->setNBThreshold(float(value));
 
 	m_nbValue = value;
 }
@@ -245,7 +241,7 @@ void CDTTSPControl::setNB2(bool onOff)
 	if (onOff == m_nb2)
 		return;
 
-	::SetSDROM(onOff);
+	m_dttsp->setNBSDROMFlag(onOff);
 
 	m_nb2 = onOff;
 }
@@ -255,7 +251,7 @@ void CDTTSPControl::setNB2Value(unsigned int value)
 	if (value == m_nb2Value)
 		return;
 
-	::SetSDROMvals(float(value));
+	m_dttsp->setNBSDROMThreshold(float(value));
 
 	m_nb2Value = value;
 }
@@ -265,7 +261,7 @@ void CDTTSPControl::setSP(bool onOff)
 	if (onOff == m_sp)
 		return;
 
-	::SetTXCompressionSt(onOff);
+	m_dttsp->setCompressionFlag(onOff);
 
 	m_sp = onOff;
 }
@@ -275,7 +271,7 @@ void CDTTSPControl::setSPValue(unsigned int value)
 	if (value == m_spValue)
 		return;
 
-	::SetTXCompressionLevel(float(value));
+	m_dttsp->setCompressionLevel(float(value));
 
 	m_spValue = value;
 }
@@ -285,7 +281,7 @@ void CDTTSPControl::setCarrierLevel(unsigned int value)
 	if (value == m_carrierLevel)
 		return;
 
-	::SetTXCarrierLevel(float(value) / 100.0F);
+	m_dttsp->setCarrierLevel(float(value) / 100.0F);
 
 	m_carrierLevel = value;
 }
@@ -295,9 +291,9 @@ void CDTTSPControl::setALCValue(unsigned int attack, unsigned int decay, unsigne
 	if (attack == m_attack && decay == m_decay && hang == m_hang)
 		return;
 
-	::SetTXALCAttack(float(attack));
-	::SetTXALCDecay(float(decay));
-	::SetTXALCHang(float(hang));
+	m_dttsp->setALCAttack(float(attack));
+	m_dttsp->setALCDecay(float(decay));
+	m_dttsp->setALCHangTime(float(hang));
 
 	m_attack = attack;
 	m_decay  = decay;
@@ -309,7 +305,7 @@ void CDTTSPControl::setRXIAndQ(int phase, int gain)
 	if (phase == m_rxPhase && gain == m_rxGain)
 		return;
 
-	::SetCorrectIQ(phase, gain);
+	m_dttsp->setRXCorrectIQ(phase, gain);
 
 	m_rxPhase = phase;
 	m_rxGain  = gain;
@@ -320,7 +316,7 @@ void CDTTSPControl::setTXIAndQ(int phase, int gain)
 	if (phase == m_txPhase && gain == m_txGain)
 		return;
 
-	::SetCorrectTXIQ(phase, gain);
+	m_dttsp->setTXCorrectIQ(phase, gain);
 
 	m_txPhase = phase;
 	m_txGain  = gain;
@@ -334,19 +330,19 @@ void CDTTSPControl::setSquelch(unsigned int value)
 	// Map 0 - 1000 to -200.0 - 0.0
 	float sql = float(value) / 5.0F - 200.0F;
 
-	::SetSquelchVal(sql);
+	m_dttsp->setRXSquelchThreshold(sql);
 
 	m_squelch = value;
 }
 
 float CDTTSPControl::getTXOffset()
 {
-	return ::GetTXOffset();
+	return m_dttsp->getTXOffset();
 }
 
 float CDTTSPControl::getRXOffset()
 {
-	return ::GetRXOffset();
+	return m_dttsp->getRXOffset();
 }
 
 float CDTTSPControl::getMeter(METERPOS type)
@@ -358,44 +354,44 @@ float CDTTSPControl::getMeter(METERPOS type)
 
 	switch (type) {
 		case METER_I_INPUT:
-			val = ::Calculate_Meters(ADC_REAL);
+			val = m_dttsp->getMeter(ADC_REAL);
 			if (val != -200.0F)
 				val += 55.0F;
 			break;
 		case METER_Q_INPUT:
-			val = ::Calculate_Meters(ADC_IMAG);
+			val = m_dttsp->getMeter(ADC_IMAG);
 			if (val != -200.0F)
 				val += 55.0F;
 			break;
 		case METER_SIGNAL:
-			val = ::Calculate_Meters(SIGNAL_STRENGTH);
+			val = m_dttsp->getMeter(SIGNAL_STRENGTH);
 			if (val != -200.0F)
 				val += 45.0F;
 			break;
 		case METER_AVG_SIGNAL:
-			val = ::Calculate_Meters(AVG_SIGNAL_STRENGTH);
+			val = m_dttsp->getMeter(AVG_SIGNAL_STRENGTH);
 			if (val != -200.0F)
 				val += 45.0F;
 			break;
 		case METER_AGC:
-			val = ::Calculate_Meters(AGC_GAIN);
+			val = m_dttsp->getMeter(AGC_GAIN);
 			if (val != -200.0F)
 				val -= 62.0F;
 			break;
 		case METER_MICROPHONE:
-			val = ::Calculate_Meters(MIC);
+			val = m_dttsp->getMeter(MIC);
 			if (val != -200.0F) {
 				val += 160.0F;
 				val /= 2.0F;
 			}
 			break;
 		case METER_POWER:
-			val = ::Calculate_Meters(PWR);
+			val = m_dttsp->getMeter(PWR);
 			if (val != -200.0F)
 				val *= 200.0F;
 			break;
 		case METER_ALC:
-			val = ::Calculate_Meters(ALC);
+			val = m_dttsp->getMeter(ALC);
 			if (val != -200.0F) {
 				val += 160.0F;
 				val /= 2.0F;
@@ -413,10 +409,8 @@ void CDTTSPControl::getSpectrum(float* spectrum)
 	if (!m_started)
 		return;
 
-	if (!m_transmit)
-		::Process_Panadapter(spectrum);
-	else
-		::Process_Spectrum(spectrum);
+	m_dttsp->setSpectrumType(SPEC_IQ);
+	m_dttsp->getSpectrum(spectrum);
 }
 
 void CDTTSPControl::getScope(float* spectrum)
@@ -426,7 +420,8 @@ void CDTTSPControl::getScope(float* spectrum)
 	if (!m_started)
 		return;
 
-	::Process_Scope(spectrum, SPECTRUM_SIZE);
+	m_dttsp->setSpectrumType(SPEC_AUDIO);
+	m_dttsp->getScope(spectrum, SPECTRUM_SIZE);
 }
 
 void CDTTSPControl::getPhase(float* spectrum)
@@ -436,18 +431,19 @@ void CDTTSPControl::getPhase(float* spectrum)
 	if (!m_started)
 		return;
 
-	::Process_Phase(spectrum, SPECTRUM_SIZE);
+	m_dttsp->setSpectrumType(SPEC_IQ);
+	m_dttsp->getPhase(spectrum, SPECTRUM_SIZE);
 }
 
 void CDTTSPControl::dataIO(const float* input, float* output, unsigned int nSamples)
 {
 	if (m_started)
-		::Audio_CallbackIL((float*)input, output, nSamples);
+		m_dttsp->audioEntry(input, output, nSamples);
 }
 
 void CDTTSPControl::close()
 {
-	::Destroy_SDR();
+	delete m_dttsp;
 }
 
 void CDTTSPControl::normaliseFilter()
@@ -624,6 +620,6 @@ void CDTTSPControl::normaliseFilter()
 		txHigh = -swap;
 	}
 
-	::SetFilter(rxLow, rxHigh, m_blockSize, RX);
-	::SetFilter(txLow, txHigh, m_blockSize, TX);
+	m_dttsp->setRXFilter(rxLow, rxHigh);
+	m_dttsp->setTXFilter(txLow, txHigh);
 }

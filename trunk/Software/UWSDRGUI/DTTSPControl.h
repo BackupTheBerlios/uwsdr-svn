@@ -22,6 +22,7 @@
 #include <wx/wx.h>
 
 #include "UWSDRDefs.h"
+#include "DttSP.h"
 
 
 class CDTTSPControl : public wxThread {
@@ -70,6 +71,7 @@ class CDTTSPControl : public wxThread {
 	virtual void close();
 
     private:
+	CDttSP*      m_dttsp;
 	float        m_sampleRate;
 	unsigned int m_blockSize;
 	FILTERWIDTH  m_filter;

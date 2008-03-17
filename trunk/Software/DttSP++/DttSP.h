@@ -56,7 +56,7 @@ class CDttSP {
 	~CDttSP();
 
 	void  releaseUpdate();
-	void  ringBufferReset();
+	void  ringBufferReset();															// Unused by the GUI
 
 	void  setMode(SDRMODE m);
 	void  setWeaver(bool flag);
@@ -65,49 +65,48 @@ class CDttSP {
 	void  setTXFilter(double lowFreq, double highFreq);
 	void  setRXFrequency(double freq);
 	void  setTXFrequency(double freq);
-	void  setANRFlag(bool flag);
-	void  setBANRFlag(bool flag);
-	void  setANRValues(unsigned int taps, unsigned int delay, float gain, float leak);
+	void  setANRFlag(bool flag);														// Unused by the GUI
+	void  setBANRFlag(bool flag);														// Unused by the GUI
+	void  setANRValues(unsigned int taps, unsigned int delay, float gain, float leak);	// Unused by the GUI
 	void  setRXSquelchFlag(bool flag);
 	void  setRXSquelchThreshold(float threshold);
-	void  setANFFlag(bool flag);
-	void  setBANFFlag(bool flag);
-	void  setANFValues(unsigned int taps, unsigned int delay, float gain, float leak);
+	void  setANFFlag(bool flag);														// Unused by the GUI
+	void  setBANFFlag(bool flag);														// Unused by the GUI
+	void  setANFValues(unsigned int taps, unsigned int delay, float gain, float leak);	// Unused by the GUI
 	void  setNBFlag(bool flag);
 	void  setNBThreshold(float threshold);
 	void  setNBSDROMFlag(bool flag);
 	void  setNBSDROMThreshold(float threshold);
-	void  setBinauralFlag(bool flag);
+	void  setBinauralFlag(bool flag);													// Unused by the GUI
 	void  setAGCMode(AGCMODE mode);
 	void  setALCAttack(float attack);
 	void  setCarrierLevel(float level);
 	void  setALCDecay(float decay);
-	void  setALCGainBottom(float gain);
+	void  setALCGainBottom(float gain);													// Unused by the GUI
 	void  setALCHangTime(float hang);
 	void  setRXCorrectIQ(float phase, float gain);
 	void  setTXCorrectIQ(float phase, float gain);
-	void  setSpectrumType(SPECTRUMtype type);
+	void  setSpectrumType(SPECTRUMtype type);											// Unused by the GUI
 	void  setSpectrumWindowType(Windowtype window);
-	void  setSpectrumPolyphaseFlag(bool flag);
+	void  setSpectrumPolyphaseFlag(bool flag);											// Unused by the GUI
 	void  setCompressionFlag(bool flag);
 	void  setCompressionLevel(float level);
 	void  setTRX(TRXMODE trx);
-	void  setALCGainTop(float gain);
+	void  setALCGainTop(float gain);													// Unused by the GUI
 	void  getSpectrum(float *results);
 	void  getPhase(float* results, unsigned int numpoints);
 	void  getScope(float* results, unsigned int numpoints);
 	float getMeter(METERTYPE mt);
 	void  setDeviation(float value);
-	void  setRXPan(float pos);
+	void  setRXPan(float pos);															// Unused by the GUI
 
 	float getTXOffset() const;
 	float getRXOffset() const;
 
-	void  audioEntry(float* input_i, float* input_q, float* output_i, float* output_q, unsigned int nframes);
-	void  audioEntry(float* input, float* output, unsigned int nframes);
+	void  audioEntry(const float* input_i, const float* input_q, float* output_i, float* output_q, unsigned int nframes);	// Unused by the GUI
+	void  audioEntry(const float* input, float* output, unsigned int nframes);
 
 	void  process();
-
 
     protected:
 	void runMute();
@@ -117,7 +116,6 @@ class CDttSP {
 	void processSamples(float* bufi, float* bufq, unsigned int n);
 	void getHold();
 	bool canHold();
-
 
     private:
 	float        m_sampleRate;
