@@ -43,6 +43,7 @@ m_sampleWidth(sampleWidth),
 m_blockSize(0U),
 m_buffer8(NULL),
 m_buffer16(NULL),
+m_buffer32(NULL),
 m_enabled(false),
 m_handle(NULL),
 m_parent(),
@@ -181,8 +182,8 @@ void CSoundFileWriter::write(const float* buffer, unsigned int length)
 				case 2U:
 					// Swap I and Q
 					for (i = 0U; i < length; i++) {
-						m_buffer32[i * 2U + 0U] = wxFloat32(m_buffer16[i * 2U + 1U]);
-						m_buffer32[i * 2U + 1U] = wxFloat32(m_buffer16[i * 2U + 0U]);
+						m_buffer32[i * 2U + 0U] = wxFloat32(buffer[i * 2U + 1U]);
+						m_buffer32[i * 2U + 1U] = wxFloat32(buffer[i * 2U + 0U]);
 					}
 					break;
 			}

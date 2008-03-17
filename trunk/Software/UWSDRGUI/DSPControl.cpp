@@ -306,8 +306,10 @@ void CDSPControl::closeIO()
 	m_cwKeyer->close();
 	m_voiceKeyer->close();
 
-	if (m_record != NULL)
+	if (m_record != NULL) {
+		m_record->disable();
 		m_record->close();
+	}
 }
 
 void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
@@ -655,11 +657,15 @@ bool CDSPControl::setRecord(bool record, bool raw)
 			return false;
 		}
 
+		sdfw->enable();
+
 		m_recordRaw = raw;
 		m_record    = sdfw;
 
 		::wxLogMessage(wxT("Opened file %s for recording"), fileName.c_str());
 	} else if (!record && m_record != NULL) {
+		m_record->disable();
+
 		CSoundFileWriter* sdfw = m_record;
 		m_record = NULL;
 
