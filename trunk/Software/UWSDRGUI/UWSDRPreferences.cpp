@@ -1015,28 +1015,28 @@ wxPanel* CUWSDRPreferences::createIQTab(wxNotebook* noteBook)
 	sizer->Add(label1, 0, wxALL, BORDER_SIZE);
 
 	m_rxIQPhase = new wxSpinCtrl(panel, RXIQ_PHASE, wxEmptyString, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
-	m_rxIQPhase->SetRange(-400, 400);
+	m_rxIQPhase->SetRange(-100, 100);
 	sizer->Add(m_rxIQPhase, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label3 = new wxStaticText(panel, -1, _("Transmit phase"));
 	sizer->Add(label3, 0, wxALL, BORDER_SIZE);
 
 	m_txIQPhase = new wxSpinCtrl(panel, TXIQ_PHASE, wxEmptyString, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
-	m_txIQPhase->SetRange(-400, 400);
+	m_txIQPhase->SetRange(-100, 100);
 	sizer->Add(m_txIQPhase, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label2 = new wxStaticText(panel, -1, _("Receive gain"));
 	sizer->Add(label2, 0, wxALL, BORDER_SIZE);
 
 	m_rxIQGain = new wxSpinCtrl(panel, RXIQ_GAIN, wxEmptyString, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
-	m_rxIQGain->SetRange(-500, 500);
+	m_rxIQGain->SetRange(-100, 100);
 	sizer->Add(m_rxIQGain, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label4 = new wxStaticText(panel, -1, _("Transmit gain"));
 	sizer->Add(label4, 0, wxALL, BORDER_SIZE);
 
 	m_txIQGain = new wxSpinCtrl(panel, TXIQ_GAIN, wxEmptyString, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
-	m_txIQGain->SetRange(-500, 500);
+	m_txIQGain->SetRange(-100, 100);
 	sizer->Add(m_txIQGain, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label5 = new wxStaticText(panel, -1, _("Method"));

@@ -287,12 +287,12 @@ void CDttSP::setALCHangTime(float hang)
 
 void CDttSP::setRXCorrectIQ(float phase, float gain)
 {
-	m_rx->setIQ(0.001F * phase, 1.0F + 0.001F * gain);
+	m_rx->setIQ(0.01F * phase, 1.0F + 0.01F * gain);
 }
 
 void CDttSP::setTXCorrectIQ(float phase, float gain)
 {
-	m_tx->setIQ(0.001F * phase, 1.0F + 0.001F * gain);
+	m_tx->setIQ(0.01F * phase, 1.0F + 0.01F * gain);
 }
 
 void CDttSP::setSpectrumType(SPECTRUMtype type)
