@@ -373,7 +373,8 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			}
 
 			m_dsp->setTXWriter(new CNullWriter());
-			m_dsp->setRXReader(new CSignalReader(1000.5F, 0.0003F, 0.0004F));
+			// m_dsp->setRXReader(new CSignalReader(1000.5F, 0.0F, 0.7F, 1.6F, 0.0F));
+			m_dsp->setRXReader(new CSignalReader(1000.5F, 0.0003F, 0.0004F, 0.0F, 0.0F));
 
 			if (m_parameters->m_txInEnable) {
 				CSerialInterface* control = new CSerialInterface(m_parameters->m_txInDev, m_parameters->m_txInPin);

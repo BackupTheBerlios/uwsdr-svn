@@ -163,8 +163,8 @@ bool CDataControl::openIO()
 	m_soundCardReader = scrw;
 	m_soundCardWriter = scrw;
 
-	m_internal1Reader = new CSignalReader(1000.0F, 0.0003F, 0.0004F);
-	m_internal2Reader = new CSignalReader(1000.0F, 0.0F, 0.001F);
+	m_internal1Reader = new CSignalReader(1000.0F, 0.0003F, 0.0004F, 0.0F, 0.0F);
+	m_internal2Reader = new CSignalReader(1000.0F, 0.0F, 0.001F, 0.0F, 0.0F);
 	m_rxWriter        = new CUDPDataWriter(m_address, m_port);
 
 	m_nullWriter      = new CNullWriter();

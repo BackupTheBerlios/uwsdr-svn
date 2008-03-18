@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,11 +22,13 @@
 #include <wx/log.h>
 
 
-CSignalReader::CSignalReader(float frequency, float noiseAmplitude, float signalAmplitude, IDataReader* reader) :
+CSignalReader::CSignalReader(float frequency, float noiseAmplitude, float signalAmplitude, float balanceErr, float amplitudeErr, IDataReader* reader) :
 CThreadReader(reader),
 m_frequency(frequency),
 m_noiseAmplitude(noiseAmplitude),
 m_signalAmplitude(signalAmplitude),
+m_balanceErr(balanceErr),
+m_amplitudeErr(amplitudeErr),
 m_blockSize(0),
 m_callback(NULL),
 m_id(0),
@@ -68,8 +70,9 @@ bool CSignalReader::open(float sampleRate, unsigned int blockSize)
 	m_buffer = new float[m_blockSize * 2];
 	m_awgn   = new float[m_noiseSize];
 
+	// Skew the balance if needed
 	m_cosVal = 1.0F;
-	m_sinVal = 0.0F;
+	m_sinVal = ::sin(m_balanceErr * M_PI / 180.0F);
 
 	float delta = m_frequency / sampleRate * 2.0 * M_PI;
 	m_cosDelta = ::cos(delta);
@@ -107,7 +110,7 @@ bool CSignalReader::create()
 		m_cosVal = tmpVal;
 
 		m_buffer[i * 2 + 0] = m_awgn[m_awgnN++] + m_cosVal * m_signalAmplitude;
-		m_buffer[i * 2 + 1] = m_awgn[m_awgnN++] + m_sinVal * m_signalAmplitude;
+		m_buffer[i * 2 + 1] = m_awgn[m_awgnN++] + m_sinVal * m_signalAmplitude * (1.0F + m_amplitudeErr);
 
 		if (m_awgnN >= m_noiseSize)
 			m_awgnN = 0;
