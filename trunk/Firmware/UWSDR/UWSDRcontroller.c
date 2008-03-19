@@ -19,16 +19,17 @@
 
 //************************* DEFINES ******************************************
 
-#define 
+#define _UWSDR_RX_OK      0
+#define _UWSDR_RX_ON      1
 
 //************************* MODULE VARIABLES *********************************
 
 int m_datasock;
-int m_ctrlsock;
+//int m_ctrlsock;
 
 u16 m_framecounter;
 u32 hostIP;
-u32 m_state
+u32 m_state;
 
 //************************* FUNKTIONS ****************************************
 
@@ -50,8 +51,8 @@ void UWSDR_init(void)
   hostIP = 0;
   m_framecounter = 0;
   m_state = 0;
-  m_ctrlsock = UDP_create(0, _UDP_CTRL_PORT, _UDP_MODE_LISTENING, UWSDR_dispatch);
-  m_datasock = UDP_create(0, _UDP_DATA_PORT, _UDP_MODE_DUPLEX, UWSDR_dispatch);
+  //m_ctrlsock = UDP_create(0, _UDP_CTRL_PORT, _UDP_MODE_LISTENING, UWSDR_dispatch);
+  m_datasock = UDP_create(0, _UDP_CTRL_PORT, _UDP_MODE_DUPLEX, UWSDR_dispatch);
 
 }
 
@@ -121,10 +122,15 @@ s32 UWSDR_dispatch(u8* pFrame, u32 length)
       case 'R': 
         /***** ER ******/
         if(pData[2] == '1') {
+          hostIP = GET_LE32(pFrame - _IP_HDR_SIZE + _IP_HDR_SRC_IP);
+          SET_FLAG(m_state, _UWSDR_RX_OK);
+          m_framecounter = 0;
+          CODEC_startRX();
           return USWDR_ackn(pFrame, pData);
         }
         if(pData[2] == '0') {
           CODEC_stop();
+          return USWDR_ackn(pFrame, pData);
         }
       break;
       case 'T': 
@@ -138,13 +144,16 @@ s32 UWSDR_dispatch(u8* pFrame, u32 length)
     case 'F': switch(pData[1]) {
       case 'R': 
         /***** FR ******/
+        if(TEST_FLAG(m_state, _UWSDR_RX_OK) && !TEST_FLAG(m_state, _UWSDR_RX_ON)) {
+          SET_FLAG(m_state, _UWSDR_RX_ON);
+        }
         return USWDR_ackn(pFrame, pData);
     }
     /******* S **********/
     case 'S': switch(pData[1]) {
       case 'D':
-        sscanf((const char*)&pData[2], "%d.%d.%d.%d", &ip[0], &ip[1], &ip[2], &ip[3]);
-        hostIP = (ip[3]<<24) + (ip[2]<<16) + (ip[1]<<8) + ip[0];
+//        sscanf((const char*)&pData[2], "%d.%d.%d.%d", &ip[0], &ip[1], &ip[2], &ip[3]);
+//        hostIP = (ip[3]<<24) + (ip[2]<<16) + (ip[1]<<8) + ip[0];
         break;
       }
       break;
@@ -153,9 +162,11 @@ s32 UWSDR_dispatch(u8* pFrame, u32 length)
       case 'X':
         if(pData[2] == '1') {
           CODEC_startTX();
+          return USWDR_ackn(pFrame, pData);
         }
         if(pData[2] == '0') {
           CODEC_stop();
+          return USWDR_ackn(pFrame, pData);
         }
     }
   }
@@ -193,12 +204,18 @@ void UWSDR_upload()
 
   // increase sample frame counter
   SET_LE16(pData+2, m_framecounter);
-  m_framecounter++;
+  m_framecounter += 2;
 
-  UDP_sendto(hostIP, _UDP_DATA_PORT, pData, _CODEC_FRAME_SIZE);
+  UDP_sendto(hostIP, _UDP_CTRL_PORT, pData, 0, _CODEC_FRAME_SIZE, 0);
 
-  if(m_framecounter > 0xFFFF)
-    m_framecounter = 0;
+  if (m_framecounter > 0xFFFF) {
+    if ((m_framecounter % 2) == 0)
+      m_framecounter = 1;
+    else
+      m_framecounter = 0;
+  }
+//  if(m_framecounter > 0xFFFF)
+//    m_framecounter = 0;
   
   DBG_LED1_OFF();
   

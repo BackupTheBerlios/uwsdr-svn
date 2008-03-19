@@ -72,7 +72,7 @@ s32 NET_process()
   s32     ret;
   u8      *pRX8, *pTX8;
   t_DLC   *pDLC;
-  
+
   //*** PARAMETER CHECK ***
   if(m_pRxBuf == NULL)
     return _NET_NULL_POINTER;
@@ -191,7 +191,6 @@ int NET_sendFrame(u16 len)
   //*** INITIALIZATION ***
   //*** PARAMETER CHECK ***
   //*** PROGRAM CODE ***
-  EMACSend(len);
-
+  return EMACSend(len);
 }
 

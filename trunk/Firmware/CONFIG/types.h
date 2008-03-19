@@ -64,9 +64,11 @@
 #define GET_LE32(x)   ((*(((u8*)x)+0)) | \
                       ((*(((u8*)x)+1)) << 8) | \
                       ((*(((u8*)x)+2)) << 16) | \
-                      ((*(((u8*)x)+0)) << 24) )
+                      ((*(((u8*)x)+3)) << 24) )
 
-
+#define SET_FLAG(x, bit) (x |= (1<<bit))
+#define CLR_FLAG(x, bit) (x &= ~(1<<bit))
+#define TEST_FLAG(x, bit) ((x & (1<<bit)) != 0)
 
 //#define u8_t u8
 //#define u16_t u16

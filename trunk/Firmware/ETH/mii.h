@@ -27,23 +27,24 @@
 #define MII_ADVERTISE       0x04        /* Advertisement control reg   */
 #define MII_LPA             0x05        /* Link partner ability reg    */
 #define MII_EXPANSION       0x06        /* Expansion register          */
+#define MII_AUTONEG_NEXT    0x07        /* Auto-Negotiation next page  */
 #define MII_RERRCOUNTER     0x15        /* Receive error counter       */
 #define MII_TPISTATUS       0x1b        /* TPI status for 10mbps       */
 //** #define MII_NCONFIG         0x1c        /* Network interface config    */
 
 
 
-/* Basic mode control register. */
+/* Basic mode control register. Valid for KSZ8041TL. */
 #define BMCR_RESV               0x007f  /* Unused...                   */
 #define BMCR_CTST               0x0080  /* Collision test              */
 #define BMCR_FULLDPLX           0x0100  /* Full duplex                 */
 #define BMCR_ANRESTART          0x0200  /* Auto negotiation restart    */
-#define BMCR_ISOLATE            0x0400  /* Disconnect DP83840 from MII */
-#define BMCR_PDOWN              0x0800  /* Powerdown the DP83840       */
+#define BMCR_ISOLATE            0x0400  /* Disconnect from MII         */
+#define BMCR_PDOWN              0x0800  /* Powerdown the Chip          */
 #define BMCR_ANENABLE           0x1000  /* Enable auto negotiation     */
 #define BMCR_SPEED100           0x2000  /* Select 100Mbps              */
 #define BMCR_LOOPBACK           0x4000  /* TXD loopback bits           */
-#define BMCR_RESET              0x8000  /* Reset the DP83840           */
+#define BMCR_RESET              0x8000  /* Reset the chip              */
 
 /* Basic mode status register. */
 #define BMSR_ERCAP              0x0001  /* Ext-reg capability          */
@@ -115,7 +116,9 @@
 /* PHY ID */
 #define MII_DM9161_ID     0x0181b8a0
 #define MII_AM79C875_ID   0x00225540	/* 0x00225541 */
-#define MII_MICREL_ID     0x00221610
+//#define MII_MICREL_ID     0x00221610 OLIMEX
+#define MII_MICREL_KS8041_ID     0x00221510
+
 
 // #define AT91C_PHY_ADDR	31
 #define AT91C_PHY_ADDR	  1

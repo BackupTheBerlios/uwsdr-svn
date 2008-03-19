@@ -221,10 +221,11 @@ static int ARP_process_request(u8* pData)
   //*** DEFINITON ***
   u32 ip_addr, i;
   int res;
-  u8* pDest8; 
+  u8* pDest8, *pSrc; 
   
   //*** INITIALIZATION ***
   pDest8 = (u8*)m_pTxBuf;
+  pSrc = (u8*)m_pRxBuf;
   
   //*** PARAMETER CHECK ***
   //*** PROGRAM CODE ***
@@ -263,11 +264,8 @@ static int ARP_process_request(u8* pData)
     }  
   }
   // we have to send him an answer
-  //ARP_createReturnFrame(pDest, pData);
+  pDest8 += ARP_createReturnFrame(pDest8, pSrc);
 
-  // MAC is ok, now the data
-  pDest8 += _DLC_HDR_SIZE;
-  
   memcpy(pDest8, pData, ARP_OPCODE_L); //copy everthing from source untill opcode
   // the reply opcode
   pDest8[ARP_OPCODE_L] = low(ARP_OPCODE_REPLY);
@@ -286,7 +284,7 @@ static int ARP_process_request(u8* pData)
   // his MAC
   memcpy(pDest8 + ARP_TARGET_MAC, pData + ARP_SENDER_MAC, _DLC_ADDR_SIZE);
   // set TX length
-  m_TxLen = _ARP_FRAMESIZE;
+  m_TxLen += _ARP_FRAMESIZE;
     
   return _NET_TX_REPLY;
 }
@@ -338,29 +336,30 @@ s16 ARP_dispatch(u8* pInFrame)
 // 
 //
 //****************************************************************************
-void ARP_createReturnFrame(u8* pTXFrame, u8* pRXFrame)
+int ARP_createReturnFrame(u8* pTXFrame, u8* pRXFrame)
 {
   //*** DEFINITON ***
   //*** INITIALIZATION ***
   //t_DLC* pRX = (t_DLC*)(pRXFrame - _DLC_HDR_SIZE);
-  t_DLC* pRX = (t_DLC*)(pRXFrame);
-  t_DLC* pTX = (t_DLC*)pTXFrame;
+  t_DLC* pRXDLC = (t_DLC*)(pRXFrame);
+  t_DLC* pTXDLC = (t_DLC*)pTXFrame;
   
   //*** PARAMETER CHECK ***
   //*** PROGRAM CODE ***
   
-  m_TxLen += sizeof(t_DLC);
+  m_TxLen = sizeof(t_DLC);
 
-  memcpy(pTX->dstMAC, pRX->srcMAC, _DLC_ADDR_SIZE); // copy source to dest
+  memcpy(pTXDLC->dstMAC, pRXDLC->srcMAC, _DLC_ADDR_SIZE); // copy source to dest
   // set source (my MAC)
-  pTX->srcMAC[0] = _MAC_ADDR_0;
-  pTX->srcMAC[1] = _MAC_ADDR_1;
-  pTX->srcMAC[2] = _MAC_ADDR_2;
-  pTX->srcMAC[3] = _MAC_ADDR_3;
-  pTX->srcMAC[4] = _MAC_ADDR_4;
-  pTX->srcMAC[5] = _MAC_ADDR_5;
-  pTX->frameType = pRX->frameType;
+  pTXDLC->srcMAC[0] = _MAC_ADDR_0;
+  pTXDLC->srcMAC[1] = _MAC_ADDR_1;
+  pTXDLC->srcMAC[2] = _MAC_ADDR_2;
+  pTXDLC->srcMAC[3] = _MAC_ADDR_3;
+  pTXDLC->srcMAC[4] = _MAC_ADDR_4;
+  pTXDLC->srcMAC[5] = _MAC_ADDR_5;
+  pTXDLC->frameType = pRXDLC->frameType;
 
+  return sizeof(t_DLC);
 }
 
 

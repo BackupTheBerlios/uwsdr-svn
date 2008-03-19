@@ -175,20 +175,19 @@ const unsigned char ucIPAddress[ 4 ]  = { _IP_ADDR_0, _IP_ADDR_1, _IP_ADDR_2, _I
 
 void EMAC_Init( void )
 {
-  /* Code supplied by Atmel (modified) --------------------*/
-  
   /* disable pull up on RXDV => PHY normal mode (not in test mode),
   PHY has internal pull down. */
-  AT91C_BASE_PIOB->PIO_PPUDR = 1 << 15;
-  
+  AT91C_BASE_PIOB->PIO_PPUDR = AT91C_PB15_ERXDV_ECRSDV;
+  AT91C_BASE_PIOB->PIO_PPUDR = AT91C_PB4_ECRS;
+
 #if USE_RMII_INTERFACE != 1
   /* PHY has internal pull down : set MII mode. */
-  AT91C_BASE_PIOB->PIO_PPUDR= 1 << 16;
+  AT91C_BASE_PIOB->PIO_PPUDR= AT91C_PB16_ECOL;
 #endif
   
+  /* Code supplied by Atmel (modified) --------------------*/
   /* clear PB18 <=> PHY powerdown. */
-  AT91F_PIO_CfgOutput( AT91C_BASE_PIOB, 1 << 18 ) ;
-  AT91F_PIO_ClearOutput( AT91C_BASE_PIOB,  1 << 18) ;
+ 
   
   /* After PHY power up, hardware reset. */
   AT91C_BASE_RSTC->RSTC_RMR = emacRESET_KEY | emacRESET_LENGTH;
@@ -202,10 +201,16 @@ void EMAC_Init( void )
   
   /* EMAC IO init for EMAC-PHY com. Remove EF100 config. */
   AT91F_EMAC_CfgPIO();
+
+  delay_us(150000);
+  ETH_RESET_ACTIVE();
+  delay_us(150000);
+  /* Enable com between EMAC PHY. */
+  ETH_RESET_INACTIVE();
+  delay_us(1000000);
+      
   
-  /* Enable com between EMAC PHY.
-  
-  Enable management port. */
+  /*  Enable management port. */
   AT91C_BASE_EMAC->EMAC_NCR |= AT91C_EMAC_MPE;	
   
   /* MDC = MCK/32. */
@@ -213,7 +218,8 @@ void EMAC_Init( void )
   
   /* Wait for PHY auto init end (rather crude delay!). */
   //vTaskDelay( emacPHY_INIT_DELAY );
-  delay_us(2500000);
+  //delay_us(20000);
+  //delay_us(2000000);
   
   /* PHY configuration. */
 #if USE_RMII_INTERFACE != 1
@@ -224,8 +230,8 @@ void EMAC_Init( void )
     EMAC_ReadPHY( AT91C_PHY_ADDR, MII_BMCR, &ulControl );
     EMAC_ReadPHY( AT91C_PHY_ADDR, MII_BMCR, &ulControl );
     ulControl &= ~BMCR_ISOLATE;
+    //ulControl |= BMCR_ANRESTART;
     vWritePHY( AT91C_PHY_ADDR, MII_BMCR, ulControl );
-    
   }
 #endif
   
@@ -241,13 +247,15 @@ void EMAC_Init( void )
   AT91C_BASE_EMAC->EMAC_USRIO = AT91C_EMAC_RMII | AT91C_EMAC_CLKEN ;
 #endif
   
-  /* End of code supplied by Atmel ------------------------*/
-  
   /* Setup the buffers and descriptors. */
   prvSetupDescriptors();
+
+  delay_us(5000000);
   
   /* Load our MAC address into the EMAC. */
   prvSetupMACAddress();
+
+  /* End of code supplied by Atmel ------------------------*/
   
   /* Try to connect. */
   if( prvProbePHY() ) {
@@ -507,7 +515,7 @@ char xSwitchRequired = pdFALSE;
 
 static char prvProbePHY( void )
 {
-  u32 ulPHYId1, ulPHYId2, ulStatus;
+  u32 ulPHYId1, ulPHYId2, ulStatus, x;
   char xReturn = pdPASS;
   
   /* Code supplied by Atmel (reformatted) -----------------*/
@@ -527,7 +535,8 @@ static char prvProbePHY( void )
   0001 stands for Rev. A, etc.
   */
   // if( ( ( ulPHYId1 << 16 ) | ( ulPHYId2 & 0xfff0 ) ) != MII_DM9161_ID )
-  if( ( ( ulPHYId1 << 16 ) | ( ulPHYId2 & 0xfff0 ) ) != MII_MICREL_ID )
+  x = ( ulPHYId1 << 16 ) | ( ulPHYId2 & 0xfff0 );
+  if( x != MII_MICREL_KS8041_ID )
   {
     /* Did not expect this ID. */
     xReturn = pdFAIL;
@@ -601,6 +610,8 @@ static char xGetLinkSpeed( void )
 	/* Code supplied by Atmel (reformatted) -----------------*/
 
 	/* Link status is latched, so read twice to get current value */
+	EMAC_ReadPHY(AT91C_PHY_ADDR, MII_BMCR, &ulBMCR);
+	EMAC_ReadPHY(AT91C_PHY_ADDR, MII_BMCR, &ulBMCR);
 	EMAC_ReadPHY(AT91C_PHY_ADDR, MII_BMSR, &ulBMSR);
 	EMAC_ReadPHY(AT91C_PHY_ADDR, MII_BMSR, &ulBMSR);
 

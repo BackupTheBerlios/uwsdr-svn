@@ -87,7 +87,7 @@ int IP_dispatch(u8* pRX)
 {
   //*** DEFINITON ***
   volatile u32 ul;
-  //u16 us; //unsiged short (16 bit)
+  u16 us; //unsiged short (16 bit)
   s32 ret;
   u8  hdrLen; //unsigned chort (one byte)
   
@@ -122,7 +122,7 @@ int IP_dispatch(u8* pRX)
       break;
     //***** Handling of UDP frames *****
     case _IP_PROTTYPE_UDP:
-      UDP_dispatch(pRX + hdrLen);
+      ret = UDP_dispatch(pRX + hdrLen);
       break;
       
     default:
@@ -130,8 +130,9 @@ int IP_dispatch(u8* pRX)
   }
   
   if(ret == _NET_RETURN_THIS_IPFRAME) {
-    IP_createReturnFrame((u8*)m_pTxBuf + _DLC_HDR_SIZE, pRX);
-    m_TxLen += hdrLen;
+    //**** calculate IP header Checksum ****  
+    us = NET_CRC16((u8*)m_pTxBuf + _DLC_HDR_SIZE, _IP_HDR_SIZE);
+    SET_BE16((u8*)m_pTxBuf + _DLC_HDR_SIZE + _IP_HDR_HDRCKSUM, us);
     return _NET_TX_REPLY;
   }
   
@@ -146,19 +147,35 @@ int IP_dispatch(u8* pRX)
 // returns the incomming IP frame to sender
 //
 //****************************************************************************
-int IP_createReturnFrame(u8* pTX, u8* pRX)
+int IP_createReturnFrame(u8* pTX, u8* pRX, u16 newSize)
 {
   //*** DEFINITON ***
+  u8  *pIPTXFrame, *pIPRXFrame;
+  int  frameSize;
+  
   //*** INITIALIZATION ***
   //*** PARAMETER CHECK ***
   //*** PROGRAM CODE ***
   
-  memcpy(pTX, pRX, 12); // copy everything that doesnt change
-  // exchange IPs
-  memcpy(&pTX[_IP_HDR_DST_IP], &pRX[_IP_HDR_SRC_IP], _IP_ADDR_SIZE);
-  SET_LE32(&pTX[_IP_HDR_SRC_IP], _IP_MYIPADDR);
+  // ask the lower layer to create a return frame
+  frameSize = ARP_createReturnFrame(pTX, pRX);
+
+  pIPTXFrame = pTX + frameSize;
+  pIPRXFrame = pRX + frameSize;
   
-  return _NET_RETURN_THIS_IPFRAME;
+  memcpy(pIPTXFrame, pIPRXFrame, 12); // copy everything that doesnt change
+  //readjust frame size
+  SET_BE16(&pIPTXFrame[_IP_HDR_TOTLEN], frameSize + _IP_HDR_SIZE);
+  // exchange IPs
+  memcpy(&pIPTXFrame[_IP_HDR_DST_IP], &pIPRXFrame[_IP_HDR_SRC_IP], _IP_ADDR_SIZE);
+  SET_LE32(&pIPTXFrame[_IP_HDR_SRC_IP], _IP_MYIPADDR);
+  // reset old checksum
+  SET_BE16(pIPTXFrame + _IP_HDR_HDRCKSUM, 0); // first reset old checksum
+
+  m_TxLen += _IP_HDR_SIZE;
+  frameSize += _IP_HDR_SIZE;
+  
+  return frameSize;
 }
 
 //****************************************************************************
@@ -186,7 +203,7 @@ int IP_createFrame(u8* pFrame, u32 IP, u16 port, u16 length, u8 proto)
   
   result = ARP_createFrameforIP((u8*)pFrame, IP);
   
-  if(result != _NET_OK)
+  if(result < _NET_OK)
     return result;
   
   pIPFrame[_IP_HDR_VERSION] = (_NET_IP_VERSION<<4) + (_IP_HDR_SIZE>>2);

@@ -78,7 +78,7 @@ s16 ARP_dispatch(u8* pData);
 // ARP_createReturnFrame
 // 
 //****************************************************************************
-void ARP_createReturnFrame(u8* pRXFrame, u8* pTXFrame);
+int ARP_createReturnFrame(u8* pRXFrame, u8* pTXFrame);
 
 //****************************************************************************
 // ARP_getMAC

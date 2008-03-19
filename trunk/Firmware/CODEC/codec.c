@@ -81,7 +81,8 @@ void CODEC_startRX(void)
   pHdr->type_char1 = 'R';
   pHdr->seqNr = 0;
   pHdr->seqLen = _CODEC_SAMPLES_PER_FRAME;
-  pHdr->Dummy = 0x1234;
+  pHdr->agc = 0x01;
+  pHdr->dummy = 0x02;
   for(i = 1; i < _CODEC_NUM_OF_BUFS; i++) {
     memcpy(codec_buf[i] , codec_buf, sizeof(t_codec_hdr));
   }
@@ -121,12 +122,18 @@ void CODEC_startTX(void)
  
   RING_reset();
 
+  //***** configure 16 Bit for TX *****
+  AT91C_BASE_SSC->SSC_TFMR =  (AT91C_SSC_DATLEN & (7 << 0))|
+                              AT91C_SSC_MSBF|
+                              (AT91C_SSC_DATNB & (1 << 8));
+    
+  
   CODEC_SET_MODE(CODEC_MODE_TX);
  
   // prepare ring TX
-  AT91C_BASE_SSC->SSC_TPR = (u32)codec_buf + _CODEC_HEADER_SIZE;
+  AT91C_BASE_SSC->SSC_TPR = (u32)codec_buf;
   AT91C_BASE_SSC->SSC_TCR = _CODEC_DATA_SIZE;
-  AT91C_BASE_SSC->SSC_TNPR = (u32)codec_buf + _CODEC_HEADER_SIZE;
+  AT91C_BASE_SSC->SSC_TNPR = (u32)codec_buf;
   AT91C_BASE_SSC->SSC_TNCR = _CODEC_DATA_SIZE;
 
   CODEC_sync();
@@ -149,13 +156,27 @@ void CODEC_init(void)
   //u8 uc;
 //  int i;
 
-
+  
   //m_codec_rx_pos = 0;
   m_codec_tx_pos = 0;
   codec_status_flag = 0;
 
  /****** SSC *******/
+  
+  //configure the mode select pins
+  SET_OUTPUT(PIOA, AT91C_PIO_PA29|AT91C_PIO_PA1);
+  SET_OUTPUT(PIOB, AT91C_PIO_PB21|AT91C_PIO_PB22|AT91C_PIO_PB21);
+  
+  CLR_PIN(PIOA, AT91C_PIO_PA29);
+  CLR_PIN(PIOB, AT91C_PIO_PB21|AT91C_PIO_PB22);
 
+  //reset the whole CODEC system
+  CODEC_RESET_ACTIVE();
+  delay_us(50000);  
+  CODEC_RESET_INACTIVE();
+  //wait for ADC Zero offset calibration
+  delay_us(250000);  
+   
   // configure SSC pins as peripheral
   AT91F_PIO_CfgPeriph(AT91C_BASE_PIOA, CODEC_PERIPH_A, 0);
   
@@ -392,23 +413,25 @@ void CODEC_SSC_ISR() //__irq
 
   
   if(CODEC_IS_MODE(CODEC_MODE_RX)) {
+    //***** RX case *****
     pNext = RING_produce();
+    if(pNext != NULL) {
+      pNext += _CODEC_HEADER_SIZE;
+      AT91C_BASE_SSC->SSC_RNPR = (u32)pNext;
+      AT91C_BASE_SSC->SSC_TNPR = (u32)pNext;
+    }
+    AT91C_BASE_SSC->SSC_RNCR = _CODEC_DATA_SIZE;
   }
   else {
-    return;
-  }
-
-  if(pNext != NULL) {
-    pNext += _CODEC_HEADER_SIZE;
-    AT91C_BASE_SSC->SSC_RNPR = (u32)pNext;
-    AT91C_BASE_SSC->SSC_TNPR = (u32)pNext;
+    //***** TX case *****
+    pNext = RING_consume();
+    if(pNext != NULL) {
+      AT91C_BASE_SSC->SSC_RNPR = (u32)pNext;
+      AT91C_BASE_SSC->SSC_TNPR = (u32)pNext;
+    }
+    AT91C_BASE_SSC->SSC_TNCR = _CODEC_DATA_SIZE;
   }
   
-  
-  AT91C_BASE_SSC->SSC_RNCR = _CODEC_DATA_SIZE;
-  AT91C_BASE_SSC->SSC_TNCR = _CODEC_DATA_SIZE;
-
-
   
   //AT91C_BASE_SSC->SSC_PTCR = (1 << 8); // TXTEN
     //AT91C_BASE_SSC->SSC_PTCR = (1 << 0); // RXTEN
@@ -466,7 +489,7 @@ void UDP_process_(void)
   }
 }
 
-void UDP_process_incomming()
+void UDP_process_incoming()
 {
   //*** DEFINITON ***
   u16 us;

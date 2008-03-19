@@ -49,15 +49,16 @@ typedef struct s_codec_hdr {
   u8    type_char1;
   u16   seqNr;
   u16   seqLen;
-  u16   Dummy;
+  u8    agc;
+  u8    dummy;
 } t_codec_hdr;
 
-#define _CODEC_HEADER_SIZE     sizeof(t_codec_hdr)
+#define _CODEC_HEADER_SIZE        sizeof(t_codec_hdr)
 #define _CODEC_SAMPLES_PER_FRAME  400
-#define _CODEC_DATA_SIZE      _CODEC_SAMPLES_PER_FRAME * 3 // 1200bytes
-#define _CODEC_FRAME_SIZE     (_CODEC_DATA_SIZE + _CODEC_HEADER_SIZE)
+#define _CODEC_DATA_SIZE          _CODEC_SAMPLES_PER_FRAME * 3 // 1200bytes
+#define _CODEC_FRAME_SIZE         (_CODEC_DATA_SIZE + _CODEC_HEADER_SIZE)
 
-#define _CODEC_NUM_OF_BUFS     4
+#define _CODEC_NUM_OF_BUFS        4
 
 
 
@@ -109,7 +110,7 @@ void UDP_process_(void);
 void CODEC_init(void);
 void CODEC_start(void);
 void codec_getpeaks(void);
-void UDP_process_incomming(void);
+void UDP_process_incoming(void);
 
 //****************************************************************************
 // CODEC_startRX

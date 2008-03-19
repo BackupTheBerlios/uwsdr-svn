@@ -24,6 +24,44 @@ t_socket m_sockets[_UDP_MAX_SOCKETS];
 
 //************************* FUNCTIONS ****************************************
 
+//****************************************************************************
+// UDP_reply
+//
+// Parameters: u8* pData, u32 len
+// Return type: void
+// Returns data to a incoming UDP sender
+//
+//****************************************************************************
+s32 UDP_reply(u8* pRXUDP, u8* pData, u32 len)
+{
+  //*** DEFINITON ***
+  //int   frameSize;
+  u16   destport, crc;
+  u8*   pTX;
+  
+  //*** INITIALIZATION ***
+  pTX = (u8*)m_pTxBuf;
+    
+  //*** PARAMETER CHECK ***
+  //*** PROGRAM CODE ***
+
+  destport = GET_BE16(pRXUDP + _UDP_HDR_DST_PORT);
+ 
+  pTX += IP_createReturnFrame(pTX, (u8*)m_pRxBuf, len + _UDP_HDR_SIZE);
+
+  SET_BE16(pTX + _UDP_HDR_SRC_PORT, destport);
+  SET_BE16(pTX + _UDP_HDR_DST_PORT, destport);
+  SET_BE16(pTX + _UDP_HDR_PACKET_LEN, len + _UDP_HDR_SIZE);
+  SET_BE16(pTX + _UDP_HDR_CKSUM, 0);
+  
+  pTX += _UDP_HDR_PAYLOAD;
+  
+  // add payload  
+  memcpy(pTX, pData, len);
+  m_TxLen += (len + _UDP_HDR_SIZE);
+  
+  return _NET_RETURN_THIS_IPFRAME;
+}
 
 
 //****************************************************************************
@@ -34,7 +72,7 @@ t_socket m_sockets[_UDP_MAX_SOCKETS];
 // Processes incomming UDP frames
 //
 //****************************************************************************
-s16 UDP_dispatch(u8* pRX)
+s32 UDP_dispatch(u8* pRX)
 {
   //*** DEFINITON ***
   int len, i;
@@ -49,8 +87,7 @@ s16 UDP_dispatch(u8* pRX)
   for(i = 0; i < _UDP_MAX_SOCKETS; i++) {
     if(m_sockets[i].localport == destport) {
       len = GET_BE16(pRX + _UDP_HDR_PACKET_LEN);
-      m_sockets[i].appcall(pRX + _UDP_HDR_PAYLOAD, len);
-      return _NET_OK;
+      return m_sockets[i].appcall(pRX, len);
     }
   }
   if(i == _UDP_MAX_SOCKETS)
@@ -70,7 +107,7 @@ s16 UDP_dispatch(u8* pRX)
 // creates a UDP socket, returns a socket struct
 //
 //****************************************************************************
-int UDP_create(u32 ip, u16 port, u8 mode, void(*appcall)(u8* pData, u32 length))
+int UDP_create(u32 ip, u16 port, u8 mode, s32(*appcall)(u8* pData, u32 length))
 {
   //*** DEFINITON ***
   int i;
@@ -112,7 +149,7 @@ int UDP_create(u32 ip, u16 port, u8 mode, void(*appcall)(u8* pData, u32 length))
 // Sends a UDP Packet so the given address
 //
 //****************************************************************************
-int UDP_sendto(u32 IP, u16 port, u8* pData, u32 size)
+int UDP_sendto(u32 IP, u16 port, u8* pData, u32 totalSize, u32 frameSize, u32 offset)
 {
   //*** DEFINITON ***
   int result;
@@ -128,7 +165,7 @@ int UDP_sendto(u32 IP, u16 port, u8* pData, u32 size)
                           pTX,
                           IP,
                           port,
-                          size + _UDP_HDR_SIZE,
+                          frameSize + _UDP_HDR_SIZE,
                           _IP_PROTTYPE_UDP
                           );
   
@@ -140,15 +177,15 @@ int UDP_sendto(u32 IP, u16 port, u8* pData, u32 size)
     
   SET_BE16(pUDPHDR + _UDP_HDR_SRC_PORT, port);
   SET_BE16(pUDPHDR + _UDP_HDR_DST_PORT, port);
-  SET_BE16(pUDPHDR + _UDP_HDR_PACKET_LEN, size);
+  SET_BE16(pUDPHDR + _UDP_HDR_PACKET_LEN, frameSize);
   //**** no checksum is calculated ****
   SET_BE16(pUDPHDR + _UDP_HDR_CKSUM, 0);
    
   //**** copy payload **** 
-  memcpy (pUDPHDR + _UDP_HDR_PAYLOAD, pData, size);
+  memcpy (pUDPHDR + _UDP_HDR_PAYLOAD, pData, frameSize);
   
   
-  return IP_sendFrame(pTX, size + _UDP_HDR_SIZE + result);
+  return IP_sendFrame(pTX, frameSize + _UDP_HDR_SIZE + result);
 }
 
 

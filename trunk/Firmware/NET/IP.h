@@ -51,7 +51,7 @@
 
 
 typedef struct s_socket {
-  void(*appcall)(u8* pData, u32 length);
+  s32(*appcall)(u8* pData, u32 length);
   u16 localport;
   u16 destport;
   u8 address[_IP_ADDR_SIZE];
@@ -68,7 +68,7 @@ int IP_dispatch(u8* pRX);
 // IP_createReturnFrame
 // returns the incomming IP frame to sender
 //****************************************************************************
-int IP_createReturnFrame(u8* pTX, u8* pRX);
+int IP_createReturnFrame(u8* pTX, u8* pRX, u16 newSize);
 
 //****************************************************************************
 // IP_createFrame

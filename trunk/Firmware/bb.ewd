@@ -566,7 +566,7 @@
     </debuggerPlugins>
   </configuration>
   <configuration>
-    <name>Debug Flash</name>
+    <name>Release FLASH</name>
     <toolchain>
       <name>ARM</name>
     </toolchain>
@@ -1129,7 +1129,7 @@
     </debuggerPlugins>
   </configuration>
   <configuration>
-    <name>Release FLASH</name>
+    <name>Debug FLASH</name>
     <toolchain>
       <name>ARM</name>
     </toolchain>
@@ -1159,11 +1159,11 @@
         </option>
         <option>
           <name>MacOverride</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>MacFile</name>
-          <state></state>
+          <state>D:\Data\Develop\uwsdr\fw3\settings\SAM7.mac</state>
         </option>
         <option>
           <name>MemOverride</name>
@@ -1171,7 +1171,7 @@
         </option>
         <option>
           <name>MemFile</name>
-          <state></state>
+          <state>$TOOLKIT_DIR$\CONFIG\ioAT91SAM7X256.ddf</state>
         </option>
         <option>
           <name>RunToEnable</name>
@@ -1203,7 +1203,7 @@
         </option>
         <option>
           <name>OCDownloadVerifyAll</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>OCProductVersion</name>
@@ -1211,7 +1211,7 @@
         </option>
         <option>
           <name>OCDynDriverList</name>
-          <state>ARMSIM_ID</state>
+          <state>RDI_ID</state>
         </option>
         <option>
           <name>OCLastSavedByProductVersion</name>
@@ -1223,11 +1223,11 @@
         </option>
         <option>
           <name>FlashLoaders</name>
-          <state></state>
+          <state>,,,,(default),</state>
         </option>
         <option>
           <name>UseFlashLoader</name>
-          <state>0</state>
+          <state>1</state>
         </option>
       </data>
     </settings>
@@ -1525,7 +1525,7 @@
         <option>
           <name>CEmuCommPort</name>
           <version>0</version>
-          <state>0</state>
+          <state>4</state>
         </option>
         <option>
           <name>jtago</name>
@@ -1567,7 +1567,7 @@
         <debug>1</debug>
         <option>
           <name>CRDIDriverDll</name>
-          <state>Browse to your RDI driver</state>
+          <state>C:\Programme\H-JTAG\H-JTAG.dll</state>
         </option>
         <option>
           <name>CRDILogFileCheck</name>
@@ -1579,7 +1579,7 @@
         </option>
         <option>
           <name>CCRDIHWReset</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CCRDICatchReset</name>

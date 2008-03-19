@@ -56,8 +56,8 @@
 #define _DBG_STATE_ETH          3
 
 
-#define _DBG_STATE_POS(x)       CLR_PIN(PIOA, ~(x<<21)); \
-                                SET_PIN(PIOA, (x<<21))
+#define _DBG_STATE_POS(x)  //     CLR_PIN(PIOA, ~(x<<21) ); \
+                            //    SET_PIN(PIOA, (x<<21)  )
 
 #define pdTRUE		( 1 )
 #define pdFALSE		( 0 )
@@ -95,7 +95,7 @@
 
 
 #define _UDP_CTRL_PORT      2221
-#define _UDP_DATA_PORT      2222
+//#define _UDP_DATA_PORT      2222
 
 #define _IP_DRIPADDR0   192
 #define _IP_DRIPADDR1   168
@@ -128,13 +128,13 @@
 #define ETH_IOW_PIN       (1 << 29)
 #define ETH_IOR_PIN       (1 << 8)
 #define ETH_PSEN_PIN      (1 << 22)
-#define ETH_RST_PIN       (1 << 23)
+#define ETH_RST_PIN       AT91C_PA0_RXD0
 #define ETH_IRQ_PIN       (1 << 30)
 
 /****** CODEC DEFINITIONS ******/
 
 #define CODEC_SPICS_PIN   AT91C_PA11_NPCS0
-#define CODEC_RST_PIN     (AT91C_BASE_PIOA, (1 << 16))
+#define CODEC_RST_PIN     (AT91C_BASE_PIOA, AT91C_PA1_TXD0)
 
 
 /****** I2C DEFINITIONS ******/
@@ -142,25 +142,6 @@
 #define I2C_SCL_PIN       AT91C_PA11_TWCK
 #define I2C_SDA_PIN       AT91C_PA10_TWD
 
-#define ETH_CLR_IOW() \
-  AT91C_BASE_PIOA->PIO_CODR = ETH_IOW_PIN
-#define ETH_SET_IOW() \
-  AT91C_BASE_PIOA->PIO_SODR = ETH_IOW_PIN
-
-#define ETH_CLR_IOR() \
-  AT91C_BASE_PIOA->PIO_CODR = ETH_IOR_PIN
-#define ETH_SET_IOR() \
-  AT91C_BASE_PIOA->PIO_SODR = ETH_IOR_PIN
-
-#define ETH_CLR_PSEN() \
-  AT91C_BASE_PIOA->PIO_CODR = ETH_PSEN_PIN
-#define ETH_SET_PSEN() \
-  AT91C_BASE_PIOA->PIO_SODR = ETH_PSEN_PIN
-
-#define ETH_CLR_RST() \
-  AT91C_BASE_PIOA->PIO_CODR = ETH_RST_PIN
-#define ETH_SET_RST() \
-  AT91C_BASE_PIOA->PIO_SODR = ETH_RST_PIN
 
 //******* PORT PIN ABSTRACTION ********
 #define PIOA AT91C_BASE_PIOA
@@ -177,13 +158,16 @@
 * general PIN definitions
 *******************************************************************************/
 
-#define CODEC_RESET_HIGH() SET_PIN(PIOB, AT91C_PIO_PB23);
+#define ETH_RESET_ACTIVE()  CLR_PIN(PIOA, ETH_RST_PIN);
+#define ETH_RESET_INACTIVE()  SET_PIN(PIOA, ETH_RST_PIN);
+#define CODEC_RESET_INACTIVE()  SET_PIN(PIOA, AT91C_PIO_PA1);
+#define CODEC_RESET_ACTIVE()  CLR_PIN(PIOA, AT91C_PIO_PA1);
 
 
 //******************* DEBUG PINS **************************
 
-#define DBG_LED1_ON()   SET_PIN(PIOB, AT91C_PIO_PB21)
-#define DBG_LED1_OFF()  CLR_PIN(PIOB, AT91C_PIO_PB21)
+#define DBG_LED1_ON()   SET_PIN(PIOB, AT91C_PIO_PB23)
+#define DBG_LED1_OFF()  CLR_PIN(PIOB, AT91C_PIO_PB23)
 
 
 #define MAX(x,y) ( (x>y)?x:y )

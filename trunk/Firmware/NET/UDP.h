@@ -37,24 +37,30 @@
 // UDP_dispatch
 // Processes incomming UDP frames
 //****************************************************************************
-s16 UDP_dispatch(u8* pRX);
+s32 UDP_dispatch(u8* pRX);
 
 //****************************************************************************
 // UDP_sendto
 // Sends a UDP Packet so the given address
 //****************************************************************************
-int UDP_sendto(u32 IP, u16 port, u8* pData, u32 size);
+int UDP_sendto(u32 IP, u16 port, u8* pData, u32 totalSize, u32 frameSize, u32 offset);
 
 //****************************************************************************
 // UDP_create
 // creates a UDP socket
 //****************************************************************************
-int UDP_create(u32 ip, u16 port, u8 mode, void(*appcall)(u8* pData, u32 length));
+int UDP_create(u32 ip, u16 port, u8 mode, s32(*appcall)(u8* pData, u32 length));
 
 //****************************************************************************
 // UDP_init
 // initialises the UDP part of the stack
 //****************************************************************************
 void UDP_init(void);
+
+//****************************************************************************
+// UDP_reply
+// Returns data to a incoming UDP sender
+//****************************************************************************
+s32 UDP_reply(u8* pRXUDP, u8* pData, u32 len);
 
 #endif //__UDP_H__

@@ -833,7 +833,7 @@
     </settings>
   </configuration>
   <configuration>
-    <name>Debug Flash</name>
+    <name>Release FLASH</name>
     <toolchain>
       <name>ARM</name>
     </toolchain>
@@ -855,15 +855,15 @@
         </option>
         <option>
           <name>ExePath</name>
-          <state>Debug Flash\Exe</state>
+          <state>Release FLASH\Exe</state>
         </option>
         <option>
           <name>ObjPath</name>
-          <state>Debug Flash\Obj</state>
+          <state>Release FLASH\Obj</state>
         </option>
         <option>
           <name>ListPath</name>
-          <state>Debug Flash\List</state>
+          <state>Release FLASH\List</state>
         </option>
         <option>
           <name>Variant</name>
@@ -1656,7 +1656,7 @@
     </settings>
   </configuration>
   <configuration>
-    <name>Release FLASH</name>
+    <name>Debug FLASH</name>
     <toolchain>
       <name>ARM</name>
     </toolchain>
@@ -1674,19 +1674,19 @@
         </option>
         <option>
           <name>GProcessorMode</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>ExePath</name>
-          <state>Release FLASH\Exe</state>
+          <state>Debug FLASH\Exe</state>
         </option>
         <option>
           <name>ObjPath</name>
-          <state>Release FLASH\Obj</state>
+          <state>Debug FLASH\Obj</state>
         </option>
         <option>
           <name>ListPath</name>
-          <state>Release FLASH\List</state>
+          <state>Debug FLASH\List</state>
         </option>
         <option>
           <name>Variant</name>
@@ -1699,7 +1699,7 @@
         </option>
         <option>
           <name>GInterwork</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>GStackAlign</name>
@@ -1734,7 +1734,7 @@
         </option>
         <option>
           <name>OGCoreOrChip</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>GRuntimeLibSelect</name>
@@ -1752,15 +1752,15 @@
         </option>
         <option>
           <name>RTConfigPath</name>
-          <state>$TOOLKIT_DIR$\LIB\dl4tptinl8n.h</state>
+          <state>$TOOLKIT_DIR$\LIB\dl4tpannl8n.h</state>
         </option>
         <option>
           <name>RTLibraryPath</name>
-          <state>$TOOLKIT_DIR$\LIB\dl4tptinl8n.r79</state>
+          <state>$TOOLKIT_DIR$\LIB\dl4tpannl8n.r79</state>
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
-          <state></state>
+          <state>4.41A</state>
         </option>
         <option>
           <name>GeneralMisraRules</name>
@@ -1777,7 +1777,7 @@
         </option>
         <option>
           <name>OGChipSelectEditMenu</name>
-          <state>LPC2106	NXP LPC2106</state>
+          <state>AT91SAM7X256	Atmel AT91SAM7X256</state>
         </option>
       </data>
     </settings>
@@ -1806,15 +1806,15 @@
         </option>
         <option>
           <name>CCListCFile</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CCListCMnemonics</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CCListCMessages</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CCListAssFile</name>
@@ -1855,7 +1855,7 @@
         <option>
           <name>CCOptimization</name>
           <version>0</version>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>CCAllowList</name>
@@ -1912,7 +1912,7 @@
         </option>
         <option>
           <name>CCRequirePrototypes</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CCMultibyteSupport</name>
@@ -1949,7 +1949,7 @@
         <option>
           <name>CCOptimizationSlave</name>
           <version>0</version>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>CCCodeFunctions</name>
@@ -1986,7 +1986,14 @@
         </option>
         <option>
           <name>CCIncludePath2</name>
-          <state></state>
+          <state>$PROJ_DIR$\CONFIG\</state>
+          <state>$PROJ_DIR$\INCLUDE\</state>
+          <state>$PROJ_DIR$\UIP-1.0\</state>
+          <state>$PROJ_DIR$\NET\</state>
+          <state>$PROJ_DIR$\CODEC\</state>
+          <state>$PROJ_DIR$\ETH\</state>
+          <state>$PROJ_DIR$\SYSTEM\</state>
+          <state>$PROJ_DIR$\UWSDR\</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -2157,7 +2164,7 @@
         </option>
         <option>
           <name>AUserIncludes</name>
-          <state></state>
+          <state>$PROJ_DIR$\</state>
         </option>
         <option>
           <name>AExtraOptionsCheckV2</name>
@@ -2229,7 +2236,7 @@
         </option>
         <option>
           <name>OverlapWarnings</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>NoGlobalCheck</name>
@@ -2237,7 +2244,7 @@
         </option>
         <option>
           <name>XList</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>SegmentMap</name>
@@ -2265,11 +2272,11 @@
         </option>
         <option>
           <name>XclOverride</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>XclFile</name>
-          <state>$TOOLKIT_DIR$\config\lnkarm.xcl</state>
+          <state>D:\Data\Develop\uwsdr\fw3\settings\at91SAM7X256_NoRemap.xcl</state>
         </option>
         <option>
           <name>XclFileSlave</name>
@@ -2353,7 +2360,7 @@
         </option>
         <option>
           <name>ModuleSummary</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>xcProgramEntryLabel</name>
@@ -2377,11 +2384,11 @@
         </option>
         <option>
           <name>AllowExtraOutput</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>GenerateExtraOutput</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>XExtraOutOverride</name>
@@ -2389,12 +2396,12 @@
         </option>
         <option>
           <name>ExtraOutputFile</name>
-          <state>templproj.a79</state>
+          <state>bb.a79</state>
         </option>
         <option>
           <name>ExtraOutputFormat</name>
           <version>11</version>
-          <state>23</state>
+          <state>57</state>
         </option>
         <option>
           <name>ExtraFormatVariant</name>
@@ -2403,11 +2410,11 @@
         </option>
         <option>
           <name>xcOverrideProgramEntryLabel</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>xcProgramEntryLabelSelect</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>ListOutputFormat</name>

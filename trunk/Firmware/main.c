@@ -14,14 +14,12 @@
 u32 RX_buf[NET_BUFSIZE/4];
 u32 TX_buf[NET_BUFSIZE/4];
 
-int m_sock;
 
 __noreturn int main()
 {
   s16 result;
   u32 ul;
 
-  
   __disable_interrupt();
 
   //*** Hardware Init ***
@@ -43,11 +41,11 @@ __noreturn int main()
   AT91F_PIO_CfgPeriph(PIOB, 0, 0);
   
   CLR_PIN(PIOB, AT91C_PB18_EF100);
-  SET_OUTPUT(PIOA, AT91C_PA22_TK|AT91C_PA21_TF);
-  SET_OUTPUT(PIOB, AT91C_PB18_EF100|AT91C_PIO_PB23|AT91C_PIO_PB21);
+  SET_OUTPUT(PIOA, AT91C_PA22_TK|AT91C_PA21_TF|AT91C_PA0_RXD0);
+  SET_OUTPUT(PIOB, AT91C_PIO_PB21);
 
   // Release Reset of the CODEC
-  CODEC_RESET_HIGH();
+
 
   NET_init(RX_buf, TX_buf);
   EMAC_Init();
@@ -65,8 +63,9 @@ __noreturn int main()
   
   RING_init((u8*)&codec_buf, 0, _CODEC_FRAME_SIZE, _CODEC_NUM_OF_BUFS);
   
-  // create a UDP listening socket
-  m_sock = UDP_create(0, _UDP_CTRL_PORT, _UDP_MODE_LISTENING, UWSDR_dispatch);
+  // Init the UWSDR sub system
+  UWSDR_init();
+  
   
   //CODEC_start();
 
@@ -84,12 +83,17 @@ __noreturn int main()
     _DBG_STATE_POS(_DBG_STATE_MAIN);
 
     ul = AT91C_BASE_SSC->SSC_SR;
-    if((ul & AT91C_SSC_ENDRX) /*|| ul & (AT91C_SSC_ENDTX)*/) {
+    if((ul & AT91C_SSC_ENDRX) && CODEC_IS_MODE(CODEC_MODE_RX)) {
 //      DBG_LED1_ON();
       CODEC_SSC_ISR();
       UWSDR_upload();
 //      DBG_LED1_OFF();
     }
+    if(ul & AT91C_SSC_ENDRX && CODEC_IS_MODE(CODEC_MODE_TX)) {
+      CODEC_SSC_ISR();
+      
+    }
+
     _DBG_STATE_POS(_DBG_STATE_MAIN);
   }
 }
