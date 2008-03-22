@@ -118,6 +118,7 @@ const wxChar* KEY_HPSDRC1            = wxT("/HPSDRC1");
 const wxChar* KEY_HPSDRC2            = wxT("/HPSDRC2");
 const wxChar* KEY_HPSDRC3            = wxT("/HPSDRC3");
 const wxChar* KEY_HPSDRC4            = wxT("/HPSDRC4");
+const wxChar* KEY_TUNING_HW          = wxT("/TuningHW");
 const wxChar* KEY_CW_SPEED           = wxT("/CWSpeed");
 const wxChar* KEY_CW_LOCAL           = wxT("/CWLocalCallsign");
 const wxChar* KEY_CW_REMOTE          = wxT("/CWRemoteCallsign");
@@ -404,6 +405,7 @@ bool CUWSDRApp::readConfig()
 	wxString keyHpsdrC2         = wxT("/") + m_parameters->m_name + KEY_HPSDRC2;
 	wxString keyHpsdrC3         = wxT("/") + m_parameters->m_name + KEY_HPSDRC3;
 	wxString keyHpsdrC4         = wxT("/") + m_parameters->m_name + KEY_HPSDRC4;
+	wxString keyTuningHW        = wxT("/") + m_parameters->m_name + KEY_TUNING_HW;
 	wxString keyCwSpeed         = wxT("/") + m_parameters->m_name + KEY_CW_SPEED;
 	wxString keyCwLocal         = wxT("/") + m_parameters->m_name + KEY_CW_LOCAL;
 	wxString keyCwRemote        = wxT("/") + m_parameters->m_name + KEY_CW_REMOTE;
@@ -642,6 +644,9 @@ bool CUWSDRApp::readConfig()
 
 	profile->Read(keyHpsdrC4,          &num, 0x00);
 	m_parameters->m_c4 = num;
+
+	profile->Read(keyTuningHW,         &num);
+	m_parameters->m_tuning = TUNINGHW(num);
 
 	profile->Read(keyCwSpeed,          &num, KEYER_SPEED);
 	m_parameters->m_cwSpeed = num;

@@ -3,7 +3,7 @@ all:		GUISetup
 CFLAGS :=	-I../UWSDRGUI -I../Common $(CFLAGS)
 LIBS   :=	$(PALIBS) $(JACKLIBS) $(LIBS)
 
-OBJS :=		GUISetupApp.o GUISetupFrame.o EthernetDialog.o HPSDRDialog.o PortDialog.o SoundCardDialog.o
+OBJS :=		GUISetupApp.o GUISetupFrame.o EthernetDialog.o HPSDRDialog.o PortDialog.o SoundCardDialog.o TuningDialog.o
 
 GUISetup:	$(OBJS)
 		$(CC) $(LDFLAGS) -o GUISetup $(OBJS) ../Common/Common.a $(LIBS)
@@ -12,7 +12,7 @@ GUISetupApp.o:	GUISetupApp.cpp GUISetupApp.h GUISetupFrame.h GUISetup.xpm
 		$(CC) $(CFLAGS) -c GUISetupApp.cpp
 
 GUISetupFrame.o: GUISetupFrame.cpp GUISetupFrame.h EthernetDialog.h HPSDRDialog.h PortDialog.h SoundCardDialog.h ../Common/AudioDevInfo.h \
-		../Common/SDRDescrFile.h
+		../Common/SDRDescrFile.h TuningDialog.h
 		$(CC) $(CFLAGS) -c GUISetupFrame.cpp
 
 EthernetDialog.o:	EthernetDialog.cpp EthernetDialog.h
@@ -26,6 +26,9 @@ PortDialog.o:	PortDialog.cpp PortDialog.h ../Common/SerialControl.h ../Common/Co
 
 SoundCardDialog.o:	SoundCardDialog.cpp SoundCardDialog.h ../Common/AudioDevInfo.h
 		$(CC) $(CFLAGS) -c SoundCardDialog.cpp
+
+TuningDialog.o:	TuningDialog.cpp TuningDialog.h ../Common/Common.h
+		$(CC) $(CFLAGS) -c TuningDialog.cpp
 
 install:	GUISetup
 		install -g bin -o root -m 0775 GUISetup $(BINDIR)

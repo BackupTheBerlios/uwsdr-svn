@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,38 +16,18 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	Version_H
-#define	Version_H
+#ifndef	DialInterface_H
+#define	DialInterface_H
 
-#include <wx/wx.h>
-#include <wx/datetime.h>
+#include "DialCallback.h"
 
-const wxString VERSION  = wxT("uWave SDR 0.9");
+class IDialInterface {
 
-const wxDateTime::wxDateTime_t REL_DATE_DAY   = 9;
-const wxDateTime::Month        REL_DATE_MONTH = wxDateTime::Mar;
-const unsigned int             REL_DATE_YEAR  = 2008;
+    public:
+	virtual void setCallback(IDialCallback* callback, int id) = 0;
 
-enum INPIN {
-	IN_NONE = -1,
-	IN_RTS_CTS,
-	IN_RTS_DSR,
-	IN_DTR_DSR,
-	IN_DTR_CTS
+	virtual bool open() = 0;
+	virtual void close() = 0;
 };
-
-enum OUTPIN {
-	OUT_NONE = -1,
-	OUT_RTS,
-	OUT_DTR
-};
-
-enum TUNINGHW {
-	TUNINGHW_NONE = 0,
-	TUNINGHW_POWERMATE
-};
-
-const int JACK_API = -1;
-const int JACK_DEV = -1;
 
 #endif

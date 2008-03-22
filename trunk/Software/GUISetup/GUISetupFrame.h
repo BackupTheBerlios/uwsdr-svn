@@ -38,6 +38,7 @@ class CGUISetupFrame : public wxFrame {
 	void onEthernet(wxCommandEvent& event);
 	void onPort(wxCommandEvent& event);
 	void onHPSDR(wxCommandEvent& event);
+	void onTuning(wxCommandEvent& event);
 	void onCreate(wxCommandEvent& event);
 
     private:
@@ -49,6 +50,7 @@ class CGUISetupFrame : public wxFrame {
 	wxButton*      m_ethernet;
 	wxButton*      m_port;
 	wxButton*      m_hpsdr;
+	wxButton*      m_tuning;
 	wxString       m_filename;
 	SDRTYPE        m_sdrType;
 	bool           m_rxonly;
@@ -73,6 +75,7 @@ class CGUISetupFrame : public wxFrame {
 	int            m_c2;
 	int            m_c3;
 	int            m_c4;
+	TUNINGHW       m_tuningHW;
 
 	DECLARE_EVENT_TABLE()
 

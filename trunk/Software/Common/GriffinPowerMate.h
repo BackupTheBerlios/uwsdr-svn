@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,38 +16,40 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	Version_H
-#define	Version_H
+#ifndef	GriffinPowerMate_H
+#define	GriffinPowerMate_H
 
 #include <wx/wx.h>
-#include <wx/datetime.h>
 
-const wxString VERSION  = wxT("uWave SDR 0.9");
+#include "usb.h"
 
-const wxDateTime::wxDateTime_t REL_DATE_DAY   = 9;
-const wxDateTime::Month        REL_DATE_MONTH = wxDateTime::Mar;
-const unsigned int             REL_DATE_YEAR  = 2008;
+#include "DialInterface.h"
 
-enum INPIN {
-	IN_NONE = -1,
-	IN_RTS_CTS,
-	IN_RTS_DSR,
-	IN_DTR_DSR,
-	IN_DTR_CTS
+
+class CGriffinPowerMate : public IDialInterface, public wxThread  {
+    public:
+	CGriffinPowerMate();
+
+	virtual void setCallback(IDialCallback* callback, int id);
+
+	virtual bool open();
+	virtual void close();
+
+	virtual void* Entry();
+
+    protected:
+	virtual ~CGriffinPowerMate();
+
+    private:
+	struct usb_dev_handle* m_handle;
+	IDialCallback*         m_callback;
+	int                    m_id;
+	char*                  m_buffer;
+	unsigned int           m_len;
+	bool                   m_button;
+	unsigned int           m_speed;
+
+	struct usb_device* find(unsigned int vendor, unsigned int product) const;
 };
-
-enum OUTPIN {
-	OUT_NONE = -1,
-	OUT_RTS,
-	OUT_DTR
-};
-
-enum TUNINGHW {
-	TUNINGHW_NONE = 0,
-	TUNINGHW_POWERMATE
-};
-
-const int JACK_API = -1;
-const int JACK_DEV = -1;
 
 #endif

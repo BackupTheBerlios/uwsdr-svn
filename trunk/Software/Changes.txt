@@ -414,3 +414,5 @@ No longer set the DSP IP address is SDRSetup, this is done dynamically when the 
 Option to record the incoming signal as raw I+Q instead of just the audio.
 
 Display the incoming incoming and outgoing I+Q signals on the scope as well as incoming and outgoing audio.
+
+Added (untested) support for the Griffin PowerMate.

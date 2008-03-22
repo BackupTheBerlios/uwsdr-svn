@@ -16,41 +16,29 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	USBBulkReaderWriter_H
-#define	USBBulkReaderWriter_H
+#ifndef	TuningDialog_H
+#define	TuningDialog_H
 
 #include <wx/wx.h>
 
-#include "usb.h"
+#include "Common.h"
 
-#include "RawDataCallback.h"
+class CTuningDialog : public wxDialog {
 
-class CUSBBulkReaderWriter : public wxThread {
     public:
-	CUSBBulkReaderWriter();
+	CTuningDialog(wxWindow* parent, const wxString& title, TUNINGHW hw, int id = -1);
+	virtual ~CTuningDialog();
 
-	virtual void setCallback(IRawDataCallback* callback, int id);
+	void onOK(wxCommandEvent& event);
 
-	virtual struct usb_device* find(unsigned int vendor, unsigned int product) const;
-
-	virtual bool open(unsigned int vendor, unsigned int product, unsigned int inEndPoint, unsigned int outEndPoint);
-
-	virtual bool write(const char* buffer, unsigned int len);
-
-	virtual void close();
-
-	virtual void* Entry();
-
-    protected:
-	virtual ~CUSBBulkReaderWriter();
+	virtual TUNINGHW getTuningHW() const;
 
     private:
-	unsigned int           m_inEndPoint;
-	unsigned int           m_outEndPoint;
-	struct usb_dev_handle* m_handle;
-	char*                  m_buffer;
-	IRawDataCallback*      m_callback;
-	int                    m_id;
+	wxChoice*   m_hwChoice;
+
+	TUNINGHW    m_hw;
+
+	DECLARE_EVENT_TABLE()
 };
 
 #endif

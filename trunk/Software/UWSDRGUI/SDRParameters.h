@@ -157,6 +157,8 @@ class CSDRParameters {
 	int           m_c3;
 	int           m_c4;
 
+	TUNINGHW      m_tuning;
+
 	unsigned int  m_cwSpeed;
 	wxString      m_cwLocal;
 	wxString      m_cwRemote;

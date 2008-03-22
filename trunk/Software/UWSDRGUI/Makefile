@@ -28,7 +28,7 @@ DSPControl.o:	DSPControl.cpp DSPControl.h CWKeyer.h ../Common/DataCallback.h ../
 DTTSPControl.o:	DTTSPControl.cpp DTTSPControl.h UWSDRDefs.h ../Common/Common.h ../DttSP++/DttSP.h
 		$(CC) $(CFLAGS) -c DTTSPControl.cpp
 
-FreqDial.o:	FreqDial.cpp FreqDial.h DialInterface.h UWSDRDefs.h
+FreqDial.o:	FreqDial.cpp FreqDial.h ../Common/DialCallback.h UWSDRDefs.h
 		$(CC) $(CFLAGS) -c FreqDial.cpp
 
 FreqDisplay.o:	FreqDisplay.cpp FreqDisplay.h ../Common/Frequency.h UWSDRDefs.h
@@ -54,14 +54,14 @@ UWSDRApp.o:	UWSDRApp.cpp UWSDRApp.h ConfigChooser.h ../Common/Log.h SDRParameter
 		../Common/SDRDescrFile.h
 		$(CC) $(CFLAGS) -c UWSDRApp.cpp
 
-UWSDRFrame.o:	UWSDRFrame.cpp UWSDRFrame.h ../Common/ControlInterface.h CWKeyboard.h DialInterface.h DSPControl.h FreqDial.h \
+UWSDRFrame.o:	UWSDRFrame.cpp UWSDRFrame.h ../Common/ControlInterface.h CWKeyboard.h ../Common/DialCallback.h DSPControl.h FreqDial.h \
 		FreqDisplay.h FreqKeypad.h ../Common/Frequency.h InfoBox.h ../Common/NullController.h ../Common/UDPDataReader.h \
 		../Common/UDPDataWriter.h SDRParameters.h ../Common/SerialInterface.h SMeter.h ../Common/JackReaderWriter.h \
 		../Common/SoundCardReaderWriter.h ../Common/SoundFileWriter.h SpectrumDisplay.h ../Common/HPSDRDataReader.h \
 		../Common/HPSDRDataWriter.h ../Common/HPSDRAudioReader.h ../Common/HPSDRAudioWriter.h ../Common/HPSDRReaderWriter.h \
 		../Common/SRTXRXController.h UWSDRApp.h ../Common/UWSDRController.h UWSDRDefs.h UWSDRPreferences.h UWSDR.xpm \
 		../Common/Common.h  ../Common/UWSDRDataReader.h ../Common/UWSDRDataWriter.h VoiceKeyboard.h ../Common/HPSDRPTTInterface.h \
-		../Common/HPSDRKeyInterface.h
+		../Common/HPSDRKeyInterface.h ../Common/DialInterface.h ../Common/GriffinPowerMate.h
 		$(CC) $(CFLAGS) -c UWSDRFrame.cpp
 
 UWSDRPreferences.o: UWSDRPreferences.cpp UWSDRPreferences.h DSPControl.h SDRParameters.h UWSDRApp.h UWSDRDefs.h
@@ -74,7 +74,7 @@ VoiceKeyer.o:	VoiceKeyer.cpp VoiceKeyer.h ../Common/DataCallback.h ../Common/Dat
 		../Common/SoundFileReader.h
 		$(CC) $(CFLAGS) -c VoiceKeyer.cpp
 
-VolumeDial.o:	VolumeDial.cpp VolumeDial.h DialInterface.h UWSDRDefs.h
+VolumeDial.o:	VolumeDial.cpp VolumeDial.h ../Common/DialCallback.h UWSDRDefs.h
 		$(CC) $(CFLAGS) -c VolumeDial.cpp
 
 install:	UWSDR

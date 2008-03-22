@@ -19,18 +19,18 @@
 #ifndef	HPSDRReaderWriter_H
 #define	HPSDRReaderWriter_H
 
+#include <wx/wx.h>
 
-#include "USBBulkReaderWriter.h"
+#include "usb.h"
+
 #include "SDRController.h"
-#include "RawDataCallback.h"
 #include "RingBuffer.h"
 #include "DataCallback.h"
 
 
-class CHPSDRReaderWriter : public IRawDataCallback, public ISDRController  {
+class CHPSDRReaderWriter : public ISDRController, public wxThread  {
     public:
 	CHPSDRReaderWriter(unsigned int blockSize, int c0, int c1, int c2, int c3, int c4);
-	virtual ~CHPSDRReaderWriter();
 
 	virtual void setCallback(IControlInterface* callback);
 	virtual void setDataCallback(IDataCallback* callback, int id);
@@ -38,6 +38,8 @@ class CHPSDRReaderWriter : public IRawDataCallback, public ISDRController  {
 
 	virtual bool open();
 	virtual void close();
+
+	virtual void* Entry();
 
 	virtual void writeData(const float* buffer, unsigned int nSamples);
 	virtual void writeAudio(const float* buffer, unsigned int nSamples);
@@ -54,33 +56,38 @@ class CHPSDRReaderWriter : public IRawDataCallback, public ISDRController  {
 
 	virtual void setClockTune(unsigned int clock);
 
-	virtual bool callback(char* buffer, unsigned int len, int id);
+    protected:
+	virtual ~CHPSDRReaderWriter();
 
     private:
-	CUSBBulkReaderWriter* m_usb;
-	unsigned int          m_blockSize;
-	CRingBuffer*          m_dataRingBuffer;
-	CRingBuffer*          m_audioRingBuffer;
-	char*                 m_usbBuffer;
-	float*                m_cbBuffer;
-	float*                m_dataBuffer;
-	float*                m_audioBuffer;
-	IDataCallback*        m_dataCallback;
-	IDataCallback*        m_audioCallback;
-	IControlInterface*    m_controlCallback;
-	int                   m_dataId;
-	int                   m_audioId;
-	bool                  m_transmit;
-	unsigned int          m_frequency;
-	unsigned int          m_robin;
-	int                   m_c0;
-	int                   m_c1;
-	int                   m_c2;
-	int                   m_c3;
-	int                   m_c4;
-	bool                  m_ptt;
-	bool                  m_key;
+	struct usb_dev_handle* m_handle;
+	unsigned int           m_blockSize;
+	CRingBuffer*           m_dataRingBuffer;
+	CRingBuffer*           m_audioRingBuffer;
+	char*                  m_usbOutBuffer;
+	char*                  m_usbInBuffer;
+	float*                 m_cbBuffer;
+	float*                 m_dataBuffer;
+	float*                 m_audioBuffer;
+	IDataCallback*         m_dataCallback;
+	IDataCallback*         m_audioCallback;
+	IControlInterface*     m_controlCallback;
+	int                    m_dataId;
+	int                    m_audioId;
+	bool                   m_transmit;
+	unsigned int           m_frequency;
+	unsigned int           m_robin;
+	int                    m_c0;
+	int                    m_c1;
+	int                    m_c2;
+	int                    m_c3;
+	int                    m_c4;
+	bool                   m_ptt;
+	bool                   m_key;
 
+	struct usb_device* find(unsigned int vendor, unsigned int product) const;
+
+	bool processData(char* buffer, unsigned int len);
 	void writeUSB();
 };
 

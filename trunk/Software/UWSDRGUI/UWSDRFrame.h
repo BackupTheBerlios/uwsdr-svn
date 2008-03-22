@@ -26,7 +26,7 @@
 #include "SpectrumDisplay.h"
 #include "SDRParameters.h"
 #include "SDRController.h"
-#include "DialInterface.h"
+#include "DialCallback.h"
 #include "ControlInterface.h"
 #include "DSPControl.h"
 #include "VolumeDial.h"
@@ -37,9 +37,10 @@
 #include "SMeter.h"
 #include "VoiceKeyboard.h"
 #include "CWKeyboard.h"
+#include "DialInterface.h"
 
 
-class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterface {
+class CUWSDRFrame : public wxFrame, public IDialCallback, public IControlInterface {
     public:
 	CUWSDRFrame(const wxString& title = wxEmptyString);
 	virtual ~CUWSDRFrame();
@@ -63,6 +64,7 @@ class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterf
 	void onCommandNak(wxEvent& event);
 	void onCommandMisc(wxEvent& event);
 	void onConnectionLost(wxEvent& event);
+	void onTune(wxEvent& event);
 
 	virtual void            setParameters(CSDRParameters* parameters);
 	virtual CSDRParameters* getParameters();
@@ -85,6 +87,7 @@ class CUWSDRFrame : public wxFrame, public IDialInterface, public IControlInterf
 	CSDRParameters*   m_parameters;
 	CDSPControl*      m_dsp;
 	ISDRController*   m_sdr;
+	IDialInterface*   m_tuning;
 	bool              m_rxOn;
 	unsigned int      m_txOn;
 	double            m_stepSize;

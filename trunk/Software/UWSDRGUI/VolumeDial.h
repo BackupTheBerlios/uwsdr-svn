@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -21,12 +21,12 @@
 
 #include <wx/wx.h>
 
-#include "DialInterface.h"
+#include "DialCallback.h"
 
 class CVolumeDial : public wxPanel {
 
     public:
-	CVolumeDial(wxWindow* parent, int id, int min, int max, int value, IDialInterface* callback, const wxPoint& pos, const wxSize& size, long style = 0L, const wxString& name = wxPanelNameStr);
+	CVolumeDial(wxWindow* parent, int id, int min, int max, int value, IDialCallback* callback, const wxPoint& pos, const wxSize& size, long style = 0L, const wxString& name = wxPanelNameStr);
 	virtual ~CVolumeDial();
 
 	virtual bool Enable(bool enable = true);
@@ -37,13 +37,13 @@ class CVolumeDial : public wxPanel {
 	void onMouse(wxMouseEvent& event);
 
     private:
-	int             m_width;
-	int             m_height;
-	IDialInterface* m_callback;
-	wxBitmap*       m_bitmap;
-	int             m_min;
-	int             m_max;
-	int             m_value;
+	int            m_width;
+	int            m_height;
+	IDialCallback* m_callback;
+	wxBitmap*      m_bitmap;
+	int            m_min;
+	int            m_max;
+	int            m_value;
 
 	DECLARE_EVENT_TABLE()
 

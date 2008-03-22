@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -21,12 +21,12 @@
 
 #include <wx/wx.h>
 
-#include "DialInterface.h"
+#include "DialCallback.h"
 
 class CFreqDial : public wxPanel {
 
     public:
-	CFreqDial(wxWindow* parent, int id, IDialInterface* callback, const wxPoint& pos, const wxSize& size, long style = 0L, const wxString& name = wxPanelNameStr);
+	CFreqDial(wxWindow* parent, int id, IDialCallback* callback, const wxPoint& pos, const wxSize& size, long style = 0L, const wxString& name = wxPanelNameStr);
 	virtual ~CFreqDial();
 
 	void onPaint(wxPaintEvent& event);
@@ -35,13 +35,13 @@ class CFreqDial : public wxPanel {
 	void onMenu(wxCommandEvent& event);
 
     private:
-	wxMenu*         m_menu;
-	int             m_width;
-	int             m_height;
-	IDialInterface* m_callback;
-	wxBitmap*       m_bitmap;
-	double          m_angle;
-	unsigned int    m_mult;
+	wxMenu*        m_menu;
+	int            m_width;
+	int            m_height;
+	IDialCallback* m_callback;
+	wxBitmap*      m_bitmap;
+	double         m_angle;
+	unsigned int   m_mult;
 
 	DECLARE_EVENT_TABLE()
 

@@ -204,6 +204,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\GriffinPowerMate.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\HPSDRAudioReader.cpp"
 				>
 			</File>
@@ -470,10 +474,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\USBBulkReaderWriter.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\UWSDRController.cpp"
 				>
 			</File>
@@ -515,11 +515,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DialCallback.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DialInterface.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ExternalInterface.h"
 				>
 			</File>
 			<File
 				RelativePath="Frequency.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GriffinPowerMate.h"
 				>
 			</File>
 			<File
@@ -632,10 +644,6 @@
 			</File>
 			<File
 				RelativePath=".\UDPDataWriter.h"
-				>
-			</File>
-			<File
-				RelativePath=".\USBBulkReaderWriter.h"
 				>
 			</File>
 			<File

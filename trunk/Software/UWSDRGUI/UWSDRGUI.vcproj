@@ -613,10 +613,6 @@
 				>
 			</File>
 			<File
-				RelativePath="DialInterface.h"
-				>
-			</File>
-			<File
 				RelativePath="DSPControl.h"
 				>
 			</File>

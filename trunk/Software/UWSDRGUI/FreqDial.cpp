@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ BEGIN_EVENT_TABLE(CFreqDial, wxPanel)
 	EVT_MENU(MENU_25X, CFreqDial::onMenu)
 END_EVENT_TABLE()
 
-CFreqDial::CFreqDial(wxWindow* parent, int id, IDialInterface* callback, const wxPoint& pos, const wxSize& size, long style, const wxString& name) :
+CFreqDial::CFreqDial(wxWindow* parent, int id, IDialCallback* callback, const wxPoint& pos, const wxSize& size, long style, const wxString& name) :
 wxPanel(parent, id, pos, size, style, name),
 m_menu(NULL),
 m_width(size.GetWidth()),

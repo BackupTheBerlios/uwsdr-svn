@@ -277,6 +277,10 @@
 				RelativePath=".\SoundCardDialog.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\TuningDialog.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -304,6 +308,10 @@
 			</File>
 			<File
 				RelativePath=".\SoundCardDialog.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TuningDialog.h"
 				>
 			</File>
 		</Filter>

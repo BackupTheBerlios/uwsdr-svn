@@ -28,6 +28,8 @@ const unsigned int HPSDR_TXBUFFER_SIZE = 512U;
 const unsigned int HPSDR_RXMAX_SAMPLES = 63U;
 const unsigned int HPSDR_TXMAX_SAMPLES = 63U;
 
+const unsigned int HPSDR_TIMEOUT       = 1000U;
+
 const unsigned char HPSDR_SYNC = 0x7F;
 
 const unsigned char HPSDR_MOX   = 0x01;
@@ -50,11 +52,13 @@ const unsigned int C4_POS = 7U;
 
 
 CHPSDRReaderWriter::CHPSDRReaderWriter(unsigned int blockSize, int c0, int c1, int c2, int c3, int c4) :
-m_usb(NULL),
+wxThread(),
+m_handle(NULL),
 m_blockSize(blockSize),
 m_dataRingBuffer(NULL),
 m_audioRingBuffer(NULL),
-m_usbBuffer(NULL),
+m_usbOutBuffer(NULL),
+m_usbInBuffer(NULL),
 m_cbBuffer(NULL),
 m_dataBuffer(NULL),
 m_audioBuffer(NULL),
@@ -74,10 +78,16 @@ m_c4(c4),
 m_ptt(false),
 m_key(false)
 {
+	::usb_init();
+	::usb_find_devices();
+	::usb_find_busses();
+
 	m_dataRingBuffer  = new CRingBuffer(2048U, 2U);
 	m_audioRingBuffer = new CRingBuffer(2048U, 2U);
 
-	m_usbBuffer   = new char[HPSDR_TXBUFFER_SIZE];
+	m_usbOutBuffer = new char[HPSDR_TXBUFFER_SIZE];
+	m_usbInBuffer  = new char[HPSDR_RXBUFFER_SIZE];
+
 	m_cbBuffer    = new float[m_blockSize * 2U];
 	m_dataBuffer  = new float[HPSDR_TXMAX_SAMPLES * 2U];
 	m_audioBuffer = new float[HPSDR_TXMAX_SAMPLES * 2U];
@@ -88,7 +98,9 @@ CHPSDRReaderWriter::~CHPSDRReaderWriter()
 	delete m_dataRingBuffer;
 	delete m_audioRingBuffer;
 
-	delete[] m_usbBuffer;
+	delete[] m_usbOutBuffer;
+	delete[] m_usbInBuffer;
+
 	delete[] m_cbBuffer;
 	delete[] m_dataBuffer;
 	delete[] m_audioBuffer;
@@ -96,10 +108,57 @@ CHPSDRReaderWriter::~CHPSDRReaderWriter()
 
 bool CHPSDRReaderWriter::open()
 {
-	m_usb = new CUSBBulkReaderWriter();
-	m_usb->setCallback(this, 0);
+	struct usb_device* dev = find(HPSDR_VENDOR_ID, HPSDR_PRODUCT_ID);
+	if (dev == NULL) {
+		::wxLogWarning(wxT("Cannot find the USB hardware with vendor: 0x%04X and product: 0x%04X"), HPSDR_VENDOR_ID, HPSDR_PRODUCT_ID);
+		return false;
+	}
 
-	return m_usb->open(HPSDR_VENDOR_ID, HPSDR_PRODUCT_ID, HPSDR_IN_ENDPOINT, HPSDR_OUT_ENDPOINT);
+	m_handle = ::usb_open(dev);
+	if (m_handle == NULL) {
+		::wxLogWarning(wxT("Cannot open the USB device with vendor: 0x%04X and product: 0x%04X"), HPSDR_VENDOR_ID, HPSDR_PRODUCT_ID);
+		return false;
+	}
+
+	int rc = ::usb_set_configuration(m_handle, 1);
+	if (rc != 0) {
+		::wxLogWarning(wxT("Cannot set the USB configuration, rc: %d"), rc);
+		::usb_close(m_handle);
+		return false;
+	} 
+
+	rc = ::usb_claim_interface(m_handle, 0);
+	if (rc != 0) {
+		::wxLogWarning(wxT("Cannot claim the USB interface, rc: %d"), rc);
+		::usb_close(m_handle);
+		return false;
+	}
+
+	rc = ::usb_set_altinterface(m_handle, 0);
+	if (rc != 0) {
+		::wxLogWarning(wxT("Cannot set the alternate USB interface, rc: %d"), rc);
+		::usb_close(m_handle);
+		return false;
+	}
+
+	rc = ::usb_clear_halt(m_handle, HPSDR_IN_ENDPOINT);
+	if (rc != 0) {
+		::wxLogWarning(wxT("Cannot clear the USB halt on end point %u, rc: %d"), HPSDR_IN_ENDPOINT, rc);
+		::usb_close(m_handle);
+		return false;
+	} 
+
+	rc = ::usb_clear_halt(m_handle, HPSDR_OUT_ENDPOINT); 
+	if (rc != 0) {
+		::wxLogWarning(wxT("Cannot clear the USB halt on end point %u, rc: %d"), HPSDR_OUT_ENDPOINT, rc);
+		::usb_close(m_handle);
+		return false;
+	}
+
+	Create();
+	Run();
+
+	return true;
 }
 
 void CHPSDRReaderWriter::setCallback(IControlInterface* callback)
@@ -125,9 +184,29 @@ void CHPSDRReaderWriter::setAudioCallback(IDataCallback* callback, int id)
 	m_audioId       = id;
 }
 
+void* CHPSDRReaderWriter::Entry()
+{
+	wxASSERT(m_handle != NULL);
+	wxASSERT(m_dataCallback != NULL);
+	wxASSERT(m_audioCallback != NULL);
+	wxASSERT(m_controlCallback != NULL);
+
+	while (!TestDestroy()) {
+		unsigned int n = ::usb_bulk_read(m_handle, HPSDR_IN_ENDPOINT, m_usbInBuffer, HPSDR_RXBUFFER_SIZE, HPSDR_TIMEOUT);
+
+		if (n > 0U)
+			processData(m_usbInBuffer, n);
+	}
+
+	::usb_release_interface(m_handle, 0x0);
+	::usb_close(m_handle);
+
+	return NULL;
+}
+
 void CHPSDRReaderWriter::close()
 {
-	m_usb->close();
+	Delete();
 }
 
 void CHPSDRReaderWriter::purgeAudio()
@@ -140,7 +219,7 @@ void CHPSDRReaderWriter::purgeData()
 	m_dataRingBuffer->clear();
 }
 
-bool CHPSDRReaderWriter::callback(char* buffer, unsigned int len, int WXUNUSED(id))
+bool CHPSDRReaderWriter::processData(char* buffer, unsigned int len)
 {
 	if (len != HPSDR_RXBUFFER_SIZE) {
 		::wxLogWarning(wxT("Invalid buffer length received from HPSDR"));
@@ -230,35 +309,35 @@ void CHPSDRReaderWriter::writeUSB()
 {
 	while (m_dataRingBuffer->dataSpace() >= HPSDR_TXMAX_SAMPLES &&
 		   m_audioRingBuffer->dataSpace() >= HPSDR_TXMAX_SAMPLES) {
-		m_usbBuffer[0] = HPSDR_SYNC;
-		m_usbBuffer[1] = HPSDR_SYNC;
-		m_usbBuffer[2] = HPSDR_SYNC;
+		m_usbOutBuffer[0] = HPSDR_SYNC;
+		m_usbOutBuffer[1] = HPSDR_SYNC;
+		m_usbOutBuffer[2] = HPSDR_SYNC;
 
 		if (m_robin > 9U) {
-			m_usbBuffer[C0_POS] = m_c0 & 0xFF;
-			m_usbBuffer[C0_POS] |= HPSDR_CTRL1;
+			m_usbOutBuffer[C0_POS] = m_c0 & 0xFF;
+			m_usbOutBuffer[C0_POS] |= HPSDR_CTRL1;
 			if (m_transmit)
-				m_usbBuffer[C0_POS] |= HPSDR_MOX;
+				m_usbOutBuffer[C0_POS] |= HPSDR_MOX;
 
-			m_usbBuffer[C1_POS] = m_c1 & 0xFF;
-			m_usbBuffer[C1_POS] |= HPSDR_48KHZ;
+			m_usbOutBuffer[C1_POS] = m_c1 & 0xFF;
+			m_usbOutBuffer[C1_POS] |= HPSDR_48KHZ;
 
-			m_usbBuffer[C2_POS] = m_c2 & 0xFF;
+			m_usbOutBuffer[C2_POS] = m_c2 & 0xFF;
 
-			m_usbBuffer[C3_POS] = m_c3 & 0xFF;
+			m_usbOutBuffer[C3_POS] = m_c3 & 0xFF;
 
-			m_usbBuffer[C4_POS] = m_c4 & 0xFF;
+			m_usbOutBuffer[C4_POS] = m_c4 & 0xFF;
 
 			m_robin = 0U;
 		} else {
-			m_usbBuffer[C0_POS] = HPSDR_CTRL2;
+			m_usbOutBuffer[C0_POS] = HPSDR_CTRL2;
 			if (m_transmit)
-				m_usbBuffer[C0_POS] |= HPSDR_MOX;
+				m_usbOutBuffer[C0_POS] |= HPSDR_MOX;
 
-			m_usbBuffer[C1_POS] = (m_frequency >>  0) & 0xFF;
-			m_usbBuffer[C2_POS] = (m_frequency >>  8) & 0xFF;
-			m_usbBuffer[C3_POS] = (m_frequency >> 16) & 0xFF;
-			m_usbBuffer[C4_POS] = (m_frequency >> 24) & 0xFF;
+			m_usbOutBuffer[C1_POS] = (m_frequency >>  0) & 0xFF;
+			m_usbOutBuffer[C2_POS] = (m_frequency >>  8) & 0xFF;
+			m_usbOutBuffer[C3_POS] = (m_frequency >> 16) & 0xFF;
+			m_usbOutBuffer[C4_POS] = (m_frequency >> 24) & 0xFF;
 
 			m_robin++;
 		}
@@ -271,23 +350,23 @@ void CHPSDRReaderWriter::writeUSB()
 			wxInt16 iData = wxInt16(m_audioBuffer[i * 2 + 0] * 32767.0F);
 			wxInt16 qData = wxInt16(m_audioBuffer[i * 2 + 1] * 32767.0F);
 
-			m_usbBuffer[pos++] = (iData >> 8) & 0xFF;
-			m_usbBuffer[pos++] = (iData >> 0) & 0xFF;
+			m_usbOutBuffer[pos++] = (iData >> 8) & 0xFF;
+			m_usbOutBuffer[pos++] = (iData >> 0) & 0xFF;
 
-			m_usbBuffer[pos++] = (qData >> 8) & 0xFF;
-			m_usbBuffer[pos++] = (qData >> 0) & 0xFF;
+			m_usbOutBuffer[pos++] = (qData >> 8) & 0xFF;
+			m_usbOutBuffer[pos++] = (qData >> 0) & 0xFF;
 
 			iData = wxInt16(m_dataBuffer[i * 2 + 0] * 32767.0F);
 			qData = wxInt16(m_dataBuffer[i * 2 + 1] * 32767.0F);
 
-			m_usbBuffer[pos++] = (iData >> 8) & 0xFF;
-			m_usbBuffer[pos++] = (iData >> 0) & 0xFF;
+			m_usbOutBuffer[pos++] = (iData >> 8) & 0xFF;
+			m_usbOutBuffer[pos++] = (iData >> 0) & 0xFF;
 
-			m_usbBuffer[pos++] = (qData >> 8) & 0xFF;
-			m_usbBuffer[pos++] = (qData >> 0) & 0xFF;
+			m_usbOutBuffer[pos++] = (qData >> 8) & 0xFF;
+			m_usbOutBuffer[pos++] = (qData >> 0) & 0xFF;
 		}
 
-		m_usb->write(m_usbBuffer, pos);
+		::usb_bulk_write(m_handle, HPSDR_OUT_ENDPOINT, (char *)m_usbOutBuffer, pos, HPSDR_TIMEOUT);
 	}
 }
 
@@ -317,4 +396,14 @@ void CHPSDRReaderWriter::setTXAndFreq(bool transmit, const CFrequency& freq)
 
 void CHPSDRReaderWriter::setClockTune(unsigned int WXUNUSED(clock))
 {
+}
+
+struct usb_device *CHPSDRReaderWriter::find(unsigned int vendor, unsigned int product) const
+{
+	for (struct usb_bus* bus = usb_get_busses(); bus != NULL; bus = bus->next)
+		for (struct usb_device* dev = bus->devices; dev != NULL; dev = dev->next)
+			if (dev->descriptor.idVendor == vendor && dev->descriptor.idProduct == product)
+				return dev;
+
+	return NULL;
 }

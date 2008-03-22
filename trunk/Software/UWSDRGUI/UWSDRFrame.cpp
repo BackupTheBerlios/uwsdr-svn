@@ -42,7 +42,7 @@
 #include "SoundFileWriter.h"
 #include "JackReaderWriter.h"
 #include "SoundCardReaderWriter.h"
-
+#include "GriffinPowerMate.h"
 
 #if defined(__WXGTK__) || defined(__WXMAC__)
 #include "UWSDR.xpm"
@@ -87,7 +87,8 @@ enum {
 	POWER_KNOB,
 	VOLUME_KNOB,
 	SQUELCH_KNOB,
-	DISPLAY_TIMER
+	DISPLAY_TIMER,
+	TUNING_HARDWARE
 };
 
 DEFINE_EVENT_TYPE(TRANSMIT_ON_EVENT)
@@ -97,6 +98,7 @@ DEFINE_EVENT_TYPE(KEY_OFF_EVENT)
 DEFINE_EVENT_TYPE(COMMAND_NAK_EVENT)
 DEFINE_EVENT_TYPE(COMMAND_MISC_EVENT)
 DEFINE_EVENT_TYPE(CONNECTION_LOST_EVENT)
+DEFINE_EVENT_TYPE(TUNING_EVENT)
 
 BEGIN_EVENT_TABLE(CUWSDRFrame, wxFrame)
 	EVT_BUTTON(MENU_BUTTON, CUWSDRFrame::onMenuButton)
@@ -132,6 +134,7 @@ BEGIN_EVENT_TABLE(CUWSDRFrame, wxFrame)
 	EVT_CUSTOM(COMMAND_NAK_EVENT, wxID_ANY, CUWSDRFrame::onCommandNak)
 	EVT_CUSTOM(COMMAND_MISC_EVENT, wxID_ANY, CUWSDRFrame::onCommandMisc)
 	EVT_CUSTOM(CONNECTION_LOST_EVENT, wxID_ANY, CUWSDRFrame::onConnectionLost)
+	EVT_CUSTOM(TUNING_EVENT, wxID_ANY, CUWSDRFrame::onTune)
 END_EVENT_TABLE()
 
 
@@ -144,6 +147,7 @@ m_timer(),
 m_parameters(NULL),
 m_dsp(NULL),
 m_sdr(NULL),
+m_tuning(NULL),
 m_rxOn(true),
 m_txOn(0U),
 m_stepSize(0.0),
@@ -260,6 +264,24 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	CHPSDRReaderWriter* hpsdr = NULL;
 	CUDPDataReader* reader = NULL;
 	CUDPDataWriter* writer = NULL;
+
+	switch (m_parameters->m_tuning) {
+		case TUNINGHW_POWERMATE:
+			m_tuning = new CGriffinPowerMate();
+			break;
+	}
+
+	if (m_tuning != NULL) {
+		m_tuning->setCallback(this, TUNING_HARDWARE);
+
+		bool ret = m_tuning->open();
+		if (!ret) {
+			::wxLogError(wxT("Problems communicating with the tuning hardware"));
+			::wxMessageBox(_("Problems communicating with the tuning hardware"), _("uWave SDR Error"), wxICON_ERROR);
+			Close(true);
+			return;
+		}
+	}
 
 	switch (m_parameters->m_hardwareType) {
 		case TYPE_UWSDR1:
@@ -833,6 +855,12 @@ void CUWSDRFrame::dialMoved(int id, int value)
 		case SQUELCH_KNOB:
 			m_parameters->m_squelch = value;
 			m_dsp->setSquelch(value);
+			break;
+		case TUNING_HARDWARE: {
+				wxCommandEvent event(TUNING_EVENT);
+				event.SetInt(value);
+				AddPendingEvent(event);
+			}
 			break;
 	}
 }
@@ -1606,6 +1634,8 @@ void CUWSDRFrame::onClose(wxCloseEvent& event)
 		m_sdr->enableRX(false);
 		m_sdr->close();
 		m_dsp->close();
+		if (m_tuning != NULL)
+			m_tuning->close();
 
 		// Grab the parameters from the CW keyboard
 		m_parameters->m_cwSpeed   = m_cwKeyboard->getSpeed();
@@ -1751,4 +1781,12 @@ void CUWSDRFrame::onConnectionLost(wxEvent& WXUNUSED(event))
 	::wxMessageBox(_("Connection to the SDR lost"), _("uWave SDR Error"), wxICON_ERROR);
 
 	Close(true);
+}
+
+void CUWSDRFrame::onTune(wxEvent& event1)
+{
+	wxCommandEvent& event2 = dynamic_cast<wxCommandEvent&>(event1);
+	int value = event2.GetInt();
+
+	dialMoved(FREQ_KNOB, value);
 }

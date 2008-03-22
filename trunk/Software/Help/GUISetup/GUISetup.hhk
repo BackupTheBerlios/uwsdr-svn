@@ -141,6 +141,11 @@
               </object>
 
          <li> <object type="text/sitemap">
+                  <param name="Name" value="Tuning Hardware Setup">
+                  <param name="Local" value="Tuning.htm">
+              </object>
+
+         <li> <object type="text/sitemap">
                   <param name="Name" value="User Audio Setup">
                   <param name="Local" value="UserAudio.htm">
               </object>

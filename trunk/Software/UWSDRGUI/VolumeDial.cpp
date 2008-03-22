@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ BEGIN_EVENT_TABLE(CVolumeDial, wxPanel)
 	EVT_LEFT_DOWN(CVolumeDial::onMouse)
 END_EVENT_TABLE()
 
-CVolumeDial::CVolumeDial(wxWindow* parent, int id, int min, int max, int value, IDialInterface* callback, const wxPoint& pos, const wxSize& size, long style, const wxString& name) :
+CVolumeDial::CVolumeDial(wxWindow* parent, int id, int min, int max, int value, IDialCallback* callback, const wxPoint& pos, const wxSize& size, long style, const wxString& name) :
 wxPanel(parent, id, pos, size, style, name),
 m_width(size.GetWidth()),
 m_height(size.GetHeight()),
