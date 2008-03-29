@@ -36,9 +36,6 @@ const int DATA_WIDTH      = 100;
 const int MESSAGES_WIDTH  = 400;
 const int MESSAGES_HEIGHT = 200;
 
-const CFrequency maxFreq = CFrequency(2451, 0.0);
-const CFrequency minFreq = CFrequency(2299, 0.0);
-
 DEFINE_EVENT_TYPE(COMMAND_EVENT)
 
 BEGIN_EVENT_TABLE(CSDREmulatorFrame, wxFrame)
@@ -53,6 +50,8 @@ END_EVENT_TABLE()
 
 CSDREmulatorFrame::CSDREmulatorFrame(const wxString& address, unsigned int port) :
 wxFrame(NULL, -1, wxString(wxT("uWave SDR Emulator")), wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX  | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN),
+m_minFreq(2299, 0.0),
+m_maxFreq(2451, 0.0),
 m_txFreq(),
 m_rxFreq(),
 m_txEnable(false),
@@ -93,12 +92,6 @@ m_messages(NULL)
 
 	m_sourceLabel = new wxStaticText(panel, -1, wxT("Noisy Carrier"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
 	panelSizer->Add(m_sourceLabel, 0, wxALL, BORDER_SIZE);
-
-	wxStaticText* label1 = new wxStaticText(panel, -1, wxT("Status:"));
-	panelSizer->Add(label1, 0, wxALL, BORDER_SIZE);
-
-	m_connectLabel = new wxStaticText(panel, -1, wxT("Not connected"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
-	panelSizer->Add(m_connectLabel, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label2 = new wxStaticText(panel, -1, wxT("TX Freq:"));
 	panelSizer->Add(label2, 0, wxALL, BORDER_SIZE);
@@ -204,7 +197,7 @@ void CSDREmulatorFrame::onCommand(wxEvent& WXUNUSED(event))
 
 		wxString text;
 
-		text.Printf(wxT("==> %s;"), m_message.c_str());
+		text.Printf(wxT("==> %s"), m_message.c_str());
 		m_messages->Append(text);
 
 		text.Printf(wxT("<== NK%s;"), m_message.c_str());
@@ -223,28 +216,22 @@ void CSDREmulatorFrame::onCommand(wxEvent& WXUNUSED(event))
 
 		if (n >= 0L && n <= 65536L)
 			ack = true;
-
-		echo = true;
 	} else if (command.Cmp(wxT("FR")) == 0) {
-		wxString freqText = m_message.Mid(2);
+		wxString freqText = m_message.Mid(2, pos - 2);
 		CFrequency freq = CFrequency(freqText);
 
-		if (freq >= minFreq && freq < maxFreq) {
+		if (freq >= m_minFreq && freq < m_maxFreq) {
 			m_rxFreq = freq;
 			ack = true;
 		}
-
-		echo = false;
 	} else if (command.Cmp(wxT("FT")) == 0) {
-		wxString freqText = m_message.Mid(2);
+		wxString freqText = m_message.Mid(2, pos - 2);
 		CFrequency freq = CFrequency(freqText);
 
-		if (freq >= minFreq && freq < maxFreq) {
+		if (freq >= m_minFreq && freq < m_maxFreq) {
 			m_txFreq = freq;
 			ack = true;
 		}	
-
-		echo = false;
 	} else if (command.Cmp(wxT("ET")) == 0) {
 		long n;
 		m_message.Mid(2).ToLong(&n);
@@ -283,7 +270,7 @@ void CSDREmulatorFrame::onCommand(wxEvent& WXUNUSED(event))
 		wxString text;
 
 		if (echo) {
-			text.Printf(wxT("==> %s;"), m_message.c_str());
+			text.Printf(wxT("==> %s"), m_message.c_str());
 			m_messages->Append(text);
 
 			text.Printf(wxT("<== AK%s;"), command.c_str());
@@ -307,7 +294,7 @@ void CSDREmulatorFrame::onCommand(wxEvent& WXUNUSED(event))
 
 		wxString text;
 
-		text.Printf(wxT("==> %s;"), m_message.c_str());
+		text.Printf(wxT("==> %s"), m_message.c_str());
 		m_messages->Append(text);
 
 		text.Printf(wxT("<== NK%s;"), command.c_str());

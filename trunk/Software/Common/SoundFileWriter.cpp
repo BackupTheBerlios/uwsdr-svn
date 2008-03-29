@@ -380,7 +380,7 @@ void CSoundFileWriter::write(const float* buffer, unsigned int length)
 	}
 
 	if (n != bytes)
-		::wxLogError(wxT("SoundFileWriter: error from wxFFile::Write(), wanted %u available %lu"), bytes, n);
+		::wxLogError(wxT("SoundFileWriter: error from wxFFile::Write(), wanted %u available %lu"), bytes, (unsigned long)n);
 
 	m_length += n;
 }

@@ -269,6 +269,8 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 		case TUNINGHW_POWERMATE:
 			m_tuning = new CGriffinPowerMate();
 			break;
+		default:
+			break;
 	}
 
 	if (m_tuning != NULL) {
@@ -1632,6 +1634,9 @@ void CUWSDRFrame::onClose(wxCloseEvent& event)
 		if (!m_parameters->m_hardwareReceiveOnly)
 			m_sdr->enableTX(false);
 		m_sdr->enableRX(false);
+
+		::wxSleep(1);		// Give time to shut down
+
 		m_sdr->close();
 		m_dsp->close();
 		if (m_tuning != NULL)

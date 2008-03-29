@@ -42,6 +42,8 @@ class CSDREmulatorFrame : public wxFrame, public IRawDataCallback {
 	virtual bool callback(char* buffer, unsigned int len, int id);
 
     private:
+	CFrequency    m_minFreq;
+	CFrequency    m_maxFreq;
 	CFrequency    m_txFreq;
 	CFrequency    m_rxFreq;
 	bool          m_txEnable;
@@ -52,7 +54,6 @@ class CSDREmulatorFrame : public wxFrame, public IRawDataCallback {
 	wxString      m_message;
 	wxMenuBar*    m_menuBar;
 	wxStaticText* m_sourceLabel;
-	wxStaticText* m_connectLabel;
 	wxStaticText* m_txFreqLabel;
 	wxStaticText* m_rxFreqLabel;
 	wxStaticText* m_txEnabledLabel;

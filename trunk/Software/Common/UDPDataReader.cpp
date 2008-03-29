@@ -18,7 +18,7 @@
 
 #include "UDPDataReader.h"
 
-const unsigned int MAX_SOCK_SIZE = 8192U;
+const unsigned int MAX_SOCK_SIZE = 16384U;
 
 #if !defined(__WINDOWS__)
 #include <netdb.h>

@@ -16,8 +16,8 @@ export PALIBS := -lportaudio
 #
 # Uncomment the two lines below to enable Jack support
 #
-export JACK_DEF := -DUSE_JACK=1
-export JACKLIBS := -ljack
+# export JACK_DEF := -DUSE_JACK=1
+# export JACKLIBS := -ljack
 
 
 export CC := $(shell wx-config --cxx)
