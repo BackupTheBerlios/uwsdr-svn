@@ -61,7 +61,7 @@ __noreturn int main()
  
   CODEC_init();
   
-  RING_init((u8*)&codec_buf, 0, _CODEC_FRAME_SIZE, _CODEC_NUM_OF_BUFS);
+  RING_init(_CODEC_DATA_START_ADR, _CODEC_DATABLOCK_SIZE, _CODEC_NUM_OF_BUFS);
   
   // Init the UWSDR sub system
   UWSDR_init();

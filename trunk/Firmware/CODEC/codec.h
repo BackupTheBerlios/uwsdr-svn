@@ -53,12 +53,14 @@ typedef struct s_codec_hdr {
   u8    dummy;
 } t_codec_hdr;
 
-#define _CODEC_HEADER_SIZE        sizeof(t_codec_hdr)
-#define _CODEC_SAMPLES_PER_FRAME  400
-#define _CODEC_DATA_SIZE          _CODEC_SAMPLES_PER_FRAME * 3 // 1200bytes
-#define _CODEC_FRAME_SIZE         (_CODEC_DATA_SIZE + _CODEC_HEADER_SIZE)
+#define _CODEC_HEADER_SIZE          sizeof(t_codec_hdr)
+#define _CODEC_NUM_OF_BUFS          4
 
-#define _CODEC_NUM_OF_BUFS        4
+#define _CODEC_SAMPLES_PER_BLOCK    480
+#define _CODEC_BLOCKS_PER_FRAME     8
+#define _CODEC_DATABLOCK_SIZE       (_CODEC_SAMPLES_PER_BLOCK * 3) // 1440bytes
+#define _CODEC_FRAME_SIZE           (_CODEC_DATABLOCK_SIZE * _CODEC_BLOCKS_PER_FRAME)
+#define _CODEC_DATA_START_ADR       ((u8*)&codec_buf + _CODEC_HEADER_SIZE)
 
 
 
@@ -69,6 +71,8 @@ typedef struct s_codec_hdr {
 #define CODEC_SET_CS() SET_PIN(CODEC_SPICS_PIN)
 #define CODEC_CLR_CS() CLR_PIN(CODEC_SPICS_PIN)
 
+#define CODEC_GET_BLOCK_ADR(x)    ((u8*)&codec_buf + _CODEC_DATABLOCK_SIZE * x + _CODEC_HEADER_SIZE)
+
 #define CODEC_MODE_RX             (1<<2)
 #define CODEC_MODE_TX             (1<<3)
 #define CODEC_BUFFER_FLAG         (1<<4)
@@ -77,7 +81,7 @@ typedef struct s_codec_hdr {
 
 
 extern u32 codec_status_flag;
-extern u8 codec_buf[_CODEC_NUM_OF_BUFS][_CODEC_FRAME_SIZE];
+extern u8 codec_buf[ _CODEC_NUM_OF_BUFS * _CODEC_DATABLOCK_SIZE + _CODEC_HEADER_SIZE ];
 extern u8 *codec_inactivebuf;
 
 #define CODEC_SET_BUFFER_FULL(x)    (codec_status_flag |= (1 << x))

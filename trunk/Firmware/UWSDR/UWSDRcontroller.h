@@ -19,6 +19,8 @@
 #define _UWSDR_AKER "AKER;"
 #define _UWSDR_AKCF "AKCF;"
 
+#define _UWSDR_TOTSIZEFRAGMENT    
+
 //****************************************************************************
 // UWSDR_init
 // Inits the UWSDR controller

@@ -6,7 +6,7 @@
 #include "ring.h"
 
 #pragma data_alignment=4
-u8    codec_buf[_CODEC_NUM_OF_BUFS][_CODEC_FRAME_SIZE]; // ~6kb = 2000 24bit stereo samples
+u8    codec_buf[ _CODEC_NUM_OF_BUFS * _CODEC_DATABLOCK_SIZE + _CODEC_HEADER_SIZE ]; // ~6kb = 2000 24bit stereo samples
 
 //u16   codec_send_counter0;
 //u16   codec_send_counter1;
@@ -63,7 +63,6 @@ volatile u32 max_Q;
 void CODEC_startRX(void)
 {
   //*** DEFINITON ***
-  t_codec_hdr*  pHdr;
   int i;
 
   //*** INITIALIZATION ***
@@ -75,24 +74,12 @@ void CODEC_startRX(void)
 
   RING_reset();
   
-  //Prepare outbuffer headers
-  pHdr = (t_codec_hdr*)&codec_buf;
-  pHdr->type_char0 = 'D';
-  pHdr->type_char1 = 'R';
-  pHdr->seqNr = 0;
-  pHdr->seqLen = _CODEC_SAMPLES_PER_FRAME;
-  pHdr->agc = 0x01;
-  pHdr->dummy = 0x02;
-  for(i = 1; i < _CODEC_NUM_OF_BUFS; i++) {
-    memcpy(codec_buf[i] , codec_buf, sizeof(t_codec_hdr));
-  }
-  
   CODEC_SET_MODE(CODEC_MODE_RX);
 
   AT91C_BASE_SSC->SSC_RPR = (u32)codec_buf + _CODEC_HEADER_SIZE;
-  AT91C_BASE_SSC->SSC_RCR = _CODEC_DATA_SIZE;
+  AT91C_BASE_SSC->SSC_RCR = _CODEC_DATABLOCK_SIZE;
   AT91C_BASE_SSC->SSC_RNPR = (u32)codec_buf + _CODEC_HEADER_SIZE;
-  AT91C_BASE_SSC->SSC_RNCR = _CODEC_DATA_SIZE;
+  AT91C_BASE_SSC->SSC_RNCR = _CODEC_DATABLOCK_SIZE;
   //AT91C_BASE_SSC->SSC_TNPR = _CODEC_DATA_SIZE;
   
 
@@ -132,9 +119,9 @@ void CODEC_startTX(void)
  
   // prepare ring TX
   AT91C_BASE_SSC->SSC_TPR = (u32)codec_buf;
-  AT91C_BASE_SSC->SSC_TCR = _CODEC_DATA_SIZE;
+  AT91C_BASE_SSC->SSC_TCR = _CODEC_DATABLOCK_SIZE;
   AT91C_BASE_SSC->SSC_TNPR = (u32)codec_buf;
-  AT91C_BASE_SSC->SSC_TNCR = _CODEC_DATA_SIZE;
+  AT91C_BASE_SSC->SSC_TNCR = _CODEC_DATABLOCK_SIZE;
 
   CODEC_sync();
   
@@ -416,11 +403,10 @@ void CODEC_SSC_ISR() //__irq
     //***** RX case *****
     pNext = RING_produce();
     if(pNext != NULL) {
-      pNext += _CODEC_HEADER_SIZE;
       AT91C_BASE_SSC->SSC_RNPR = (u32)pNext;
       AT91C_BASE_SSC->SSC_TNPR = (u32)pNext;
     }
-    AT91C_BASE_SSC->SSC_RNCR = _CODEC_DATA_SIZE;
+    AT91C_BASE_SSC->SSC_RNCR = _CODEC_DATABLOCK_SIZE;
   }
   else {
     //***** TX case *****
@@ -429,7 +415,7 @@ void CODEC_SSC_ISR() //__irq
       AT91C_BASE_SSC->SSC_RNPR = (u32)pNext;
       AT91C_BASE_SSC->SSC_TNPR = (u32)pNext;
     }
-    AT91C_BASE_SSC->SSC_TNCR = _CODEC_DATA_SIZE;
+    AT91C_BASE_SSC->SSC_TNCR = _CODEC_DATABLOCK_SIZE;
   }
   
   

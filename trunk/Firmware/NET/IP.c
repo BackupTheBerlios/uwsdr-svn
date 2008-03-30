@@ -186,7 +186,7 @@ int IP_createReturnFrame(u8* pTX, u8* pRX, u16 newSize)
 // creates an IP frame header
 // returns negative, if error occured, or else, the length of the prepared header
 //****************************************************************************
-int IP_createFrame(u8* pFrame, u32 IP, u16 port, u16 length, u8 proto)
+int IP_createFrame(u8* pFrame, u32 IP, u16 port, u16 length, u8 proto, u16 fragment)
 {
   //*** DEFINITON ***
   int result;
@@ -211,9 +211,14 @@ int IP_createFrame(u8* pFrame, u32 IP, u16 port, u16 length, u8 proto)
   //**** total length (incl. IP header ****
   SET_BE16(&pIPFrame[_IP_HDR_TOTLEN], length + _IP_HDR_SIZE);
   //**** sequential identification ****
-  SET_BE16(&pIPFrame[_IP_HDR_ID], IP_GET_SEQ_NR());
+  if(fragment & _IP_FRAGMENT_MOREFRAG) {
+    SET_BE16(&pIPFrame[_IP_HDR_ID], IP_GET_SEQ_NR_NO_INCR());
+  }
+  else {
+    SET_BE16(&pIPFrame[_IP_HDR_ID], IP_GET_SEQ_NR());
+  }
   //**** Flags and offset for fragmentation ****
-  SET_BE16(&pIPFrame[_IP_HDR_FLAGS], 0);
+  SET_BE16(&pIPFrame[_IP_HDR_FRAGMENT], fragment);
   //**** Time To Live TTL *****
   pIPFrame[_IP_HDR_TTL] = _IP_DEFAULT_TTL;
   //**** Protocol ****
@@ -221,7 +226,7 @@ int IP_createFrame(u8* pFrame, u32 IP, u16 port, u16 length, u8 proto)
   //**** Checksum is calculated in IP_send ****
   pIPFrame[_IP_HDR_HDRCKSUM + 0] = 0;
   pIPFrame[_IP_HDR_HDRCKSUM + 1] = 0;
-
+  
   //**** set my IP as sender ****  
   SET_LE32(pIPFrame + _IP_HDR_SRC_IP, _IP_MYIPADDR);
 

@@ -37,7 +37,7 @@
 #define _IP_HDR_SERVICETYPE       1
 #define _IP_HDR_TOTLEN            2
 #define _IP_HDR_ID                4
-#define _IP_HDR_FLAGS             6
+#define _IP_HDR_FRAGMENT          6
 #define _IP_HDR_TTL               8
 #define _IP_HDR_PROTOCOL          9
 #define _IP_HDR_HDRCKSUM          10
@@ -45,9 +45,13 @@
 #define _IP_HDR_DST_IP            16
 #define _IP_HDR_OPTION            20
 
+#define _IP_FRAGMENT_DONTFRAG     (1 << 14)
+#define _IP_FRAGMENT_MOREFRAG     (1 << 13)
+
 #define _IP_HDR_SIZE              _IP_HDR_OPTION
 
 #define IP_GET_SEQ_NR()           (m_IPseqNr++)
+#define IP_GET_SEQ_NR_NO_INCR()   (m_IPseqNr)
 
 
 typedef struct s_socket {
@@ -74,7 +78,7 @@ int IP_createReturnFrame(u8* pTX, u8* pRX, u16 newSize);
 // IP_createFrame
 // creates an IP frame header
 //****************************************************************************
-int IP_createFrame(u8* pIPFrame, u32 IP, u16 port, u16 length, u8 proto);
+int IP_createFrame(u8* pIPFrame, u32 IP, u16 port, u16 length, u8 proto, u16 fragment);
 
 //****************************************************************************
 // IP_init

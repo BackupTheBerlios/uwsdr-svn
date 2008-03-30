@@ -154,36 +154,65 @@ int UDP_sendto(u32 IP, u16 port, u8* pData, u32 totalSize, u32 frameSize, u32 of
   //*** DEFINITON ***
   int result;
   u8* pUDPHDR;
+  u16 fragment;  
   
   //*** INITIALIZATION ***
   u8* pTX = (u8*)m_pTxBuf;
   
   //*** PARAMETER CHECK ***
+  if(offset > totalSize - frameSize)
+    return _NET_INVALID_FRAME;
+     
   //*** PROGRAM CODE ***
   
+  // are there more fragments to come
+  if(offset + frameSize < totalSize)
+    fragment = (offset >> 3) + _IP_FRAGMENT_MOREFRAG;
+  else {
+    fragment = (offset >> 3);
+  }
+
+  if(offset == 0) {
+    //the first frame is 8 bytes longer because of the UDP header
+    frameSize += _UDP_HDR_SIZE;
+  }
+  else {
+    //the later packets must be shifted by 8 because the caller 
+    //is not aware of the UDP header length
+    fragment += _UDP_HDR_SIZE/8;
+  }
+
   result = IP_createFrame(
                           pTX,
                           IP,
                           port,
-                          frameSize + _UDP_HDR_SIZE,
-                          _IP_PROTTYPE_UDP
+                          frameSize,
+                          _IP_PROTTYPE_UDP,
+                          fragment
                           );
+  
+  //the first frame is a bit greater because the UDP header is included
+  if(offset == 0) {
+
+    //**** prepare UDP header ****
+    pUDPHDR = pTX + result;
+      
+    SET_BE16(pUDPHDR + _UDP_HDR_SRC_PORT, port);
+    SET_BE16(pUDPHDR + _UDP_HDR_DST_PORT, port);
+    SET_BE16(pUDPHDR + _UDP_HDR_PACKET_LEN, totalSize + _UDP_HDR_SIZE);
+    //**** no checksum is calculated ****
+    SET_BE16(pUDPHDR + _UDP_HDR_CKSUM, 0);
+   
+    //**** copy payload **** 
+    memcpy (pUDPHDR + _UDP_HDR_PAYLOAD, pData, frameSize);
+  }
+  else {
+    memcpy (pTX + result, pData, frameSize);
+  }
+  
   
   if(result < _NET_OK)
     return result;
-  
-  //**** prepare UDP header ****
-  pUDPHDR = (u8*)m_pTxBuf + result;
-    
-  SET_BE16(pUDPHDR + _UDP_HDR_SRC_PORT, port);
-  SET_BE16(pUDPHDR + _UDP_HDR_DST_PORT, port);
-  SET_BE16(pUDPHDR + _UDP_HDR_PACKET_LEN, frameSize);
-  //**** no checksum is calculated ****
-  SET_BE16(pUDPHDR + _UDP_HDR_CKSUM, 0);
-   
-  //**** copy payload **** 
-  memcpy (pUDPHDR + _UDP_HDR_PAYLOAD, pData, frameSize);
-  
   
   return IP_sendFrame(pTX, frameSize + _UDP_HDR_SIZE + result);
 }

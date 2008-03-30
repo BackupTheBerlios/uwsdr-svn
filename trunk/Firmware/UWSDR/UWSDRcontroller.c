@@ -28,6 +28,7 @@ int m_datasock;
 //int m_ctrlsock;
 
 u16 m_framecounter;
+u16 m_fragmentcounter;
 u32 hostIP;
 u32 m_state;
 
@@ -50,6 +51,7 @@ void UWSDR_init(void)
 
   hostIP = 0;
   m_framecounter = 0;
+  m_fragmentcounter = 0;
   m_state = 0;
   //m_ctrlsock = UDP_create(0, _UDP_CTRL_PORT, _UDP_MODE_LISTENING, UWSDR_dispatch);
   m_datasock = UDP_create(0, _UDP_CTRL_PORT, _UDP_MODE_DUPLEX, UWSDR_dispatch);
@@ -187,26 +189,58 @@ void UWSDR_upload()
 {
   //*** DEFINITON ***
   u8    *pData;
-  
+  t_codec_hdr*  pHdr;
+  int   TXlen;
+
   //*** INITIALIZATION ***
   _DBG_STATE_POS(_DBG_STATE_UDP);
-
+  TXlen = _CODEC_DATABLOCK_SIZE;
+  
   //*** PARAMETER CHECK ***
   //*** PROGRAM CODE ***
   
+  //get the oldest data from the ring
   pData = RING_consume();
 
-  
+  // is there data ?
   if(pData == NULL)
     return;
 
   DBG_LED1_ON();
 
+  //if this is the first frame within the fragment
+  if(m_fragmentcounter == 0) {
+    //create the uWSDR data header for this frame in front of the data
+    pHdr = (t_codec_hdr*) (pData - _CODEC_HEADER_SIZE);
+    pHdr->type_char0 = 'D';
+    pHdr->type_char1 = 'R';
+    pHdr->seqNr = m_framecounter;
+    pHdr->seqLen = _CODEC_SAMPLES_PER_BLOCK * _CODEC_BLOCKS_PER_FRAME / 2;
+    pHdr->agc = 0x01;
+    pHdr->dummy = 0x02;
+    //correct buffer sizes and position for the header inclusion
+    pData = (u8*)pHdr;
+    TXlen += _CODEC_HEADER_SIZE;
   // increase sample frame counter
-  SET_LE16(pData+2, m_framecounter);
-  m_framecounter += 2;
+    m_framecounter += 2;
+  }
 
-  UDP_sendto(hostIP, _UDP_CTRL_PORT, pData, 0, _CODEC_FRAME_SIZE, 0);
+  UDP_sendto(
+             hostIP,
+             _UDP_CTRL_PORT,
+             pData,
+             _CODEC_FRAME_SIZE + _CODEC_HEADER_SIZE,
+             TXlen,
+             m_fragmentcounter
+             );
+  
+  //increase the fragment pointer
+  m_fragmentcounter += TXlen;
+  
+  if(m_fragmentcounter == (_CODEC_FRAME_SIZE + _CODEC_HEADER_SIZE)) {
+    //reset fragment counter
+    m_fragmentcounter = 0;
+  }
 
   if (m_framecounter > 0xFFFF) {
     if ((m_framecounter % 2) == 0)

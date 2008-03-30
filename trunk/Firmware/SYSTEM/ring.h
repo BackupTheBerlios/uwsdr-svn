@@ -26,7 +26,7 @@ void RING_reset(void);
 // RING_init
 // Init for the ring buffer
 //****************************************************************************
-void RING_init(u8* pBuffer, int elements, int elementSize, int numOfElements);
+void RING_init(u8* pBuffer, int elementSize, int numOfElements);
 
 //****************************************************************************
 // RING_consume
