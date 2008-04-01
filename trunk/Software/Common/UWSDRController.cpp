@@ -77,13 +77,15 @@ void CUWSDRController::enableTX(bool on)
 	if (m_enableTX == on)
 		return;
 
+	wxString command;
+
 	switch (m_version) {
-		case 1: {
-				wxString command = on ? wxT("ET1;") : wxT("ET0;");
-				m_commands.push_back(command);
-				m_flag.Post();
-			}
+		case 1:
+			command = on ? wxT("ET1;") : wxT("ET0;");
+			m_commands.push_back(command);
+			m_flag.Post();
 			break;
+
 		default:
 			wxASSERT(false);
 			break;
@@ -97,13 +99,15 @@ void CUWSDRController::enableRX(bool on)
 	if (m_enableRX == on)
 		return;
 
+	wxString command;
+
 	switch (m_version) {
-		case 1: {
-				wxString command = on ? wxT("ER1;") : wxT("ER0;");
-				m_commands.push_back(command);
-				m_flag.Post();
-			}
+		case 1:
+			command = on ? wxT("ER1;") : wxT("ER0;");
+			m_commands.push_back(command);
+			m_flag.Post();
 			break;
+
 		default:
 			wxASSERT(false);
 			break;
@@ -120,15 +124,16 @@ void CUWSDRController::setTXAndFreq(bool transmit, const CFrequency& freq)
 	if (!transmit && !m_tx && freq == m_rxFreq)
 		return;
 
+	wxString command;
+
 	if (transmit && freq != m_txFreq) {
 		switch (m_version) {
-			case 1: {
-					wxString command;
-					command.Printf(wxT("FT%s;"), freq.getString().c_str());
-					m_commands.push_back(command);
-					m_flag.Post();
-				}
+			case 1:
+				command.Printf(wxT("FT%s;"), freq.getString().c_str());
+				m_commands.push_back(command);
+				m_flag.Post();
 				break;
+
 			default:
 				wxASSERT(false);
 				break;
@@ -137,13 +142,12 @@ void CUWSDRController::setTXAndFreq(bool transmit, const CFrequency& freq)
 		m_txFreq = freq;
 	} else if (!transmit && freq != m_rxFreq) {
 		switch (m_version) {
-			case 1: {
-					wxString command;
-					command.Printf(wxT("FR%s;"), freq.getString().c_str());
-					m_commands.push_back(command);
-					m_flag.Post();
-				}
+			case 1:
+				command.Printf(wxT("FR%s;"), freq.getString().c_str());
+				m_commands.push_back(command);
+				m_flag.Post();
 				break;
+
 			default:
 				wxASSERT(false);
 				break;
@@ -156,12 +160,16 @@ void CUWSDRController::setTXAndFreq(bool transmit, const CFrequency& freq)
 		return;
 
 	switch (m_version) {
-		case 1: {
-				wxString command = transmit ? wxT("TX1;") : wxT("TX0;");
-				m_commands.push_back(command);
-				m_flag.Post();
-			}
+		case 1:
+			command = transmit ? wxT("ER0;") : wxT("TX0;");
+			m_commands.push_back(command);
+			m_flag.Post();
+
+			command = transmit ? wxT("TX1;") : wxT("ER1;");
+			m_commands.push_back(command);
+			m_flag.Post();
 			break;
+
 		default:
 			wxASSERT(false);
 			break;
@@ -177,14 +185,15 @@ void CUWSDRController::setClockTune(unsigned int clock)
 	if (clock == m_clock)
 		return;
 
+	wxString command;
+
 	switch (m_version) {
-		case 1: {
-				wxString command;
-				command.Printf(wxT("CF%u;"), clock);
-				m_commands.push_back(command);
-				m_flag.Post();
-			}
+		case 1:
+			command.Printf(wxT("CF%u;"), clock);
+			m_commands.push_back(command);
+			m_flag.Post();
 			break;
+
 		default:
 			wxASSERT(false);
 			break;

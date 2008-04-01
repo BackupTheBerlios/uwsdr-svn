@@ -37,7 +37,7 @@ m_waiting(),
 m_requests(0U),
 m_overruns(0U),
 m_packets(0U),
-m_maxSamples(maxSamples),
+m_maxSamples(360U),		// m_maxSamples(maxSamples),		XXX
 m_packetRequests(0U),
 m_enabled(false)
 {
