@@ -96,7 +96,7 @@ DEFINE_EVENT_TYPE(TRANSMIT_OFF_EVENT)
 DEFINE_EVENT_TYPE(KEY_ON_EVENT)
 DEFINE_EVENT_TYPE(KEY_OFF_EVENT)
 DEFINE_EVENT_TYPE(COMMAND_NAK_EVENT)
-DEFINE_EVENT_TYPE(COMMAND_MISC_EVENT)
+DEFINE_EVENT_TYPE(COMMAND_ERROR_EVENT)
 DEFINE_EVENT_TYPE(CONNECTION_LOST_EVENT)
 DEFINE_EVENT_TYPE(TUNING_EVENT)
 
@@ -132,7 +132,7 @@ BEGIN_EVENT_TABLE(CUWSDRFrame, wxFrame)
 	EVT_CUSTOM(KEY_ON_EVENT, wxID_ANY, CUWSDRFrame::onKeyOn)
 	EVT_CUSTOM(KEY_OFF_EVENT, wxID_ANY, CUWSDRFrame::onKeyOff)
 	EVT_CUSTOM(COMMAND_NAK_EVENT, wxID_ANY, CUWSDRFrame::onCommandNak)
-	EVT_CUSTOM(COMMAND_MISC_EVENT, wxID_ANY, CUWSDRFrame::onCommandMisc)
+	EVT_CUSTOM(COMMAND_ERROR_EVENT, wxID_ANY, CUWSDRFrame::onCommandError)
 	EVT_CUSTOM(CONNECTION_LOST_EVENT, wxID_ANY, CUWSDRFrame::onConnectionLost)
 	EVT_CUSTOM(TUNING_EVENT, wxID_ANY, CUWSDRFrame::onTune)
 END_EVENT_TABLE()
@@ -511,6 +511,9 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_dsp->swapIQ(m_parameters->m_swapIQ);
 
+	m_dsp->setBinaural(m_parameters->m_binaural);
+	m_dsp->setPan(m_parameters->m_pan);
+
 	m_sMeter->setRXMeter(m_parameters->m_rxMeter);
 	m_sMeter->setTXMeter(m_parameters->m_txMeter);
 
@@ -528,7 +531,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 		m_voiceKeyboard->setFile(j, m_parameters->m_voiceFile[j]);
 
 	m_timer.SetOwner(this, DISPLAY_TIMER);
-	m_timer.Start(100);
+	m_timer.Start(200);
 
 	// If receive only disable/remove transmit possibilities
 	if (m_parameters->m_hardwareReceiveOnly) {
@@ -1395,6 +1398,9 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 					m_dsp->setWeaver(m_parameters->m_weaver);
 					m_dsp->swapIQ(m_parameters->m_swapIQ);
 
+					m_dsp->setBinaural(m_parameters->m_binaural);
+					m_dsp->setPan(m_parameters->m_pan);
+
 					normaliseFreq();
 				}
 
@@ -1444,13 +1450,18 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 		case MENU_CW_KEYBOARD:
 			m_cwKeyboard->Show(true);
 			break;
-		case MENU_RECORD: {
-				m_record = !m_record;
-				bool ret = m_dsp->setRecord(m_record, m_parameters->m_recordRaw);
+		case MENU_RECORD:
+			m_record = !m_record;
+
+			if (m_record) {
+				bool ret = m_dsp->setRecordOn(m_parameters->m_recordType);
+
 				if (!ret) {
 					m_record = false;
 					::wxMessageBox(_("Cannot open the sound file for recording"), _("uWave SDR Error"), wxICON_ERROR);
 				}
+			} else {
+				m_dsp->setRecordOff();
 			}
 			break;
 		case wxID_HELP:
@@ -1747,9 +1758,9 @@ void CUWSDRFrame::commandNak(const wxString& message)
 	AddPendingEvent(event);
 }
 
-void CUWSDRFrame::commandMisc(const wxString& message)
+void CUWSDRFrame::commandError(const wxString& message)
 {
-	wxCommandEvent event(COMMAND_MISC_EVENT);
+	wxCommandEvent event(COMMAND_ERROR_EVENT);
 	event.SetString(message);
 
 	AddPendingEvent(event);
@@ -1771,13 +1782,13 @@ void CUWSDRFrame::onCommandNak(wxEvent& event1)
 	::wxMessageBox(_("Received a NAK from the SDR\n") + message, _("uWave SDR Error"), wxICON_ERROR);
 }
 
-void CUWSDRFrame::onCommandMisc(wxEvent& event1)
+void CUWSDRFrame::onCommandError(wxEvent& event1)
 {
 	wxCommandEvent& event2 = dynamic_cast<wxCommandEvent&>(event1);
 	wxString message = event2.GetString();
 
-	::wxLogError(wxT("Unknown reply from the SDR: ") + message);
-	::wxMessageBox(_("Unknown reply from the SDR\n") + message, _("uWave SDR Error"), wxICON_ERROR);
+	::wxLogError(message);
+	::wxMessageBox(message, _("uWave SDR Error"), wxICON_ERROR);
 }
 
 void CUWSDRFrame::onConnectionLost(wxEvent& WXUNUSED(event))

@@ -62,7 +62,7 @@ class CUWSDRFrame : public wxFrame, public IDialCallback, public IControlInterfa
 	void onKeyOn(wxEvent& event);
 	void onKeyOff(wxEvent& event);
 	void onCommandNak(wxEvent& event);
-	void onCommandMisc(wxEvent& event);
+	void onCommandError(wxEvent& event);
 	void onConnectionLost(wxEvent& event);
 	void onTune(wxEvent& event);
 
@@ -73,7 +73,7 @@ class CUWSDRFrame : public wxFrame, public IDialCallback, public IControlInterfa
 
 	virtual void commandAck(const wxString& message);
 	virtual void commandNak(const wxString& message);
-	virtual void commandMisc(const wxString& message);
+	virtual void commandError(const wxString& message);
 	virtual void connectionLost();
 
 	virtual CWERROR    sendCW(unsigned int speed, const wxString& text, CWSTATUS state);

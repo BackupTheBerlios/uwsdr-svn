@@ -103,7 +103,6 @@ class CDttSP {
 	float getTXOffset() const;
 	float getRXOffset() const;
 
-	void  audioEntry(const float* input_i, const float* input_q, float* output_i, float* output_q, unsigned int nframes);	// Unused by the GUI
 	void  audioEntry(const float* input, float* output, unsigned int nframes);
 
 	void  process();

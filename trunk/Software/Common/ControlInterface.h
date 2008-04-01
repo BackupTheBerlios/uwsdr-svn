@@ -29,7 +29,7 @@ class IControlInterface {
 
 	virtual void commandAck(const wxString& message) = 0;
 	virtual void commandNak(const wxString& message) = 0;
-	virtual void commandMisc(const wxString& message) = 0;
+	virtual void commandError(const wxString& message) = 0;
 	virtual void connectionLost() = 0;
 };
 

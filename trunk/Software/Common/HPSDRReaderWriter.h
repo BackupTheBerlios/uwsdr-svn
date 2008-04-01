@@ -82,12 +82,18 @@ class CHPSDRReaderWriter : public ISDRController, public wxThread  {
 	int                    m_c2;
 	int                    m_c3;
 	int                    m_c4;
+	unsigned int           m_offset;
+	wxInt32                m_iData;
+	wxInt32                m_qData;
+	wxInt16                m_audio;
 	bool                   m_ptt;
 	bool                   m_key;
+	bool                   m_overflow;
+	unsigned int           m_space;
 
 	struct usb_device* find(unsigned int vendor, unsigned int product) const;
 
-	bool processData(char* buffer, unsigned int len);
+	void processData(char* buffer, unsigned int len);
 	void writeUSB();
 };
 

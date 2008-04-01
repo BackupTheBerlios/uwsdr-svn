@@ -112,7 +112,9 @@ const wxChar* KEY_RF_GAIN            = wxT("/RFGain");
 const wxChar* KEY_SQUELCH            = wxT("/Squelch");
 const wxChar* KEY_MIC_GAIN           = wxT("/MicGain");
 const wxChar* KEY_POWER              = wxT("/Power");
-const wxChar* KEY_RECORD_RAW         = wxT("/RecordRaw");
+const wxChar* KEY_BINAURAL           = wxT("/Binaural");
+const wxChar* KEY_PAN                = wxT("/Pan");
+const wxChar* KEY_RECORD_TYPE        = wxT("/RecordType");
 const wxChar* KEY_HPSDRC0            = wxT("/HPSDRC0");
 const wxChar* KEY_HPSDRC1            = wxT("/HPSDRC1");
 const wxChar* KEY_HPSDRC2            = wxT("/HPSDRC2");
@@ -193,6 +195,12 @@ bool CUWSDRApp::OnInit()
 
 	::wxLogMessage(wxT("Using hardware configuration file: ") + m_parameters->m_fileName);
 
+	// We interpolate so that we don't send too many commands to the hardware
+	if (m_parameters->m_hardwareStepSize < 10.0F &&
+		m_parameters->m_hardwareType == TYPE_UWSDR1)
+		m_parameters->m_hardwareStepSize = 10.0F;
+
+	// We cannot use Weaver on hardware with too large step sizes
 	if (m_parameters->m_hardwareStepSize > 100.0F      ||
 	    m_parameters->m_hardwareType == TYPE_AUDIORX   ||
 	    m_parameters->m_hardwareType == TYPE_AUDIOTXRX ||
@@ -398,8 +406,10 @@ bool CUWSDRApp::readConfig()
 	wxString keyRfGain          = wxT("/") + m_parameters->m_name + KEY_RF_GAIN;
 	wxString keySquelch         = wxT("/") + m_parameters->m_name + KEY_SQUELCH;
 	wxString keyMicGain         = wxT("/") + m_parameters->m_name + KEY_MIC_GAIN;
+	wxString keyBinaural        = wxT("/") + m_parameters->m_name + KEY_BINAURAL;
+	wxString keyPan             = wxT("/") + m_parameters->m_name + KEY_PAN;
 	wxString keyPower           = wxT("/") + m_parameters->m_name + KEY_POWER;
-	wxString keyRecordRaw       = wxT("/") + m_parameters->m_name + KEY_RECORD_RAW;
+	wxString keyRecordType      = wxT("/") + m_parameters->m_name + KEY_RECORD_TYPE;
 	wxString keyHpsdrC0         = wxT("/") + m_parameters->m_name + KEY_HPSDRC0;
 	wxString keyHpsdrC1         = wxT("/") + m_parameters->m_name + KEY_HPSDRC1;
 	wxString keyHpsdrC2         = wxT("/") + m_parameters->m_name + KEY_HPSDRC2;
@@ -603,7 +613,7 @@ bool CUWSDRApp::readConfig()
 
 	profile->Read(keySpectrumType,     &num, SPECTRUM_PANADAPTER1);
 	m_parameters->m_spectrumType =  SPECTRUMTYPE(num);
-	profile->Read(keySpectrumSpeed,    &num, SPECTRUM_100MS);
+	profile->Read(keySpectrumSpeed,    &num, SPECTRUM_200MS);
 	m_parameters->m_spectrumSpeed = SPECTRUMSPEED(num);
 	profile->Read(keySpectrumDB,       &num, SPECTRUM_40DB);
 	m_parameters->m_spectrumDB =    SPECTRUMRANGE(num);
@@ -628,7 +638,11 @@ bool CUWSDRApp::readConfig()
 	profile->Read(keyPower,            &num, 0);
 	m_parameters->m_power = num;
 
-	profile->Read(keyRecordRaw,        &m_parameters->m_recordRaw, false);
+	profile->Read(keyBinaural,         &m_parameters->m_binaural, false);
+	profile->Read(keyPan,              &m_parameters->m_pan,      0);
+
+	profile->Read(keyRecordType,       &num, RECORD_MONO_AUDIO);
+	m_parameters->m_recordType = RECORDTYPE(num);
 
 	profile->Read(keyHpsdrC0,          &num, 0x00);
 	m_parameters->m_c0 = num;
@@ -742,7 +756,9 @@ void CUWSDRApp::writeConfig()
 	wxString keySquelch       = wxT("/") + m_parameters->m_name + KEY_SQUELCH;
 	wxString keyMicGain       = wxT("/") + m_parameters->m_name + KEY_MIC_GAIN;
 	wxString keyPower         = wxT("/") + m_parameters->m_name + KEY_POWER;
-	wxString keyRecordRaw     = wxT("/") + m_parameters->m_name + KEY_RECORD_RAW;
+	wxString keyBinaural      = wxT("/") + m_parameters->m_name + KEY_BINAURAL;
+	wxString keyPan           = wxT("/") + m_parameters->m_name + KEY_PAN;
+	wxString keyRecordType    = wxT("/") + m_parameters->m_name + KEY_RECORD_TYPE;
 	wxString keyCwSpeed       = wxT("/") + m_parameters->m_name + KEY_CW_SPEED;
 	wxString keyCwLocal       = wxT("/") + m_parameters->m_name + KEY_CW_LOCAL;
 	wxString keyCwRemote      = wxT("/") + m_parameters->m_name + KEY_CW_REMOTE;
@@ -839,8 +855,10 @@ void CUWSDRApp::writeConfig()
 	profile->Write(keyRfGain,           int(m_parameters->m_rfGain));
 	profile->Write(keySquelch,          int(m_parameters->m_squelch));
 	profile->Write(keyMicGain,          int(m_parameters->m_micGain));
+	profile->Write(keyBinaural,         m_parameters->m_binaural);
+	profile->Write(keyPan,              m_parameters->m_pan);
 	profile->Write(keyPower,            int(m_parameters->m_power));
-	profile->Write(keyRecordRaw,        m_parameters->m_recordRaw);
+	profile->Write(keyRecordType,       m_parameters->m_recordType);
 	profile->Write(keyCwSpeed,          int(m_parameters->m_cwSpeed));
 	profile->Write(keyCwLocal,          m_parameters->m_cwLocal);
 	profile->Write(keyCwRemote,         m_parameters->m_cwRemote);

@@ -149,7 +149,10 @@ class CSDRParameters {
 	unsigned int  m_micGain;
 	unsigned int  m_power;
 
-	bool          m_recordRaw;
+	bool          m_binaural;
+	int           m_pan;
+
+	RECORDTYPE    m_recordType;
 
 	int           m_c0;
 	int           m_c1;

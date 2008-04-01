@@ -57,7 +57,7 @@ m_micGain(0.0F),
 m_power(0.0F),
 m_mode(MODE_USB),
 m_swap(false),
-m_recordRaw(false),
+m_recordType(RECORD_STEREO_IQ),
 m_clockId(-1),
 m_lastTXIn(false),
 m_lastKeyIn(false),
@@ -184,7 +184,7 @@ void* CDSPControl::Entry()
 			m_rxWriter->write(m_rxBuffer, nSamples);
 
 			// Don't record when transmitting
-			if (m_record != NULL && !m_recordRaw && !m_transmit)
+			if (m_record != NULL && (m_recordType == RECORD_MONO_AUDIO || m_recordType == RECORD_STEREO_AUDIO) && !m_transmit)
 				m_record->write(m_rxBuffer, nSamples);
 		}
 	}
@@ -289,7 +289,7 @@ bool CDSPControl::openIO()
 
 void CDSPControl::closeIO()
 {
-	setRecord(false, false);
+	setRecordOff();
 
 	m_rxReader->close();
 	m_txReader->close();
@@ -350,7 +350,7 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 					return;
 
 				// Don't record when transmitting
-				if (m_record != NULL && m_recordRaw)
+				if (m_record != NULL && m_recordType == RECORD_STEREO_IQ)
 					m_record->write(m_rxBuffer, nSamples);
 
 				scaleBuffer(inBuffer, nSamples, m_rfGain, m_swap);
@@ -584,6 +584,16 @@ void CDSPControl::setTXIAndQ(int phase, int gain)
 	m_dttsp->setTXIAndQ(phase, gain);
 }
 
+void CDSPControl::setBinaural(bool onOff)
+{
+	m_dttsp->setBinaural(onOff);
+}
+
+void CDSPControl::setPan(int value)
+{
+	m_dttsp->setPan(value);
+}
+
 float CDSPControl::getMeter(METERPOS type)
 {
 	return m_dttsp->getMeter(type);
@@ -639,17 +649,27 @@ void CDSPControl::setSquelch(unsigned int value)
 	m_dttsp->setSquelch(value);
 }
 
-bool CDSPControl::setRecord(bool record, bool raw)
+bool CDSPControl::setRecordOn(RECORDTYPE type)
 {
-	if (record && m_record == NULL) {
+	if (m_record == NULL) {
 		wxDateTime now = wxDateTime::Now();
 		wxString fileName = now.Format(wxT("%Y%m%d-%H%M%S.wav"));
 
-		CSoundFileWriter* sdfw;
-		if (raw)
-			sdfw = new CSoundFileWriter(fileName, 2U, 32U);
-		else
-			sdfw = new CSoundFileWriter(fileName, 1U, 16U);
+		CSoundFileWriter* sdfw = NULL;
+		switch (type) {
+			case RECORD_MONO_AUDIO:
+				sdfw = new CSoundFileWriter(fileName, 1U, 16U);
+				break;
+			case RECORD_STEREO_AUDIO:
+				sdfw = new CSoundFileWriter(fileName, 2U, 16U);
+				break;
+			case RECORD_STEREO_IQ:
+				sdfw = new CSoundFileWriter(fileName, 2U, 32U);
+				break;
+			default:
+				::wxLogError(wxT("Unknown recording type = %d"), type);				
+				return false;
+		}
 
 		bool ret = sdfw->open(m_sampleRate, m_blockSize);
 		if (!ret) {
@@ -659,11 +679,18 @@ bool CDSPControl::setRecord(bool record, bool raw)
 
 		sdfw->enable();
 
-		m_recordRaw = raw;
-		m_record    = sdfw;
+		m_recordType = type;
+		m_record     = sdfw;
 
 		::wxLogMessage(wxT("Opened file %s for recording"), fileName.c_str());
-	} else if (!record && m_record != NULL) {
+	}
+
+	return true;
+}
+
+void CDSPControl::setRecordOff()
+{
+	if (m_record != NULL) {
 		m_record->disable();
 
 		CSoundFileWriter* sdfw = m_record;
@@ -673,8 +700,6 @@ bool CDSPControl::setRecord(bool record, bool raw)
 
 		::wxLogMessage(wxT("Closed sound file"));
 	}
-
-	return true;
 }
 
 void CDSPControl::scaleBuffer(float* buffer, unsigned int nSamples, float scale, bool swap)

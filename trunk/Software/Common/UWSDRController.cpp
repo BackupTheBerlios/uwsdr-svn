@@ -285,7 +285,7 @@ bool CUWSDRController::callback(char* buffer, unsigned int len, int WXUNUSED(id)
 				return true;
 			} else if (::strncmp(buffer, "DR", 2) != 0) {
 				buffer[len] = '\0';
-				m_callback->commandMisc(buffer);
+				m_callback->commandError(buffer);
 				return true;
 			}
 

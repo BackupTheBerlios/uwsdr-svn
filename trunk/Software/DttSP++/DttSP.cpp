@@ -467,7 +467,7 @@ float CDttSP::getMeter(METERTYPE mt)
 					break;
 			}
 			break;
-    }
+	}
 
 	SEM_POST(m_update);
 
@@ -509,64 +509,6 @@ float CDttSP::getTXOffset() const
 float CDttSP::getRXOffset() const
 {
 	return m_rx->getOffset();
-}
-
-void CDttSP::audioEntry(const float* input_i, const float* input_q, float* output_i, float* output_q, unsigned int nframes)
-{
-	ASSERT(input_i != NULL);
-	ASSERT(input_q != NULL);
-	ASSERT(output_i != NULL);
-	ASSERT(output_q != NULL);
-
-	if (m_suspend) {
-		::memset(output_i, 0x00, nframes * sizeof(float));
-		::memset(output_q, 0x00, nframes * sizeof(float));
-		return;
-	}
-
-	if (m_outputI->dataSpace() >= nframes && m_outputQ->dataSpace() >= nframes) {
-		m_outputI->getData(output_i, nframes);
-		m_outputQ->getData(output_q, nframes);
-	} else {
-		m_inputI->clear();
-		m_inputQ->clear();
-		m_outputI->clear();
-		m_outputQ->clear();
-
-		::memset(output_i, 0x00, nframes * sizeof(float));
-		::memset(output_q, 0x00, nframes * sizeof(float));
-
-#if defined(__WXMSW__) || defined(__WXGTK__) || defined(__WXMAC__)
-		wxLogError(wxT("Not enough data in the output ring buffer"));
-#elif defined(WIN32)
-		// No WIN32 logging yet
-#else
-		::syslog(LOG_ERR, "Not enough data in the output ring buffer");
-#endif
-	}
-
-	// input: copy from port to ring
-	if (m_inputI->freeSpace() >= nframes && m_inputQ->freeSpace() >= nframes) {
-		m_inputI->addData(input_i, nframes);
-		m_inputQ->addData(input_q, nframes);
-	} else {
-		m_inputI->clear();
-		m_inputQ->clear();
-		m_outputI->clear();
-		m_outputQ->clear();
-
-#if defined(__WXMSW__) || defined(__WXGTK__) || defined(__WXMAC__)
-		wxLogError(wxT("Not enough space in the input ring buffer"));
-#elif defined(WIN32)
-		// No WIN32 logging yet
-#else
-		::syslog(LOG_ERR, "Not enough space in the input ring buffer");
-#endif
-	}
-
-	// if enough accumulated in ring, fire dsp
-	if (m_inputI->dataSpace() >= m_frames && m_inputQ->dataSpace() >= m_frames)
-		SEM_POST(m_buffer);
 }
 
 void CDttSP::audioEntry(const float* input, float* output, unsigned int nframes)

@@ -58,6 +58,9 @@ class CDTTSPControl : public wxThread {
 	virtual void setRXIAndQ(int phase, int gain);
 	virtual void setTXIAndQ(int phase, int gain);
 
+	virtual void setBinaural(bool onOff);
+	virtual void setPan(int value);
+
 	virtual float getMeter(METERPOS type);
 	virtual void  getSpectrum(float* spectrum);
 	virtual void  getPhase(float* spectrum);
@@ -96,6 +99,8 @@ class CDTTSPControl : public wxThread {
 	int          m_rxGain;
 	int          m_txPhase;
 	int          m_txGain;
+	bool         m_binaural;
+	int          m_pan;
 	unsigned int m_squelch;
 	bool         m_started;
 

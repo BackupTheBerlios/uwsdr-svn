@@ -83,7 +83,9 @@ m_nb2Button(NULL),
 m_nb2Value(NULL),
 m_spButton(NULL),
 m_spValue(NULL),
-m_recordRaw(NULL),
+m_binButton(NULL),
+m_panValue(NULL),
+m_recordType(NULL),
 m_carrierLevel(NULL),
 m_alcAttack(NULL),
 m_alcDecay(NULL),
@@ -182,7 +184,20 @@ m_swapIQ(NULL)
 	m_nb2Button->SetValue(m_parameters->m_nb2On);
 	m_nb2Value->SetValue(m_parameters->m_nb2Value);
 
-	m_recordRaw->SetSelection(m_parameters->m_recordRaw ? 1 : 0);
+	switch (m_parameters->m_recordType) {
+		case RECORD_MONO_AUDIO:
+			m_recordType->SetSelection(0);
+			break;
+		case RECORD_STEREO_AUDIO:
+			m_recordType->SetSelection(1);
+			break;
+		case RECORD_STEREO_IQ:
+			m_recordType->SetSelection(2);
+			break;
+	}
+
+	m_binButton->SetValue(m_parameters->m_binaural);
+	m_panValue->SetValue(m_parameters->m_pan);
 
 	// Map 500 -> 1000 to -30 -> 0
 	unsigned int val = (unsigned int)(20.0 * ::log10(double(m_parameters->m_rfGain) / 1000.0) + 0.5);
@@ -519,7 +534,20 @@ void CUWSDRPreferences::onOK(wxCommandEvent& WXUNUSED(event))
 	m_parameters->m_nb2On    = m_nb2Button->IsChecked();
 	m_parameters->m_nb2Value = m_nb2Value->GetValue();
 
-	m_parameters->m_recordRaw = m_recordRaw->GetSelection() == 1;
+	switch (m_recordType->GetSelection()) {
+		case 0:
+			m_parameters->m_recordType = RECORD_MONO_AUDIO;
+			break;
+		case 1:
+			m_parameters->m_recordType = RECORD_STEREO_AUDIO;
+			break;
+		case 2:
+			m_parameters->m_recordType = RECORD_STEREO_IQ;
+			break;
+	}
+
+	m_parameters->m_binaural = m_binButton->GetValue();
+	m_parameters->m_pan      = m_panValue->GetValue();
 
 	// Map -30 -> 0 to 1 -> 1000
 	double gainDb = double(m_rfValue->GetValue());
@@ -886,6 +914,15 @@ wxPanel* CUWSDRPreferences::createReceiveTab(wxNotebook* noteBook)
 	m_nb2Value = new wxSlider(panel, -1, 1, 1, 1000, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
 	sizer->Add(m_nb2Value, 0, wxALL, BORDER_SIZE);
 
+	wxStaticText* binLabel = new wxStaticText(panel, -1, _("Binaural/Pan"));
+	sizer->Add(binLabel, 0, wxALL, BORDER_SIZE);
+
+	m_binButton = new wxCheckBox(panel, -1, wxEmptyString);
+	sizer->Add(m_binButton, 0, wxALL, BORDER_SIZE);
+
+	m_panValue = new wxSlider(panel, -1, 0, -100, 100, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
+	sizer->Add(m_panValue, 0, wxALL, BORDER_SIZE);
+
 	wxStaticText* rfLabel = new wxStaticText(panel, -1, _("RF attenuator (dB)"));
 	sizer->Add(rfLabel, 0, wxALL, BORDER_SIZE);
 
@@ -901,10 +938,11 @@ wxPanel* CUWSDRPreferences::createReceiveTab(wxNotebook* noteBook)
 	wxStaticText* dummy2 = new wxStaticText(panel, -1, wxEmptyString);
 	sizer->Add(dummy2, 0, wxALL, BORDER_SIZE);
 
-	m_recordRaw = new wxChoice(panel, -1, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1));
-	m_recordRaw->Append(_("16-bit Audio"));
-	m_recordRaw->Append(_("32-bit Raw I and Q"));
-	sizer->Add(m_recordRaw, 0, wxALL, BORDER_SIZE);
+	m_recordType = new wxChoice(panel, -1, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1));
+	m_recordType->Append(_("16-bit Audio (Mono)"));
+	m_recordType->Append(_("16-bit Audio (Stereo)"));
+	m_recordType->Append(_("32-bit Raw I and Q (Stereo)"));
+	sizer->Add(m_recordType, 0, wxALL, BORDER_SIZE);
 
 	mainSizer->Add(sizer, 0, wxTOP, BORDER_SIZE);
 

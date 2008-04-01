@@ -46,6 +46,8 @@ m_rxPhase(0),
 m_rxGain(0),
 m_txPhase(0),
 m_txGain(0),
+m_binaural(false),
+m_pan(0),
 m_squelch(999999),
 m_started(false)
 {
@@ -320,6 +322,28 @@ void CDTTSPControl::setTXIAndQ(int phase, int gain)
 
 	m_txPhase = phase;
 	m_txGain  = gain;
+}
+
+void CDTTSPControl::setBinaural(bool onOff)
+{
+	if (onOff == m_binaural)
+		return;
+
+	m_dttsp->setBinauralFlag(onOff);
+
+	m_binaural = onOff;
+}
+
+void CDTTSPControl::setPan(int value)
+{
+	if (value == m_pan)
+		return;
+
+	float val = float(value + 100) / 200.0F;
+
+	m_dttsp->setRXPan(val);
+
+	m_pan = value;
 }
 
 void CDTTSPControl::setSquelch(unsigned int value)

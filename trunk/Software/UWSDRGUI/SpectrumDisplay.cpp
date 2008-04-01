@@ -26,11 +26,10 @@ enum {
 	MENU_WATERFALL,
 	MENU_PHASE,
 	MENU_AUDIO,
-	MENU_100MS,
 	MENU_200MS,
-	MENU_300MS,
 	MENU_400MS,
-	MENU_500MS,
+	MENU_600MS,
+	MENU_800MS,
 	MENU_1000MS,
 	MENU_10DB,
 	MENU_20DB,
@@ -49,11 +48,10 @@ BEGIN_EVENT_TABLE(CSpectrumDisplay, wxPanel)
 	EVT_MENU(MENU_WATERFALL,   CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_PHASE,       CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_AUDIO,       CSpectrumDisplay::onMenu)
-	EVT_MENU(MENU_100MS,       CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_200MS,       CSpectrumDisplay::onMenu)
-	EVT_MENU(MENU_300MS,       CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_400MS,       CSpectrumDisplay::onMenu)
-	EVT_MENU(MENU_500MS,       CSpectrumDisplay::onMenu)
+	EVT_MENU(MENU_600MS,       CSpectrumDisplay::onMenu)
+	EVT_MENU(MENU_800MS,       CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_1000MS,      CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_10DB,        CSpectrumDisplay::onMenu)
 	EVT_MENU(MENU_20DB,        CSpectrumDisplay::onMenu)
@@ -78,7 +76,7 @@ m_speedMenu(NULL),
 m_typeMenu(NULL),
 m_dbMenu(NULL),
 m_type(SPECTRUM_PANADAPTER1),
-m_speed(SPECTRUM_100MS),
+m_speed(SPECTRUM_200MS),
 m_db(SPECTRUM_40DB),
 m_factor(1),
 m_ticks(0),
@@ -89,11 +87,10 @@ m_offset(0.0F)
 	m_background = new wxBitmap(m_width, m_height);
 
 	m_speedMenu = new wxMenu();
-	m_speedMenu->AppendRadioItem(MENU_100MS,  _("100 ms"));
 	m_speedMenu->AppendRadioItem(MENU_200MS,  _("200 ms"));
-	m_speedMenu->AppendRadioItem(MENU_300MS,  _("300 ms"));
 	m_speedMenu->AppendRadioItem(MENU_400MS,  _("400 ms"));
-	m_speedMenu->AppendRadioItem(MENU_500MS,  _("500 ms"));
+	m_speedMenu->AppendRadioItem(MENU_600MS,  _("600 ms"));
+	m_speedMenu->AppendRadioItem(MENU_800MS,  _("800 ms"));
 	m_speedMenu->AppendRadioItem(MENU_1000MS, _("1 s"));
 
 	m_dbMenu = new wxMenu();
@@ -712,20 +709,17 @@ void CSpectrumDisplay::onRightMouse(wxMouseEvent& event)
 	}
 
 	switch (m_speed) {
-		case SPECTRUM_100MS:
-			m_speedMenu->Check(MENU_100MS, true);
-			break;
 		case SPECTRUM_200MS:
 			m_speedMenu->Check(MENU_200MS, true);
-			break;
-		case SPECTRUM_300MS:
-			m_speedMenu->Check(MENU_300MS, true);
 			break;
 		case SPECTRUM_400MS:
 			m_speedMenu->Check(MENU_400MS, true);
 			break;
-		case SPECTRUM_500MS:
-			m_speedMenu->Check(MENU_500MS, true);
+		case SPECTRUM_600MS:
+			m_speedMenu->Check(MENU_600MS, true);
+			break;
+		case SPECTRUM_800MS:
+			m_speedMenu->Check(MENU_800MS, true);
 			break;
 		case SPECTRUM_1000MS:
 			m_speedMenu->Check(MENU_1000MS, true);
@@ -783,20 +777,17 @@ void CSpectrumDisplay::onMenu(wxCommandEvent& event)
 		case MENU_AUDIO:
 			setType(SPECTRUM_AUDIO);
 			break;
-		case MENU_100MS:
-			setSpeed(SPECTRUM_100MS);
-			break;
 		case MENU_200MS:
 			setSpeed(SPECTRUM_200MS);
-			break;
-		case MENU_300MS:
-			setSpeed(SPECTRUM_300MS);
 			break;
 		case MENU_400MS:
 			setSpeed(SPECTRUM_400MS);
 			break;
-		case MENU_500MS:
-			setSpeed(SPECTRUM_500MS);
+		case MENU_600MS:
+			setSpeed(SPECTRUM_600MS);
+			break;
+		case MENU_800MS:
+			setSpeed(SPECTRUM_800MS);
 			break;
 		case MENU_1000MS:
 			setSpeed(SPECTRUM_1000MS);
@@ -858,23 +849,20 @@ void CSpectrumDisplay::setSpeed(SPECTRUMSPEED speed)
 		return;
 
 	switch (speed) {
-		case SPECTRUM_100MS:
+		case SPECTRUM_200MS:
 			m_factor = 1;
 			break;
-		case SPECTRUM_200MS:
+		case SPECTRUM_400MS:
 			m_factor = 2;
 			break;
-		case SPECTRUM_300MS:
+		case SPECTRUM_600MS:
 			m_factor = 3;
 			break;
-		case SPECTRUM_400MS:
+		case SPECTRUM_800MS:
 			m_factor = 4;
 			break;
-		case SPECTRUM_500MS:
-			m_factor = 5;
-			break;
 		case SPECTRUM_1000MS:
-			m_factor = 10;
+			m_factor = 5;
 			break;
 	}
 

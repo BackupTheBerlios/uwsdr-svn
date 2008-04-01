@@ -388,7 +388,7 @@ Re-ordered the modes in the GUI and added USB and LSB data modes.
 Added new .sdr files for the SoftRock RXTX.
 
 
-Version 0.9 - March 2008
+Version 0.9 - April 2008
 ==============================
 
 Convert all communication to and from the UWSDR hardware to UDP.
@@ -413,6 +413,12 @@ No longer set the DSP IP address is SDRSetup, this is done dynamically when the 
 
 Option to record the incoming signal as raw I+Q instead of just the audio.
 
+Option to record the audio as stereo also.
+
 Display the incoming incoming and outgoing I+Q signals on the scope as well as incoming and outgoing audio.
 
 Added (untested) support for the Griffin PowerMate.
+
+Changed the refresh on the S Meter and the Spectrum Display to be slower and to save CPU.
+
+Option to set binaural audio and the sound position between the left and right channels.

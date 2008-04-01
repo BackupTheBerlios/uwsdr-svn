@@ -44,11 +44,15 @@ const unsigned char HPSDR_KEY = 0x02;
 
 const unsigned char HPSDR_OVERFLOW = 0x01;
 
-const unsigned int C0_POS = 3U;
-const unsigned int C1_POS = 4U;
-const unsigned int C2_POS = 5U;
-const unsigned int C3_POS = 6U;
-const unsigned int C4_POS = 7U;
+const unsigned int SYNC0_POS = 0U;
+const unsigned int SYNC1_POS = 1U;
+const unsigned int SYNC2_POS = 2U;
+const unsigned int C0_POS    = 3U;
+const unsigned int C1_POS    = 4U;
+const unsigned int C2_POS    = 5U;
+const unsigned int C3_POS    = 6U;
+const unsigned int C4_POS    = 7U;
+const unsigned int DATA_POS  = 8U;
 
 
 CHPSDRReaderWriter::CHPSDRReaderWriter(unsigned int blockSize, int c0, int c1, int c2, int c3, int c4) :
@@ -75,8 +79,14 @@ m_c1(c1),
 m_c2(c2),
 m_c3(c3),
 m_c4(c4),
+m_offset(SYNC0_POS),
+m_iData(0),
+m_qData(0),
+m_audio(0),
 m_ptt(false),
-m_key(false)
+m_key(false),
+m_overflow(false),
+m_space(512U)
 {
 	::usb_init();
 	::usb_find_devices();
@@ -219,68 +229,122 @@ void CHPSDRReaderWriter::purgeData()
 	m_dataRingBuffer->clear();
 }
 
-bool CHPSDRReaderWriter::processData(char* buffer, unsigned int len)
+void CHPSDRReaderWriter::processData(char* buffer, unsigned int len)
 {
-	if (len != HPSDR_RXBUFFER_SIZE) {
-		::wxLogWarning(wxT("Invalid buffer length received from HPSDR"));
-		return true;
+	bool ptt, key, overflow;
+	unsigned int dataOffset;
+	unsigned int n;
+	float f[2];
+
+	for (unsigned int i = 0U; i < len; i++) {
+		switch (m_offset) {
+			case SYNC0_POS:
+			case SYNC1_POS:
+			case SYNC2_POS:
+				if (buffer[i] == HPSDR_SYNC)
+					m_offset++;
+				else
+					m_offset = SYNC0_POS;
+				break;
+
+			case C0_POS:
+				ptt = (buffer[i] & HPSDR_PTT) == HPSDR_PTT;
+				key = (buffer[i] & HPSDR_KEY) == HPSDR_KEY;
+
+				if (ptt != m_ptt && m_controlCallback != NULL) {
+					m_controlCallback->setTransmit(ptt);
+					m_ptt = ptt;
+				}
+
+				if (key != m_key && m_controlCallback != NULL) {
+					m_controlCallback->setKey(key);
+					m_key = key;
+				}
+
+				m_offset++;
+				break;
+
+			case C1_POS:
+				overflow = (buffer[i] & HPSDR_OVERFLOW) == HPSDR_OVERFLOW;
+
+				if (overflow && !m_overflow && m_controlCallback != NULL) {
+					m_controlCallback->commandError(_("Data overflow in HPSDR"));
+					m_overflow = overflow;
+				}
+
+				m_offset++;
+				break;
+
+			case C2_POS:
+				m_offset++;
+				break;
+
+			case C3_POS:
+				m_space = buffer[i] * 16U;		// Check XXX
+				m_offset++;
+				break;
+
+			case C4_POS:
+				m_offset++;
+				break;
+
+			default:
+				dataOffset = i - DATA_POS;
+
+				switch (dataOffset % 8U) {
+					case 0U:
+						m_iData =  (buffer[i] << 24) & 0xFF000000;
+						break;
+					case 1U:
+						m_iData |= (buffer[i] << 16) & 0xFF0000;
+						break;
+					case 2U:
+						m_iData |= (buffer[i] << 8) & 0xFF00;
+						break;
+					case 3U:
+						m_qData =  (buffer[i] << 24) & 0xFF000000;
+						break;
+					case 4U:
+						m_qData |= (buffer[i] << 16) & 0xFF0000;
+						break;
+					case 5U:
+						m_qData |= (buffer[i] << 8) & 0xFF00;
+						break;
+					case 6U:
+						m_audio =  (buffer[i] << 8) & 0xFF00;
+						break;
+					case 7U:
+						m_audio |= (buffer[i] << 0) & 0xFF;
+
+						// The sample data is complete
+						f[0] = float(m_iData) / float(0x7FFFFFFF);
+						f[1] = float(m_qData) / float(0x7FFFFFFF);
+						m_dataRingBuffer->addData(f, 1U);
+
+						f[0] = f[1] = float(m_audio) / float(0x7FFF);
+						m_audioRingBuffer->addData(f, 1U);
+
+						n = m_dataRingBuffer->dataSpace();
+						if (n >= m_blockSize && m_dataCallback != NULL) {
+							m_dataRingBuffer->getData(m_cbBuffer, m_blockSize);
+							m_dataCallback->callback(m_cbBuffer, m_blockSize, m_dataId);
+						}
+
+						n = m_audioRingBuffer->dataSpace();
+						if (n >= m_blockSize && m_audioCallback != NULL) {
+							m_audioRingBuffer->getData(m_cbBuffer, m_blockSize);
+							m_audioCallback->callback(m_cbBuffer, m_blockSize, m_audioId);
+						}
+						break;
+				}
+
+				m_offset++;
+				break;
+		}
+
+		if (m_offset >= HPSDR_RXBUFFER_SIZE)
+			m_offset = SYNC0_POS;
 	}
-
-	if (buffer[0] != HPSDR_SYNC || buffer[1] != HPSDR_SYNC || buffer[2] != HPSDR_SYNC) {
-		::wxLogWarning(wxT("Invalid sync pattern received from HPSDR"));
-		return true;
-	}
-
-	bool ptt = (buffer[C0_POS] & HPSDR_PTT) == HPSDR_PTT;
-	bool key = (buffer[C0_POS] & HPSDR_KEY) == HPSDR_KEY;
-
-	// bool overflow = (buffer[C1_POS] & HPSDR_OVERFLOW) == HPSDR_OVERFLOW;
-
-	unsigned int pos = C4_POS + 1U;
-	for (unsigned int i = 0U; i < HPSDR_RXMAX_SAMPLES; i++) {
-		wxInt32 iData = (buffer[pos++] << 24) & 0xFF000000;
-		iData |= (buffer[pos++] << 16) & 0xFF0000;
-		iData |= (buffer[pos++] << 8) & 0xFF00;
-
-		wxInt32 qData = (buffer[pos++] << 24) & 0xFF000000;
-		qData |= (buffer[pos++] << 16) & 0xFF0000;
-		qData |= (buffer[pos++] << 8) & 0xFF00;
-
-		float f[2];
-		f[0] = float(iData) / float(0x7FFFFFFF);
-		f[1] = float(qData) / float(0x7FFFFFFF);
-		m_dataRingBuffer->addData(f, 1U);
-
-		wxInt16 audio = (buffer[pos++] << 8) & 0xFF00;
-		audio |= (buffer[pos++] << 0) & 0xFF;
-
-		f[0] = f[1] = float(audio) / float(0x7FFF);
-		m_audioRingBuffer->addData(f, 1U);
-	}
-
-	unsigned int n = m_dataRingBuffer->dataSpace();
-	if (n >= m_blockSize && m_dataCallback != NULL) {
-		m_dataRingBuffer->getData(m_cbBuffer, m_blockSize);
-		m_dataCallback->callback(m_cbBuffer, m_blockSize, m_dataId);
-	}
-
-	n = m_audioRingBuffer->dataSpace();
-	if (n >= m_blockSize && m_audioCallback != NULL) {
-		m_audioRingBuffer->getData(m_cbBuffer, m_blockSize);
-		m_audioCallback->callback(m_cbBuffer, m_blockSize, m_audioId);
-	}
-
-	if (ptt != m_ptt && m_controlCallback != NULL) {
-		m_controlCallback->setTransmit(ptt);
-		m_ptt = ptt;
-	}
-
-	if (key != m_key && m_controlCallback != NULL) {
-		m_controlCallback->setKey(key);
-		m_key = key;
-	}
-
-	return true;
 }
 
 void CHPSDRReaderWriter::writeData(const float* buffer, unsigned int nSamples)
@@ -307,6 +371,9 @@ void CHPSDRReaderWriter::writeAudio(const float* buffer, unsigned int nSamples)
 
 void CHPSDRReaderWriter::writeUSB()
 {
+	if (m_space < HPSDR_TXBUFFER_SIZE)
+		return;
+
 	while (m_dataRingBuffer->dataSpace() >= HPSDR_TXMAX_SAMPLES &&
 		   m_audioRingBuffer->dataSpace() >= HPSDR_TXMAX_SAMPLES) {
 		m_usbOutBuffer[0] = HPSDR_SYNC;
