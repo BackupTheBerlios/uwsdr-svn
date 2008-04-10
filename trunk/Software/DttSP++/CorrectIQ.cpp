@@ -37,13 +37,14 @@ Bridgewater, NJ 08807
 
 #include "CorrectIQ.h"
 
+#include <wx/wx.h>
 
 CCorrectIQ::CCorrectIQ(CXB* buf) :
 m_buf(buf),
 m_phase(0.0F),
 m_gain(1.0F)
 {
-	ASSERT(buf != NULL);
+	wxASSERT(buf != NULL);
 }
 
 CCorrectIQ::~CCorrectIQ()
@@ -55,8 +56,8 @@ void CCorrectIQ::process()
 	unsigned int n = CXBhave(m_buf);
 
 	for (unsigned int i = 0; i < n; i++) {
-		CXBreal(m_buf, i) += m_phase * CXBimag(m_buf, i);
-		CXBimag(m_buf, i) *= m_gain;
+		CXBimag(m_buf, i) += m_phase * CXBreal(m_buf, i);
+		CXBreal(m_buf, i) *= m_gain;
 	}
 }
 

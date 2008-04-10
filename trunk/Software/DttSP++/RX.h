@@ -58,10 +58,7 @@ class CRX {
 	CRX(unsigned int bufLen, unsigned int bits, float sampleRate, CMeter* meter, CSpectrum* spectrum);
 	~CRX();
 
-	void process();
-
-	CXB* getIBuf();
-	CXB* getOBuf();
+	void process(float* bufi, float* bufq, unsigned int n);
 
 	void setMode(SDRMODE mode);
 
@@ -148,7 +145,7 @@ class CRX {
 
 	SDRMODE        m_mode;
 
-    bool           m_binFlag;
+	bool           m_binFlag;
 
 	bool           m_weaver;
 

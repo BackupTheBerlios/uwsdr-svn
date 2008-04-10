@@ -3,7 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -34,10 +34,15 @@ Bridgewater, NJ 08807
 
 #include "Spectrum.h"
 #include "Window.h"
-#include "FromSys.h"
 #include "FIR.h"
 #include "Utils.h"
 
+#include <wx/wx.h>
+
+#include <cmath>
+#include <algorithm>
+using std::max;
+using std::min;
 
 
 CSpectrum::CSpectrum(unsigned int size, unsigned int planbits, SPECTRUMscale scale) :
@@ -54,7 +59,7 @@ m_planbits(planbits),
 m_plan(),
 m_polyphase(false)
 {
-	ASSERT(size > 0);
+	wxASSERT(size > 0U);
 
 	m_accum  = newCXB(m_size * 16, NULL);
 	m_window = new float[m_size * 16];
@@ -62,8 +67,8 @@ m_polyphase(false)
 	COMPLEX* timebuf = (COMPLEX*)::fftwf_malloc(m_size * sizeof(COMPLEX));
 	COMPLEX* freqbuf = (COMPLEX*)::fftwf_malloc(m_size * sizeof(COMPLEX));
 
-	ASSERT(timebuf != NULL);
-	ASSERT(freqbuf != NULL);
+	wxASSERT(timebuf != NULL);
+	wxASSERT(freqbuf != NULL);
 
 	::memset(CXBbase(m_accum), 0x00, 16 * m_size * sizeof(COMPLEX));
 	::memset(m_window, 0x00, 16 * m_size * sizeof(float));
@@ -122,7 +127,7 @@ void CSpectrum::setPolyphaseFlag(bool setit)
 
 			float maxTap = 0.0F;
 			for (i = 0; i < 8 * m_size; i++)
-				maxTap = max(maxTap, (float)::fabs(m_window[i]));
+				maxTap = ::max(maxTap, (float)::fabs(m_window[i]));
 
 			maxTap = 1.0F / maxTap;
 
@@ -141,7 +146,7 @@ void CSpectrum::setPolyphaseFlag(bool setit)
 
 void CSpectrum::setData(CXB* buf)
 {
-	ASSERT(buf != NULL);
+	wxASSERT(buf != NULL);
 
 	::memcpy(&CXBdata(m_accum, m_fill), CXBbase(buf), CXBhave(buf) * sizeof(COMPLEX));
 
@@ -205,7 +210,7 @@ void CSpectrum::snapScope()
 // snapshot -> frequency domain
 void CSpectrum::computeSpectrum(float* spectrum)
 {
-	ASSERT(spectrum != NULL);
+	wxASSERT(spectrum != NULL);
 
 	unsigned int half = m_size / 2;
 	unsigned int i, j;
@@ -228,8 +233,8 @@ void CSpectrum::computeSpectrum(float* spectrum)
 
 void CSpectrum::computeScopeReal(float* results, unsigned int numpoints)
 {
-	ASSERT(results != NULL);
-	ASSERT(numpoints <= m_size);
+	wxASSERT(results != NULL);
+	wxASSERT(numpoints <= m_size);
 
 	::memset(results, 0x00, numpoints * sizeof(float));
 
@@ -243,8 +248,8 @@ void CSpectrum::computeScopeReal(float* results, unsigned int numpoints)
 
 void CSpectrum::computeScopeComplex(float* results, unsigned int numpoints)
 {
-	ASSERT(results != NULL);
-	ASSERT(numpoints <= m_size);
+	wxASSERT(results != NULL);
+	wxASSERT(numpoints <= m_size);
 
 	::memset(results, 0x00, numpoints * sizeof(float));
 

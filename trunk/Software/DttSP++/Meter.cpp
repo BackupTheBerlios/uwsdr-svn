@@ -3,7 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -33,8 +33,13 @@ Bridgewater, NJ 08807
 */
 
 #include "Meter.h"
-#include "FromSys.h"
 #include "Utils.h"
+
+#include <wx/wx.h>
+
+#include <algorithm>
+using std::min;
+using std::max;
 
 
 CMeter::CMeter() :
@@ -48,12 +53,10 @@ m_eqTapSave(0.0F),
 m_levelerSave(0.0F),
 m_compSave(0.0F)
 {
-	int i;
-
-	for (i = 0; i < RXMETERPTS; i++)
+	for (unsigned int i = 0U; i < RXMETERPTS; i++)
 		m_rxval[i] = -200.0F;
 
-	for (i = 0; i < TXMETERPTS; i++)
+	for (unsigned int i = 0U; i < TXMETERPTS; i++)
 		m_txval[i] = -200.0F;
 }
 
@@ -63,18 +66,16 @@ CMeter::~CMeter()
 
 void CMeter::reset()
 {
-	int i;
-
-	for (i = 0; i < RXMETERPTS; i++)
+	for (unsigned int i = 0U; i < RXMETERPTS; i++)
 		m_rxval[i] = -200.0F;
 
-	for (i = 0; i < TXMETERPTS; i++)
+	for (unsigned int i = 0U; i < TXMETERPTS; i++)
 		m_txval[i] = -200.0F;
 }
 
 void CMeter::setRXMeter(RXMETERTAP tap, CXB* buf, float agcGain)
 {
-	ASSERT(buf != NULL);
+	wxASSERT(buf != NULL);
 
 	COMPLEX* vec = CXBbase(buf);
 
@@ -87,12 +88,12 @@ void CMeter::setRXMeter(RXMETERTAP tap, CXB* buf, float agcGain)
 		case RXMETER_PRE_CONV:
 			temp1 = m_rxval[RX_ADC_REAL];
 			for (i = 0; i < len; i++)
-				temp1 = (float)max(::fabs(vec[i].re), temp1);
+				temp1 = (float)::max(::fabs(vec[i].re), temp1);
 			m_rxval[RX_ADC_REAL] = float(20.0 * ::log10(temp1 + 1e-10));
 
 			temp1 = m_rxval[RX_ADC_IMAG];
 			for (i = 0; i < len; i++)
-				temp1 = (float)max(::fabs(vec[i].im), temp1);
+				temp1 = (float)::max(::fabs(vec[i].im), temp1);
 			m_rxval[RX_ADC_IMAG] = float(20.0 * ::log10(temp1 + 1e-10));
 			break;
 
@@ -117,7 +118,7 @@ void CMeter::setRXMeter(RXMETERTAP tap, CXB* buf, float agcGain)
 
 void CMeter::setTXMeter(TXMETERTYPE type, CXB* buf, float alcGain)
 {
-	ASSERT(buf != NULL);
+	wxASSERT(buf != NULL);
 
 	COMPLEX *vec = CXBbase(buf);
 

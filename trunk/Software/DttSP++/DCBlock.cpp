@@ -33,15 +33,15 @@ Bridgewater, NJ 08807
 */
 
 #include "DCBlock.h"
-#include "FromSys.h"
 
+#include <wx/wx.h>
 
 CDCBlock::CDCBlock(CXB* buf) :
 m_buf(buf),
 m_xm1(0.0F),
 m_ym1(0.0F)
 {
-	ASSERT(buf != NULL);
+	wxASSERT(buf != NULL);
 }
 
 CDCBlock::~CDCBlock()

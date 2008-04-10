@@ -5,7 +5,7 @@ This routine implements a common fixed-frequency oscillator
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -35,8 +35,8 @@ Bridgewater, NJ 08807
 */
 
 #include "Oscillator.h"
-#include "FromSys.h"
 
+#include <wx/wx.h>
 
 COscillator::COscillator(CXB* buf, float sampleRate, double frequency) :
 m_buf(buf),
@@ -47,8 +47,8 @@ m_sinVal(0.0F),
 m_cosDelta(0.0F),
 m_sinDelta(0.0F)
 {
-	ASSERT(buf != NULL);
-	ASSERT(sampleRate > 0.0F);
+	wxASSERT(buf != NULL);
+	wxASSERT(sampleRate > 0.0F);
 
 	setFrequency(frequency);
 }
@@ -59,7 +59,7 @@ COscillator::~COscillator()
 
 void COscillator::setFrequency(double frequency)
 {
-	float delta = frequency / m_sampleRate * TWOPI;
+	float delta = frequency / m_sampleRate * 2.0 * M_PI;
 
 	m_frequency = frequency;
 	m_cosDelta  = ::cos(delta);

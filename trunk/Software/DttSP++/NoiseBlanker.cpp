@@ -3,7 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -33,8 +33,8 @@ Bridgewater, NJ 08807
 */
 
 #include "NoiseBlanker.h"
-#include "FromSys.h"
 
+#include <wx/wx.h>
 
 CNoiseBlanker::CNoiseBlanker(CXB* sigbuf, float threshold) :
 m_sigbuf(sigbuf),
@@ -46,7 +46,7 @@ m_delayIndex(2),
 m_sigIndex(0),
 m_hangTime(0)
 {
-	ASSERT(sigbuf != NULL);
+	wxASSERT(sigbuf != NULL);
 
 	::memset(m_delay, 0x00, 8 * sizeof(COMPLEX));
 }

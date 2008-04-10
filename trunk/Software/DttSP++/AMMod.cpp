@@ -3,7 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004,2005,2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -34,13 +34,14 @@ Bridgewater, NJ 08807
 
 #include "AMMod.h"
 
+#include <wx/wx.h>
 
 CAMMod::CAMMod(float level, CXB* buf) :
 m_carrierLevel(level),
 m_buf(buf)
 {
-	ASSERT(level >= 0.0F && level <= 1.0F);
-	ASSERT(buf != NULL);
+	wxASSERT(level >= 0.0F && level <= 1.0F);
+	wxASSERT(buf != NULL);
 }
 
 CAMMod::~CAMMod()
@@ -49,7 +50,7 @@ CAMMod::~CAMMod()
 
 void CAMMod::setCarrierLevel(float level)
 {
-	ASSERT(level >= 0.0F && level <= 1.0F);
+	wxASSERT(level >= 0.0F && level <= 1.0F);
 
 	m_carrierLevel = level;
 }

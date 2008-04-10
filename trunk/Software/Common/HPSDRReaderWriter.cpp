@@ -92,8 +92,8 @@ m_space(512U)
 	::usb_find_devices();
 	::usb_find_busses();
 
-	m_dataRingBuffer  = new CRingBuffer(2048U, 2U);
-	m_audioRingBuffer = new CRingBuffer(2048U, 2U);
+	m_dataRingBuffer  = new CRingBuffer(m_blockSize * 10U, 2U);
+	m_audioRingBuffer = new CRingBuffer(m_blockSize * 10U, 2U);
 
 	m_usbOutBuffer = new char[HPSDR_TXBUFFER_SIZE];
 	m_usbInBuffer  = new char[HPSDR_RXBUFFER_SIZE];

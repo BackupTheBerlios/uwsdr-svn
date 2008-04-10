@@ -57,10 +57,7 @@ class CTX {
 	CTX(unsigned int bufLen, unsigned int bits, float sampleRate, CMeter* meter, CSpectrum* spectrum);
 	~CTX();
 
-	void process();
-
-	CXB* getIBuf();
-	CXB* getOBuf();
+	void process(float* bufi, float* bufq, unsigned int n);
 
 	SDRMODE getMode() const;
 
@@ -100,7 +97,7 @@ class CTX {
 	CSpectrum*     m_spectrum;
 	TXSPECTRUMtype m_type;
 
-    CXB*           m_iBuf;
+	CXB*           m_iBuf;
 	CXB*           m_oBuf;
 
 	CCorrectIQ*    m_iq;

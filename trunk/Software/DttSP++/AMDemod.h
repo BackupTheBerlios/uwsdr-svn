@@ -3,7 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -36,7 +36,6 @@ Bridgewater, NJ 08807
 #define _amdemod_h
 
 #include "Demod.h"
-#include "FromSys.h"
 #include "Complex.h"
 #include "CXB.h"
 
@@ -76,7 +75,7 @@ class CAMDemod : public IDemod {
 	float   m_pllPhase;
 	float   m_pllIIRAlpha;
 	COMPLEX m_pllDelay;
-    float   m_lockCurr;
+	float   m_lockCurr;
 	float   m_lockPrev;
 	float   m_dc;
 	float   m_smooth;

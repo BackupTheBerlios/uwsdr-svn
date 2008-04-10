@@ -3,7 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@ Bridgewater, NJ 08807
 #include "LMS.h"
 #include "Utils.h"
 
+#include <wx/wx.h>
 
 CLMS::CLMS(CXB* signal, unsigned int delay, float adaptionRate, float leakage, unsigned int adaptiveFilterSize, unsigned int filterType) :
 m_signal(signal),
@@ -49,8 +50,8 @@ m_delayLinePtr(0),
 m_size(512),
 m_mask(511)
 {
-	ASSERT(signal != NULL);
-	ASSERT(filterType == LMS_INTERFERENCE || filterType == LMS_NOISE);
+	wxASSERT(signal != NULL);
+	wxASSERT(filterType == LMS_INTERFERENCE || filterType == LMS_NOISE);
 
 	m_delayLine      = new float[m_size];
 	m_adaptiveFilter = new float[128];
@@ -123,7 +124,7 @@ void CLMS::processInterference()
 		unsigned int j;
 		for (j = 0; j < m_adaptiveFilterSize; j++) {
 			unsigned int k = (j + m_delay + m_delayLinePtr) & m_mask;
-			sum_sq += sqr(m_delayLine[k]);
+			sum_sq += m_delayLine[k] * m_delayLine[k];
 			accum += m_adaptiveFilter[j] * m_delayLine[k];
 		}
 
@@ -158,7 +159,7 @@ void CLMS::processNoise()
 		unsigned int j;
 		for (j = 0; j < m_adaptiveFilterSize; j++) {
 			unsigned int k = (j + m_delay + m_delayLinePtr) & m_mask;
-			sum_sq += sqr(m_delayLine[k]);
+			sum_sq += m_delayLine[k] * m_delayLine[k];
 			accum += m_adaptiveFilter[j] * m_delayLine[k];
 		}
 

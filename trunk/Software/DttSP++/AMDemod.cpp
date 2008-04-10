@@ -3,7 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004,2005,2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ Bridgewater, NJ 08807
 
 #include "AMDemod.h"
 
+#include <wx/wx.h>
 
 CAMDemod::CAMDemod(float samprate, float f_initial, float f_lobound, float f_hibound, float f_bandwid, CXB* ivec, CXB* ovec, AMMode mode) :
 m_ibuf(ivec),
@@ -53,11 +54,11 @@ m_dc(0.0F),
 m_smooth(0.0F),
 m_mode(mode)
 {
-	ASSERT(samprate > 0.0F);
-	ASSERT(ivec != NULL);
-	ASSERT(ovec != NULL);
+	wxASSERT(samprate > 0.0F);
+	wxASSERT(ivec != NULL);
+	wxASSERT(ovec != NULL);
 
-	float fac = float(TWOPI / samprate);
+	float fac = float(2.0 * M_PI / samprate);
 
 	m_pllFreqF = f_initial * fac;
 	m_pllFreqL = f_lobound * fac;
@@ -130,11 +131,11 @@ void CAMDemod::pll(COMPLEX sig)
 
 	m_pllPhase += m_pllFreqF + m_pllAlpha * diff;
 
-	while (m_pllPhase >= TWOPI)
-		m_pllPhase -= (float) TWOPI;
+	while (m_pllPhase >= 2.0 * M_PI)
+		m_pllPhase -= float(2.0 * M_PI);
 
 	while (m_pllPhase < 0.0F)
-		m_pllPhase += (float) TWOPI;
+		m_pllPhase += float(2.0 * M_PI);
 }
 
 float CAMDemod::dem()

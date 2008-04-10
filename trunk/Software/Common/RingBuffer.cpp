@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,40 +18,17 @@
 
 #include "RingBuffer.h"
 
-// For semaphores and logging
-#if defined(__WXMSW__) || defined(__WXGTK__) || defined(__WXMAC__)
-#include <wx/wx.h>
-
-#define	ASSERT(x)	wxASSERT((x))
-#elif defined(WIN32)
-#include <windows.h>
-#include <cassert>
-
-#define	ASSERT(x)	assert((x))
-#else
-#include <ctsdio>
-#include <cassert>
-
-#define	ASSERT(x)	assert((x))
-#endif
-
-
-const int STATE_EMPTY = 0;
-const int STATE_FULL  = 1;
-const int STATE_DATA  = 2;
-
 
 CRingBuffer::CRingBuffer(unsigned int length, unsigned int step) :
 m_length(length),
 m_step(step),
 m_buffer(NULL),
-m_iPtr(0),
-m_oPtr(0),
-m_state(STATE_EMPTY),
-m_mutex()
+m_iPtr(0U),
+m_oPtr(0U),
+m_state(RBSTATE_EMPTY)
 {
-	ASSERT(length > 0);
-	ASSERT(step > 0);
+	wxASSERT(length > 0U);
+	wxASSERT(step > 0U);
 
 	m_buffer = new float[length * step];
 
@@ -65,22 +42,20 @@ CRingBuffer::~CRingBuffer()
 
 unsigned int CRingBuffer::addData(const float* buffer, unsigned int nSamples)
 {
-	wxMutexLocker lock(m_mutex);
-
 	unsigned int space = freeSpace();
 
 	if (nSamples >= space) {
 		nSamples = space;
-		m_state = STATE_FULL;
+		m_state = RBSTATE_FULL;
 	} else {
-		m_state = STATE_DATA;
+		m_state = RBSTATE_DATA;
 	}
 
-	for (unsigned int i = 0; i < nSamples * m_step; i++) {
+	for (unsigned int i = 0U; i < nSamples * m_step; i++) {
 		m_buffer[m_iPtr++] = buffer[i];
 
 		if (m_iPtr == (m_length * m_step))
-			m_iPtr = 0;
+			m_iPtr = 0U;
 	}
 
 	return nSamples;
@@ -88,22 +63,20 @@ unsigned int CRingBuffer::addData(const float* buffer, unsigned int nSamples)
 
 unsigned int CRingBuffer::getData(float* buffer, unsigned int nSamples)
 {
-	wxMutexLocker lock(m_mutex);
-
 	unsigned int space = dataSpace();
 
 	if (nSamples >= space) {
 		nSamples = space;
-		m_state = STATE_EMPTY;
+		m_state = RBSTATE_EMPTY;
 	} else {
-		m_state = STATE_DATA;
+		m_state = RBSTATE_DATA;
 	}
 
-	for (unsigned int i = 0; i < nSamples * m_step; i++) {
+	for (unsigned int i = 0U; i < nSamples * m_step; i++) {
 		buffer[i] = m_buffer[m_oPtr++];
 
 		if (m_oPtr == (m_length * m_step))
-			m_oPtr = 0;
+			m_oPtr = 0U;
 	}
 
 	return nSamples;
@@ -111,11 +84,9 @@ unsigned int CRingBuffer::getData(float* buffer, unsigned int nSamples)
 
 void CRingBuffer::clear()
 {
-	wxMutexLocker lock(m_mutex);
-
-	m_iPtr  = 0;
-	m_oPtr  = 0;
-	m_state = STATE_EMPTY;
+	m_iPtr  = 0U;
+	m_oPtr  = 0U;
+	m_state = RBSTATE_EMPTY;
 
 	::memset(m_buffer, 0x00, m_length * m_step);
 }
@@ -126,7 +97,7 @@ unsigned int CRingBuffer::freeSpace() const
 		return m_length;
 
 	if (isFull())
-		return 0;
+		return 0U;
 
 	if (m_oPtr > m_iPtr)
 		return (m_oPtr - m_iPtr) / m_step;
@@ -137,7 +108,7 @@ unsigned int CRingBuffer::freeSpace() const
 unsigned int CRingBuffer::dataSpace() const
 {
 	if (isEmpty())
-		return 0;
+		return 0U;
 
 	if (isFull())
 		return m_length;
@@ -150,12 +121,12 @@ unsigned int CRingBuffer::dataSpace() const
 
 bool CRingBuffer::isEmpty() const
 {
-	return m_state == STATE_EMPTY;
+	return m_state == RBSTATE_EMPTY;
 }
 
 bool CRingBuffer::isFull() const
 {
-	return m_state == STATE_FULL;
+	return m_state == RBSTATE_FULL;
 }
 
 #if defined(__WXDEBUG__)
@@ -166,14 +137,14 @@ void CRingBuffer::dump(const wxString& title) const
 
 	::wxLogMessage(wxT(":"));
 
-	unsigned int n = 0;
-	for (unsigned int i = 0; i < m_length; i += 16) {
+	unsigned int n = 0U;
+	for (unsigned int i = 0U; i < m_length; i += 16) {
 		wxString text;
 		text.Printf(wxT("%05X:  "), i);
 
-		for (unsigned int j = 0; j < 16; j++) {
-			for (unsigned int k = 0; k < m_step; k++) {
-				if (k > 0)
+		for (unsigned int j = 0U; j < 16; j++) {
+			for (unsigned int k = 0U; k < m_step; k++) {
+				if (k > 0U)
 					text.Append(wxT(":"));
 
 				wxString buf;

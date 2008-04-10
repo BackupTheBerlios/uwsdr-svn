@@ -3,7 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -33,8 +33,8 @@ Bridgewater, NJ 08807
 */
 
 #include "FMDemod.h"
-#include "FromSys.h"
 
+#include <wx/wx.h>
 
 CFMDemod::CFMDemod(float samprate, float f_initial, float f_lobound, float f_hibound, float f_bandwid, CXB* ivec, CXB* ovec) :
 m_samprate(samprate),
@@ -52,11 +52,11 @@ m_lock(0.5F),
 m_afc(0.0F),
 m_cvt(0.0F)
 {
-	ASSERT(ivec != NULL);
-	ASSERT(ovec != NULL);
-	ASSERT(samprate > 0.0F);
+	wxASSERT(ivec != NULL);
+	wxASSERT(ovec != NULL);
+	wxASSERT(samprate > 0.0F);
 
-	float fac = TWOPI / samprate;
+	float fac = 2.0 * M_PI / samprate;
 
 	m_pllFreqF = f_initial * fac;
 	m_pllFreqL = f_lobound * fac;
@@ -75,7 +75,7 @@ CFMDemod::~CFMDemod()
 
 void CFMDemod::setBandwidth(float f_lobound, float f_hibound)
 {
-	float fac = TWOPI / m_samprate;
+	float fac = 2.0 * M_PI / m_samprate;
 
 	m_pllFreqF = 0.0F;
 	m_pllFreqL = f_lobound * fac;
@@ -84,7 +84,7 @@ void CFMDemod::setBandwidth(float f_lobound, float f_hibound)
 
 void CFMDemod::setDeviation(float f_bandwid)
 {
-	float fac = TWOPI / m_samprate;
+	float fac = 2.0 * M_PI / m_samprate;
 
 	m_pllFreqF = 0.0F;
 
@@ -128,11 +128,11 @@ void CFMDemod::pll(COMPLEX sig)
 
 	m_pllPhase += m_pllFreqF + m_pllAlpha * diff;
 
-	while (m_pllPhase >= TWOPI)
-		m_pllPhase -= float(TWOPI);
+	while (m_pllPhase >= 2.0 * M_PI)
+		m_pllPhase -= float(2.0 * M_PI);
 
 	while (m_pllPhase < 0.0F)
-		m_pllPhase += float(TWOPI);
+		m_pllPhase += float(2.0 * M_PI);
 }
 
 bool CFMDemod::hasBinaural() const

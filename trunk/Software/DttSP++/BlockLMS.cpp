@@ -3,7 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@ Bridgewater, NJ 08807
 #include "BlockLMS.h"
 #include "Utils.h"
 
+#include <wx/wx.h>
 
 const float BLKSCL = 1.0F / 256.0F;
 
@@ -59,9 +60,9 @@ m_yPlan(NULL),
 m_errHatPlan(NULL),
 m_updPlan(NULL)
 {
-	ASSERT(signal != NULL);
-	ASSERT(filterType == BLMS_INTERFERENCE || filterType == BLMS_NOISE);
-	ASSERT(pbits > 0);
+	wxASSERT(signal != NULL);
+	wxASSERT(filterType == BLMS_INTERFERENCE || filterType == BLMS_NOISE);
+	wxASSERT(pbits > 0);
 
 	m_delayLine = (COMPLEX*)::fftwf_malloc(256 * sizeof(COMPLEX));
 	m_y         = (COMPLEX*)::fftwf_malloc(256 * sizeof(COMPLEX));
@@ -73,15 +74,15 @@ m_updPlan(NULL)
 	m_update1   = (COMPLEX*)::fftwf_malloc(256 * sizeof(COMPLEX));
 	m_update2   = (COMPLEX*)::fftwf_malloc(256 * sizeof(COMPLEX));
 
-	ASSERT(m_delayLine != NULL);
-	ASSERT(m_y != NULL);
-	ASSERT(m_wHat != NULL);
-	ASSERT(m_xHat != NULL);
-	ASSERT(m_yHat != NULL);
-	ASSERT(m_error != NULL);
-	ASSERT(m_errHat != NULL);
-	ASSERT(m_update1 != NULL);
-	ASSERT(m_update2 != NULL);
+	wxASSERT(m_delayLine != NULL);
+	wxASSERT(m_y != NULL);
+	wxASSERT(m_wHat != NULL);
+	wxASSERT(m_xHat != NULL);
+	wxASSERT(m_yHat != NULL);
+	wxASSERT(m_error != NULL);
+	wxASSERT(m_errHat != NULL);
+	wxASSERT(m_update1 != NULL);
+	wxASSERT(m_update2 != NULL);
 
 	::memset(m_delayLine, 0x00, 256 * sizeof(COMPLEX));
 	::memset(m_y,         0x00, 256 * sizeof(COMPLEX));

@@ -3,7 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
 
 Implemented from code by Bill Schottstaedt of Snd Editor at CCRMA
 
@@ -37,8 +37,7 @@ Bridgewater, NJ 08807
 #ifndef _window_h
 #define _window_h
 
-#include "FromSys.h"
-
+#include <cstdio>
 
 enum Windowtype {
 	RECTANGULAR_WINDOW,

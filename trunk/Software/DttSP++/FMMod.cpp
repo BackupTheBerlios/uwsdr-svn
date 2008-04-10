@@ -3,7 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004,2005,2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ Bridgewater, NJ 08807
 
 #include "FMMod.h"
 
-
+#include <wx/wx.h>
 
 CFMMod::CFMMod(float sampleRate, float deviation, CXB* buf) :
 m_sampleRate(sampleRate),
@@ -42,8 +42,8 @@ m_deviation(0.0F),
 m_buf(buf),
 m_phase(0.0F)
 {
-	ASSERT(deviation >= 0.0F);
-	ASSERT(buf != NULL);
+	wxASSERT(deviation >= 0.0F);
+	wxASSERT(buf != NULL);
 
 	m_deviation = deviation * M_PI / m_sampleRate;
 }
@@ -54,7 +54,7 @@ CFMMod::~CFMMod()
 
 void CFMMod::setDeviation(float value)
 {
-	ASSERT(value >= 0.0F);
+	wxASSERT(value >= 0.0F);
 
 	m_deviation = value * M_PI / m_sampleRate;
 }

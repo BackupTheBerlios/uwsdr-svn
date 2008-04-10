@@ -3,7 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -35,9 +35,11 @@ Bridgewater, NJ 08807
 #ifndef _cxops_h
 #define _cxops_h
 
+#include <cmath>
+
 #include "Complex.h"
-#include "FromSys.h"
 #include "Utils.h"
+
 
 // Useful constants
 const COMPLEX cxzero     = { 0.0, 0.0 };
@@ -82,7 +84,7 @@ inline COMPLEX Cmul(COMPLEX x, COMPLEX y)
 
 inline COMPLEX Cdiv(COMPLEX x, COMPLEX y)
 {
-	float d = sqr(y.re) + sqr(y.im);
+	float d = y.re * y.re + y.im * y.im;
 
 	COMPLEX z;
 	z.re = (x.re * y.re + x.im * y.im) / d;
@@ -92,25 +94,25 @@ inline COMPLEX Cdiv(COMPLEX x, COMPLEX y)
 
 inline float Cappmag(COMPLEX z)
 {
-	float tmpr = (float)::fabs(z.re);
-	float tmpi = (float)::fabs(z.im);
+	float tmpr = float(::fabs(z.re));
+	float tmpi = float(::fabs(z.im));
 
 	return (tmpr < tmpi) ? 0.4F * tmpr + 0.7F * tmpi : 0.4F * tmpi + 0.7F * tmpr;
 }
 
 inline float Cmag(COMPLEX z)
 {
-	return float(::sqrt(sqr(z.re) + sqr(z.im)));
+	return float(::sqrt(z.re * z.re + z.im * z.im));
 }
 
 inline float Cabs(COMPLEX z)
 {
-	return float(::sqrt(sqr(z.re) + sqr(z.im)));
+	return float(::sqrt(z.re * z.re + z.im * z.im));
 }
 
 inline float Csqrmag(COMPLEX z)
 {
-	return float(sqr(z.re) + sqr(z.im));
+	return float(z.re * z.re + z.im * z.im);
 }
 
 inline COMPLEX Cmplx(float x, float y)

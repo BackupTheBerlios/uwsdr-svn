@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -21,25 +21,31 @@
 
 #include <wx/wx.h>
 
+enum RBSTATE {
+	RBSTATE_EMPTY,
+	RBSTATE_FULL,
+	RBSTATE_DATA
+};
 
 class CRingBuffer {
 
     public:
 	CRingBuffer(unsigned int length, unsigned int step);
-	virtual ~CRingBuffer();
+	~CRingBuffer();
 
-	virtual unsigned int addData(const float* buffer, unsigned int nSamples);
-	virtual unsigned int getData(float* buffer, unsigned int nSamples);
+	unsigned int addData(const float* buffer, unsigned int nSamples);
+	unsigned int getData(float* buffer, unsigned int nSamples);
 
-	virtual void         clear();
-	virtual unsigned int freeSpace() const;
-	virtual unsigned int dataSpace() const;
+	void clear();
 
-	virtual bool isEmpty() const;
-	virtual bool isFull() const;
+	unsigned int freeSpace() const;
+	unsigned int dataSpace() const;
+
+	bool isEmpty() const;
+	bool isFull() const;
 
 #if defined(__WXDEBUG__)
-	virtual void dump(const wxString& title) const;
+	void dump(const wxString& title) const;
 #endif
 
     private:
@@ -48,8 +54,7 @@ class CRingBuffer {
 	float*       m_buffer;
 	unsigned int m_iPtr;
 	unsigned int m_oPtr;
-	int          m_state;
-	wxMutex      m_mutex;
+	RBSTATE      m_state;
 };
 
 #endif

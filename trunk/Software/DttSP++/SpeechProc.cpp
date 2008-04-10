@@ -1,9 +1,9 @@
 /* SpeechProc.cpp
-   
+
   This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY, Phil Harman, VK6APH
-Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
 
 Based on Visual Basic code for SDR by Phil Harman
 
@@ -35,8 +35,13 @@ Bridgewater, NJ 08807
 */
 
 #include "SpeechProc.h"
-#include "FromSys.h"
 #include "Utils.h"
+
+#include <wx/wx.h>
+
+#include <algorithm>
+using std::min;
+using std::max;
 
 
 CSpeechProc::CSpeechProc(float k, float maxCompression, CXB* spdat) :
@@ -47,7 +52,7 @@ m_k(k),
 m_maxGain(0.0F),
 m_fac(0.0F)
 {
-	ASSERT(spdat != NULL);
+	wxASSERT(spdat != NULL);
 
 	unsigned int size = CXBsize(spdat);
 
@@ -72,19 +77,18 @@ void CSpeechProc::setCompression(float compression)
 void CSpeechProc::process()
 {
 	unsigned int n = CXBhave(m_buf);
-	unsigned int i;
 
 	if (m_maxGain == 1.0F)
 		return;
 
 	// K was 0.4 in VB version, this value is better, perhaps due to filters that follow?
 	float r = 0.0;
-	for (i = 0; i < n; i++)
-		r = max(r, Cmag(CXBdata(m_buf, i)));	// find the peak magnitude value in the sample buffer 
+	for (unsigned int i = 0U; i < n; i++)
+		r = ::max(r, Cmag(CXBdata(m_buf, i)));	// find the peak magnitude value in the sample buffer
 
 	m_CG[0] = m_lastCG;	// restore from last time
 
-	for (i = 1; i <= n; i++) {
+	for (unsigned int i = 1U; i <= n; i++) {
 		float mag = Cmag(CXBdata(m_buf, i - 1));
 
 		if (mag != 0.0F) {
@@ -96,8 +100,8 @@ void CSpeechProc::process()
 		}
 	}
 
-	m_lastCG = m_CG[n];	// save for next time 
+	m_lastCG = m_CG[n];	// save for next time
 
-	for (i = 0; i < n; i++)	// multiply each sample by its gain constant 
+	for (unsigned int i = 0U; i < n; i++)	// multiply each sample by its gain constant
 		CXBdata(m_buf, i) = Cscl(CXBdata(m_buf, i), float(m_CG[i] / (m_fac * ::pow(m_maxGain, 0.25F))));
 }

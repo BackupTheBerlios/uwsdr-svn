@@ -3,7 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -32,10 +32,15 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
+#include <cmath>
+
 #include "FIR.h"
-#include "FromSys.h"
 #include "CXB.h"
 #include "Window.h"
+
+#if !defined(M_PI)
+const double M_PI = 3.14159265358979323846;
+#endif
 
 
 COMPLEX* CFIR::lowpass(float cutoff, float samprate, unsigned int size)
@@ -61,7 +66,7 @@ COMPLEX* CFIR::lowpass(float cutoff, float samprate, unsigned int size)
 		float k = float(i - midpoint);
 
 		if (i != midpoint) {
-			h[j].re = float((::sin(TWOPI * k * fc) / (M_PI * k)) * w[j]);
+			h[j].re = float((::sin(2.0 * M_PI * k * fc) / (M_PI * k)) * w[j]);
 			h[j].im = 0.0F;
 		} else {
 			h[midpoint - 1].re = 2.0F * fc;
@@ -103,7 +108,7 @@ COMPLEX* CFIR::bandpass(float lo, float hi, float samprate, unsigned int size)
 
 		float tmp;
 		if (i != midpoint)
-			tmp = float((::sin(TWOPI * k * fc) / (M_PI * k)) * w[j]);
+			tmp = float((::sin(2.0 * M_PI * k * fc) / (M_PI * k)) * w[j]);
 		else
 			tmp = 2.0F * fc;
 
@@ -142,7 +147,7 @@ COMPLEX* CFIR::highpass(float cutoff, float samprate, unsigned int size)
 		float k = float(i - midpoint);
 
 		if (i != midpoint) {
-			h[j].re = float((::sin(TWOPI * k * fc) / (M_PI * k)) * w[j]);
+			h[j].re = float((::sin(2.0 * M_PI * k * fc) / (M_PI * k)) * w[j]);
 			h[j].im = 0.0F;
 		} else {
 			h[midpoint - 1].re = 2.0F * fc;
@@ -193,7 +198,7 @@ COMPLEX* CFIR::hilbert(float lo, float hi, float samprate, unsigned int size)
 
 		float tmp;
 		if (i != midpoint)
-			tmp = float((::sin(TWOPI * k * fc) / (M_PI * k)) * w[j]);
+			tmp = float((::sin(2.0 * M_PI * k * fc) / (M_PI * k)) * w[j]);
 		else
 			tmp = 2.0F * fc;
 
@@ -237,7 +242,7 @@ COMPLEX* CFIR::bandstop(float lo, float hi, float samprate, unsigned int size)
 
 		float tmp;
 		if (i != midpoint)
-			tmp = float((::sin(TWOPI * k * fc) / (M_PI * k)) * w[j]);
+			tmp = float((::sin(2.0 * M_PI * k * fc) / (M_PI * k)) * w[j]);
 		else
 			tmp = 2.0F * fc;
 

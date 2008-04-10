@@ -1,11 +1,11 @@
-/* CXB.c
+/* CXB.cpp
 
-   creation, deletion, management for vectors and buffers 
-   
+   creation, deletion, management for vectors and buffers
+
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -35,8 +35,12 @@ Bridgewater, NJ 08807
 */
 
 #include "CXB.h"
-#include "FromSys.h"
 #include "Utils.h"
+
+#include <cstdio>
+#include <algorithm>
+using std::min;
+using std::max;
 
 
 void CXBscl(CXB* buff, float scl)
@@ -47,7 +51,7 @@ void CXBscl(CXB* buff, float scl)
 
 float CXBpeak(CXB* buff)
 {
-	float maxsam = 0.0;
+	float maxsam = 0.0F;
 	for (unsigned int i = 0; i < CXBhave(buff); i++)
 		maxsam = max(Cmag(CXBdata(buff, i)), maxsam);
 

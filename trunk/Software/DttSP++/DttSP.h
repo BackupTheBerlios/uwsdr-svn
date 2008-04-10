@@ -35,6 +35,8 @@ Bridgewater, NJ 08807
 #ifndef _dttsp_h
 #define _dttsp_h
 
+#include <wx/wx.h>
+
 #include "RX.h"
 #include "TX.h"
 #include "Meter.h"
@@ -42,12 +44,9 @@ Bridgewater, NJ 08807
 #include "RingBuffer.h"
 
 enum RUNMODE {
-   RUN_MUTE,
-   RUN_PASS,
    RUN_PLAY,
    RUN_SWITCH
 };
-
 
 
 class CDttSP {
@@ -77,7 +76,7 @@ class CDttSP {
 	void  setNBThreshold(float threshold);
 	void  setNBSDROMFlag(bool flag);
 	void  setNBSDROMThreshold(float threshold);
-	void  setBinauralFlag(bool flag);													// Unused by the GUI
+	void  setBinauralFlag(bool flag);
 	void  setAGCMode(AGCMODE mode);
 	void  setALCAttack(float attack);
 	void  setCarrierLevel(float level);
@@ -98,7 +97,7 @@ class CDttSP {
 	void  getScope(float* results, unsigned int numpoints);
 	float getMeter(METERTYPE mt);
 	void  setDeviation(float value);
-	void  setRXPan(float pos);															// Unused by the GUI
+	void  setRXPan(float pos);
 
 	float getTXOffset() const;
 	float getRXOffset() const;
@@ -108,8 +107,6 @@ class CDttSP {
 	void  process();
 
     protected:
-	void runMute();
-	void runPass();
 	void runPlay();
 	void runSwitch();
 	void processSamples(float* bufi, float* bufq, unsigned int n);
@@ -120,16 +117,8 @@ class CDttSP {
 	float        m_sampleRate;
 	bool         m_running;
 	bool         m_suspend;
-#if defined(__WXMSW__) || defined(__WXGTK__) || defined(__WXMAC__)
 	wxSemaphore* m_update;
 	wxSemaphore* m_buffer;
-#elif defined(WIN32)
-	HANDLE		 m_update;
-	HANDLE		 m_buffer;
-#else
-	sem_t		 m_update;
-	sem_t		 m_buffer;
-#endif
 	CRX*         m_rx;
 	CTX*         m_tx;
 	CMeter*      m_meter;
@@ -144,7 +133,6 @@ class CDttSP {
 	TRXMODE      m_trxNext;
 	RUNMODE      m_state;
 	RUNMODE      m_stateLast;
-	unsigned int m_tick;
 	unsigned int m_want;
 	unsigned int m_have;
 	unsigned int m_fade;

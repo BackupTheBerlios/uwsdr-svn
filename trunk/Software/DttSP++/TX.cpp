@@ -34,6 +34,7 @@ Bridgewater, NJ 08807
 
 #include "TX.h"
 
+#include <wx/wx.h>
 
 CTX::CTX(unsigned int bufLen, unsigned int bits, float sampleRate, CMeter* meter, CSpectrum* spectrum) :
 m_sampleRate(sampleRate),
@@ -62,8 +63,8 @@ m_lowFreq(0.0),
 m_highFreq(0.0),
 m_tick(0UL)
 {
-	ASSERT(meter != NULL);
-	ASSERT(spectrum != NULL);
+	wxASSERT(meter != NULL);
+	wxASSERT(spectrum != NULL);
 
 	m_filter = new CFilterOVSV(bufLen, bits, sampleRate, 300.0F, 3000.0F);
 
@@ -113,8 +114,14 @@ CTX::~CTX()
 	delete m_filter;
 }
 
-void CTX::process()
+void CTX::process(float* bufi, float* bufq, unsigned int n)
 {
+	for (unsigned int i = 0U; i < n; i++) {
+		CXBreal(m_iBuf, i) = bufi[i];
+		CXBimag(m_iBuf, i) = bufq[i];
+	}
+	CXBhave(m_iBuf) = n;
+
 /*
 	unsigned int n = CXBhave(m_iBuf);
 
@@ -157,6 +164,12 @@ void CTX::process()
 
 	meter(m_oBuf, TX_PWR);
 
+	n = CXBhave(m_oBuf);
+	for (unsigned int i = 0U; i < n; i++) {
+		bufi[i] = CXBreal(m_oBuf, i);
+		bufq[i] = CXBimag(m_oBuf, i);
+	}
+
 	m_tick++;
 }
 
@@ -171,16 +184,6 @@ void CTX::spectrum(CXB* buf, TXSPECTRUMtype type)
 		m_spectrum->setData(buf);
 }
 
-CXB* CTX::getIBuf()
-{
-	return m_iBuf;
-}
-
-CXB* CTX::getOBuf()
-{
-	return m_oBuf;
-}
-
 SDRMODE CTX::getMode() const
 {
 	return m_mode;
@@ -189,7 +192,7 @@ SDRMODE CTX::getMode() const
 void CTX::setMode(SDRMODE mode)
 {
 	m_mode = mode;
- 
+
 	if (m_weaver) {
 		switch (mode) {
 			case AM:
@@ -197,19 +200,19 @@ void CTX::setMode(SDRMODE mode)
 				m_oscillator2->setFrequency(-INV_FREQ);
 				m_modulator = m_amModulator;
 				break;
- 
+
 			case FMN:
 				m_oscillator2->setFrequency(-INV_FREQ);
 				m_modulator = m_fmModulator;
 				break;
- 
+
 			case USB:
 			case CWU:
 			case DIGU:
 				m_oscillator2->setFrequency(-INV_FREQ);
 				m_modulator = m_ssbModulator;
 				break;
-               
+
 			case LSB:
 			case CWL:
 			case DIGL:
@@ -224,12 +227,12 @@ void CTX::setMode(SDRMODE mode)
 				m_oscillator2->setFrequency(0.0);
 				m_modulator = m_amModulator;
 				break;
- 
+
 			case FMN:
 				m_oscillator2->setFrequency(0.0);
 				m_modulator = m_fmModulator;
 				break;
- 
+
 			case USB:
 			case LSB:
 			case CWL:
@@ -261,7 +264,7 @@ void CTX::setFilter(double lowFreq, double highFreq)
 {
 	m_lowFreq  = lowFreq;
 	m_highFreq = highFreq;
- 
+
 	if (m_weaver) {
 		if (m_mode == LSB || m_mode == CWL || m_mode == DIGL)
 			m_filter->setFilter(lowFreq + INV_FREQ, highFreq + INV_FREQ);
@@ -275,7 +278,7 @@ void CTX::setFilter(double lowFreq, double highFreq)
 void CTX::setFrequency(double freq)
 {
 	m_freq = freq;
- 
+
 	m_oscillator1->setFrequency(freq);
 }
 

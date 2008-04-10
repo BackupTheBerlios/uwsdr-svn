@@ -3,7 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
 
 Implemented from code by Bill Schottstaedt of Snd Editor at CCRMA
 
@@ -34,9 +34,15 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
+#include <cstring>
+#include <cmath>
+
 #include "Window.h"
 #include "Utils.h"
-#include "FromSys.h"
+
+#if !defined(M_PI)
+const double M_PI = 3.14159265358979323846;
+#endif
 
 
 /* shamelessly stolen from Bill Schottstaedt's clm.c */
@@ -46,7 +52,7 @@ Bridgewater, NJ 08807
  *    Fredric J. Harris, "On the Use of Windows for Harmonic Analysis with the
  *    Discrete Fourier Transform," Proceedings of the IEEE, Vol. 66, No. 1,
  *    January 1978.
- *    Albert H. Nuttall, "Some Windows with Very Good Sidelobe Behaviour", 
+ *    Albert H. Nuttall, "Some Windows with Very Good Sidelobe Behaviour",
  *    IEEE Transactions of Acoustics, Speech, and Signal Processing, Vol. ASSP-29,
  *    No. 1, February 1981, pp 84-91
  *
@@ -62,7 +68,7 @@ float* CWindow::create(Windowtype type, unsigned int size, float* window)
 	unsigned int midp1 = (size + 1) / 2;
 	unsigned int midm1 = (size - 1) / 2;
 
-	float freq = float(TWOPI / float(size));
+	float freq = float(2.0 * M_PI / float(size));
 	float rate = 1.0F / float(midn);
 	float angle = 0.0F;
 	float expn = float(::log(2.0) / float(midn + 1));
@@ -84,8 +90,10 @@ float* CWindow::create(Windowtype type, unsigned int size, float* window)
 			break;
 
 		case WELCH_WINDOW:
-			for (i = 0, j = size - 1; i <= midn; i++, j--)
-				window[j] = window[i] = float(1.0 - ::sqr(float(i - midm1) / float(midp1)));
+			for (i = 0, j = size - 1; i <= midn; i++, j--) {
+				float n = float(i - midm1) / float(midp1);
+				window[j] = window[i] = 1.0F - n * n;
+			}
 			break;
 
 		case PARZEN_WINDOW:
@@ -132,7 +140,7 @@ float* CWindow::create(Windowtype type, unsigned int size, float* window)
 			break;
 
 		case RIEMANN_WINDOW:
-			sr1 = float(TWOPI / float(size));
+			sr1 = float(2.0 * M_PI / float(size));
 			for (i = 0, j = size - 1; i <= midn; i++, j--) {
 				if (i == midn) {
 					window[j] = window[i] = 1.0F;
@@ -150,9 +158,9 @@ float* CWindow::create(Windowtype type, unsigned int size, float* window)
 				const float a3 = 0.01168F;
 
 				for (i = 0; i < size; i++)
-					window[i] = float(a0 - a1 * (float)::cos(      TWOPI * float(i + 0.5F) / float(size - 1)) +
-										   a2 * (float)::cos(2.0 * TWOPI * float(i + 0.5F) / float(size - 1)) -
-										   a3 * (float)::cos(3.0 * TWOPI * float(i + 0.5F) / float(size - 1)));
+					window[i] = float(a0 - a1 * (float)::cos(      2.0 * M_PI * float(i + 0.5F) / float(size - 1)) +
+										   a2 * (float)::cos(2.0 * 2.0 * M_PI * float(i + 0.5F) / float(size - 1)) -
+										   a3 * (float)::cos(3.0 * 2.0 * M_PI * float(i + 0.5F) / float(size - 1)));
 			}
 			break;
 
@@ -163,9 +171,9 @@ float* CWindow::create(Windowtype type, unsigned int size, float* window)
 				const float a3 = 0.0106411F;
 
 				for (i = 0; i < size; i++)
-					window[i] = float(a0 - a1 * (float)::cos(      TWOPI * float(i + 0.5) / float(size - 1)) +
-										   a2 * (float)::cos(2.0 * TWOPI * float(i + 0.5) / float(size - 1)) -
-										   a3 * (float)::cos(3.0 * TWOPI * float(i + 0.5) / float(size - 1)));
+					window[i] = float(a0 - a1 * (float)::cos(      2.0 * M_PI * float(i + 0.5) / float(size - 1)) +
+										   a2 * (float)::cos(2.0 * 2.0 * M_PI * float(i + 0.5) / float(size - 1)) -
+										   a3 * (float)::cos(3.0 * 2.0 * M_PI * float(i + 0.5) / float(size - 1)));
 			}
 			break;
 

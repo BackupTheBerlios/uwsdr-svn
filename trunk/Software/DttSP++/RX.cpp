@@ -34,6 +34,12 @@ Bridgewater, NJ 08807
 
 #include "RX.h"
 
+#include <wx/wx.h>
+
+#include <algorithm>
+using std::min;
+using std::max;
+
 
 CRX::CRX(unsigned int bufLen, unsigned int bits, float sampleRate, CMeter* meter, CSpectrum* spectrum) :
 m_sampleRate(sampleRate),
@@ -73,8 +79,8 @@ m_highFreq(0.0),
 m_azim(),
 m_tick(0UL)
 {
-	ASSERT(meter != NULL);
-	ASSERT(spectrum != NULL);
+	wxASSERT(meter != NULL);
+	wxASSERT(spectrum != NULL);
 
 	m_filter = new CFilterOVSV(bufLen, bits, sampleRate, -4800.0F, 4800.0F);
 
@@ -88,7 +94,7 @@ m_tick(0UL)
 
 	m_agc = new CAGC(agcLONG,	// mode kept around for control reasons alone
 				    m_oBuf,	// input buffer
-				    1.0F,	// Target output 
+				    1.0F,	// Target output
 				    2.0F,	// Attack time constant in ms
 				    500,	// Decay time constant in ms
 				    1.0,	// Slope
@@ -170,8 +176,17 @@ CRX::~CRX()
 	delete m_filter;
 }
 
-void CRX::process()
+void CRX::process(float* bufi, float* bufq, unsigned int n)
 {
+	wxASSERT(bufi != NULL);
+	wxASSERT(bufq != NULL);
+
+	for (unsigned int i = 0U; i < n; i++) {
+		CXBreal(m_iBuf, i) = bufi[i];
+		CXBimag(m_iBuf, i) = bufq[i];
+	}
+	CXBhave(m_iBuf) = n;
+
 	if (m_nbFlag)
 		m_nb->blank();
 
@@ -239,6 +254,12 @@ void CRX::process()
 
 	spectrum(m_oBuf, SPEC_RX_POST_DET);
 
+	n = CXBhave(m_oBuf);
+	for (unsigned int i = 0U; i < n; i++) {
+		bufi[i] = CXBreal(m_oBuf, i);
+		bufq[i] = CXBimag(m_oBuf, i);
+	}
+
 	m_tick++;
 }
 
@@ -253,20 +274,10 @@ void CRX::spectrum(CXB* buf, RXSPECTRUMtype type)
 		m_spectrum->setData(buf);
 }
 
-CXB* CRX::getIBuf()
-{
-	return m_iBuf;
-}
-
-CXB* CRX::getOBuf()
-{
-	return m_oBuf;
-}
-
 void CRX::setMode(SDRMODE mode)
 {
 	m_mode = mode;
- 
+
 	if (m_weaver) {
 		switch (mode) {
 			case AM:
@@ -274,25 +285,25 @@ void CRX::setMode(SDRMODE mode)
 				m_oscillator2->setFrequency(-INV_FREQ);
 				m_demodulator = m_amDemodulator;
 				break;
- 
+
 			case SAM:
 				m_amDemodulator->setMode(SAMdet);
 				m_oscillator2->setFrequency(-INV_FREQ);
 				m_demodulator = m_amDemodulator;
 				break;
- 
+
 			case FMN:
 				m_oscillator2->setFrequency(-INV_FREQ);
 				m_demodulator = m_fmDemodulator;
 				break;
- 
+
 			case USB:
 			case CWU:
 			case DIGU:
 				m_oscillator2->setFrequency(-INV_FREQ);
 				m_demodulator = m_ssbDemodulator;
 				break;
-               
+
 			case LSB:
 			case CWL:
 			case DIGL:
@@ -307,18 +318,18 @@ void CRX::setMode(SDRMODE mode)
 				m_oscillator2->setFrequency(0.0);
 				m_demodulator = m_amDemodulator;
 				break;
- 
+
 			case SAM:
 				m_amDemodulator->setMode(SAMdet);
 				m_oscillator2->setFrequency(0.0);
 				m_demodulator = m_amDemodulator;
 				break;
- 
+
 			case FMN:
 				m_oscillator2->setFrequency(0.0);
 				m_demodulator = m_fmDemodulator;
 				break;
- 
+
 			case USB:
 			case LSB:
 			case CWL:
@@ -345,7 +356,7 @@ void CRX::setFilter(double lowFreq, double highFreq)
 {
 	m_lowFreq  = lowFreq;
 	m_highFreq = highFreq;
- 
+
 	if (m_weaver) {
 		if (m_mode == LSB || m_mode == CWL || m_mode == DIGL)
 			m_filter->setFilter(lowFreq + INV_FREQ, highFreq + INV_FREQ);
@@ -361,7 +372,7 @@ void CRX::setFilter(double lowFreq, double highFreq)
 void CRX::setFrequency(double freq)
 {
 	m_freq = freq;
- 
+
 	m_oscillator1->setFrequency(freq);
 }
 
@@ -403,7 +414,7 @@ void CRX::setANRValues(unsigned int adaptiveFilterSize, unsigned int delay, floa
 	m_anr->setAdaptationRate(adaptationRate);
 	m_anr->setLeakage(leakage);
 
-	m_banr->setAdaptationRate(min(0.1F * adaptationRate, 0.0002F));
+	m_banr->setAdaptationRate(::min(0.1F * adaptationRate, 0.0002F));
 }
 
 void CRX::setANRFlag(bool flag)
@@ -423,7 +434,7 @@ void CRX::setANFValues(unsigned int adaptiveFilterSize, unsigned int delay, floa
 	m_anf->setAdaptationRate(adaptationRate);
 	m_anf->setLeakage(leakage);
 
-	m_banf->setAdaptationRate(min(0.1F * adaptationRate, 0.0002F));
+	m_banf->setAdaptationRate(::min(0.1F * adaptationRate, 0.0002F));
 }
 
 void CRX::setNBFlag(bool flag)

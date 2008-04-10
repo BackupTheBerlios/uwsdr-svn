@@ -58,25 +58,16 @@ m_trx(RX),
 m_trxNext(RX),
 m_state(RUN_PLAY),
 m_stateLast(RUN_PLAY),
-m_tick(0),
-m_want(0),
-m_have(0),
-m_fade(0),
-m_tail(0),
+m_want(0U),
+m_have(0U),
+m_fade(0U),
+m_tail(0U),
 m_frames(audioSize)
 {
-	ASSERT(sampleRate > 0.0F);
+	wxASSERT(sampleRate > 0.0F);
 
-#if defined(__WXMSW__) || defined(__WXGTK__) || defined(__WXMAC__)
 	m_update = new wxSemaphore();
 	m_buffer = new wxSemaphore();
-#elif defined(WIN32)
-	m_update = ::CreateSemaphore(NULL, 0, 99, NULL);
-	m_buffer = ::CreateSemaphore(NULL, 0, 99, NULL);;
-#else
-	::sem_init(&m_update, 0, 0);
-	::sem_init(&m_buffer, 0, 0);
-#endif
 
 	m_meter    = new CMeter();
 	m_spectrum = new CSpectrum(DEFSPEC, FFTW_ESTIMATE, SPEC_PWR);
@@ -86,12 +77,12 @@ m_frames(audioSize)
 	::memset(m_bufferI, 0x00, m_frames * sizeof(float));
 	::memset(m_bufferQ, 0x00, m_frames * sizeof(float));
 
-	m_inputI  = new CRingBuffer(RINGSIZE, 1);
-	m_inputQ  = new CRingBuffer(RINGSIZE, 1);
-	m_outputI = new CRingBuffer(RINGSIZE, 1);
-	m_outputQ = new CRingBuffer(RINGSIZE, 1);
+	m_inputI  = new CRingBuffer(RINGSIZE, 1U);
+	m_inputQ  = new CRingBuffer(RINGSIZE, 1U);
+	m_outputI = new CRingBuffer(RINGSIZE, 1U);
+	m_outputQ = new CRingBuffer(RINGSIZE, 1U);
 
-	m_fade = m_frames / 5;
+	m_fade = m_frames / 5U;
 	m_tail = m_frames - m_fade;
 
 	m_rx = new CRX(m_frames, FFTW_ESTIMATE, sampleRate, m_meter, m_spectrum);
@@ -109,16 +100,8 @@ CDttSP::~CDttSP()
 	delete[] m_bufferI;
 	delete[] m_bufferQ;
 
-#if defined(__WXMSW__) || defined(__WXGTK__) || defined(__WXMAC__)
 	delete m_update;
 	delete m_buffer;
-#elif defined(WIN32)
-	::CloseHandle(m_update);
-	::CloseHandle(m_buffer);
-#else
-	::sem_destroy(&m_update);
-	::sem_destroy(&m_buffer);
-#endif
 
 	delete m_rx;
 	delete m_tx;
@@ -132,12 +115,12 @@ CDttSP::~CDttSP()
 
 void CDttSP::setMode(SDRMODE m)
 {
-	SEM_WAIT(m_update);
+	m_update->Wait();
 
 	m_tx->setMode(m);
 	m_rx->setMode(m);
 
-	SEM_POST(m_update);
+	m_update->Post();
 }
 
 void CDttSP::setWeaver(bool flag)
@@ -153,25 +136,25 @@ void CDttSP::setDCBlockFlag(bool flag)
 
 void CDttSP::setRXFilter(double lowFreq, double highFreq)
 {
-	SEM_WAIT(m_update);
+	m_update->Wait();
 
 	m_rx->setFilter(lowFreq, highFreq);
 
-	SEM_POST(m_update);
+	m_update->Post();
 }
 
 void CDttSP::setTXFilter(double lowFreq, double highFreq)
 {
-	SEM_WAIT(m_update);
+	m_update->Wait();
 
 	m_tx->setFilter(lowFreq, highFreq);
 
-	SEM_POST(m_update);
+	m_update->Post();
 }
 
 void CDttSP::releaseUpdate()
 {
-	SEM_POST(m_update);
+	m_update->Post();
 }
 
 void CDttSP::setRXFrequency(double freq)
@@ -331,35 +314,35 @@ void CDttSP::setCompressionLevel(float level)
 
 void CDttSP::setTRX(TRXMODE trx)
 {
-	SEM_WAIT(m_update);
+	m_update->Wait();
 
 	switch (trx) {
 		case TX:
 			switch (m_tx->getMode()) {
 				case CWU:
 				case CWL:
-					m_want = 0;
+					m_want = 0U;
 					break;
 				default:
-					m_want = int(2 * m_sampleRate / 48000);
+					m_want = int(2.0F * m_sampleRate / 48000.0F);
 					break;
 			}
 			break;
 
 		case RX:
-			m_want = int(1 * m_sampleRate / 48000);
+			m_want = int(1.0F * m_sampleRate / 48000.0F);
 			break;
 	}
 
 	m_trxNext = trx;
-	m_have    = 0;
+	m_have    = 0U;
 
 	if (m_state != RUN_SWITCH)
 		m_stateLast = m_state;
 
 	m_state = RUN_SWITCH;
 
-	SEM_POST(m_update);
+	m_update->Post();
 }
 
 void CDttSP::setALCGainTop(float gain)
@@ -369,39 +352,39 @@ void CDttSP::setALCGainTop(float gain)
 
 void CDttSP::getSpectrum(float *results)
 {
-	ASSERT(results != NULL);
+	wxASSERT(results != NULL);
 
 	m_spectrum->setScale(SPEC_PWR);
 
-	SEM_WAIT(m_update);
+	m_update->Wait();
 	m_spectrum->snapSpectrum();
-	SEM_POST(m_update);
+	m_update->Post();
 
 	m_spectrum->computeSpectrum(results);
 }
 
 void CDttSP::getPhase(float* results, unsigned int numpoints)
 {
-	ASSERT(results != NULL);
+	wxASSERT(results != NULL);
 
 	m_spectrum->setScale(SPEC_PWR);
 
-	SEM_WAIT(m_update);
+	m_update->Wait();
 	m_spectrum->snapScope();
-	SEM_POST(m_update);
+	m_update->Post();
 
 	m_spectrum->computeScopeComplex(results, numpoints);
 }
 
 void CDttSP::getScope(float* results, unsigned int numpoints)
 {
-	ASSERT(results != NULL);
+	wxASSERT(results != NULL);
 
 	m_spectrum->setScale(SPEC_PWR);
 
-	SEM_WAIT(m_update);
+	m_update->Wait();
 	m_spectrum->snapScope();
-	SEM_POST(m_update);
+	m_update->Post();
 
 	m_spectrum->computeScopeReal(results, numpoints);
 }
@@ -409,8 +392,6 @@ void CDttSP::getScope(float* results, unsigned int numpoints)
 float CDttSP::getMeter(METERTYPE mt)
 {
 	float returnval = -200.0F;
-
-	SEM_WAIT(m_update);
 
 	switch (m_trx) {
 		case RX:
@@ -469,8 +450,6 @@ float CDttSP::getMeter(METERTYPE mt)
 			break;
 	}
 
-	SEM_POST(m_update);
-
 	return returnval;
 }
 
@@ -482,14 +461,14 @@ void CDttSP::setDeviation(float value)
 
 void CDttSP::ringBufferReset()
 {
-	SEM_WAIT(m_update);
+	m_update->Wait();
 
 	m_inputI->clear();
 	m_inputQ->clear();
 	m_outputI->clear();
 	m_outputQ->clear();
 
-	SEM_POST(m_update);
+	m_update->Post();
 }
 
 // [pos]  0.0 <= pos <= 1.0
@@ -513,79 +492,59 @@ float CDttSP::getRXOffset() const
 
 void CDttSP::audioEntry(const float* input, float* output, unsigned int nframes)
 {
-	ASSERT(input != NULL);
-	ASSERT(output != NULL);
+	wxASSERT(input != NULL);
+	wxASSERT(output != NULL);
 
 	if (m_suspend) {
-		::memset(output, 0x00, 2 * nframes * sizeof(float));
+		::memset(output, 0x00, 2U * nframes * sizeof(float));
 		return;
 	}
 
 	if (m_outputI->dataSpace() >= nframes && m_outputQ->dataSpace() >= nframes) {
 		unsigned int i, j;
-		/* The following code is broken up in this manner to minimize
-		   cache hits */
-		for (i = 0, j = 0; i < nframes; i++, j += 2)
-			m_outputI->getData(&output[j], 1);
-		for (i = 0, j = 1; i < nframes; i++, j += 2)
-			m_outputQ->getData(&output[j], 1);
+		// The following code is broken up in this manner to minimize cache hits
+		for (i = 0U, j = 0U; i < nframes; i++, j += 2U)
+			m_outputI->getData(&output[j], 1U);
+		for (i = 0U, j = 1U; i < nframes; i++, j += 2U)
+			m_outputQ->getData(&output[j], 1U);
 	} else {
 		m_inputI->clear();
 		m_inputQ->clear();
 		m_outputI->clear();
 		m_outputQ->clear();
 
-		::memset(output, 0x00, 2 * nframes * sizeof(float));
+		::memset(output, 0x00, 2U * nframes * sizeof(float));
 
-#if defined(__WXMSW__) || defined(__WXGTK__) || defined(__WXMAC__)
-		wxLogError(wxT("Not enough data in the output ring buffer"));
-#elif defined(WIN32)
-		// No WIN32 logging yet
-#else
-		::syslog(LOG_ERR, "Not enough data in the output ring buffer");
-#endif
+		::wxLogError(wxT("Not enough data in the output ring buffer"));
 	}
 
 	// input: copy from port to ring
 	if (m_inputI->freeSpace() >= nframes && m_inputQ->freeSpace() >= nframes) {
 		unsigned int i, j;
-		/* The following code is broken up in this manner to minimize
-		   cache hits */
-		for (i = 0, j = 0; i < nframes; i++, j += 2)
-			m_inputI->addData(&input[j], 1);
-		for (i = 0, j = 1; i < nframes; i++, j += 2)
-			m_inputQ->addData(&input[j], 1);
+		// The following code is broken up in this manner to minimize cache hits
+		for (i = 0U, j = 0U; i < nframes; i++, j += 2U)
+			m_inputI->addData(&input[j], 1U);
+		for (i = 0U, j = 1U; i < nframes; i++, j += 2U)
+			m_inputQ->addData(&input[j], 1U);
 	} else {
 		m_inputI->clear();
 		m_inputQ->clear();
 		m_outputI->clear();
 		m_outputQ->clear();
 
-#if defined(__WXMSW__) || defined(__WXGTK__) || defined(__WXMAC__)
-		wxLogError(wxT("Not enough space in the input ring buffer"));
-#elif defined(WIN32)
-		// No WIN32 logging yet
-#else
-		::syslog(LOG_ERR, "Not enough space in the input ring buffer");
-#endif
+		::wxLogError(wxT("Not enough space in the input ring buffer"));
 	}
 
 	// if enough accumulated in ring, fire dsp
 	if (m_inputI->dataSpace() >= m_frames && m_inputQ->dataSpace() >= m_frames)
-		SEM_POST(m_buffer);
+		m_buffer->Post();
 }
 
 void CDttSP::getHold()
 {
 	if (m_outputI->freeSpace() < m_frames) {
 		// pathology
-#if defined(__WXMSW__) || defined(__WXGTK__) || defined(__WXMAC__)
-		wxLogError(wxT("Not enough space in the output ring buffer"));
-#elif defined(WIN32)
-		// No WIN32 logging yet
-#else
-		::syslog(LOG_ERR, "Not enough space in the output ring buffer");
-#endif
+		::wxLogError(wxT("Not enough space in the output ring buffer"));
 	} else {
 		m_outputI->addData(m_bufferI, m_frames);
 		m_outputQ->addData(m_bufferQ, m_frames);
@@ -596,17 +555,11 @@ void CDttSP::getHold()
 		::memset(m_bufferI, 0x00, m_frames * sizeof(float));
 		::memset(m_bufferQ, 0x00, m_frames * sizeof(float));
 
-#if defined(__WXMSW__) || defined(__WXGTK__) || defined(__WXMAC__)
-		wxLogError(wxT("Not enough data in the output ring buffer"));
-#elif defined(WIN32)
-		// No WIN32 logging yet
-#else
-		::syslog(LOG_ERR, "Not enough data in the output ring buffer");
-#endif
+		::wxLogError(wxT("Not enough data in the input ring buffer"));
 	} else {
 		m_inputI->getData(m_bufferI, m_frames);
 		m_inputQ->getData(m_bufferQ, m_frames);
-    }
+	}
 }
 
 bool CDttSP::canHold()
@@ -617,47 +570,25 @@ bool CDttSP::canHold()
 void CDttSP::process()
 {
 	while (m_running) {
-		SEM_WAIT(m_buffer);
+		m_buffer->Wait();
 
 		while (canHold()) {
 			getHold();
 
-			SEM_WAIT(m_update);
+			m_update->Wait();
 
 			switch (m_state) {
-				case RUN_MUTE:
-					runMute();
-					break;
-
-				case RUN_PASS:
-					runPass();
-					break;
-
 				case RUN_PLAY:
 					runPlay();
 					break;
-
 				case RUN_SWITCH:
 					runSwitch();
 					break;
 			}
 
-			SEM_POST(m_update);
+			m_update->Post();
 		}
 	}
-}
-
-void CDttSP::runMute()
-{
-	::memset(m_bufferI, 0x00, m_frames * sizeof(float));
-	::memset(m_bufferQ, 0x00, m_frames * sizeof(float));
-
-	m_tick++;
-}
-
-void CDttSP::runPass()
-{
-	m_tick++;
 }
 
 void CDttSP::runPlay()
@@ -668,9 +599,8 @@ void CDttSP::runPlay()
 void CDttSP::runSwitch()
 {
 	if (m_have == 0) {
-		// first time
-		// apply ramp down
-		for (unsigned int i = 0; i < m_fade; i++) {
+		// First time, apply ramp down
+		for (unsigned int i = 0U; i < m_fade; i++) {
 			float w = 1.0F - float(i) / float(m_fade);
 
 			m_bufferI[i] *= w;
@@ -688,9 +618,8 @@ void CDttSP::runSwitch()
 
 		m_have++;
 	} else {
-		// last time
-		// apply ramp up
-		for (unsigned int i = 0; i < m_fade; i++) {
+		// Last time, apply ramp up
+		for (unsigned int i = 0U; i < m_fade; i++) {
 			float w = float(i) / float(m_fade);
 
 			m_bufferI[i] *= w;
@@ -700,8 +629,8 @@ void CDttSP::runSwitch()
 		m_trx   = m_trxNext;
 		m_state = m_stateLast;
 
-		m_want = 0;
-		m_have = 0;
+		m_want = 0U;
+		m_have = 0U;
 	}
 
 	processSamples(m_bufferI, m_bufferQ, m_frames);
@@ -709,49 +638,15 @@ void CDttSP::runSwitch()
 
 void CDttSP::processSamples(float* bufi, float* bufq, unsigned int n)
 {
-	unsigned int i;
+	wxASSERT(bufi != NULL);
+	wxASSERT(bufq != NULL);
 
 	switch (m_trx) {
-		case RX: {
-				CXB* iBuf = m_rx->getIBuf();
-				CXB* oBuf = m_rx->getOBuf();
-
-				for (i = 0; i < n; i++) {
-					CXBreal(iBuf, i) = bufi[i];
-					CXBimag(iBuf, i) = bufq[i];
-				}
-				CXBhave(iBuf) = n;
-
-				m_rx->process();
-
-				n = CXBhave(oBuf);
-				for (i = 0; i < n; i++) {
-					bufi[i] = CXBreal(oBuf, i);
-					bufq[i] = CXBimag(oBuf, i);
-				}
-			}
+		case RX:
+			m_rx->process(bufi, bufq, n);
 			break;
-
-		case TX: {
-				CXB* iBuf = m_tx->getIBuf();
-				CXB* oBuf = m_tx->getOBuf();
-
-				for (i = 0; i < n; i++) {
-					CXBreal(iBuf, i) = bufi[i];
-					CXBimag(iBuf, i) = bufq[i];
-				}
-				CXBhave(iBuf) = n;
-
-				m_tx->process();
-
-				n = CXBhave(oBuf);
-				for (i = 0; i < n; i++) {
-					bufi[i] = CXBreal(oBuf, i);
-					bufq[i] = CXBimag(oBuf, i);
-				}
-			}
+		case TX:
+			m_tx->process(bufi, bufq, n);
 			break;
 	}
-
-	m_tick++;
 }
