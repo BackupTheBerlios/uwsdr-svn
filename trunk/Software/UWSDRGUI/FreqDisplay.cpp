@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ wxPanel(parent, id, pos, size, style, name),
 m_width(size.GetWidth()),
 m_height(size.GetHeight()),
 m_bitmap(NULL),
-m_lastFrequency(0, 0),
+m_lastFrequency(),
 m_lightColour(wxColour(0, 255, 255)),
 m_darkColour(wxColour(0, 64, 64))
 {
@@ -46,11 +46,10 @@ CFreqDisplay::~CFreqDisplay()
 
 void CFreqDisplay::setFrequency(const CFrequency& frequency)
 {
-	int mhz = frequency.getMHz();
-	int  hz = (int)frequency.getHz();
+	wxInt64 hz = frequency.get();
 
 	// Only display to 10 Hz
-	if (m_lastFrequency.getMHz() == mhz && int(m_lastFrequency.getHz() / 10) == int(hz / 10))
+	if ((m_lastFrequency.get() / 10LL) == (hz / 10LL))
 		return;
 
 	clearGraph();
@@ -59,13 +58,13 @@ void CFreqDisplay::setFrequency(const CFrequency& frequency)
 	memoryDC.SelectObject(*m_bitmap);
 
 	int mhzDigits = 1;
-	if (mhz >= 10000)			// 10 GHz
+	if (hz >= 10000000000LL)			// 10 GHz
 		mhzDigits = 5;
-	else if (mhz >= 1000)		// 1000 MHz
+	else if (hz >= 1000000000LL)		// 1000 MHz
 		mhzDigits = 4;
-	else if (mhz >= 100)		// 100 MHz
+	else if (hz >= 100000000LL)			// 100 MHz
 		mhzDigits = 3;
-	else if (mhz >= 10)			// 10 MHz
+	else if (hz >= 10000000LL)			// 10 MHz
 		mhzDigits = 2;
 
 	const int bigThickness    = 5;
@@ -82,32 +81,32 @@ void CFreqDisplay::setFrequency(const CFrequency& frequency)
 
 	int x = BORDER_SIZE + (mhzDigits + 4) * bigWidth;
 
-	unsigned int rem = hz / 10;
+	wxInt64 rem = hz / 10LL;
 
-	drawDigit(memoryDC, littleWidth, littleHeight, littleThickness, x, littleY, rem % 10, false);
+	drawDigit(memoryDC, littleWidth, littleHeight, littleThickness, x, littleY, rem % 10LL, false);
 	x   -= littleWidth;
-	rem /= 10;
+	rem /= 10LL;
 
-	drawDigit(memoryDC, littleWidth, littleHeight, littleThickness, x, littleY, rem % 10, false);
+	drawDigit(memoryDC, littleWidth, littleHeight, littleThickness, x, littleY, rem % 10LL, false);
 	x   -= bigWidth;
-	rem /= 10;
+	rem /= 10LL;
 
-	drawDigit(memoryDC, bigWidth, bigHeight, bigThickness, x, bigY, rem % 10, false);
+	drawDigit(memoryDC, bigWidth, bigHeight, bigThickness, x, bigY, rem % 10LL, false);
 	x   -= bigWidth;
-	rem /= 10;
+	rem /= 10LL;
 
-	drawDigit(memoryDC, bigWidth, bigHeight, bigThickness, x, bigY, rem % 10, false);
+	drawDigit(memoryDC, bigWidth, bigHeight, bigThickness, x, bigY, rem % 10LL, false);
 	x   -= bigWidth;
-	rem /= 10;
+	rem /= 10LL;
 
-	drawDigit(memoryDC, bigWidth, bigHeight, bigThickness, x, bigY, rem % 10, true);
+	drawDigit(memoryDC, bigWidth, bigHeight, bigThickness, x, bigY, rem % 10LL, true);
 	x   -= bigWidth;
 
-	rem = mhz;
+	rem = hz;
 
 	for (int i = 0; i < mhzDigits; i++) {
-		int n = rem % 10;
-		rem /= 10;
+		wxInt64 n = rem % 10LL;
+		rem /= 10LL;
 
 		drawDigit(memoryDC, bigWidth, bigHeight, bigThickness, x, bigY, n, false);
 		x -= bigWidth;

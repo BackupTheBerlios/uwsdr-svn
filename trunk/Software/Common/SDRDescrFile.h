@@ -37,15 +37,15 @@ class CSDRDescrFile {
 	CSDRDescrFile(const wxString& fileName);
 	~CSDRDescrFile();
 
-	wxString   getName() const;
-	SDRTYPE    getType() const;
-	CFrequency getMaxFreq() const;
-	CFrequency getMinFreq() const;
-	CFrequency getOffset() const;
-	float      getStepSize() const;
-	float      getSampleRate() const;
-	bool       getReceiveOnly() const;
-	bool       isValid() const;
+	wxString     getName() const;
+	SDRTYPE      getType() const;
+	CFrequency   getMaxFreq() const;
+	CFrequency   getMinFreq() const;
+	CFrequency   getOffset() const;
+	unsigned int getStepSize() const;
+	float        getSampleRate() const;
+	bool         getReceiveOnly() const;
+	bool         isValid() const;
 
     private:
 	wxString     m_name;
@@ -53,7 +53,7 @@ class CSDRDescrFile {
 	CFrequency   m_maxFreq;
 	CFrequency   m_minFreq;
 	CFrequency   m_offset;
-	float        m_stepSize;
+	unsigned int m_stepSize;
 	float        m_sampleRate;
 	bool         m_receiveOnly;
 	bool         m_valid;

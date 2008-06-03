@@ -196,12 +196,12 @@ bool CUWSDRApp::OnInit()
 	::wxLogMessage(wxT("Using hardware configuration file: ") + m_parameters->m_fileName);
 
 	// We interpolate so that we don't send too many commands to the hardware
-	if (m_parameters->m_hardwareStepSize < 10.0F &&
+	if (m_parameters->m_hardwareStepSize < 10U &&
 		m_parameters->m_hardwareType == TYPE_UWSDR1)
-		m_parameters->m_hardwareStepSize = 10.0F;
+		m_parameters->m_hardwareStepSize = 10U;
 
 	// We cannot use Weaver on hardware with too large step sizes
-	if (m_parameters->m_hardwareStepSize > 100.0F      ||
+	if (m_parameters->m_hardwareStepSize > 100U        ||
 	    m_parameters->m_hardwareType == TYPE_AUDIORX   ||
 	    m_parameters->m_hardwareType == TYPE_AUDIOTXRX ||
 	    m_parameters->m_hardwareType == TYPE_DEMO)
@@ -454,28 +454,28 @@ bool CUWSDRApp::readConfig()
 
 	wxString freq;
 	profile->Read(keyMaxRxFreq,        &freq, wxT("9999999.0"));
-	m_parameters->m_maxReceiveFreq.setFrequency(freq);
+	m_parameters->m_maxReceiveFreq.set(freq);
 
 	profile->Read(keyMinRxFreq,        &freq, wxT("0.0"));
-	m_parameters->m_minReceiveFreq.setFrequency(freq);
+	m_parameters->m_minReceiveFreq.set(freq);
 
 	profile->Read(keyMaxTxFreq,        &freq, wxT("9999999.0"));
-	m_parameters->m_maxTransmitFreq.setFrequency(freq);
+	m_parameters->m_maxTransmitFreq.set(freq);
 
 	profile->Read(keyMinTxFreq,        &freq, wxT("0.0"));
-	m_parameters->m_minTransmitFreq.setFrequency(freq);
+	m_parameters->m_minTransmitFreq.set(freq);
 
 	profile->Read(keyVfoA,             &freq, wxT("0.0"));
-	m_parameters->m_vfoA.setFrequency(freq);
+	m_parameters->m_vfoA.set(freq);
 
 	profile->Read(keyVfoB,             &freq, wxT("0.0"));
-	m_parameters->m_vfoB.setFrequency(freq);
+	m_parameters->m_vfoB.set(freq);
 
 	profile->Read(keyVfoC,             &freq, wxT("0.0"));
-	m_parameters->m_vfoC.setFrequency(freq);
+	m_parameters->m_vfoC.set(freq);
 
 	profile->Read(keyVfoD,             &freq, wxT("0.0"));
-	m_parameters->m_vfoD.setFrequency(freq);
+	m_parameters->m_vfoD.set(freq);
 
 	long num;
 	profile->Read(keyFreqShift1,       &num, 0L);

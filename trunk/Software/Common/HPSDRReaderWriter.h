@@ -75,7 +75,7 @@ class CHPSDRReaderWriter : public ISDRController, public wxThread  {
 	int                    m_dataId;
 	int                    m_audioId;
 	bool                   m_transmit;
-	unsigned int           m_frequency;
+	wxInt64                m_frequency;
 	unsigned int           m_robin;
 	int                    m_c0;
 	int                    m_c1;

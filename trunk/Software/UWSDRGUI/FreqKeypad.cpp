@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ wxDialog(parent, id, wxString(_("Frequency Keypad"))),
 m_vfo(vfo),
 m_minFreq(minFreq),
 m_maxFreq(maxFreq),
-m_frequency(0, 0.0F),
+m_frequency(),
 m_text(NULL)
 {
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
@@ -182,7 +182,7 @@ void CFreqKeypad::onOK(wxCommandEvent& WXUNUSED(event))
 		text.Prepend(mhz);
 	}
 
-	if (!m_frequency.setFrequency(text)) {
+	if (!m_frequency.set(text)) {
 		::wxBell();
 		return;
 	}

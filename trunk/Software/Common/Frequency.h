@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,123 +24,99 @@
 class CFrequency {
 
     public:
-	CFrequency(int mhz, double hz);
+	CFrequency(wxInt64 hz);
 	CFrequency(const CFrequency& frequency);
 	CFrequency(const wxString& freq);
 	CFrequency();
 	virtual ~CFrequency();
 
-	virtual void addMHz(int mhz);
-	virtual void addHz(double hz);
+	virtual void add(wxInt64 hz);
+	virtual void sub(wxInt64 hz);
 
-	virtual bool setFrequency(const wxString& freq);
-
-	virtual void setHz(double hz);
-	virtual void setMHz(int mhz);
+	virtual void set(wxInt64 hz);
+	virtual bool set(const wxString& freq);
 
 	virtual wxString getString(unsigned int decimals = 8) const;
-	virtual int      getMHz() const;
-	virtual double   getHz() const;
+	virtual wxInt64  get() const;
 
-	CFrequency operator+(double hz)
+	CFrequency operator+(wxInt64 hz)
 	{
 		CFrequency temp(*this);
-		temp.addHz(hz);
+		temp.add(hz);
 		return temp;
 	}
 
-	CFrequency operator-(double hz)
+	CFrequency operator-(wxInt64 hz)
 	{
 		CFrequency temp(*this);
-		temp.addHz(-hz);
+		temp.sub(hz);
 		return temp;
 	}
 
 	CFrequency operator+(const CFrequency& freq)
 	{
-		int    mhz = this->m_mhz + freq.m_mhz;
-		double  hz = this->m_hz  + freq.m_hz;
-
-		while (hz > 1000000.0) {
-			hz  -= 1000000.0;
-			mhz += 1;
-		}
-
-		CFrequency temp(mhz, hz);
+		CFrequency temp(*this);
+		temp.add(freq.m_hz);
 		return temp;
 	}
 
 	CFrequency operator-(const CFrequency& freq)
 	{
-		int    mhz = this->m_mhz - freq.m_mhz;
-		double  hz = this->m_hz  - freq.m_hz;
-
-		while (hz > 1000000.0) {
-			hz  -= 1000000.0;
-			mhz += 1;
-		}
-
-		while (hz < -1000000.0) {
-			hz  += 1000000.0;
-			mhz -= 1;
-		}
-
-		CFrequency temp(mhz, hz);
+		CFrequency temp(*this);
+		temp.sub(freq.m_hz);
 		return temp;
 	}
 
-	CFrequency& operator+=(double hz)
+	CFrequency& operator+=(wxInt64 hz)
 	{
-		this->addHz(hz);
+		this->add(hz);
 		return *this;
 	}
 
-	CFrequency& operator-=(double hz)
+	CFrequency& operator-=(wxInt64 hz)
 	{
-		this->addHz(-hz);
+		this->sub(hz);
 		return *this;
 	}		
 
 	CFrequency& operator=(const CFrequency& frequency)
 	{
-		this->setMHz(frequency.getMHz());
-		this->setHz(frequency.getHz());
+		this->set(frequency.get());
 		return *this;
 	}
 
 	bool operator==(const CFrequency& freq) const
 	{
-		return freq.m_mhz == this->m_mhz && freq.m_hz == this->m_hz;
+		return freq.m_hz == this->m_hz;
 	}
 
 	bool operator!=(const CFrequency& freq) const
 	{
-		return freq.m_mhz != this->m_mhz || freq.m_hz != this->m_hz;
+		return freq.m_hz != this->m_hz;
 	}
 
 	bool operator<(const CFrequency& freq) const
 	{
-		return freq.m_mhz > this->m_mhz || (freq.m_mhz == this->m_mhz && freq.m_hz > this->m_hz);
+		return freq.m_hz > this->m_hz;
 	}
 
 	bool operator<=(const CFrequency& freq) const
 	{
-		return freq.m_mhz > this->m_mhz || (freq.m_mhz == this->m_mhz && freq.m_hz >= this->m_hz);
+		return freq.m_hz >= this->m_hz;
 	}
 
 	bool operator>(const CFrequency& freq) const
 	{
-		return freq.m_mhz < this->m_mhz || (freq.m_mhz == this->m_mhz && freq.m_hz < this->m_hz);
+		return freq.m_hz < this->m_hz;
 	}
 
 	bool operator>=(const CFrequency& freq) const
 	{
-		return freq.m_mhz < this->m_mhz || (freq.m_mhz == this->m_mhz && freq.m_hz <= this->m_hz);
+		return freq.m_hz <= this->m_hz;
 	}
 
     private:
-	int    m_mhz;
-	double m_hz;
+	wxInt64 m_hz;
 };
 
 #endif

@@ -72,7 +72,7 @@ m_controlCallback(NULL),
 m_dataId(0),
 m_audioId(0),
 m_transmit(false),
-m_frequency(0U),
+m_frequency(0LL),
 m_robin(0U),
 m_c0(c0),
 m_c1(c1),
@@ -458,7 +458,7 @@ void CHPSDRReaderWriter::enableRX(bool WXUNUSED(on))
 void CHPSDRReaderWriter::setTXAndFreq(bool transmit, const CFrequency& freq)
 {
 	m_transmit  = transmit;
-	m_frequency = freq.getMHz() * 1000000U + (unsigned int)(freq.getHz() + 0.5);
+	m_frequency = freq.get();
 }
 
 void CHPSDRReaderWriter::setClockTune(unsigned int WXUNUSED(clock))

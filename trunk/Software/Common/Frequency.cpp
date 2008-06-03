@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,28 +18,24 @@
 
 #include "Frequency.h"
 
-CFrequency::CFrequency(int mhz, double hz) :
-m_mhz(mhz),
+CFrequency::CFrequency(wxInt64 hz) :
 m_hz(hz)
 {
 }
 
 CFrequency::CFrequency(const CFrequency& frequency) :
-m_mhz(frequency.m_mhz),
 m_hz(frequency.m_hz)
 {
 }
 
 CFrequency::CFrequency(const wxString& freq) :
-m_mhz(0),
-m_hz(0.0)
+m_hz(0LL)
 {
-	setFrequency(freq);
+	set(freq);
 }
 
 CFrequency::CFrequency() :
-m_mhz(0),
-m_hz(0.0)
+m_hz(0LL)
 {
 }
 
@@ -47,41 +43,22 @@ CFrequency::~CFrequency()
 {
 }
 
-void CFrequency::addMHz(int mhz)
+void CFrequency::add(wxInt64 hz)
 {
-	m_mhz += mhz;
+	m_hz += hz;
 }
 
-void CFrequency::addHz(double hz)
+void CFrequency::sub(wxInt64 hz)
 {
-	if (hz < 0.0) {
-		while (-hz > m_hz) {
-			m_mhz -= 1;
-			m_hz  += 1000000.0;
-		}
-
-		m_hz += hz;
-	} else {
-		m_hz += hz;
-
-		while (m_hz >= 1000000.0) {
-			m_mhz += 1;
-			m_hz  -= 1000000.0;
-		}
-	}
+	m_hz -= hz;
 }
 
-void CFrequency::setMHz(int mhz)
-{
-	m_mhz = mhz;
-}
-
-void CFrequency::setHz(double hz)
+void CFrequency::set(wxInt64 hz)
 {
 	m_hz = hz;
 }
 
-bool CFrequency::setFrequency(const wxString& freq)
+bool CFrequency::set(const wxString& freq)
 {
 	if (freq.Freq(wxT('.')) > 1)
 		return false;
@@ -111,9 +88,7 @@ bool CFrequency::setFrequency(const wxString& freq)
 	if (pos == -1) {
 		long temp;
 		freq.ToLong(&temp);
-		m_mhz = temp;
-
-		m_hz  = 0.0;
+		m_hz = temp * 1000000LL;
 	} else {
 		wxString hertz = freq.Mid(pos + 1);
 
@@ -122,10 +97,14 @@ bool CFrequency::setFrequency(const wxString& freq)
 		hertz.insert(6, wxT("."));
 
 		long temp;
-		freq.Left(pos).ToLong(&temp);
-		m_mhz = temp;
 
-		hertz.ToDouble(&m_hz);
+		// Parse the MHz
+		freq.Left(pos).ToLong(&temp);
+		m_hz = temp * 1000000LL;
+
+		// Parse the Hz
+		hertz.ToLong(&temp);
+		m_hz += temp;
 	}
 
 	return true;
@@ -134,25 +113,20 @@ bool CFrequency::setFrequency(const wxString& freq)
 
 wxString CFrequency::getString(unsigned int decimals) const
 {
-	wxASSERT(decimals < 9);
+	wxASSERT(decimals < 7);
 
 	wxString hertz;
-	hertz.Printf(wxT("%08d"), int(m_hz * 100.0F + 0.5F));
+	hertz.Printf(wxT("%06lld"), m_hz % 1000000LL);
 
 	hertz.Truncate(decimals);
 
 	wxString text;
-	text.Printf(wxT("%d.%s"), m_mhz, hertz.c_str());
+	text.Printf(wxT("%lld.%s"), m_hz / 1000000LL, hertz.c_str());
 
 	return text;
 }
 
-int CFrequency::getMHz() const
-{
-	return m_mhz;
-}
-
-double CFrequency::getHz() const
+wxInt64 CFrequency::get() const
 {
 	return m_hz;
 }

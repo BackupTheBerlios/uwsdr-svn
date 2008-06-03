@@ -38,7 +38,7 @@ class CSDRParameters {
 	CFrequency    m_hardwareMaxFreq;
 	CFrequency    m_hardwareMinFreq;
 	CFrequency    m_hardwareOffset;
-	float         m_hardwareStepSize;
+	unsigned int  m_hardwareStepSize;
 	float         m_hardwareSampleRate;
 	bool          m_hardwareReceiveOnly;
 

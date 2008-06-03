@@ -346,7 +346,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" User"), 0U, 2U);
 				m_dsp->setRXWriter(rw);
 			} else {
-				CSoundCardReaderWriter* rw = new CSoundCardReaderWriter(-1, m_parameters->m_userAudioOutDev, 0U, 1U);
+				CSoundCardReaderWriter* rw = new CSoundCardReaderWriter(-1, m_parameters->m_userAudioOutDev, 0U, 2U);
 				m_dsp->setRXWriter(rw);
 			}
 			break;
@@ -1262,29 +1262,26 @@ void CUWSDRFrame::normaliseFreq()
 		freq -= m_dsp->getRXOffset();
 
 	if (m_parameters->m_hardwareType == TYPE_AUDIORX || m_parameters->m_hardwareType == TYPE_AUDIOTXRX) {
-		// This won't work over a MHz boundary ....
-		double hz = m_parameters->m_hardwareMinFreq.getHz() + m_parameters->m_hardwareSampleRate / 2.0F;
+		wxInt64 hz = m_parameters->m_hardwareMinFreq.get() + wxInt64(m_parameters->m_hardwareSampleRate / 2.0F + 0.5F);
 
 		m_sdr->setTXAndFreq(m_txOn > 0U, freq);	// The frequency argument is unused
-		m_dsp->setTXAndFreq(m_txOn > 0U, freq.getHz() - hz);
+		m_dsp->setTXAndFreq(m_txOn > 0U, freq.get() - hz);
 	} else {
 		// Take into account the frequency steps of the SDR ...
-		double offset = 0.0;
-		if (m_parameters->m_hardwareStepSize > 1.0F) {		// FIXME XXX
-			double stepSize = m_parameters->m_hardwareStepSize;
-			double hz       = freq.getHz();
+		unsigned int stepSize = m_parameters->m_hardwareStepSize;
+		wxInt64 hz            = freq.get();
+		wxInt64 offset        = 0LL;
 
-			offset = ::fmod(hz, stepSize);
+		offset = hz % stepSize;
 
-			double base = hz - offset;
+		wxInt64 base = hz - offset;
 
-			if (offset >= stepSize / 2.0) {
-				offset -= stepSize;
-				base   += stepSize;
-			}
-
-			freq.setHz(base);
+		if (offset >= stepSize / 2U) {
+			offset -= stepSize;
+			base   += stepSize;
 		}
+
+		freq.set(base);
 
 		// Finally go to TX or RX
 		m_sdr->setTXAndFreq(m_txOn > 0U, freq);
