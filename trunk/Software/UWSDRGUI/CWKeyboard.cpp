@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -25,8 +25,8 @@
  * This is the lookup table to convert characters to morse code.
  */
 static struct {
-	wxChar  character;
-	wxChar* cwString;
+	const wxChar  character;
+	const wxChar* cwString;
 } cwLookup[] = {
 	{wxT('A'), wxT(".-")},
 	{wxT('B'), wxT("-...")},

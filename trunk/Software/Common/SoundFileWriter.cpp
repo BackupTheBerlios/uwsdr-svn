@@ -245,7 +245,7 @@ bool CSoundFileWriter::open(float sampleRate, unsigned int blockSize)
 	m_length    = 0U ;
 	m_enabled   = false;
 
-	m_file = new wxFFile(m_fileName, "wb");
+	m_file = new wxFFile(m_fileName.c_str(), wxT("wb"));
 
 	bool ret = m_file->IsOpened();
 	if (!ret) {

@@ -422,3 +422,7 @@ Added (untested) support for the Griffin PowerMate.
 Changed the refresh on the S Meter and the Spectrum Display to be slower and to save CPU.
 
 Option to set binaural audio and the sound position between the left and right channels.
+
+Fixed for running on Ubuntu 8.04 LTS with the default libraries (Unicode wxWidgets).
+Changed the frequency display and information area for better visibility.
+

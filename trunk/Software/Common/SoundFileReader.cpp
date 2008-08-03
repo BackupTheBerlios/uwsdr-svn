@@ -302,7 +302,7 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 	m_blockSize = blockSize;
 	m_read      = 0U;
 
-	m_file = new wxFFile(m_fileName, "rb");
+	m_file = new wxFFile(m_fileName.c_str(), wxT("rb"));
 
 	bool ret = m_file->IsOpened();
 	if (!ret) {

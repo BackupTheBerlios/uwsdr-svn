@@ -3,7 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006-5 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2007 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -38,9 +38,6 @@ Bridgewater, NJ 08807
 #include "CXB.h"
 
 
-const int RXMETERPTS = 5;
-const int TXMETERPTS = 8;
-
 enum METERTYPE {
 	SIGNAL_STRENGTH,
 	AVG_SIGNAL_STRENGTH,
@@ -54,13 +51,15 @@ enum METERTYPE {
 	LEVELER,
 	COMP,
 	ALC_G,
-	LVL_G
+	LVL_G,
+	METERTYPE_COUNT
 };
 
 enum RXMETERTAP {
 	RXMETER_PRE_CONV,
 	RXMETER_POST_FILT,
-	RXMETER_POST_AGC
+	RXMETER_POST_AGC,
+	RXMETERTAP_COUNT
 };
 
 enum RXMETERTYPE {
@@ -68,7 +67,8 @@ enum RXMETERTYPE {
 	RX_AVG_SIGNAL_STRENGTH,
 	RX_ADC_REAL,
 	RX_ADC_IMAG,
-	RX_AGC_GAIN
+	RX_AGC_GAIN,
+	RXMETERTYPE_COUNT
 };
 
 enum TXMETERTYPE {
@@ -79,7 +79,8 @@ enum TXMETERTYPE {
 	TX_LEVELER,
 	TX_COMP,
 	TX_ALC_G,
-	TX_LVL_G
+	TX_LVL_G,
+	TXMETERTYPE_COUNT
 };
 
 
@@ -97,9 +98,9 @@ class CMeter {
 	void reset();
 
     private:
-    float       m_rxval[RXMETERPTS];
+	float       m_rxval[RXMETERTYPE_COUNT];
 	RXMETERTYPE m_rxmode;
-	float       m_txval[TXMETERPTS];
+	float       m_txval[TXMETERTYPE_COUNT];
 	TXMETERTYPE m_txmode;
 	float       m_micSave;
 	float       m_alcSave;

@@ -385,9 +385,9 @@ void CDataControl::sendACK(const wxString& command)
 	wxASSERT(m_rxWriter != NULL);
 
 	wxString text;
-	text.Printf("AK%s;", command.c_str());
+	text.Printf(wxT("AK%s;"), command.c_str());
 
-	m_rxWriter->write(text.c_str(), text.Length());
+	m_rxWriter->write(text.char_str(), text.Length());
 }
 
 void CDataControl::sendNAK(const wxString& command)
@@ -395,9 +395,9 @@ void CDataControl::sendNAK(const wxString& command)
 	wxASSERT(m_rxWriter != NULL);
 
 	wxString text;
-	text.Printf("NK%s;", command.c_str());
+	text.Printf(wxT("NK%s;"), command.c_str());
 
-	m_rxWriter->write(text.c_str(), text.Length());
+	m_rxWriter->write(text.char_str(), text.Length());
 }
 
 void CDataControl::sendData(const float* buffer, unsigned int nSamples)

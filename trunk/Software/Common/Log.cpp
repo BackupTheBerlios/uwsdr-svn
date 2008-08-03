@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2002,2003,2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2002,2003,2006,2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ m_eol()
 	if (!m_file->IsOpened())
 		return;
 
-	m_eol = (char*)wxTextFile::GetEOL();
+	m_eol = wxTextFile::GetEOL();
 }
 
 CLog::~CLog()

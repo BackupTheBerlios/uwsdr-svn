@@ -50,14 +50,14 @@ bool CUDPDataWriter::open()
 #endif
 
 #if defined(__WINDOWS__)
-	unsigned long addr = ::inet_addr(m_address.c_str());
+	unsigned long addr = ::inet_addr(m_address.char_str());
 #else
-	in_addr_t addr = ::inet_addr(m_address.c_str());
+	in_addr_t addr = ::inet_addr(m_address.char_str());
 #endif
 	unsigned int length = 4U;
 
 	if (addr == INADDR_NONE) {
-		struct hostent* host = ::gethostbyname(m_address.c_str());
+		struct hostent* host = ::gethostbyname(m_address.char_str());
 
 		if (host == NULL) {
 			::wxLogError(wxT("UDPDataWriter: Error %d when resolving host: %s"),

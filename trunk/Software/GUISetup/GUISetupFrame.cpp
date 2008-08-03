@@ -279,7 +279,7 @@ void CGUISetupFrame::onBrowse(wxCommandEvent& WXUNUSED(event))
 
 	sdrDir.Append(wxT("\\SDR Files"));
 #else
-	wxString sdrDir = DATA_DIR;
+	wxString sdrDir = wxT(DATA_DIR);
 #endif
 
 	wxFileDialog files(this, _("Choose an SDR Configuration File"), wxEmptyString, wxEmptyString, _("SDR files (*.sdr)|*.sdr"), wxFD_FILE_MUST_EXIST);
@@ -886,7 +886,7 @@ void CGUISetupFrame::writeDeskTop(const wxString& name, const wxString& dir)
 void CGUISetupFrame::writeDeskTop(const wxString& name, const wxString& dir)
 {
 	wxString fileName;
-	fileName.Printf(wxT("%s/%s"), DATA_DIR, SKELETON_FILE);
+	fileName.Printf(wxT("%s/%s"), wxT(DATA_DIR), SKELETON_FILE);
 
 	// Open the .desktop template file
 	wxTextFile inFile;

@@ -922,7 +922,7 @@ wxString CUWSDRApp::getHelpDir()
 
 	return dir;
 #else
-	return DATA_DIR;
+	return wxT(DATA_DIR);
 #endif
 }
 

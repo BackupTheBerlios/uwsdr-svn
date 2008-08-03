@@ -280,21 +280,20 @@ bool CUWSDRController::callback(char* buffer, unsigned int len, int WXUNUSED(id)
 {
 	wxASSERT(m_callback != NULL);
 
+	wxString response(buffer, wxConvLocal, len);
+
 	switch (m_version) {
 		case 1:
 			if (::strncmp(buffer, "AK", 2) == 0) {
 				m_replies = true;
-				buffer[len] = '\0';
-				m_callback->commandAck(buffer);
+				m_callback->commandAck(response);
 				return true;
 			} else if (::strncmp(buffer, "NK", 2) == 0) {
 				m_replies = true;
-				buffer[len] = '\0';
-				m_callback->commandNak(buffer);
+				m_callback->commandNak(response);
 				return true;
 			} else if (::strncmp(buffer, "DR", 2) != 0) {
-				buffer[len] = '\0';
-				m_callback->commandError(buffer);
+				m_callback->commandError(response);
 				return true;
 			}
 

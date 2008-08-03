@@ -63,7 +63,9 @@ bool CAudioDevInfo::enumerateAPIs()
 	for (PaHostApiIndex i = 0; i < n; i++) {
 		const PaHostApiInfo* hostAPI = ::Pa_GetHostApiInfo(i);
 
-		CAudioDevAPI* api = new CAudioDevAPI(i, hostAPI->name, i == defAPI, hostAPI->defaultInputDevice, hostAPI->defaultOutputDevice, SOUND_PORTAUDIO);
+		wxString name(hostAPI->name, wxConvLocal);
+
+		CAudioDevAPI* api = new CAudioDevAPI(i, name, i == defAPI, hostAPI->defaultInputDevice, hostAPI->defaultOutputDevice, SOUND_PORTAUDIO);
 		m_apis.push_back(api);
 	}
 
@@ -99,7 +101,7 @@ bool CAudioDevInfo::enumerateDevs()
 	for (PaDeviceIndex i = 0; i < n; i++) {
 		const PaDeviceInfo* device = ::Pa_GetDeviceInfo(i);
 
-		wxString name = device->name;
+		wxString name(device->name, wxConvLocal);
 
 #if defined(__WINDOWS__)
 		// Map the seperate names for the sound mapper under Windows MME to one name

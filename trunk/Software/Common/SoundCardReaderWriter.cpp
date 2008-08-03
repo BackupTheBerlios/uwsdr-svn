@@ -83,7 +83,7 @@ bool CSoundCardReaderWriter::open(float sampleRate, unsigned int blockSize)
 
 	PaError error = ::Pa_Initialize();
 	if (error != paNoError) {
-		::wxLogError(wxT("SoundCardReaderWriter: received %d:%s from Pa_Initialise()"), error, ::Pa_GetErrorText(error));
+		writeLog(wxT("Pa_Initialise()"), error);
 		return false;
 	}
 
@@ -136,7 +136,7 @@ bool CSoundCardReaderWriter::open(float sampleRate, unsigned int blockSize)
 	error = ::Pa_OpenStream(&m_stream, pParamsIn, pParamsOut, sampleRate, blockSize, paNoFlag, &scrwCallback, this);
 	if (error != paNoError) {
 		::Pa_Terminate();
-		::wxLogError(wxT("SoundCardReaderWriter: received %d:%s from Pa_OpenStream()"), error, ::Pa_GetErrorText(error));
+		writeLog(wxT("Pa_OpenStream()"), error);
 		return false;
 	}
 
@@ -146,7 +146,7 @@ bool CSoundCardReaderWriter::open(float sampleRate, unsigned int blockSize)
 		m_stream = NULL;
 
 		::Pa_Terminate();
-		::wxLogError(wxT("SoundCardReaderWriter: received %d:%s from Pa_StartStream()"), error, ::Pa_GetErrorText(error));
+		writeLog(wxT("Pa_StartStream()"), error);
 		return false;
 	}
 
@@ -250,15 +250,15 @@ void CSoundCardReaderWriter::close()
 
 	PaError error = ::Pa_AbortStream(m_stream);
 	if (error != paNoError)
-		::wxLogError(wxT("SoundCardReaderWriter: received %d:%s from Pa_AbortStream()"), error, ::Pa_GetErrorText(error));
+		writeLog(wxT("Pa_AbortStream()"), error);
 
 	error = ::Pa_CloseStream(m_stream);
 	if (error != paNoError)
-		::wxLogError(wxT("SoundCardReaderWriter: received %d:%s from Pa_CloseStream()"), error, ::Pa_GetErrorText(error));
+		writeLog(wxT("Pa_CloseStream()"), error);
 
 	error = ::Pa_Terminate();
 	if (error != paNoError)
-		::wxLogError(wxT("SoundCardReaderWriter: received %d:%s from Pa_Terminate()"), error, ::Pa_GetErrorText(error));
+		writeLog(wxT("Pa_Terminate()"), error);
 
 	::wxLogMessage(wxT("SoundCardReaderWriter: %u underruns and %u overruns from %u requests"), m_underruns, m_overruns, m_requests);
 }
@@ -290,6 +290,13 @@ bool CSoundCardReaderWriter::hasClock()
 
 void CSoundCardReaderWriter::clock()
 {
+}
+
+void CSoundCardReaderWriter::writeLog(const wxString& function, PaError error) const
+{
+	wxString message(::Pa_GetErrorText(error), wxConvLocal);
+
+	::wxLogError(wxT("SoundCardReaderWriter: received %d:%s from %s"), error, message.c_str(), function.c_str());
 }
 
 #else

@@ -67,17 +67,17 @@ m_hangThresh(minGain),
 m_fastHangTime(48.0F * 0.001F),		//wa6ahl:  added to structure
 m_circ(NULL),
 m_buff(buff),
-m_mask(0),
-m_index(0),
-m_sndex(0),
-m_hangIndex(0),
+m_mask(0U),
+m_index(0U),
+m_sndex(0U),
+m_hangIndex(0U),
 m_fastIndex(FASTLEAD),
-m_fastHang(0)			//wa6ahl:  added to structure
+m_fastHang(0U)				//wa6ahl:  added to structure
 {
 	wxASSERT(buff != NULL);
 	wxASSERT(samprate > 0.0F);
 
-	m_mask = 2 * CXBsize(buff);
+	m_mask = 2U * CXBsize(buff);
 
 	setAttack(attack);
 
@@ -114,20 +114,20 @@ void CAGC::process()
 		hangThresh = m_gainTop * m_hangThresh + m_gainBottom * (1.0F - m_hangThresh);
 
 	if (m_mode == agcOFF) {
-		for (unsigned int i = 0; i < n; i++)
+		for (unsigned int i = 0U; i < n; i++)
 			CXBdata(m_buff, i) = Cscl(CXBdata(m_buff, i), m_gainFix);
 
 		return;
 	}
 
-	for (unsigned int i = 0; i < n; i++) {
-		m_circ[m_index] = CXBdata(m_buff, i);	/* Drop sample into circular buffer */
+	for (unsigned int i = 0U; i < n; i++) {
+		m_circ[m_index] = CXBdata(m_buff, i);	// Drop sample into circular buffer
 		float tmp = 1.1F * Cmag(m_circ[m_index]);
 
 		if (tmp != 0.0F)
 			tmp = m_gainLimit / tmp;	// if not zero sample, calculate gain
 		else
-			tmp = m_gainNow;	// update. If zero, then use old gain
+			tmp = m_gainNow;		// update. If zero, then use old gain
 
 		if (tmp < hangThresh)
 			m_hangIndex = hangTime;
@@ -151,7 +151,7 @@ void CAGC::process()
 			if (m_fastHang++ > fastHangTime)
 				m_gainFastNow = min(m_oneMFastDecay * m_gainFastNow + m_fastDecay * min(m_gainTop, tmp), m_gainTop);
 		} else {
-			m_fastHang = 0;
+			m_fastHang = 0U;
 			m_gainFastNow = max(m_oneMFastAttack * m_gainFastNow + m_fastAttack * max(tmp, m_gainBottom), m_gainBottom);
 		}
 

@@ -71,7 +71,7 @@ class CAGC {
     private:
 	AGCMODE      m_mode;
 	float        m_samprate;
-    float        m_gainTop;
+	float        m_gainTop;
 	float        m_gainNow;
 	float        m_gainFastNow;
 	float        m_gainBottom;

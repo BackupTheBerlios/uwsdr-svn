@@ -1,5 +1,5 @@
 /* XPM */
-static char *UWSDR_xpm[]={
+static const char *UWSDR_xpm[]={
 "32 32 104 2",
 "      c None",
 " 0    c #A5A5A5",

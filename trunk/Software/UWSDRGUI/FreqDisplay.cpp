@@ -30,8 +30,7 @@ m_width(size.GetWidth()),
 m_height(size.GetHeight()),
 m_bitmap(NULL),
 m_lastFrequency(),
-m_lightColour(wxColour(0, 255, 255)),
-m_darkColour(wxColour(0, 64, 64))
+m_lightColour(wxColour(0, 255, 255))
 {
 	m_bitmap = new wxBitmap(m_width, m_height);
 
@@ -58,13 +57,13 @@ void CFreqDisplay::setFrequency(const CFrequency& frequency)
 	memoryDC.SelectObject(*m_bitmap);
 
 	int mhzDigits = 1;
-	if (hz >= 10000000000LL)			// 10 GHz
+	if (hz >= 10000000000LL)		// 10 GHz
 		mhzDigits = 5;
 	else if (hz >= 1000000000LL)		// 1000 MHz
 		mhzDigits = 4;
-	else if (hz >= 100000000LL)			// 100 MHz
+	else if (hz >= 100000000LL)		// 100 MHz
 		mhzDigits = 3;
-	else if (hz >= 10000000LL)			// 10 MHz
+	else if (hz >= 10000000LL)		// 10 MHz
 		mhzDigits = 2;
 
 	const int bigThickness    = 5;
@@ -102,7 +101,7 @@ void CFreqDisplay::setFrequency(const CFrequency& frequency)
 	drawDigit(memoryDC, bigWidth, bigHeight, bigThickness, x, bigY, rem % 10LL, true);
 	x   -= bigWidth;
 
-	rem = hz;
+	rem = hz / 1000000LL;
 
 	for (int i = 0; i < mhzDigits; i++) {
 		wxInt64 n = rem % 10LL;
@@ -163,18 +162,6 @@ void CFreqDisplay::drawDigit(wxDC& dc, int width, int height, int thickness, int
 	int barHeight = (height - topSpace - bottomSpace) / 2;
 
 	const int BODGE_FACTOR = 2;
-
-	dc.SetPen(*wxBLACK_PEN);
-	dc.SetBrush(wxBrush(m_darkColour));
-
-	dc.DrawRoundedRectangle(x + 2, y + topSpace + 2 * barHeight, thickness, thickness, radius);
-	dc.DrawRoundedRectangle(x + leftSpace + BODGE_FACTOR, y + topSpace, barWidth, thickness, radius);
-	dc.DrawRoundedRectangle(x + leftSpace, y + topSpace + BODGE_FACTOR, thickness, barHeight, radius);
-	dc.DrawRoundedRectangle(x + leftSpace + barWidth, y + topSpace + BODGE_FACTOR, thickness, barHeight, radius);
-	dc.DrawRoundedRectangle(x + leftSpace + BODGE_FACTOR, y + topSpace + barHeight, barWidth, thickness, radius);
-	dc.DrawRoundedRectangle(x + leftSpace, y + topSpace + barHeight + BODGE_FACTOR, thickness, barHeight, radius);
-	dc.DrawRoundedRectangle(x + leftSpace + barWidth, y + topSpace + barHeight + BODGE_FACTOR, thickness, barHeight, radius);
-	dc.DrawRoundedRectangle(x + leftSpace + BODGE_FACTOR, y + topSpace + 2 * barHeight, barWidth, thickness, radius);
 
 	dc.SetPen(wxPen(m_lightColour));
 	dc.SetBrush(wxBrush(m_lightColour));

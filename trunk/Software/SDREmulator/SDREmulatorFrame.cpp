@@ -179,8 +179,7 @@ bool CSDREmulatorFrame::createDataThread(const wxString& address, unsigned int p
 
 bool CSDREmulatorFrame::callback(char* buffer, unsigned int len, int WXUNUSED(id))
 {
-	buffer[len] = '\0';
-	m_message = buffer;
+	m_message = wxString(buffer, wxConvLocal, len);
 
 	wxCommandEvent event(COMMAND_EVENT);
 	AddPendingEvent(event);

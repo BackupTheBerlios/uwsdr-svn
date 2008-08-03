@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -39,7 +39,6 @@ class CFreqDisplay : public wxPanel {
 	wxBitmap*     m_bitmap;
 	CFrequency    m_lastFrequency;
 	wxColour      m_lightColour;
-	wxColour      m_darkColour;
 
 	DECLARE_EVENT_TABLE()
 

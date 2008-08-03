@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -19,6 +19,8 @@
 #include "InfoBox.h"
 
 #include "UWSDRDefs.h"
+
+const unsigned int FONT_SIZE = 10U;
 
 BEGIN_EVENT_TABLE(CInfoBox, wxPanel)
 	EVT_PAINT(CInfoBox::onPaint)
@@ -55,7 +57,7 @@ void CInfoBox::setVFO(int vfoNum)
 	memoryDC.DrawRectangle(0, 0, m_width, m_height / 4);
 
 	wxFont font = wxSystemSettings::GetFont(wxSYS_SYSTEM_FONT);
-	font.SetPointSize(12);
+	font.SetPointSize(FONT_SIZE);
 	font.SetWeight(wxFONTWEIGHT_BOLD);
 	memoryDC.SetFont(font);
 
@@ -94,13 +96,15 @@ void CInfoBox::setRIT(bool onOff)
 	memoryDC.SetPen(*wxBLACK_PEN);
 	memoryDC.DrawRectangle(0, m_height / 4, m_width, m_height / 4);
 
-	wxFont font = wxSystemSettings::GetFont(wxSYS_SYSTEM_FONT);
-	font.SetPointSize(12);
-	font.SetWeight(wxFONTWEIGHT_BOLD);
-	memoryDC.SetFont(font);
+	if (onOff) {
+		wxFont font = wxSystemSettings::GetFont(wxSYS_SYSTEM_FONT);
+		font.SetPointSize(FONT_SIZE);
+		font.SetWeight(wxFONTWEIGHT_BOLD);
+		memoryDC.SetFont(font);
 
-	memoryDC.SetTextForeground(onOff ? wxColour(0, 255, 255) : wxColour(0, 64, 64));
-	memoryDC.DrawText(wxT("RIT"), 5, m_height / 4 + 2);
+		memoryDC.SetTextForeground(wxColour(0, 255, 255));
+		memoryDC.DrawText(wxT("RIT"), 5, m_height / 4 + 2);
+	}
 
 	memoryDC.SelectObject(wxNullBitmap);
 
@@ -118,18 +122,9 @@ void CInfoBox::setSplitShift(int splitShift)
 	memoryDC.DrawRectangle(0, m_height / 2, m_width, m_height / 4);
 
 	wxFont font = wxSystemSettings::GetFont(wxSYS_SYSTEM_FONT);
-	font.SetPointSize(12);
+	font.SetPointSize(FONT_SIZE);
 	font.SetWeight(wxFONTWEIGHT_BOLD);
 	memoryDC.SetFont(font);
-
-	memoryDC.SetTextForeground(wxColour(0, 64, 64));
-
-	memoryDC.DrawText(wxT("SPLIT"), 5, m_height / 2 + 2);
-	memoryDC.DrawText(wxT("SHIFT 1 -"), 5, m_height / 2 + 2);
-	memoryDC.DrawText(wxT("SHIFT 1 +"), 5, m_height / 2 + 2);
-	memoryDC.DrawText(wxT("SHIFT 2 -"), 5, m_height / 2 + 2);
-	memoryDC.DrawText(wxT("SHIFT 2 +"), 5, m_height / 2 + 2);
-
 	memoryDC.SetTextForeground(wxColour(0, 255, 255));
 
 	switch (splitShift) {
@@ -167,14 +162,15 @@ void CInfoBox::setTX(bool onOff)
 	memoryDC.SetPen(*wxBLACK_PEN);
 	memoryDC.DrawRectangle(0, 3 * m_height / 4, m_width, m_height / 4);
 
-	wxFont font = wxSystemSettings::GetFont(wxSYS_SYSTEM_FONT);
-	font.SetPointSize(12);
-	font.SetWeight(wxFONTWEIGHT_BOLD);
-	memoryDC.SetFont(font);
+	if (onOff) {
+		wxFont font = wxSystemSettings::GetFont(wxSYS_SYSTEM_FONT);
+		font.SetPointSize(FONT_SIZE);
+		font.SetWeight(wxFONTWEIGHT_BOLD);
+		memoryDC.SetFont(font);
 
-	memoryDC.SetTextForeground(onOff ? wxColour(255, 0, 0) : wxColour(64, 0, 0));
-
-	memoryDC.DrawText(wxT("TRANSMIT"), 5, 3 * m_height / 4 + 2);
+		memoryDC.SetTextForeground(wxColour(255, 0, 0));
+		memoryDC.DrawText(wxT("TRANSMIT"), 5, 3 * m_height / 4 + 2);
+	}
 
 	memoryDC.SelectObject(wxNullBitmap);
 

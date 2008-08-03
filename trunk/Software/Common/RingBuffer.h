@@ -33,16 +33,94 @@ class CRingBuffer {
 	CRingBuffer(unsigned int length, unsigned int step);
 	~CRingBuffer();
 
-	unsigned int addData(const float* buffer, unsigned int nSamples);
-	unsigned int getData(float* buffer, unsigned int nSamples);
+	unsigned int addData(const float* buffer, unsigned int nSamples)
+	{
+		unsigned int space = freeSpace();
 
-	void clear();
+		if (nSamples >= space) {
+			nSamples = space;
+			m_state = RBSTATE_FULL;
+		} else {
+			m_state = RBSTATE_DATA;
+		}
 
-	unsigned int freeSpace() const;
-	unsigned int dataSpace() const;
+		for (unsigned int i = 0U; i < nSamples * m_step; i++) {
+			m_buffer[m_iPtr++] = buffer[i];
 
-	bool isEmpty() const;
-	bool isFull() const;
+			if (m_iPtr == (m_length * m_step))
+				m_iPtr = 0U;
+		}
+
+		return nSamples;
+	}
+
+	unsigned int getData(float* buffer, unsigned int nSamples)
+	{
+		unsigned int space = dataSpace();
+
+		if (nSamples >= space) {
+			nSamples = space;
+			m_state = RBSTATE_EMPTY;
+		} else {
+			m_state = RBSTATE_DATA;
+		}
+
+		for (unsigned int i = 0U; i < nSamples * m_step; i++) {
+			buffer[i] = m_buffer[m_oPtr++];
+
+			if (m_oPtr == (m_length * m_step))
+				m_oPtr = 0U;
+		}
+
+		return nSamples;
+	}
+
+	void clear()
+	{
+		m_iPtr  = 0U;
+		m_oPtr  = 0U;
+		m_state = RBSTATE_EMPTY;
+
+		::memset(m_buffer, 0x00, m_length * m_step);
+	}
+
+	unsigned int freeSpace() const
+	{
+		if (isEmpty())
+			return m_length;
+
+		if (isFull())
+			return 0U;
+
+		if (m_oPtr > m_iPtr)
+			return (m_oPtr - m_iPtr) / m_step;
+
+		return m_length - (m_iPtr - m_oPtr) / m_step;
+	}
+
+	unsigned int dataSpace() const
+	{
+		if (isEmpty())
+			return 0U;
+
+		if (isFull())
+			return m_length;
+
+		if (m_iPtr >= m_oPtr)
+			return (m_iPtr - m_oPtr) / m_step;
+
+		return m_length - (m_oPtr - m_iPtr) / m_step;
+	}
+
+	bool isEmpty() const
+	{
+		return m_state == RBSTATE_EMPTY;
+	}
+
+	bool isFull() const
+	{
+		return m_state == RBSTATE_FULL;
+	}
 
 #if defined(__WXDEBUG__)
 	void dump(const wxString& title) const;

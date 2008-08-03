@@ -85,7 +85,7 @@ bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
 	m_enabled   = false;
 
 	jack_status_t status;
-	m_client = ::jack_client_open(m_name.c_str(), JackNullOption, &status, NULL);
+	m_client = ::jack_client_open(m_name.char_str(), JackNullOption, &status, NULL);
 	if (m_client == NULL) {
 		if (status & JackServerFailed)
 			::wxLogError(wxT("JackReaderWriter: unabled to start the Jack server"));

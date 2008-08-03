@@ -1,5 +1,5 @@
 /* XPM */
-static char *GUISetup_xpm[]={
+static const char *GUISetup_xpm[]={
 "32 32 177 2",
 "      c None",
 " 0    c #A5A5A5",

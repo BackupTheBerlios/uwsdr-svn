@@ -36,7 +36,9 @@
 #ifndef _utils_h
 #define _utils_h
 
+#if defined(__WXMSW__)
 #define abs(a) ((a) >= 0 ? (a) : -(a))
+#endif
 
 const float MONDO = 1E15F;
 

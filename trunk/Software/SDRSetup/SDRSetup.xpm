@@ -1,5 +1,5 @@
 /* XPM */
-static char *SDRSetup_xpm[]={
+static const char *SDRSetup_xpm[]={
 "32 32 138 2",
 "      c None",
 " 0    c #BCBCBC",

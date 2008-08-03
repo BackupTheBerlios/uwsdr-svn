@@ -53,11 +53,7 @@ m_eqTapSave(0.0F),
 m_levelerSave(0.0F),
 m_compSave(0.0F)
 {
-	for (unsigned int i = 0U; i < RXMETERPTS; i++)
-		m_rxval[i] = -200.0F;
-
-	for (unsigned int i = 0U; i < TXMETERPTS; i++)
-		m_txval[i] = -200.0F;
+	reset();
 }
 
 CMeter::~CMeter()
@@ -66,10 +62,10 @@ CMeter::~CMeter()
 
 void CMeter::reset()
 {
-	for (unsigned int i = 0U; i < RXMETERPTS; i++)
+	for (int i = 0; i < RXMETERTYPE_COUNT; i++)
 		m_rxval[i] = -200.0F;
 
-	for (unsigned int i = 0U; i < TXMETERPTS; i++)
+	for (int i = 0; i < TXMETERTYPE_COUNT; i++)
 		m_txval[i] = -200.0F;
 }
 
@@ -88,12 +84,12 @@ void CMeter::setRXMeter(RXMETERTAP tap, CXB* buf, float agcGain)
 		case RXMETER_PRE_CONV:
 			temp1 = m_rxval[RX_ADC_REAL];
 			for (i = 0; i < len; i++)
-				temp1 = (float)::max(::fabs(vec[i].re), temp1);
+				temp1 = (float)::max(float(::fabs(vec[i].re)), temp1);
 			m_rxval[RX_ADC_REAL] = float(20.0 * ::log10(temp1 + 1e-10));
 
 			temp1 = m_rxval[RX_ADC_IMAG];
 			for (i = 0; i < len; i++)
-				temp1 = (float)::max(::fabs(vec[i].im), temp1);
+				temp1 = (float)::max(float(::fabs(vec[i].im)), temp1);
 			m_rxval[RX_ADC_IMAG] = float(20.0 * ::log10(temp1 + 1e-10));
 			break;
 
@@ -112,6 +108,9 @@ void CMeter::setRXMeter(RXMETERTAP tap, CXB* buf, float agcGain)
 
 		case RXMETER_POST_AGC:
 			m_rxval[RX_AGC_GAIN] = float(20.0 * ::log10(agcGain + 1e-10));
+			break;
+
+		default:
 			break;
 	}
 }
@@ -154,10 +153,7 @@ void CMeter::setTXMeter(TXMETERTYPE type, CXB* buf, float alcGain)
 			m_txval[TX_COMP] = float(10.0 * ::log10(m_compSave + 1e-16));
 			break;
 
-		case TX_ALC_G:
-		case TX_LVL_G:
-		case TX_EQtap:
-		case TX_LEVELER:
+		default:
 			break;
 	}
 }

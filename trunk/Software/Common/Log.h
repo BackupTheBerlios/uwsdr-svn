@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2002,2003,2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2002,2003,2006,2008 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -32,8 +32,8 @@ class CLog : public wxLog {
 	virtual void DoLogString(const wxChar* msg, time_t timestamp);
 
     private:
-	wxFile* m_file;
-	char*   m_eol;
+	wxFile*  m_file;
+	wxString m_eol;
 };
 
 #endif

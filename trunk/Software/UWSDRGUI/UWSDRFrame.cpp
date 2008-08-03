@@ -364,11 +364,11 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			}
 
 			if (m_parameters->m_userAudioType == SOUND_JACK) {
-				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" User"), 1U, 2U);
+				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" User"), 2U, 2U);
 				m_dsp->setTXReader(rw);
 				m_dsp->setRXWriter(rw);
 			} else {
-				CSoundCardReaderWriter* rw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 1U, 2U);
+				CSoundCardReaderWriter* rw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 2U, 2U);
 				m_dsp->setTXReader(rw);
 				m_dsp->setRXWriter(rw);
 			}
@@ -387,11 +387,11 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 		case TYPE_DEMO:
 			// A self contained variant for demo's and testing
 			if (m_parameters->m_userAudioType == SOUND_JACK) {
-				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" User"), 1U, 2U);
+				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" User"), 2U, 2U);
 				m_dsp->setTXReader(new CThreeToneReader(500.0F, 1500.0F, 2000.0F, 0.25F, rw));
 				m_dsp->setRXWriter(rw);
 			} else {
-				CSoundCardReaderWriter* rw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 1U, 2U);
+				CSoundCardReaderWriter* rw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 2U, 2U);
 				m_dsp->setTXReader(new CThreeToneReader(500.0F, 1500.0F, 2000.0F, 0.25F, rw));
 				m_dsp->setRXWriter(rw);
 			}
@@ -416,7 +416,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			wxASSERT(writer != NULL);
 
 			if (m_parameters->m_userAudioType == SOUND_JACK) {
-				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" User"), 1U, 2U);
+				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" User"), 2U, 2U);
 				m_dsp->setRXWriter(rw);
 #if defined(TOBIAS)
 				// UDP in/out with audio on loudspeaker and two-tone audio on transmit
@@ -426,7 +426,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 				m_dsp->setTXReader(rw);
 #endif
 			} else {
-				CSoundCardReaderWriter* rw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 1U, 2U);
+				CSoundCardReaderWriter* rw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 2U, 2U);
 				m_dsp->setRXWriter(rw);
 #if defined(TOBIAS)
 				// UDP in/out with audio on loudspeaker and two-tone audio on transmit
