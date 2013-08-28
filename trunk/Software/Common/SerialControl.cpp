@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2002-2004,2007,2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2002-2004,2007,2008,2013 by Jonathan Naylor G4KLX
  *   Copyright (C) 1999-2001 by Thomas Sailor HB9JNX
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -217,7 +217,7 @@ bool CSerialControl::open()
 		return true;
 	}
 
-	m_handle = ::CreateFile(m_dev.mb_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+	m_handle = ::CreateFile(m_dev.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
 	if (m_handle == INVALID_HANDLE_VALUE) {
 		::wxLogError(wxT("SerialControl: cannot open the serial port - %ld"), ::GetLastError());
 		return false;

@@ -858,8 +858,8 @@ void CGUISetupFrame::writeDeskTop(const wxString& name, const wxString& dir)
 	pShellLink->SetArguments(args.c_str());
 	pShellLink->SetWorkingDirectory(dir.c_str());
 
-    WORD wszLinkfile[MAX_PATH];
-	::MultiByteToWideChar(CP_ACP, 0, linkPath.c_str(), -1, LPWSTR(wszLinkfile), MAX_PATH);
+    TCHAR wszLinkfile[MAX_PATH];
+	::MultiByteToWideChar(CP_ACP, 0, linkPath.mb_str(), -1, wszLinkfile, MAX_PATH);
 
     IPersistFile* pPersistFile;
 	hRes = pShellLink->QueryInterface(IID_IPersistFile, (void**)&pPersistFile);

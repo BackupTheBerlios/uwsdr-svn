@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -21,7 +21,10 @@
 
 #include <wx/wx.h>
 
+#if defined(WIN32)
+#else
 #include "usb.h"
+#endif
 
 #include "DialInterface.h"
 
@@ -41,7 +44,10 @@ class CGriffinPowerMate : public IDialInterface, public wxThread  {
 	virtual ~CGriffinPowerMate();
 
     private:
+#if defined(WIN32)
+#else
 	struct usb_dev_handle* m_handle;
+#endif
 	IDialCallback*         m_callback;
 	int                    m_id;
 	char*                  m_buffer;
@@ -49,7 +55,9 @@ class CGriffinPowerMate : public IDialInterface, public wxThread  {
 	bool                   m_button;
 	unsigned int           m_speed;
 
+#if !defined(WIN32)
 	struct usb_device* find(unsigned int vendor, unsigned int product) const;
+#endif
 };
 
 #endif

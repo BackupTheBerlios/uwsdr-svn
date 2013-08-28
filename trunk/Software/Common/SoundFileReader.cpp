@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2002-2004,2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2002-2004,2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -67,7 +67,7 @@ bool CSoundFileReader::open(float sampleRate, unsigned int blockSize)
 {
 	m_blockSize = blockSize;
 
-	m_handle = ::mmioOpen((CHAR *)m_fileName.c_str(), 0, MMIO_READ | MMIO_ALLOCBUF);
+	m_handle = ::mmioOpen(LPWSTR(m_fileName.c_str()), 0, MMIO_READ | MMIO_ALLOCBUF);
 
 	if (m_handle == NULL) {
 		::wxLogError(wxT("SoundFileReader: could not open the WAV file %s."), m_fileName.c_str());

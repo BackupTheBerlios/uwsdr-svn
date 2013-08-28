@@ -22,7 +22,7 @@
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="0"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.7\lib\vc_dll\mswd&quot;;&quot;C:\wxWidgets-2.8.7\include&quot;;..\Common;..\FFTW"
+				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.12\include\msvc&quot;;&quot;C:\wxWidgets-2.8.12\include&quot;;..\Common;&quot;$(SolutionDir)..\FFTW&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;__WXMSW__;__WXDEBUG__;WXUSINGDLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -99,7 +99,7 @@
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="0"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -120,7 +120,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="0"
-				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.7\lib\vc_dll\msw&quot;;&quot;C:\wxWidgets-2.8.7\include&quot;;..\Common;..\FFTW"
+				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.12\include\msvc&quot;;&quot;C:\wxWidgets-2.8.12\include&quot;;..\Common;&quot;$(SolutionDir)..\FFTW&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;__WXMSW__;WXUSINGDLL"
 				StringPooling="true"
 				RuntimeLibrary="2"

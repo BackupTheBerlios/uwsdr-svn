@@ -22,6 +22,7 @@
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -47,7 +48,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.7\lib\vc_dll\mswd&quot;;&quot;C:\wxWidgets-2.8.7\include&quot;;..\Common;..\PA19"
+				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.12\include\msvc&quot;;&quot;C:\wxWidgets-2.8.12\include&quot;;..\Common;&quot;$(SolutionDir)..\portaudio\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;WXUSINGDLL;_WINDOWS;NOPCH;USE_PORTAUDIO"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -76,11 +77,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxbase28d.lib wxmsw28d_core.lib portaudio_x86.lib setupapi.lib"
+				AdditionalDependencies="portaudio_x86.lib setupapi.lib"
 				OutputFile="../Debug/GUISetup.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\PA19\Debug,C:\wxWidgets-2.8.7\lib\vc_dll"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)..\portaudio\build\msvc\Win32\Debug&quot;;&quot;C:\wxWidgets-2.8.12\lib\vc_dll&quot;"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/GUISetup.pdb"
 				SubSystem="2"
@@ -120,6 +121,7 @@
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -146,7 +148,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="1"
 				InlineFunctionExpansion="0"
-				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.7\lib\vc_dll\msw&quot;;&quot;C:\wxWidgets-2.8.7\include&quot;;..\Common;..\PA19"
+				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.12\include\msvc&quot;;&quot;C:\wxWidgets-2.8.12\include&quot;;..\Common;&quot;$(SolutionDir)..\portaudio\include&quot;"
 				PreprocessorDefinitions="WIN32;__WXMSW__;WXUSINGDLL;_WINDOWS;NOPCH;USE_PORTAUDIO"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -174,11 +176,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxbase28.lib wxmsw28_core.lib portaudio_x86.lib setupapi.lib"
+				AdditionalDependencies="portaudio_x86.lib setupapi.lib"
 				OutputFile="../Release/GUISetup.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\PA19\Release,C:\wxWidgets-2.8.7\lib\vc_dll"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)..\portaudio\build\msvc\Win32\Release&quot;;&quot;C:\wxWidgets-2.8.12\lib\vc_dll&quot;"
 				ProgramDatabaseFile=".\Release/GUISetup.pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"

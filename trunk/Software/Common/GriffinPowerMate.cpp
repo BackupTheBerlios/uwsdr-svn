@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -25,6 +25,58 @@ const unsigned int POWERMATE_OUT_ENDPOINT = 0x02;
 
 const unsigned int POWERMATE_TIMEOUT      = 1000U;
 
+#if defined(WIN32)
+
+CGriffinPowerMate::CGriffinPowerMate() :
+wxThread(),
+m_callback(NULL),
+m_id(0),
+m_buffer(NULL),
+m_len(0),
+m_button(false),
+m_speed(1U)
+{
+}
+
+CGriffinPowerMate::~CGriffinPowerMate()
+{
+}
+
+bool CGriffinPowerMate::open()
+{
+	Create();
+	Run();
+
+	return true;
+}
+
+void CGriffinPowerMate::setCallback(IDialCallback* callback, int id)
+{
+	wxASSERT(callback != NULL);
+
+	m_callback = callback;
+	m_id       = id;
+}
+
+void* CGriffinPowerMate::Entry()
+{
+	wxASSERT(m_callback != NULL);
+
+	while (!TestDestroy()) {
+		Sleep(1000UL);
+	}
+
+	delete[] m_buffer;
+
+	return NULL;
+}
+
+void CGriffinPowerMate::close()
+{
+	Delete();
+}
+
+#else
 
 CGriffinPowerMate::CGriffinPowerMate() :
 wxThread(),
@@ -138,3 +190,5 @@ struct usb_device *CGriffinPowerMate::find(unsigned int vendor, unsigned int pro
 
 	return NULL;
 }
+
+#endif

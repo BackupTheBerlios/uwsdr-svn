@@ -1,11 +1,8 @@
 all:		Common.a
 
-OBJS := 	AudioDevInfo.o Frequency.o GriffinPowerMate.o HPSDRAudioReader.o HPSDRAudioWriter.o HPSDRDataReader.o \
-		HPSDRDataWriter.o HPSDRKeyInterface.o HPSDRPTTInterface.o HPSDRReaderWriter.o JackReaderWriter.o Log.o \
-		NullController.o NullReader.o NullWriter.o RingBuffer.o SDRDescrFile.o SerialControl.o SerialInterface.o \
-		SignalReader.o SoundCardReaderWriter.o SoundFileReader.o SoundFileWriter.o SRTXRXController.o ThreadReader.o \
-		ThreeToneReader.o TwoToneReader.o UDPDataReader.o UDPDataWriter.o UWSDRController.o UWSDRDataReader.o \
-		UWSDRDataWriter.o
+OBJS := 	AudioDevInfo.o Frequency.o GriffinPowerMate.o JackReaderWriter.o Log.o NullController.o NullReader.o NullWriter.o RingBuffer.o SDRDescrFile.o \
+					SerialControl.o SerialInterface.o SignalReader.o SoundCardReaderWriter.o SoundFileReader.o SoundFileWriter.o SRTXRXController.o ThreadReader.o \
+					ThreeToneReader.o TwoToneReader.o UDPDataReader.o UDPDataWriter.o UWSDRController.o UWSDRDataReader.o UWSDRDataWriter.o
 
 Common.a:	$(OBJS)
 		ar rcs Common.a $(OBJS)
@@ -18,27 +15,6 @@ Frequency.o:	Frequency.cpp Frequency.h
 
 GriffinPowerMate.o: GriffinPowerMate.cpp GriffinPowerMate.h DialInterface.h DialCallback.h
 		$(CC) $(CFLAGS) -c GriffinPowerMate.cpp
-
-HPSDRAudioReader.o:	HPSDRAudioReader.cpp HPSDRAudioReader.h DataCallback.h DataReader.h HPSDRReaderWriter.h
-		$(CC) $(CFLAGS) -c HPSDRAudioReader.cpp
-
-HPSDRAudioWriter.o:	HPSDRAudioWriter.cpp HPSDRAudioWriter.h DataWriter.h HPSDRReaderWriter.h
-		$(CC) $(CFLAGS) -c HPSDRAudioWriter.cpp
-
-HPSDRDataReader.o:	HPSDRDataReader.cpp HPSDRDataReader.h DataCallback.h DataReader.h HPSDRReaderWriter.h
-		$(CC) $(CFLAGS) -c HPSDRDataReader.cpp
-
-HPSDRDataWriter.o:	HPSDRDataWriter.cpp HPSDRDataWriter.h DataWriter.h HPSDRReaderWriter.h
-		$(CC) $(CFLAGS) -c HPSDRDataWriter.cpp
-
-HPSDRKeyInterface.o:	HPSDRKeyInterface.cpp HPSDRKeyInterface.h ExternalInterface.h HPSDRReaderWriter.h
-		$(CC) $(CFLAGS) -c HPSDRKeyInterface.cpp
-
-HPSDRPTTInterface.o:	HPSDRPTTInterface.cpp HPSDRPTTInterface.h ExternalInterface.h HPSDRReaderWriter.h
-		$(CC) $(CFLAGS) -c HPSDRPTTInterface.cpp
-
-HPSDRReaderWriter.o:	HPSDRReaderWriter.cpp HPSDRReaderWriter.h ControlInterface.h DataCallback.h Frequency.h SDRController.h
-		$(CC) $(CFLAGS) -c HPSDRReaderWriter.cpp
 
 JackReaderWriter.o: JackReaderWriter.cpp JackReaderWriter.h DataCallback.h DataReader.h DataWriter.h RingBuffer.h
 		$(CC) $(CFLAGS) -c JackReaderWriter.cpp

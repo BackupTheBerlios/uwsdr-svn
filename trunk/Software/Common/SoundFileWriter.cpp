@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2002-2004,2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2002-2004,2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ bool CSoundFileWriter::open(float sampleRate, unsigned int blockSize)
 	m_blockSize = blockSize;
 	m_enabled   = false;
 
-	m_handle = ::mmioOpen((CHAR *)m_fileName.c_str(), 0, MMIO_WRITE | MMIO_CREATE | MMIO_ALLOCBUF);
+	m_handle = ::mmioOpen(LPWSTR(m_fileName.c_str()), 0, MMIO_WRITE | MMIO_CREATE | MMIO_ALLOCBUF);
 	if (m_handle == NULL) {
 		::wxLogError(wxT("SoundFileWriter: could not open the file %s in SoundFileWriter"), m_fileName.c_str());
 		return false;

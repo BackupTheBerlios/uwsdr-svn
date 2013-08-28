@@ -22,6 +22,7 @@
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -47,7 +48,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.7\lib\vc_dll\mswd&quot;;&quot;C:\wxWidgets-2.8.7\include&quot;"
+				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.12\include\msvc&quot;;&quot;C:\wxWidgets-2.8.12\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;WXUSINGDLL;_WINDOWS;NOPCH"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -75,11 +76,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxbase28d.lib wxmsw28d_core.lib wxmsw28d_html.lib"
 				OutputFile="../Debug/SDRHelp.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="C:\wxWidgets-2.8.7\lib\vc_dll"
+				AdditionalLibraryDirectories="C:\wxWidgets-2.8.12\lib\vc_dll"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/SDRHelp.pdb"
 				SubSystem="2"
@@ -119,6 +119,7 @@
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -145,7 +146,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="1"
 				InlineFunctionExpansion="0"
-				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.7\lib\vc_dll\msw&quot;;&quot;C:\wxWidgets-2.8.7\include&quot;"
+				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.12\include\msvc&quot;;&quot;C:\wxWidgets-2.8.12\include&quot;"
 				PreprocessorDefinitions="WIN32;__WXMSW__;WXUSINGDLL;_WINDOWS;NOPCH"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -172,11 +173,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxbase28.lib wxmsw28_core.lib wxmsw28_html.lib"
 				OutputFile="../Release/SDRHelp.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="C:\wxWidgets-2.8.7\lib\vc_dll"
+				AdditionalLibraryDirectories="C:\wxWidgets-2.8.12\lib\vc_dll"
 				ProgramDatabaseFile=".\Release/SDRHelp.pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"

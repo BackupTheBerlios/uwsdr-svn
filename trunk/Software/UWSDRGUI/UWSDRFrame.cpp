@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -31,12 +31,6 @@
 #include "ThreeToneReader.h"
 #include "UWSDRDataReader.h"
 #include "UWSDRDataWriter.h"
-#include "HPSDRAudioReader.h"
-#include "HPSDRAudioWriter.h"
-#include "HPSDRDataReader.h"
-#include "HPSDRDataWriter.h"
-#include "HPSDRPTTInterface.h"
-#include "HPSDRKeyInterface.h"
 #include "SerialInterface.h"
 #include "SoundFileReader.h"
 #include "SoundFileWriter.h"
@@ -261,7 +255,6 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_parameters = parameters;
 
-	CHPSDRReaderWriter* hpsdr = NULL;
 	CUDPDataReader* reader = NULL;
 	CUDPDataWriter* writer = NULL;
 
@@ -295,9 +288,9 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 		case TYPE_AUDIOTXRX:
 			m_sdr = new CSRTXRXController(m_parameters->m_txOutDev, m_parameters->m_txOutPin);
 			break;
-		case TYPE_HPSDR:
-			m_sdr = hpsdr = new CHPSDRReaderWriter(BLOCK_SIZE, m_parameters->m_c0, m_parameters->m_c1, m_parameters->m_c2, m_parameters->m_c3, m_parameters->m_c4);
-			break;
+//		case TYPE_HPSDR:
+//			m_sdr = hpsdr = new CHPSDRReaderWriter(BLOCK_SIZE, m_parameters->m_c0, m_parameters->m_c1, m_parameters->m_c2, m_parameters->m_c3, m_parameters->m_c4);
+//			break;
 		default:
 			m_sdr = new CNullController();
 			break;
@@ -453,20 +446,20 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			}
 			break;
 
-		case TYPE_HPSDR:
-			wxASSERT(hpsdr != NULL);
-
-			m_dsp->setTXReader(new CHPSDRAudioReader(hpsdr));
-			m_dsp->setTXWriter(new CHPSDRDataWriter(hpsdr));
-
-			m_dsp->setRXReader(new CHPSDRDataReader(hpsdr));
-			m_dsp->setRXWriter(new CHPSDRAudioWriter(hpsdr));
-
-			if (!m_parameters->m_hardwareReceiveOnly) {
-				m_dsp->setTXInControl(new CHPSDRPTTInterface(hpsdr));
-				m_dsp->setKeyInControl(new CHPSDRKeyInterface(hpsdr));
-			}
-			break;
+//		case TYPE_HPSDR:
+//			wxASSERT(hpsdr != NULL);
+//
+//			m_dsp->setTXReader(new CHPSDRAudioReader(hpsdr));
+//			m_dsp->setTXWriter(new CHPSDRDataWriter(hpsdr));
+//
+//			m_dsp->setRXReader(new CHPSDRDataReader(hpsdr));
+//			m_dsp->setRXWriter(new CHPSDRAudioWriter(hpsdr));
+//
+//			if (!m_parameters->m_hardwareReceiveOnly) {
+//				m_dsp->setTXInControl(new CHPSDRPTTInterface(hpsdr));
+//				m_dsp->setKeyInControl(new CHPSDRKeyInterface(hpsdr));
+//			}
+//			break;
 	}
 
 	m_infoBox->setVFO(m_parameters->m_vfoChoice);
@@ -1485,21 +1478,18 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 					case TYPE_UWSDR1:
 						type = _("UWSDR v1.0");
 						break;
-					case TYPE_HPSDR:
-						type = _("HPSDR");
+					case TYPE_HACKRF:
+						type = _("HackRF");
 						break;
 				}
 
 				wxString transmit = (m_parameters->m_hardwareReceiveOnly) ? _("No") : _("Yes");
 
-				::wxMessageBox(_("The hardware parameters are:\n\n"
-					"Name:\t\t") + m_parameters->m_hardwareName + _("\n"
-					"Max. Freq:\t") + m_parameters->m_hardwareMaxFreq.getString(3) + _(" MHz\n"
-					"Min. Freq:\t") + m_parameters->m_hardwareMinFreq.getString(3) + _(" MHz\n"
-					"Step Size:\t") + stepSize + _(" Hz\n"
-					"Sample Rate:\t") + sampleRate + _(" samples/sec\n"
-					"Type:\t\t") + type + _("\n"
-					"Transmit:\t\t") + transmit,
+				::wxMessageBox(_("The hardware parameters are:\n\nName:\t\t") + m_parameters->m_hardwareName +
+					_("\nMax. Freq:\t") + m_parameters->m_hardwareMaxFreq.getString(3) +
+					_(" MHz\nMin. Freq:\t") + m_parameters->m_hardwareMinFreq.getString(3) +
+					_(" MHz\nStep Size:\t") + stepSize + _(" Hz\nSample Rate:\t") + sampleRate +
+					_(" samples/sec\nType:\t\t") + type + _("\nTransmit:\t\t") + transmit,
 					_("SDR Hardware Information"),
 					wxICON_INFORMATION);
 			}
@@ -1513,16 +1503,8 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 			wxString dateText = dateTime.Format(_("%d %B %Y"));
 
 #if defined(__WXMSW__)
-			::wxMessageBox(VERSION + wxT(" - ") + dateText + _("\n\n"
-				"A Software Define Radio for Microwaves\n\n"
-				"Hardware:\tChris Bartram, GW4DGU\n"
-				"\t\tGrant Hodgson, G8UBN\n"
-				"\t\tDavid Wrigley, G6GXK\n"
-				"\t\tNeil Whiting, G4BRK\n"
-				"Firmware:\tTobias Weber, DG3YEV\n"
-				"Software:\tJonathan Naylor, ON/G4KLX\n"
-				"DTTSP:\t\tBob McGwier, N4HY\n"
-				"\t\tFrank Brickle, AB2KT"),
+			::wxMessageBox(VERSION + wxT(" - ") + dateText +
+				_("\n\nA Software Define Radio for Microwaves\n\nHardware:\tChris Bartram, GW4DGU\n\t\tGrant Hodgson, G8UBN\n\t\tDavid Wrigley, G6GXK\n\t\tNeil Whiting, G4BRK\nFirmware:\tTobias Weber, DG3YEV\nSoftware:\tJonathan Naylor, G4KLX\nDTTSP:\t\tBob McGwier, N4HY\n\t\tFrank Brickle, AB2KT"),
 				_("About uWave SDR"),
 				wxICON_INFORMATION);
 #else
@@ -1532,7 +1514,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 				info.SetVersion(VERSION + wxT(" - ") + dateText);
 				info.SetDescription(_("A software defined radio for microwaves"));
 
-				info.AddDeveloper(wxT("Jonathan Naylor, ON/G4KLX"));
+				info.AddDeveloper(wxT("Jonathan Naylor, G4KLX"));
 				info.AddDeveloper(wxT("Chris Bartram, GW4DGU"));
 				info.AddDeveloper(wxT("Grant Hodgson, G8UBN"));
 				info.AddDeveloper(wxT("Tobias Weber, DG3YEV"));

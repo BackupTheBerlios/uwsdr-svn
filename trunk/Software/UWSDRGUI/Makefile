@@ -55,13 +55,10 @@ UWSDRApp.o:	UWSDRApp.cpp UWSDRApp.h ConfigChooser.h ../Common/Log.h SDRParameter
 		$(CC) $(CFLAGS) -c UWSDRApp.cpp
 
 UWSDRFrame.o:	UWSDRFrame.cpp UWSDRFrame.h ../Common/ControlInterface.h CWKeyboard.h ../Common/DialCallback.h DSPControl.h FreqDial.h \
-		FreqDisplay.h FreqKeypad.h ../Common/Frequency.h InfoBox.h ../Common/NullController.h ../Common/UDPDataReader.h \
-		../Common/UDPDataWriter.h SDRParameters.h ../Common/SerialInterface.h SMeter.h ../Common/JackReaderWriter.h \
-		../Common/SoundCardReaderWriter.h ../Common/SoundFileWriter.h SpectrumDisplay.h ../Common/HPSDRDataReader.h \
-		../Common/HPSDRDataWriter.h ../Common/HPSDRAudioReader.h ../Common/HPSDRAudioWriter.h ../Common/HPSDRReaderWriter.h \
-		../Common/SRTXRXController.h UWSDRApp.h ../Common/UWSDRController.h UWSDRDefs.h UWSDRPreferences.h UWSDR.xpm \
-		../Common/Common.h  ../Common/UWSDRDataReader.h ../Common/UWSDRDataWriter.h VoiceKeyboard.h ../Common/HPSDRPTTInterface.h \
-		../Common/HPSDRKeyInterface.h ../Common/DialInterface.h ../Common/GriffinPowerMate.h
+		FreqDisplay.h FreqKeypad.h ../Common/Frequency.h InfoBox.h ../Common/NullController.h ../Common/UDPDataReader.h ../Common/UDPDataWriter.h \
+		SDRParameters.h ../Common/SerialInterface.h SMeter.h ../Common/JackReaderWriter.h ../Common/SoundCardReaderWriter.h ../Common/SoundFileWriter.h \
+		SpectrumDisplay.h	../Common/SRTXRXController.h UWSDRApp.h ../Common/UWSDRController.h UWSDRDefs.h UWSDRPreferences.h UWSDR.xpm \
+		../Common/Common.h  ../Common/UWSDRDataReader.h ../Common/UWSDRDataWriter.h VoiceKeyboard.h ../Common/DialInterface.h ../Common/GriffinPowerMate.h
 		$(CC) $(CFLAGS) -c UWSDRFrame.cpp
 
 UWSDRPreferences.o: UWSDRPreferences.cpp UWSDRPreferences.h DSPControl.h SDRParameters.h UWSDRApp.h UWSDRDefs.h
