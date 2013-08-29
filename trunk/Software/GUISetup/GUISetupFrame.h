@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@ class CGUISetupFrame : public wxFrame {
 	void onSDRAudio(wxCommandEvent& event);
 	void onEthernet(wxCommandEvent& event);
 	void onPort(wxCommandEvent& event);
-	void onHPSDR(wxCommandEvent& event);
 	void onTuning(wxCommandEvent& event);
 	void onCreate(wxCommandEvent& event);
 
@@ -49,7 +48,6 @@ class CGUISetupFrame : public wxFrame {
 	wxButton*      m_sdrAudio;
 	wxButton*      m_ethernet;
 	wxButton*      m_port;
-	wxButton*      m_hpsdr;
 	wxButton*      m_tuning;
 	wxString       m_filename;
 	SDRTYPE        m_sdrType;
@@ -70,11 +68,6 @@ class CGUISetupFrame : public wxFrame {
 	INPIN          m_keyInPin;
 	wxString       m_txOutDev;
 	OUTPIN         m_txOutPin;
-	int            m_c0;
-	int            m_c1;
-	int            m_c2;
-	int            m_c3;
-	int            m_c4;
 	TUNINGHW       m_tuningHW;
 
 	DECLARE_EVENT_TABLE()

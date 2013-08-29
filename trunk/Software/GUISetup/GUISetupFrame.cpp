@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 
 #include "EthernetDialog.h"
 #include "SoundCardDialog.h"
-#include "HPSDRDialog.h"
 #include "TuningDialog.h"
 
 #include <wx/config.h>
@@ -45,20 +44,18 @@ const wxChar* NAME_TOKEN    = wxT("@NAME@");
 #endif
 
 const struct {
-	bool userAudioButton;
 	bool sdrAudioButton;
 	bool ethernetButton;
 	bool portButton;
-	bool hpsdrButton;
 	bool tuningButton;
 	bool txOutData;
 	bool audioCheck;
 } featureList[] = {
-	{true,  true,  false, false, false, true, false, false},	// TYPE_AUDIORX
-	{true,  true,  false, true,  false, true, true,  true},		// TYPE_AUDIOTXRX
-	{true,  false, false, true,  false, true, false, false},	// TYPE_DEMO
-	{true,  false, true,  true,  false, true, false, false},	// TYPE_UWSDR1
-	{false, false, false, false, true,  true, false, false}		// TYPE_HPSDR
+	{true,  false, false, true, false, false},	// TYPE_AUDIORX
+	{true,  false, true,  true, true,  true},	// TYPE_AUDIOTXRX
+	{false, false, true,  true, false, false},	// TYPE_DEMO
+	{false, true,  true,  true, false, false},	// TYPE_UWSDR1
+	{false, false, false, true, false, false}	// TYPE_HACKRF
 };
 
 const int CREATE_BUTTON     = 27543;
@@ -67,7 +64,6 @@ const int USER_AUDIO_BUTTON = 27545;
 const int SDR_AUDIO_BUTTON  = 27546;
 const int ETHERNET_BUTTON   = 27547;
 const int PORT_BUTTON       = 27548;
-const int HPSDR_BUTTON      = 27549;
 const int TUNING_BUTTON     = 27550;
 const int NAME_COMBO        = 27551;
 
@@ -85,7 +81,6 @@ BEGIN_EVENT_TABLE(CGUISetupFrame, wxFrame)
 	EVT_BUTTON(SDR_AUDIO_BUTTON,  CGUISetupFrame::onSDRAudio)
 	EVT_BUTTON(ETHERNET_BUTTON,   CGUISetupFrame::onEthernet)
 	EVT_BUTTON(PORT_BUTTON,       CGUISetupFrame::onPort)
-	EVT_BUTTON(HPSDR_BUTTON,      CGUISetupFrame::onHPSDR)
 	EVT_BUTTON(TUNING_BUTTON,     CGUISetupFrame::onTuning)
 END_EVENT_TABLE()
 
@@ -99,7 +94,6 @@ m_userAudio(NULL),
 m_sdrAudio(NULL),
 m_ethernet(NULL),
 m_port(NULL),
-m_hpsdr(NULL),
 m_tuning(NULL),
 m_filename(),
 m_sdrType(TYPE_UWSDR1),
@@ -120,11 +114,6 @@ m_keyInDev(),
 m_keyInPin(IN_NONE),
 m_txOutDev(),
 m_txOutPin(OUT_NONE),
-m_c0(0x00),
-m_c1(0x00),
-m_c2(0x00),
-m_c3(0x00),
-m_c4(0x00),
 m_tuningHW(TUNINGHW_NONE)
 {
 	SetIcon(wxICON(GUISetup));
@@ -157,7 +146,6 @@ m_tuningHW(TUNINGHW_NONE)
 	panelSizer->Add(label3, 0, wxALL, BORDER_SIZE);
 
 	m_userAudio = new wxButton(panel, USER_AUDIO_BUTTON, _("Set"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
-	m_userAudio->Disable();
 	panelSizer->Add(m_userAudio, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* dummy2 = new wxStaticText(panel, -1, wxEmptyString);
@@ -192,16 +180,6 @@ m_tuningHW(TUNINGHW_NONE)
 
 	wxStaticText* dummy5 = new wxStaticText(panel, -1, wxEmptyString);
 	panelSizer->Add(dummy5, 0, wxALL, BORDER_SIZE);
-
-	wxStaticText* label7 = new wxStaticText(panel, -1, _("HPSDR:"));
-	panelSizer->Add(label7, 0, wxALL, BORDER_SIZE);
-
-	m_hpsdr = new wxButton(panel, HPSDR_BUTTON, _("Set"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
-	m_hpsdr->Disable();
-	panelSizer->Add(m_hpsdr, 0, wxALL, BORDER_SIZE);
-
-	wxStaticText* dummy6 = new wxStaticText(panel, -1, wxEmptyString);
-	panelSizer->Add(dummy6, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label8 = new wxStaticText(panel, -1, _("Tuning Hardware:"));
 	panelSizer->Add(label8, 0, wxALL, BORDER_SIZE);
@@ -297,11 +275,9 @@ void CGUISetupFrame::onBrowse(wxCommandEvent& WXUNUSED(event))
 	m_filenameText->SetValue(filePath.GetFullName());
 
 	// Clear everything
-	m_userAudio->Disable();
 	m_sdrAudio->Disable();
 	m_ethernet->Disable();
 	m_port->Disable();
-	m_hpsdr->Disable();
 	m_tuning->Disable();
 
 	CSDRDescrFile file(m_filename);
@@ -313,16 +289,12 @@ void CGUISetupFrame::onBrowse(wxCommandEvent& WXUNUSED(event))
 	m_sdrType = file.getType();
 	m_rxonly  = file.getReceiveOnly();
 
-	if (featureList[m_sdrType].userAudioButton)
-		m_userAudio->Enable();
 	if (featureList[m_sdrType].sdrAudioButton)
 		m_sdrAudio->Enable();
 	if (featureList[m_sdrType].ethernetButton)
 		m_ethernet->Enable();
 	if (featureList[m_sdrType].portButton)
 		m_port->Enable();
-	if (featureList[m_sdrType].hpsdrButton)
-		m_hpsdr->Enable();
 	if (featureList[m_sdrType].tuningButton)
 		m_tuning->Enable();
 }
@@ -356,11 +328,9 @@ void CGUISetupFrame::onCreate(wxCommandEvent& WXUNUSED(event))
 
 	m_sdrType = file.getType();
 
-	if (featureList[m_sdrType].userAudioButton) {
-		if (m_userAudioInDev == NO_DEV || m_userAudioOutDev == NO_DEV) {
-			::wxMessageBox(_("The User Audio has not been set"), _("GUISetup Error"), wxICON_ERROR);
-			return;
-		}
+	if (m_userAudioInDev == NO_DEV || m_userAudioOutDev == NO_DEV) {
+		::wxMessageBox(_("The User Audio has not been set"), _("GUISetup Error"), wxICON_ERROR);
+		return;
 	}
 
 	if (featureList[m_sdrType].sdrAudioButton) {
@@ -410,11 +380,6 @@ void CGUISetupFrame::onCreate(wxCommandEvent& WXUNUSED(event))
 	wxString keyInPinKey        = wxT("/") + name + wxT("/KeyInPin");
 	wxString txOutDevKey        = wxT("/") + name + wxT("/TXOutDev");
 	wxString txOutPinKey        = wxT("/") + name + wxT("/TXOutPin");
-	wxString hpsdrC0Key         = wxT("/") + name + wxT("/HPSDRC0");
-	wxString hpsdrC1Key         = wxT("/") + name + wxT("/HPSDRC1");
-	wxString hpsdrC2Key         = wxT("/") + name + wxT("/HPSDRC1");
-	wxString hpsdrC3Key         = wxT("/") + name + wxT("/HPSDRC3");
-	wxString hpsdrC4Key         = wxT("/") + name + wxT("/HPSDRC4");
 	wxString tuningKey          = wxT("/") + name + wxT("/TuningHW");
 
 	wxString test;
@@ -430,24 +395,22 @@ void CGUISetupFrame::onCreate(wxCommandEvent& WXUNUSED(event))
 		return;
 	}
 
-	if (featureList[m_sdrType].userAudioButton) {
-		ret = config->Write(userAudioTypeKey, m_userAudioType);
-		if (!ret) {
-			::wxMessageBox(_("Unable to write configuration data - UserAudioType"), _("GUISetup Error"), wxICON_ERROR);
-			return;
-		}
+	ret = config->Write(userAudioTypeKey, m_userAudioType);
+	if (!ret) {
+		::wxMessageBox(_("Unable to write configuration data - UserAudioType"), _("GUISetup Error"), wxICON_ERROR);
+		return;
+	}
 
-		ret = config->Write(userAudioOutDevKey, m_userAudioOutDev);
-		if (!ret) {
-			::wxMessageBox(_("Unable to write configuration data - UserAudioOutDev"), _("GUISetup Error"), wxICON_ERROR);
-			return;
-		}
+	ret = config->Write(userAudioOutDevKey, m_userAudioOutDev);
+	if (!ret) {
+		::wxMessageBox(_("Unable to write configuration data - UserAudioOutDev"), _("GUISetup Error"), wxICON_ERROR);
+		return;
+	}
 
-		ret = config->Write(userAudioInDevKey, m_userAudioInDev);
-		if (!ret) {
-			::wxMessageBox(_("Unable to write configuration data - UserAudioInDev"), _("GUISetup Error"), wxICON_ERROR);
-			return;
-		}
+	ret = config->Write(userAudioInDevKey, m_userAudioInDev);
+	if (!ret) {
+		::wxMessageBox(_("Unable to write configuration data - UserAudioInDev"), _("GUISetup Error"), wxICON_ERROR);
+		return;
 	}
 
 	if (featureList[m_sdrType].sdrAudioButton) {
@@ -536,38 +499,6 @@ void CGUISetupFrame::onCreate(wxCommandEvent& WXUNUSED(event))
 		}
 	}
 
-	if (featureList[m_sdrType].hpsdrButton) {
-		ret = config->Write(hpsdrC0Key, m_c0);
-		if (!ret) {
-			::wxMessageBox(_("Unable to write configuration data - HPSDRC0"), _("GUISetup Error"), wxICON_ERROR);
-			return;
-		}
-
-		ret = config->Write(hpsdrC1Key, m_c1);
-		if (!ret) {
-			::wxMessageBox(_("Unable to write configuration data - HPSDRC1"), _("GUISetup Error"), wxICON_ERROR);
-			return;
-		}
-
-		ret = config->Write(hpsdrC2Key, m_c2);
-		if (!ret) {
-			::wxMessageBox(_("Unable to write configuration data - HPSDRC2"), _("GUISetup Error"), wxICON_ERROR);
-			return;
-		}
-
-		ret = config->Write(hpsdrC3Key, m_c3);
-		if (!ret) {
-			::wxMessageBox(_("Unable to write configuration data - HPSDRC3"), _("GUISetup Error"), wxICON_ERROR);
-			return;
-		}
-
-		ret = config->Write(hpsdrC4Key, m_c4);
-		if (!ret) {
-			::wxMessageBox(_("Unable to write configuration data - HPSDRC4"), _("GUISetup Error"), wxICON_ERROR);
-			return;
-		}
-	}
-
 	if (featureList[m_sdrType].tuningButton) {
 		bool ret = config->Write(tuningKey, m_tuningHW);
 		if (!ret) {
@@ -630,11 +561,9 @@ void CGUISetupFrame::enumerateConfigs()
 void CGUISetupFrame::readConfig(const wxString& name)
 {
 	// Clear everything
-	m_userAudio->Disable();
 	m_sdrAudio->Disable();
 	m_ethernet->Disable();
 	m_port->Disable();
-	m_hpsdr->Disable();
 	m_tuning->Disable();
 
 	m_filenameText->Clear();
@@ -658,11 +587,6 @@ void CGUISetupFrame::readConfig(const wxString& name)
 	wxString keyInPinKey        = wxT("/") + name + wxT("/KeyInPin");
 	wxString txOutDevKey        = wxT("/") + name + wxT("/TXOutDev");
 	wxString txOutPinKey        = wxT("/") + name + wxT("/TXOutPin");
-	wxString hpsdrC0Key         = wxT("/") + name + wxT("/HPSDRC0");
-	wxString hpsdrC1Key         = wxT("/") + name + wxT("/HPSDRC1");
-	wxString hpsdrC2Key         = wxT("/") + name + wxT("/HPSDRC2");
-	wxString hpsdrC3Key         = wxT("/") + name + wxT("/HPSDRC3");
-	wxString hpsdrC4Key         = wxT("/") + name + wxT("/HPSDRC4");
 	wxString tuningKey          = wxT("/") + name + wxT("/TuningHW");
 
 	bool ret = config->Read(fileNameKey, &m_filename);
@@ -700,12 +624,6 @@ void CGUISetupFrame::readConfig(const wxString& name)
 	config->Read(txOutDevKey,    &m_txOutDev);
 	config->Read(txOutPinKey,    (int*)&m_txOutPin);
 
-	config->Read(hpsdrC0Key,     &m_c0);
-	config->Read(hpsdrC1Key,     &m_c1);
-	config->Read(hpsdrC2Key,     &m_c2);
-	config->Read(hpsdrC3Key,     &m_c2);
-	config->Read(hpsdrC4Key,     &m_c4);
-
 	config->Read(tuningKey,      (int*)&m_tuningHW);
 
 	delete config;
@@ -713,16 +631,12 @@ void CGUISetupFrame::readConfig(const wxString& name)
 	m_sdrType = file.getType();
 	m_rxonly  = file.getReceiveOnly();
 
-	if (featureList[m_sdrType].userAudioButton)
-		m_userAudio->Enable();
 	if (featureList[m_sdrType].sdrAudioButton)
 		m_sdrAudio->Enable();
 	if (featureList[m_sdrType].ethernetButton)
 		m_ethernet->Enable();
 	if (featureList[m_sdrType].portButton)
 		m_port->Enable();
-	if (featureList[m_sdrType].hpsdrButton)
-		m_hpsdr->Enable();
 	if (featureList[m_sdrType].tuningButton)
 		m_tuning->Enable();
 }
@@ -791,21 +705,6 @@ void CGUISetupFrame::onPort(wxCommandEvent& WXUNUSED(event))
 
 	m_txOutDev = dialog.getTXOutDev();
 	m_txOutPin = dialog.getTXOutPin();
-}
-
-void CGUISetupFrame::onHPSDR(wxCommandEvent& WXUNUSED(event))
-{
-	CHPSDRDialog dialog(this, _("HPSDR Setup"), m_c0, m_c1, m_c2, m_c3, m_c4, m_rxonly);
-
-	int ret = dialog.ShowModal();
-	if (ret != wxID_OK)
-		return;
-
-	m_c0 = dialog.getC0();
-	m_c1 = dialog.getC1();
-	m_c2 = dialog.getC2();
-	m_c3 = dialog.getC3();
-	m_c4 = dialog.getC4();
 }
 
 void CGUISetupFrame::onTuning(wxCommandEvent& WXUNUSED(event))

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -116,11 +116,6 @@ m_power(0),
 m_binaural(false),
 m_pan(0),
 m_recordType(RECORD_MONO_AUDIO),
-m_c0(0x00),
-m_c1(0x00),
-m_c2(0x00),
-m_c3(0x00),
-m_c4(0x00),
 m_tuning(TUNINGHW_NONE),
 m_cwSpeed(0),
 m_cwLocal(),

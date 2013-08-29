@@ -100,34 +100,6 @@
          </ul>
 
          <li> <object type="text/sitemap">
-                  <param name="Name" value="HPSDR Setup">
-                  <param name="ID" value=9>
-                  <param name="Local" value="HPSDR.htm">
-              </object>
-         <ul>
-             <li> <object type="text/sitemap">
-                      <param name="Name" value="Atlas Setup">
-                      <param name="ID" value=50>
-                      <param name="Local" value="Atlas.htm">
-                  </object>
-             <li> <object type="text/sitemap">
-                      <param name="Name" value="Janus Setup">
-                      <param name="ID" value=51>
-                      <param name="Local" value="Janus.htm">
-                  </object>
-             <li> <object type="text/sitemap">
-                      <param name="Name" value="Mercury Setup">
-                      <param name="ID" value=52>
-                      <param name="Local" value="Mercury.htm">
-                  </object>
-             <li> <object type="text/sitemap">
-                      <param name="Name" value="Penelope Setup">
-                      <param name="ID" value=53>
-                      <param name="Local" value="Penelope.htm">
-                  </object>
-         </ul>
-
-         <li> <object type="text/sitemap">
                   <param name="Name" value="Tuning Hardware Setup">
                   <param name="ID" value=10>
                   <param name="Local" value="Tuning.htm">

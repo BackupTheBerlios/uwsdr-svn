@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -115,11 +115,6 @@ const wxChar* KEY_POWER              = wxT("/Power");
 const wxChar* KEY_BINAURAL           = wxT("/Binaural");
 const wxChar* KEY_PAN                = wxT("/Pan");
 const wxChar* KEY_RECORD_TYPE        = wxT("/RecordType");
-const wxChar* KEY_HPSDRC0            = wxT("/HPSDRC0");
-const wxChar* KEY_HPSDRC1            = wxT("/HPSDRC1");
-const wxChar* KEY_HPSDRC2            = wxT("/HPSDRC2");
-const wxChar* KEY_HPSDRC3            = wxT("/HPSDRC3");
-const wxChar* KEY_HPSDRC4            = wxT("/HPSDRC4");
 const wxChar* KEY_TUNING_HW          = wxT("/TuningHW");
 const wxChar* KEY_CW_SPEED           = wxT("/CWSpeed");
 const wxChar* KEY_CW_LOCAL           = wxT("/CWLocalCallsign");
@@ -410,11 +405,6 @@ bool CUWSDRApp::readConfig()
 	wxString keyPan             = wxT("/") + m_parameters->m_name + KEY_PAN;
 	wxString keyPower           = wxT("/") + m_parameters->m_name + KEY_POWER;
 	wxString keyRecordType      = wxT("/") + m_parameters->m_name + KEY_RECORD_TYPE;
-	wxString keyHpsdrC0         = wxT("/") + m_parameters->m_name + KEY_HPSDRC0;
-	wxString keyHpsdrC1         = wxT("/") + m_parameters->m_name + KEY_HPSDRC1;
-	wxString keyHpsdrC2         = wxT("/") + m_parameters->m_name + KEY_HPSDRC2;
-	wxString keyHpsdrC3         = wxT("/") + m_parameters->m_name + KEY_HPSDRC3;
-	wxString keyHpsdrC4         = wxT("/") + m_parameters->m_name + KEY_HPSDRC4;
 	wxString keyTuningHW        = wxT("/") + m_parameters->m_name + KEY_TUNING_HW;
 	wxString keyCwSpeed         = wxT("/") + m_parameters->m_name + KEY_CW_SPEED;
 	wxString keyCwLocal         = wxT("/") + m_parameters->m_name + KEY_CW_LOCAL;
@@ -643,21 +633,6 @@ bool CUWSDRApp::readConfig()
 
 	profile->Read(keyRecordType,       &num, RECORD_MONO_AUDIO);
 	m_parameters->m_recordType = RECORDTYPE(num);
-
-	profile->Read(keyHpsdrC0,          &num, 0x00);
-	m_parameters->m_c0 = num;
-
-	profile->Read(keyHpsdrC1,          &num, 0x00);
-	m_parameters->m_c1 = num;
-
-	profile->Read(keyHpsdrC2,          &num, 0x00);
-	m_parameters->m_c2 = num;
-
-	profile->Read(keyHpsdrC3,          &num, 0x00);
-	m_parameters->m_c3 = num;
-
-	profile->Read(keyHpsdrC4,          &num, 0x00);
-	m_parameters->m_c4 = num;
 
 	profile->Read(keyTuningHW,         &num);
 	m_parameters->m_tuning = TUNINGHW(num);

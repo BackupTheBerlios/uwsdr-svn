@@ -288,9 +288,9 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 		case TYPE_AUDIOTXRX:
 			m_sdr = new CSRTXRXController(m_parameters->m_txOutDev, m_parameters->m_txOutPin);
 			break;
-//		case TYPE_HPSDR:
-//			m_sdr = hpsdr = new CHPSDRReaderWriter(BLOCK_SIZE, m_parameters->m_c0, m_parameters->m_c1, m_parameters->m_c2, m_parameters->m_c3, m_parameters->m_c4);
-//			break;
+		case TYPE_HACKRF:
+//			m_sdr = new CHPSDRReaderWriter(BLOCK_SIZE, m_parameters->m_c0, m_parameters->m_c1, m_parameters->m_c2, m_parameters->m_c3, m_parameters->m_c4);
+			break;
 		default:
 			m_sdr = new CNullController();
 			break;
@@ -446,7 +446,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			}
 			break;
 
-//		case TYPE_HPSDR:
+		case TYPE_HACKRF:
 //			wxASSERT(hpsdr != NULL);
 //
 //			m_dsp->setTXReader(new CHPSDRAudioReader(hpsdr));
@@ -455,11 +455,34 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 //			m_dsp->setRXReader(new CHPSDRDataReader(hpsdr));
 //			m_dsp->setRXWriter(new CHPSDRAudioWriter(hpsdr));
 //
-//			if (!m_parameters->m_hardwareReceiveOnly) {
-//				m_dsp->setTXInControl(new CHPSDRPTTInterface(hpsdr));
-//				m_dsp->setKeyInControl(new CHPSDRKeyInterface(hpsdr));
-//			}
-//			break;
+			if (m_parameters->m_userAudioType == SOUND_JACK) {
+				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" User"), 2U, 2U);
+				if (m_parameters->m_hardwareReceiveOnly)
+					m_dsp->setTXReader(new CNullReader());
+				else
+					m_dsp->setTXReader(rw);
+				m_dsp->setRXWriter(rw);
+			} else {
+				CSoundCardReaderWriter* rw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 2U, 2U);
+				if (m_parameters->m_hardwareReceiveOnly)
+					m_dsp->setTXWriter(new CNullWriter());
+				else
+					m_dsp->setTXWriter(rw);
+				m_dsp->setRXWriter(rw);
+			}
+
+			if (!m_parameters->m_hardwareReceiveOnly) {
+				if (m_parameters->m_txInEnable) {
+					CSerialInterface* control = new CSerialInterface(m_parameters->m_txInDev, m_parameters->m_txInPin);
+					m_dsp->setTXInControl(control);
+				}
+
+				if (m_parameters->m_keyInEnable) {
+					CSerialInterface* control = new CSerialInterface(m_parameters->m_keyInDev, m_parameters->m_keyInPin);
+					m_dsp->setKeyInControl(control);
+				}
+			}
+			break;
 	}
 
 	m_infoBox->setVFO(m_parameters->m_vfoChoice);

@@ -13,8 +13,8 @@
 ;Configuration
 
   ;General
-  Name "UWSDR 0.9"
-  OutFile "UWSDR-0.9.exe"
+  Name "UWSDR 0.9.1"
+  OutFile "UWSDR-0.9.1.exe"
 
   ;Folder selection page
   InstallDir "$PROGRAMFILES\UWSDR"
@@ -30,7 +30,7 @@
 ;--------------------------------
 ;Pages
 
-  !insertmacro MUI_PAGE_LICENSE "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Copying.txt"
+  !insertmacro MUI_PAGE_LICENSE "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Copying.txt"
   !insertmacro MUI_PAGE_DIRECTORY
 
   !insertmacro MUI_PAGE_INSTFILES
@@ -51,44 +51,45 @@ Section "UWSDR Program Files" SecProgram
 
   SetOutPath "$INSTDIR"
   
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\UWSDR.exe"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\GUISetup.exe"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\SDREmulator.exe"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\SDRHelp.exe"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\SDRSetup.exe"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\libfftw3f-3.dll"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\portaudio_x86.dll"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxbase28_vc_custom.dll"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxbase28_net_vc_custom.dll"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxmsw28_core_vc_custom.dll"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Release\wxmsw28_html_vc_custom.dll"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Help\GUISetup\GUISetup.zip"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Help\SDRSetup\SDRSetup.zip"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Help\UWSDR\UWSDR.zip"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Copying.txt"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Changes.txt"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\HPSDR.txt"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Install.txt"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\Jobs.txt"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SoftRock.txt"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\UWSDR.exe"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\GUISetup.exe"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\SDREmulator.exe"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\SDRHelp.exe"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\SDRSetup.exe"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\libfftw3f-3.dll"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\portaudio_x86.dll"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\wxbase28u_vc_custom.dll"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\wxbase28u_net_vc_custom.dll"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\wxmsw28u_core_vc_custom.dll"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\wxmsw28u_html_vc_custom.dll"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Help\GUISetup\GUISetup.zip"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Help\SDRSetup\SDRSetup.zip"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Help\UWSDR\UWSDR.zip"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Copying.txt"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Changes.txt"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Install.txt"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Jobs.txt"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SoftRock.txt"
 
   SetOutPath "$INSTDIR\SDR Files"
 
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\Readme.txt"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\13cms.sdr"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\23cms.sdr"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\Demo.sdr"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\HPSDR.sdr"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\HPSDR-RX.sdr"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\Skeleton.sdr"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\SoftRock30.sdr"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\SoftRock40.sdr"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\SoftRock80.sdr"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\SoftRock160.sdr"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\SoftRock-RXTX-3508.sdr"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\SoftRock-RXTX-3528.sdr"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\SoftRock-RXTX-7015.sdr"
-  File "C:\Documents and Settings\Jonathan\My Documents\UWSDR_SVN\Software\SDRFiles\SoftRock-RXTX-7056.sdr"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\Readme.txt"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\13cms.sdr"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\23cms.sdr"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\Demo.sdr"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\HackRF.sdr"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\HackRF-HF.sdr"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\HackRF-HF-RX.sdr"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\HackRF-RX.sdr"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\Skeleton.sdr"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\SoftRock30.sdr"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\SoftRock40.sdr"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\SoftRock80.sdr"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\SoftRock160.sdr"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\SoftRock-RXTX-3508.sdr"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\SoftRock-RXTX-3528.sdr"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\SoftRock-RXTX-7015.sdr"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\SoftRock-RXTX-7056.sdr"
 
   ;Create start menu entry
   CreateDirectory "$SMPROGRAMS\UWSDR"
@@ -98,7 +99,6 @@ Section "UWSDR Program Files" SecProgram
   CreateShortCut "$SMPROGRAMS\UWSDR\SDRSetup.lnk"  "$INSTDIR\SDRSetup.exe"
   CreateShortCut "$SMPROGRAMS\UWSDR\Licence.lnk"   "$INSTDIR\Copying.txt"
   CreateShortCut "$SMPROGRAMS\UWSDR\Changes.lnk"   "$INSTDIR\Changes.txt"
-  CreateShortCut "$SMPROGRAMS\UWSDR\HPSDR.lnk"     "$INSTDIR\HPSDR.txt"
   CreateShortCut "$SMPROGRAMS\UWSDR\Install.lnk"   "$INSTDIR\Install.txt"
   CreateShortCut "$SMPROGRAMS\UWSDR\TODO.lnk"      "$INSTDIR\Jobs.txt"
   CreateShortCut "$SMPROGRAMS\UWSDR\SoftRock.lnk"  "$INSTDIR\SoftRock.txt"

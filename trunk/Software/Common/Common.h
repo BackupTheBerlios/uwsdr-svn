@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,11 +22,11 @@
 #include <wx/wx.h>
 #include <wx/datetime.h>
 
-const wxString VERSION  = wxT("uWave SDR 0.9");
+const wxString VERSION  = wxT("uWave SDR 0.9.1");
 
 const wxDateTime::wxDateTime_t REL_DATE_DAY   = 9;
 const wxDateTime::Month        REL_DATE_MONTH = wxDateTime::Apr;
-const unsigned int             REL_DATE_YEAR  = 2008;
+const unsigned int             REL_DATE_YEAR  = 2013;
 
 enum INPIN {
 	IN_NONE = -1,

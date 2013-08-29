@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -153,12 +153,6 @@ class CSDRParameters {
 	int           m_pan;
 
 	RECORDTYPE    m_recordType;
-
-	int           m_c0;
-	int           m_c1;
-	int           m_c2;
-	int           m_c3;
-	int           m_c4;
 
 	TUNINGHW      m_tuning;
 
