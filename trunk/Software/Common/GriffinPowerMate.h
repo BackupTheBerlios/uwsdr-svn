@@ -21,16 +21,16 @@
 
 #include <wx/wx.h>
 
-#if defined(WIN32)
+#if defined(__WINDOWS__)
+#include <windows.h>
 #else
-#include "usb.h"
+#include <libusb-1.0/libusb.h>
 #endif
 
 #include "DialInterface.h"
 
-
 class CGriffinPowerMate : public IDialInterface, public wxThread  {
-    public:
+public:
 	CGriffinPowerMate();
 
 	virtual void setCallback(IDialCallback* callback, int id);
@@ -40,23 +40,22 @@ class CGriffinPowerMate : public IDialInterface, public wxThread  {
 
 	virtual void* Entry();
 
-    protected:
+protected:
 	virtual ~CGriffinPowerMate();
 
-    private:
-#if defined(WIN32)
-#else
-	struct usb_dev_handle* m_handle;
-#endif
+private:
 	IDialCallback*         m_callback;
 	int                    m_id;
 	char*                  m_buffer;
 	unsigned int           m_len;
 	bool                   m_button;
 	unsigned int           m_speed;
-
-#if !defined(WIN32)
-	struct usb_device* find(unsigned int vendor, unsigned int product) const;
+	bool                   m_killed;
+#if defined(__WINDOWS__)
+	HANDLE                 m_handle;
+#else
+	libusb_context*        m_context;
+	libusb_device_handle*  m_handle;
 #endif
 };
 

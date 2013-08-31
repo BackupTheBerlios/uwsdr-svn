@@ -25,16 +25,21 @@ const unsigned int POWERMATE_OUT_ENDPOINT = 0x02;
 
 const unsigned int POWERMATE_TIMEOUT      = 1000U;
 
-#if defined(WIN32)
+#if defined(__WINDOWS__)
+
+#include <Setupapi.h>
+#include "HID.h"
 
 CGriffinPowerMate::CGriffinPowerMate() :
-wxThread(),
+wxThread(wxTHREAD_JOINABLE),
 m_callback(NULL),
 m_id(0),
 m_buffer(NULL),
 m_len(0),
 m_button(false),
-m_speed(1U)
+m_speed(1U),
+m_killed(false),
+m_handle(INVALID_HANDLE_VALUE)
 {
 }
 
@@ -44,10 +49,88 @@ CGriffinPowerMate::~CGriffinPowerMate()
 
 bool CGriffinPowerMate::open()
 {
-	Create();
-	Run();
+	GUID guid;
+	::HidD_GetHidGuid(&guid);
 
-	return true;
+	HDEVINFO devInfo = ::SetupDiGetClassDevs(&guid, NULL, NULL, DIGCF_DEVICEINTERFACE | DIGCF_PRESENT);
+	if (devInfo == INVALID_HANDLE_VALUE) {
+		wxLogError(wxT("Error from SetupDiGetClassDevs: err=%u"), ::GetLastError());
+		return false;
+	}
+
+	SP_DEVICE_INTERFACE_DATA devInfoData;
+	devInfoData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
+
+	for (DWORD index = 0U; ::SetupDiEnumDeviceInterfaces(devInfo, NULL, &guid, index, &devInfoData); index++) {
+		// Find the required length of the device structure
+		DWORD length;
+		::SetupDiGetDeviceInterfaceDetail(devInfo, &devInfoData, NULL, 0U, &length, NULL);
+
+		PSP_DEVICE_INTERFACE_DETAIL_DATA detailData = PSP_DEVICE_INTERFACE_DETAIL_DATA(::malloc(length));
+		detailData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
+
+		// Get the detailed data into the newly allocated device structure
+		DWORD required;
+		BOOL res = ::SetupDiGetDeviceInterfaceDetail(devInfo, &devInfoData, detailData, length, &required, NULL);
+		if (!res) {
+			wxLogError(wxT("Error from SetupDiGetDeviceInterfaceDetail: err=%u"), ::GetLastError());
+			::SetupDiDestroyDeviceInfoList(devInfo);
+			::free(detailData);
+			return false;
+		}
+
+		// Get the handle for getting the attributes
+		HANDLE handle = ::CreateFile(detailData->DevicePath, 0, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
+		if (handle == INVALID_HANDLE_VALUE) {
+			wxLogError(wxT("Error from CreateFile: err=%u"), ::GetLastError());
+			::SetupDiDestroyDeviceInfoList(devInfo);
+			::free(detailData);
+			return false;
+		}
+
+		HIDD_ATTRIBUTES attributes;
+		attributes.Size = sizeof(HIDD_ATTRIBUTES);
+		res = ::HidD_GetAttributes(handle, &attributes);
+		if (!res) {
+			wxLogError(wxT("Error from HidD_GetAttributes: err=%u"), ::GetLastError());
+			::CloseHandle(handle);
+			::SetupDiDestroyDeviceInfoList(devInfo);
+			::free(detailData);
+			return false;
+		}
+
+		::CloseHandle(handle);
+
+		// Is this a Griffin Powermate?
+		if (attributes.VendorID  == POWERMATE_VENDOR_ID && attributes.ProductID == POWERMATE_PRODUCT_ID) {
+			m_handle = ::CreateFile(detailData->DevicePath, GENERIC_WRITE | GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
+			if (m_handle == INVALID_HANDLE_VALUE) {
+				wxLogError(wxT("Error from CreateFile: err=%u"), ::GetLastError());
+				::SetupDiDestroyDeviceInfoList(devInfo);
+				::free(detailData);
+				return false;
+			}
+
+			::SetupDiDestroyDeviceInfoList(devInfo);
+			::free(detailData);
+
+			// XXX
+			m_len = 8U;
+
+			m_buffer = new char[m_len];
+
+			Create();
+			Run();
+
+			return true;
+		}
+
+		::free(detailData);
+	}
+
+	::SetupDiDestroyDeviceInfoList(devInfo);
+
+	return false;
 }
 
 void CGriffinPowerMate::setCallback(IDialCallback* callback, int id)
@@ -61,63 +144,93 @@ void CGriffinPowerMate::setCallback(IDialCallback* callback, int id)
 void* CGriffinPowerMate::Entry()
 {
 	wxASSERT(m_callback != NULL);
+	wxASSERT(m_handle != INVALID_HANDLE_VALUE);
 
-	while (!TestDestroy()) {
-		Sleep(1000UL);
+	while (!m_killed) {
+		m_buffer[0] = 0x00U;		// POWERMATE_IN_ENDPOINT;
+
+		DWORD written;
+		BOOL res = ::ReadFile(m_handle, m_buffer, m_len, &written, NULL);
+		if (res) {
+			bool button = m_buffer[0] == 1;
+
+			int knob = 0;
+			switch (m_buffer[1]) {
+				case 0x01: knob = 1;  break;
+				case 0xFF: knob = -1; break;
+			}
+
+			if (button && !m_button) {
+				switch (m_speed) {
+					case 1U:  m_speed = 16U; break;
+					case 4U:  m_speed = 1U;  break;
+					case 9U:  m_speed = 4U;  break;
+					case 16U: m_speed = 9U;  break;
+				}
+			}
+
+			if (knob != 0)
+				m_callback->dialMoved(m_id, knob * m_speed);
+
+			m_button = button;
+		}
 	}
 
 	delete[] m_buffer;
+
+	::CloseHandle(m_handle);
 
 	return NULL;
 }
 
 void CGriffinPowerMate::close()
 {
-	Delete();
+	m_killed = true;
+
+	Wait();
 }
 
 #else
 
 CGriffinPowerMate::CGriffinPowerMate() :
-wxThread(),
-m_handle(NULL),
+wxThread(wxTHREAD_JOINABLE),
 m_callback(NULL),
 m_id(0),
 m_buffer(NULL),
 m_len(0),
 m_button(false),
-m_speed(1U)
+m_speed(1U),
+m_killed(false)
+m_context(NULL),
+m_handle(NULL)
 {
-	::usb_init();
-	::usb_find_devices();
-	::usb_find_busses();
+	::libusb_init(&m_context);
 }
 
 CGriffinPowerMate::~CGriffinPowerMate()
 {
+	wxASSERT(m_context != NULL);
+
+	::libusb_exit(m_context);
 }
 
 bool CGriffinPowerMate::open()
 {
-	struct usb_device* dev = find(POWERMATE_VENDOR_ID, POWERMATE_PRODUCT_ID);
-	if (dev == NULL) {
-		::wxLogWarning(wxT("Cannot find the USB hardware with vendor: 0x%04X and product: 0x%04X"), POWERMATE_VENDOR_ID, POWERMATE_PRODUCT_ID);
-		return false;
-	}
-
-	m_handle = ::usb_open(dev);
+	m_handle = ::libusb_open_device_with_vid_pid(m_context, POWERMATE_VENDOR_ID, POWERMATE_PRODUCT_ID);
 	if (m_handle == NULL) {
-		::wxLogWarning(wxT("Cannot open the USB device with vendor: 0x%04X and product: 0x%04X"), POWERMATE_VENDOR_ID, POWERMATE_PRODUCT_ID);
+		wxLogError(wxT("Could not open the Griffin Powermate"));
 		return false;
 	}
 
-	int rc = ::usb_claim_interface(m_handle, 0);
-	if (rc != 0) {
-		::wxLogWarning(wxT("Cannot claim the USB interface, rc: %d"), rc);
-		::usb_close(m_handle);
+	int res = ::libusb_claim_interface(m_handle, 0);
+	if (res != 0) {
+		wxLogError(wxT("Error from libusb_claim_interface: err=%d"), res);
+		::libusb_close(m_handle);
+		m_handle = NULL;
 		return false;
 	}
 
+	// XXX
 	m_len = dev->config->interface->altsetting->endpoint->wMaxPacketSize;
 
 	m_buffer = new char[m_len];
@@ -141,8 +254,9 @@ void* CGriffinPowerMate::Entry()
 	wxASSERT(m_handle != NULL);
 	wxASSERT(m_callback != NULL);
 
-	while (!TestDestroy()) {
-		int n = ::usb_interrupt_read(m_handle, POWERMATE_IN_ENDPOINT, m_buffer, m_len, POWERMATE_TIMEOUT);
+	while (!m_killed) {
+		int written;
+		int n = ::libusb_interrupt_transfer(m_handle, POWERMATE_IN_ENDPOINT, m_buffer, m_len, &written, POWERMATE_TIMEOUT);
 		if (n > 0) {
 			bool button = m_buffer[0] == 1;
 
@@ -170,25 +284,18 @@ void* CGriffinPowerMate::Entry()
 
 	delete[] m_buffer;
 
-	::usb_release_interface(m_handle, 0);
-	::usb_close(m_handle);
+	::libusb_release_interface(m_handle, 0);
+
+	::libusb_close(m_handle);
 
 	return NULL;
 }
 
 void CGriffinPowerMate::close()
 {
-	Delete();
-}
+	m_killed = true;
 
-struct usb_device *CGriffinPowerMate::find(unsigned int vendor, unsigned int product) const
-{
-	for (struct usb_bus* bus = usb_get_busses(); bus != NULL; bus = bus->next)
-		for (struct usb_device* dev = bus->devices; dev != NULL; dev = dev->next)
-			if (dev->descriptor.idVendor == vendor && dev->descriptor.idProduct == product)
-				return dev;
-
-	return NULL;
+	Wait();
 }
 
 #endif
