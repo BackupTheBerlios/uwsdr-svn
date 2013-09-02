@@ -22,7 +22,7 @@
 #include <wx/wx.h>
 
 #if defined(__WINDOWS__)
-#include <windows.h>
+#include <winusb.h>
 #else
 #include <libusb-1.0/libusb.h>
 #endif
@@ -44,18 +44,19 @@ protected:
 	virtual ~CGriffinPowerMate();
 
 private:
-	IDialCallback*         m_callback;
-	int                    m_id;
-	char*                  m_buffer;
-	unsigned int           m_len;
-	bool                   m_button;
-	unsigned int           m_speed;
-	bool                   m_killed;
+	IDialCallback*          m_callback;
+	int                     m_id;
+	unsigned char*          m_buffer;
+	unsigned int            m_len;
+	bool                    m_button;
+	unsigned int            m_speed;
+	bool                    m_killed;
 #if defined(__WINDOWS__)
-	HANDLE                 m_handle;
+	HANDLE                  m_file;
+	WINUSB_INTERFACE_HANDLE m_handle;
 #else
-	libusb_context*        m_context;
-	libusb_device_handle*  m_handle;
+	libusb_context*         m_context;
+	libusb_device_handle*   m_handle;
 #endif
 };
 

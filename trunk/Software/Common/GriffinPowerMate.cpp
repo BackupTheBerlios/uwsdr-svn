@@ -39,6 +39,7 @@ m_len(0),
 m_button(false),
 m_speed(1U),
 m_killed(false),
+m_file(INVALID_HANDLE_VALUE),
 m_handle(INVALID_HANDLE_VALUE)
 {
 }
@@ -52,28 +53,26 @@ bool CGriffinPowerMate::open()
 	GUID guid;
 	::HidD_GetHidGuid(&guid);
 
-	HDEVINFO devInfo = ::SetupDiGetClassDevs(&guid, NULL, NULL, DIGCF_DEVICEINTERFACE | DIGCF_PRESENT);
+	HDEVINFO devInfo = ::SetupDiGetClassDevs(&guid, NULL, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
 	if (devInfo == INVALID_HANDLE_VALUE) {
-		wxLogError(wxT("Error from SetupDiGetClassDevs: err=%u"), ::GetLastError());
+		wxLogError(wxT("Error from SetupDiGetClassDevs: err=%lu"), ::GetLastError());
 		return false;
 	}
 
 	SP_DEVICE_INTERFACE_DATA devInfoData;
 	devInfoData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
 
-	for (DWORD index = 0U; ::SetupDiEnumDeviceInterfaces(devInfo, NULL, &guid, index, &devInfoData); index++) {
-		// Find the required length of the device structure
+	for (unsigned int index = 0U; ::SetupDiEnumDeviceInterfaces(devInfo, NULL, &guid, index, &devInfoData); index++) {
 		DWORD length;
 		::SetupDiGetDeviceInterfaceDetail(devInfo, &devInfoData, NULL, 0U, &length, NULL);
 
 		PSP_DEVICE_INTERFACE_DETAIL_DATA detailData = PSP_DEVICE_INTERFACE_DETAIL_DATA(::malloc(length));
 		detailData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
 
-		// Get the detailed data into the newly allocated device structure
 		DWORD required;
-		BOOL res = ::SetupDiGetDeviceInterfaceDetail(devInfo, &devInfoData, detailData, length, &required, NULL);
-		if (!res) {
-			wxLogError(wxT("Error from SetupDiGetDeviceInterfaceDetail: err=%u"), ::GetLastError());
+		BOOL ret1 = ::SetupDiGetDeviceInterfaceDetail(devInfo, &devInfoData, detailData, length, &required, NULL);
+		if (!ret1) {
+			wxLogError(wxT("Error from SetupDiGetDeviceInterfaceDetail: err=%lu"), ::GetLastError());
 			::SetupDiDestroyDeviceInfoList(devInfo);
 			::free(detailData);
 			return false;
@@ -90,7 +89,7 @@ bool CGriffinPowerMate::open()
 
 		HIDD_ATTRIBUTES attributes;
 		attributes.Size = sizeof(HIDD_ATTRIBUTES);
-		res = ::HidD_GetAttributes(handle, &attributes);
+		BOOL res = ::HidD_GetAttributes(handle, &attributes);
 		if (!res) {
 			wxLogError(wxT("Error from HidD_GetAttributes: err=%u"), ::GetLastError());
 			::CloseHandle(handle);
@@ -101,12 +100,29 @@ bool CGriffinPowerMate::open()
 
 		::CloseHandle(handle);
 
-		// Is this a Griffin Powermate?
+		// Is this a Griffin PowerMate?
 		if (attributes.VendorID  == POWERMATE_VENDOR_ID && attributes.ProductID == POWERMATE_PRODUCT_ID) {
 			m_handle = ::CreateFile(detailData->DevicePath, GENERIC_WRITE | GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
 			if (m_handle == INVALID_HANDLE_VALUE) {
 				wxLogError(wxT("Error from CreateFile: err=%u"), ::GetLastError());
 				::SetupDiDestroyDeviceInfoList(devInfo);
+				::free(detailData);
+				return false;
+			}
+
+			m_file = ::CreateFile(detailData->DevicePath, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
+			if (m_file == INVALID_HANDLE_VALUE) {
+				wxLogError(wxT("Error from CreateFile: err=%lu"), ::GetLastError());
+				::SetupDiDestroyDeviceInfoList(devInfo);
+				::free(detailData);
+				return false;
+			}
+
+			ret1 = ::WinUsb_Initialize(m_file, &m_handle);
+			if (!ret1) {
+				wxLogError(wxT("Error from WinUsb_Initialize: err=%lu"), ::GetLastError());
+				::SetupDiDestroyDeviceInfoList(devInfo);
+				::CloseHandle(m_file);
 				::free(detailData);
 				return false;
 			}
@@ -117,15 +133,13 @@ bool CGriffinPowerMate::open()
 			// XXX
 			m_len = 8U;
 
-			m_buffer = new char[m_len];
+			m_buffer = new unsigned char[m_len];
 
 			Create();
 			Run();
 
 			return true;
 		}
-
-		::free(detailData);
 	}
 
 	::SetupDiDestroyDeviceInfoList(devInfo);
@@ -147,17 +161,15 @@ void* CGriffinPowerMate::Entry()
 	wxASSERT(m_handle != INVALID_HANDLE_VALUE);
 
 	while (!m_killed) {
-		m_buffer[0] = 0x00U;		// POWERMATE_IN_ENDPOINT;
-
-		DWORD written;
-		BOOL res = ::ReadFile(m_handle, m_buffer, m_len, &written, NULL);
+		ULONG written;
+		BOOL res = ::WinUsb_ReadPipe(m_handle, POWERMATE_IN_ENDPOINT, m_buffer, m_len, &written, NULL);
 		if (res) {
-			bool button = m_buffer[0] == 1;
+			bool button = m_buffer[0] == 1U;
 
 			int knob = 0;
 			switch (m_buffer[1]) {
-				case 0x01: knob = 1;  break;
-				case 0xFF: knob = -1; break;
+				case 0x01U: knob = 1;  break;
+				case 0xFFU: knob = -1; break;
 			}
 
 			if (button && !m_button) {
@@ -179,6 +191,7 @@ void* CGriffinPowerMate::Entry()
 	delete[] m_buffer;
 
 	::CloseHandle(m_handle);
+	::CloseHandle(m_file);
 
 	return NULL;
 }
@@ -200,7 +213,7 @@ m_buffer(NULL),
 m_len(0),
 m_button(false),
 m_speed(1U),
-m_killed(false)
+m_killed(false),
 m_context(NULL),
 m_handle(NULL)
 {
@@ -230,10 +243,17 @@ bool CGriffinPowerMate::open()
 		return false;
 	}
 
-	// XXX
-	m_len = dev->config->interface->altsetting->endpoint->wMaxPacketSize;
+	libusb_device* device = ::libusb_get_device(m_handle);
+	if (device == NULL) {
+		wxLogError(wxT("Error from libusb_get_device"));
+		::libusb_close(m_handle);
+		m_handle = NULL;
+		return false;
+	}
 
-	m_buffer = new char[m_len];
+	m_len = ::libusb_get_max_packet_size(device, POWERMATE_IN_ENDPOINT);
+
+	m_buffer = new unsigned char[m_len];
 
 	Create();
 	Run();
@@ -258,12 +278,12 @@ void* CGriffinPowerMate::Entry()
 		int written;
 		int n = ::libusb_interrupt_transfer(m_handle, POWERMATE_IN_ENDPOINT, m_buffer, m_len, &written, POWERMATE_TIMEOUT);
 		if (n > 0) {
-			bool button = m_buffer[0] == 1;
+			bool button = m_buffer[0] == 1U;
 
 			int knob = 0;
 			switch (m_buffer[1]) {
-				case 0x01: knob = 1;  break;
-				case 0xFF: knob = -1; break;
+				case 0x01U: knob = 1;  break;
+				case 0xFFU: knob = -1; break;
 			}
 
 			if (button && !m_button) {

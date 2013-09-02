@@ -27,7 +27,7 @@ export ARCH=x86-64
 
 export CC := $(shell wx-config --cxx)
 
-export LIBS := $(shell wx-config --libs adv,core,html,net)
+export LIBS := $(shell wx-config --libs adv,core,html,net) -lusb-1.0
 
 export CFLAGS := -pg -O2 -Wall -Wno-non-virtual-dtor -Wno-strict-aliasing -march=$(ARCH) $(PA_DEF) $(JACK_DEF) -DDATA_DIR='$(DATADIR)' -DBIN_DIR='$(BINDIR)' $(shell wx-config --cxxflags)
 
