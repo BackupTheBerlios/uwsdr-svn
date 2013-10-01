@@ -54,9 +54,13 @@ private:
 	libusb_context*         m_context;
 	libusb_device_handle*   m_device;
 #endif
+	IControlInterface*      m_callback;
 	CFrequency              m_frequency;
 	bool                    m_txEnable;
 	bool                    m_tx;
+
+	bool setFrequency(const CFrequency& freq);
+	bool setTransmit(bool tx);
 };
 
 #endif

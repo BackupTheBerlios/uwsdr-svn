@@ -20,13 +20,18 @@
 const unsigned int SI570_VID = 0x16C0;
 const unsigned int SI570_PID = 0x05DC;
 
-const unsigned int REQUEST_READ_VERSION = 0x00U;
+const unsigned int REQUEST_GET_VERSION   = 0x00U;
+const unsigned int REQUEST_SET_FREQUENCY = 0x32U;
 
 #if defined(WIN32)
+
+#include <Setupapi.h>
+#include "HID.h"
 
 CSI570Controller::CSI570Controller() :
 m_handle(INVALID_HANDLE_VALUE),
 m_file(INVALID_HANDLE_VALUE),
+m_callback(NULL),
 m_frequency(),
 m_txEnable(false),
 m_tx(false)
@@ -39,31 +44,160 @@ CSI570Controller::~CSI570Controller()
 
 bool CSI570Controller::open()
 {
+	GUID guid;
+	::HidD_GetHidGuid(&guid);
+
+	HDEVINFO devInfo = ::SetupDiGetClassDevs(&guid, NULL, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
+	if (devInfo == INVALID_HANDLE_VALUE) {
+		wxLogError(wxT("Error from SetupDiGetClassDevs: err=%lu"), ::GetLastError());
+		return false;
+	}
+
+	SP_DEVICE_INTERFACE_DATA devInfoData;
+	devInfoData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
+
+	for (unsigned int index = 0U; ::SetupDiEnumDeviceInterfaces(devInfo, NULL, &guid, index, &devInfoData); index++) {
+		DWORD length;
+		::SetupDiGetDeviceInterfaceDetail(devInfo, &devInfoData, NULL, 0U, &length, NULL);
+
+		PSP_DEVICE_INTERFACE_DETAIL_DATA detailData = PSP_DEVICE_INTERFACE_DETAIL_DATA(::malloc(length));
+		detailData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
+
+		DWORD required;
+		BOOL ret1 = ::SetupDiGetDeviceInterfaceDetail(devInfo, &devInfoData, detailData, length, &required, NULL);
+		if (!ret1) {
+			wxLogError(wxT("Error from SetupDiGetDeviceInterfaceDetail: err=%lu"), ::GetLastError());
+			::SetupDiDestroyDeviceInfoList(devInfo);
+			::free(detailData);
+			return false;
+		}
+
+		// Get the handle for getting the attributes
+		HANDLE handle = ::CreateFile(detailData->DevicePath, 0, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
+		if (handle == INVALID_HANDLE_VALUE) {
+			wxLogError(wxT("Error from CreateFile: err=%u"), ::GetLastError());
+			::SetupDiDestroyDeviceInfoList(devInfo);
+			::free(detailData);
+			return false;
+		}
+
+		HIDD_ATTRIBUTES attributes;
+		attributes.Size = sizeof(HIDD_ATTRIBUTES);
+		BOOL res = ::HidD_GetAttributes(handle, &attributes);
+		if (!res) {
+			wxLogError(wxT("Error from HidD_GetAttributes: err=%u"), ::GetLastError());
+			::CloseHandle(handle);
+			::SetupDiDestroyDeviceInfoList(devInfo);
+			::free(detailData);
+			return false;
+		}
+
+		::CloseHandle(handle);
+
+		if (attributes.VendorID  == SI570_VID && attributes.ProductID == SI570_PID) {
+			m_handle = ::CreateFile(detailData->DevicePath, GENERIC_WRITE | GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
+			if (m_handle == INVALID_HANDLE_VALUE) {
+				wxLogError(wxT("Error from CreateFile: err=%u"), ::GetLastError());
+				::SetupDiDestroyDeviceInfoList(devInfo);
+				::free(detailData);
+				return false;
+			}
+
+			m_file = ::CreateFile(detailData->DevicePath, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
+			if (m_file == INVALID_HANDLE_VALUE) {
+				wxLogError(wxT("Error from CreateFile: err=%lu"), ::GetLastError());
+				::SetupDiDestroyDeviceInfoList(devInfo);
+				::free(detailData);
+				return false;
+			}
+
+			ret1 = ::WinUsb_Initialize(m_file, &m_handle);
+			if (!ret1) {
+				wxLogError(wxT("Error from WinUsb_Initialize: err=%lu"), ::GetLastError());
+				::SetupDiDestroyDeviceInfoList(devInfo);
+				::CloseHandle(m_file);
+				::free(detailData);
+				return false;
+			}
+
+			::SetupDiDestroyDeviceInfoList(devInfo);
+			::free(detailData);
+
+			WINUSB_SETUP_PACKET packet;
+			packet.RequestType = (BMREQUEST_DEVICE_TO_HOST << 7) | (BMREQUEST_VENDOR << 5) | BMREQUEST_TO_DEVICE;
+			packet.Request = REQUEST_GET_VERSION;
+			packet.Value = 0xE00U;
+			packet.Index = 0U;
+			packet.Length = 2U;
+
+			ULONG sent = 0UL;
+			unsigned char version[2U];
+			BOOL result = ::WinUsb_ControlTransfer(m_handle, packet, version, 2UL, &sent, NULL);
+
+			if (!result) {
+				::wxLogError(wxT("Error from WinUsb_ControlTransfer: err=%lu"), ::GetLastError());
+				::WinUsb_Free(m_handle);
+				::CloseHandle(m_file);
+				return false;
+			} else if (sent == 2) {
+				::wxLogMessage(wxT("SI570Controller version: %u.%u"), version[1U], version[0U]);
+				return true;
+			} else {
+				::wxLogMessage(wxT("SI570Controller version: unknown"));
+				return true;
+			}
+		}
+	}
+
+	::SetupDiDestroyDeviceInfoList(devInfo);
+
+	::wxLogError(wxT("Could not find the SI570 USB device"));
+
+	return false;
+}
+
+bool CSI570Controller::setFrequency(const CFrequency& freq)
+{
 	WINUSB_SETUP_PACKET packet;
-	packet.RequestType = (BMREQUEST_DEVICE_TO_HOST << 7) | (BMREQUEST_VENDOR << 5) | BMREQUEST_TO_DEVICE;
-	packet.Request = REQUEST_READ_VERSION;
-	packet.Value = 0xE00U;
+	packet.RequestType = (BMREQUEST_HOST_TO_DEVICE << 7) | (BMREQUEST_VENDOR << 5) | BMREQUEST_TO_DEVICE;
+	packet.Request = REQUEST_SET_FREQUENCY;
+	packet.Value = 0U;
 	packet.Index = 0U;
-	packet.Length = 2U;
+	packet.Length = 4U;
+
+	double dFrequency = double(freq.get()) / 1000000.0;
+
+	wxUint32 frequency = wxUint32(dFrequency * (1UL << 21));
 
 	ULONG sent = 0UL;
-	unsigned char version[2U];
-	BOOL result = ::WinUsb_ControlTransfer(m_handle, packet, version, 2UL, &sent, NULL);
-
+	BOOL result = ::WinUsb_ControlTransfer(m_handle, packet, (UCHAR*)&frequency, 4UL, &sent, NULL);
 	if (!result) {
-		::wxLogError(wxT("SI570Controller version: error: %lu"), ::GetLastError());
-		::WinUsb_Free(m_handle);
-		::CloseHandle(m_file);
-		m_handle = INVALID_HANDLE_VALUE;
-		m_file = INVALID_HANDLE_VALUE;
+		::wxLogError(wxT("Error from WinUsb_ControlTransfer: err=%lu"), ::GetLastError());
 		return false;
-	} else if (sent == 2) {
-		::wxLogMessage(wxT("SI570Controller version: %u.%u"), version[1U], version[0U]);
-		return true;
-	} else {
-		::wxLogMessage(wxT("SI570Controller version: unknown"));
-		return true;
 	}
+
+	return true;
+}
+
+bool CSI570Controller::setTransmit(bool tx)
+{
+#ifdef notdef
+	WINUSB_SETUP_PACKET packet;
+	packet.RequestType = (BMREQUEST_HOST_TO_DEVICE << 7) | (BMREQUEST_VENDOR << 5) | BMREQUEST_TO_DEVICE;
+	packet.Request = REQUEST_SET_TRANSMIT;
+	packet.Value = 0U;
+	packet.Index = 0U;
+	packet.Length = 1U;
+
+	ULONG sent = 0UL;
+	BOOL result = ::WinUsb_ControlTransfer(m_handle, packet, (UCHAR*)&frequency, 1UL, &sent, NULL);
+	if (!result) {
+		::wxLogError(wxT("Error from WinUsb_ControlTransfer: err=%lu"), ::GetLastError());
+		return false;
+	}
+#endif
+
+	return true;
 }
 
 void CSI570Controller::close()
@@ -80,6 +214,7 @@ void CSI570Controller::close()
 CSI570Controller::CSI570Controller() :
 m_context(NULL),
 m_device(NULL),
+m_callback(NULL),
 m_frequency(),
 m_txEnable(false),
 m_tx(false)
@@ -101,12 +236,11 @@ bool CSI570Controller::open()
 	}
 
 	unsigned char version[2U];
-	int n = ::libusb_control_msg(m_device, LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE | LIBUSB_ENDPOINT_IN, REQUEST_READ_VERSION, 0xE00U, 0U, (char*)version, 2U, 500);
+	int n = ::libusb_control_transfer(m_device, LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE | LIBUSB_ENDPOINT_IN, REQUEST_GET_VERSION, 0xE00U, 0U, version, 2U, 500);
 
 	if (n < 0) {
-		::wxLogError(wxT("SI570Controller version: error: %d"), n);
+		::wxLogError(wxT("Error from libusb_control_transfer: err=%d"), n);
 		::libusb_close(m_device);
-		m_device = NULL;
 		return false;
 	} else if (n == 2) {
 		::wxLogMessage(wxT("SI570Controller version: %u.%u"), version[1U], version[0U]);
@@ -115,6 +249,34 @@ bool CSI570Controller::open()
 		::wxLogMessage(wxT("SI570Controller version: unknown"));
 		return true;
 	}
+}
+
+bool CSI570Controller::setFrequency(const CFrequency& freq)
+{
+	double dFrequency = double(freq.get()) / 1000000.0;
+
+	wxUint32 frequency = wxUint32(dFrequency * (1UL << 21));
+
+	int n = ::libusb_control_transfer(m_device, LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE | LIBUSB_ENDPOINT_OUT, REQUEST_SET_FREQUENCY, 0U, 0U, (unsigned char*)&frequency, 4U, 500);
+	if (n < 0) {
+		::wxLogError(wxT("Error from libusb_control_transfer: err=%d"), n);
+		return false;
+	}
+
+	return true;
+}
+
+bool CSI570Controller::setTransmit(bool tx)
+{
+#ifdef notdef
+	int n = ::libusb_control_transfer(m_device, LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE | LIBUSB_ENDPOINT_OUT, REQUEST_SET_TRANSMIT, 0U, 0U, (unsigned char*)&frequency, 1U, 500);
+	if (n < 0) {
+		::wxLogError(wxT("Error from libusb_control_transfer: err=%d"), n);
+		return false;
+	}
+#endif
+
+	return true;
 }
 
 void CSI570Controller::close()
@@ -126,8 +288,11 @@ void CSI570Controller::close()
 
 #endif
 
-void CSI570Controller::setCallback(IControlInterface* WXUNUSED(callback))
+void CSI570Controller::setCallback(IControlInterface* callback)
 {
+	wxASSERT(callback != NULL);
+
+	m_callback = callback;
 }
 
 void CSI570Controller::enableTX(bool on)
@@ -141,13 +306,28 @@ void CSI570Controller::enableRX(bool WXUNUSED(on))
 
 void CSI570Controller::setTXAndFreq(bool transmit, const CFrequency& freq)
 {
+	wxASSERT(m_callback != NULL);
+
+	if (transmit && !m_txEnable)
+		return;
+
 	if (freq != m_frequency) {
+		bool ok = setFrequency(freq);
+		if (!ok) {
+			m_callback->connectionLost();
+			return;
+		}
+
 		m_frequency = freq;
 	}
 
-	if (transmit && !m_tx) {
-		m_tx = transmit;
-	} else if (!transmit && m_tx) {
+	if (transmit != m_tx) {
+		bool ok = setTransmit(transmit);
+		if (!ok) {
+			m_callback->connectionLost();
+			return;
+		}
+
 		m_tx = transmit;
 	}
 }
