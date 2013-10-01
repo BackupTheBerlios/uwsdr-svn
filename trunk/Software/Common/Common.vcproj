@@ -334,6 +334,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SI570Controller.cpp"
+				>
+			</File>
+			<File
 				RelativePath="SignalReader.cpp"
 				>
 				<FileConfiguration
@@ -548,6 +552,10 @@
 			</File>
 			<File
 				RelativePath=".\SerialInterface.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SI570Controller.h"
 				>
 			</File>
 			<File

@@ -1,8 +1,8 @@
 all:		Common.a
 
 OBJS := 	AudioDevInfo.o Frequency.o GriffinPowerMate.o JackReaderWriter.o Log.o NullController.o NullReader.o NullWriter.o RingBuffer.o SDRDescrFile.o \
-					SerialControl.o SerialInterface.o SignalReader.o SoundCardReaderWriter.o SoundFileReader.o SoundFileWriter.o SRTXRXController.o ThreadReader.o \
-					ThreeToneReader.o TwoToneReader.o UDPDataReader.o UDPDataWriter.o UWSDRController.o UWSDRDataReader.o UWSDRDataWriter.o
+					SerialControl.o SerialInterface.o SignalReader.o SI570Controller.o SoundCardReaderWriter.o SoundFileReader.o SoundFileWriter.o SRTXRXController.o \
+					ThreadReader.o ThreeToneReader.o TwoToneReader.o UDPDataReader.o UDPDataWriter.o UWSDRController.o UWSDRDataReader.o UWSDRDataWriter.o
 
 Common.a:	$(OBJS)
 		ar rcs Common.a $(OBJS)
@@ -54,6 +54,9 @@ SoundFileReader.o: SoundFileReader.cpp SoundFileReader.h ThreadReader.h
 
 SoundFileWriter.o: SoundFileWriter.cpp SoundFileWriter.h DataWriter.h
 		$(CC) $(CFLAGS) -c SoundFileWriter.cpp
+
+SI570Controller.o:	SI570Controller.cpp SI570Controller.h ControlInterface.h Frequency.h SDRController.h
+		$(CC) $(CFLAGS) -c SI570Controller.cpp
 
 SRTXRXController.o:	SRTXRXController.cpp SRTXRXController.h ControlInterface.h Frequency.h SDRController.h SerialControl.h
 		$(CC) $(CFLAGS) -c SRTXRXController.cpp

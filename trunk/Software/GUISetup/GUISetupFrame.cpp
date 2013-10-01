@@ -55,7 +55,9 @@ const struct {
 	{true,  false, true,  true, true,  true},	// TYPE_AUDIOTXRX
 	{false, false, true,  true, false, false},	// TYPE_DEMO
 	{false, true,  true,  true, false, false},	// TYPE_UWSDR1
-	{false, false, false, true, false, false}	// TYPE_HACKRF
+	{false, false, false, true, false, false},	// TYPE_HACKRF
+	{true,  false, false, true, false, false},	// TYPE_SI570RX
+	{true,  false, true,  true, true,  true}	// TYPE_SI570TXRX
 };
 
 const int CREATE_BUTTON     = 27543;

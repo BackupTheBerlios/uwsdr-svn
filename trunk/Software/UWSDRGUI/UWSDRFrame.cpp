@@ -21,6 +21,7 @@
 #include "UWSDRApp.h"
 #include "UWSDRDefs.h"
 #include "NullController.h"
+#include "SI570Controller.h"
 #include "SRTXRXController.h"
 #include "UWSDRController.h"
 #include "FreqKeypad.h"
@@ -288,11 +289,15 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 		case TYPE_AUDIOTXRX:
 			m_sdr = new CSRTXRXController(m_parameters->m_txOutDev, m_parameters->m_txOutPin);
 			break;
+		case TYPE_SI570TXRX:
+		case TYPE_SI570RX:
+			m_sdr = new CSI570Controller;
+			break;
 		case TYPE_HACKRF:
 //			m_sdr = new CHPSDRReaderWriter(BLOCK_SIZE, m_parameters->m_c0, m_parameters->m_c1, m_parameters->m_c2, m_parameters->m_c3, m_parameters->m_c4);
 			break;
 		default:
-			m_sdr = new CNullController();
+			m_sdr = new CNullController;
 			break;
 	}
 
@@ -322,6 +327,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	switch (m_parameters->m_hardwareType) {
 		case TYPE_AUDIORX:
+		case TYPE_SI570RX:
 			// TX is disabled, RX is from audio card for signal input and audio output
 			m_dsp->setTXReader(new CNullReader());
 			m_dsp->setTXWriter(new CNullWriter());
@@ -345,6 +351,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			break;
 
 		case TYPE_AUDIOTXRX:
+		case TYPE_SI570TXRX:
 			// TX and RX are from audio cards for signal input and audio output, also simple TX/RX control
 			if (m_parameters->m_sdrAudioType == SOUND_JACK) {
 				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" SDR"), 2U, 2U);

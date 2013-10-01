@@ -63,6 +63,10 @@ m_valid(false)
 					m_type = TYPE_UWSDR1;
 				else if (type.Cmp(wxT("hackrf")) == 0)
 					m_type = TYPE_HACKRF;
+				else if (type.Cmp(wxT("si570rx")) == 0)
+					m_type = TYPE_SI570RX;
+				else if (type.Cmp(wxT("si570txrx")) == 0)
+					m_type = TYPE_SI570TXRX;
 				else {
 					::wxLogError(wxT("Unknown type - %s in the .sdr file"), type.c_str());
 					return;

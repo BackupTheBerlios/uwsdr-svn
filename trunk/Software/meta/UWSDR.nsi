@@ -76,6 +76,7 @@ Section "UWSDR Program Files" SecProgram
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\Readme.txt"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\13cms.sdr"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\23cms.sdr"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\CCW-SDR-4+.sdr"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\Demo.sdr"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\HackRF.sdr"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\HackRF-HF.sdr"

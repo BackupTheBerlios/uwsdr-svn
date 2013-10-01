@@ -130,8 +130,17 @@ bool CGriffinPowerMate::open()
 			::SetupDiDestroyDeviceInfoList(devInfo);
 			::free(detailData);
 
-			// XXX
-			m_len = 8U;
+			ULONG value;
+			ULONG valueLength = sizeof(ULONG);
+			ret1 = ::WinUsb_GetPipePolicy(m_handle, POWERMATE_IN_ENDPOINT, MAXIMUM_TRANSFER_SIZE, &valueLength, &value);
+			if (!ret1) {
+				wxLogError(wxT("Error from WinUsb_GetPipePolicy: err=%lu"), ::GetLastError());
+				::CloseHandle(m_handle);
+				::CloseHandle(m_file);
+				return false;
+			}
+
+			m_len = value;
 
 			m_buffer = new unsigned char[m_len];
 
@@ -190,7 +199,7 @@ void* CGriffinPowerMate::Entry()
 
 	delete[] m_buffer;
 
-	::CloseHandle(m_handle);
+	::WinUsb_Free(m_handle);
 	::CloseHandle(m_file);
 
 	return NULL;
