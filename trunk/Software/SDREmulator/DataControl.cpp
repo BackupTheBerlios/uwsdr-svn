@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -478,8 +478,8 @@ bool CDataControl::callback(char* buffer, unsigned int len, int WXUNUSED(id))
 
 	unsigned int n = TXHEADER_SIZE;
 	for (unsigned int i = 0; i < nSamples && n < len; n += TXSAMPLE_SIZE, i++) {
-		wxInt16 iData = (buffer[n + 0] << 8) & 0xFF00 + (buffer[n + 1] << 0) & 0xFF;
-		wxInt16 qData = (buffer[n + 2] << 8) & 0xFF00 + (buffer[n + 3] << 0) & 0xFF;
+		wxInt16 iData = ((buffer[n + 0] << 8) & 0xFF00) + ((buffer[n + 1] << 0) & 0xFF);
+		wxInt16 qData = ((buffer[n + 2] << 8) & 0xFF00) + ((buffer[n + 3] << 0) & 0xFF);
 
 		m_txSockBuffer[i * 2 + 0] = float(iData) / float(0x7FFF);
 		m_txSockBuffer[i * 2 + 1] = float(qData) / float(0x7FFF);

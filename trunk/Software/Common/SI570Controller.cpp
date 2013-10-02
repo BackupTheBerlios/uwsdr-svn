@@ -22,6 +22,7 @@ const unsigned int SI570_PID = 0x05DC;
 
 const unsigned int REQUEST_GET_VERSION   = 0x00U;
 const unsigned int REQUEST_SET_FREQUENCY = 0x32U;
+const unsigned int REQUEST_SET_TRANSMIT  = 0x50U;
 
 #if defined(WIN32)
 
@@ -181,21 +182,20 @@ bool CSI570Controller::setFrequency(const CFrequency& freq)
 
 bool CSI570Controller::setTransmit(bool tx)
 {
-#ifdef notdef
 	WINUSB_SETUP_PACKET packet;
-	packet.RequestType = (BMREQUEST_HOST_TO_DEVICE << 7) | (BMREQUEST_VENDOR << 5) | BMREQUEST_TO_DEVICE;
+	packet.RequestType = (BMREQUEST_DEVICE_TO_HOST << 7) | (BMREQUEST_VENDOR << 5) | BMREQUEST_TO_DEVICE;
 	packet.Request = REQUEST_SET_TRANSMIT;
-	packet.Value = 0U;
+	packet.Value = tx ? 0xFFFFU : 0x0000U;
 	packet.Index = 0U;
 	packet.Length = 1U;
 
 	ULONG sent = 0UL;
-	BOOL result = ::WinUsb_ControlTransfer(m_handle, packet, (UCHAR*)&frequency, 1UL, &sent, NULL);
+	unsigned char key;
+	BOOL result = ::WinUsb_ControlTransfer(m_handle, packet, &key, 1UL, &sent, NULL);
 	if (!result) {
 		::wxLogError(wxT("Error from WinUsb_ControlTransfer: err=%lu"), ::GetLastError());
 		return false;
 	}
-#endif
 
 	return true;
 }
@@ -268,13 +268,14 @@ bool CSI570Controller::setFrequency(const CFrequency& freq)
 
 bool CSI570Controller::setTransmit(bool tx)
 {
-#ifdef notdef
-	int n = ::libusb_control_transfer(m_device, LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE | LIBUSB_ENDPOINT_OUT, REQUEST_SET_TRANSMIT, 0U, 0U, (unsigned char*)&frequency, 1U, 500);
+	uint16_t value = tx ? 0xFFFFU : 0x0000U;
+
+	unsigned char key;
+	int n = ::libusb_control_transfer(m_device, LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE | LIBUSB_ENDPOINT_IN, REQUEST_SET_TRANSMIT, value, 0U, &key, 1U, 500);
 	if (n < 0) {
 		::wxLogError(wxT("Error from libusb_control_transfer: err=%d"), n);
 		return false;
 	}
-#endif
 
 	return true;
 }

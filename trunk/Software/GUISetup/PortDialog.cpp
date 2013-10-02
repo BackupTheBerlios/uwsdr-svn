@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2007,2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2007,2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -223,14 +223,14 @@ void CPortDialog::onOK(wxCommandEvent& WXUNUSED(event))
 		INPIN    keyInPin = INPIN(m_keyInPinChoice->GetSelection());
 
 		if (txInDev.IsSameAs(keyInDev)) {
-			if (txInPin == IN_RTS_CTS && keyInPin == IN_RTS_CTS ||
-				txInPin == IN_RTS_CTS && keyInPin == IN_DTR_CTS ||
-				txInPin == IN_RTS_DSR && keyInPin == IN_RTS_DSR ||
-				txInPin == IN_RTS_DSR && keyInPin == IN_DTR_DSR ||
-			    txInPin == IN_DTR_DSR && keyInPin == IN_RTS_DSR ||
-				txInPin == IN_DTR_DSR && keyInPin == IN_DTR_DSR ||
-				txInPin == IN_DTR_CTS && keyInPin == IN_RTS_CTS ||
-				txInPin == IN_DTR_CTS && keyInPin == IN_DTR_CTS) {
+			if ((txInPin == IN_RTS_CTS && keyInPin == IN_RTS_CTS) ||
+				(txInPin == IN_RTS_CTS && keyInPin == IN_DTR_CTS) ||
+				(txInPin == IN_RTS_DSR && keyInPin == IN_RTS_DSR) ||
+				(txInPin == IN_RTS_DSR && keyInPin == IN_DTR_DSR) ||
+			    (txInPin == IN_DTR_DSR && keyInPin == IN_RTS_DSR) ||
+				(txInPin == IN_DTR_DSR && keyInPin == IN_DTR_DSR) ||
+				(txInPin == IN_DTR_CTS && keyInPin == IN_RTS_CTS) ||
+				(txInPin == IN_DTR_CTS && keyInPin == IN_DTR_CTS)) {
 				::wxMessageBox(_("The Transmit In and Key In may not conflict"), _("GUISetup Error"), wxICON_ERROR);
 				return;
 			}
@@ -244,8 +244,8 @@ void CPortDialog::onOK(wxCommandEvent& WXUNUSED(event))
 		OUTPIN   txOutPin = OUTPIN(m_txOutPinChoice->GetSelection());
 
 		if (txInDev.IsSameAs(txOutDev)) {
-			if ((txInPin == IN_RTS_CTS || txInPin == IN_RTS_DSR) && txOutPin == OUT_RTS ||
-				(txInPin == IN_DTR_CTS || txInPin == IN_DTR_DSR) && txOutPin == OUT_DTR) {
+			if (((txInPin == IN_RTS_CTS || txInPin == IN_RTS_DSR) && txOutPin == OUT_RTS) ||
+				((txInPin == IN_DTR_CTS || txInPin == IN_DTR_DSR) && txOutPin == OUT_DTR)) {
 				::wxMessageBox(_("The Transmit In and Transmit Out may not conflict"), _("GUISetup Error"), wxICON_ERROR);
 				return;
 			}
@@ -259,8 +259,8 @@ void CPortDialog::onOK(wxCommandEvent& WXUNUSED(event))
 		OUTPIN   txOutPin = OUTPIN(m_txOutPinChoice->GetSelection());
 
 		if (keyInDev.IsSameAs(txOutDev)) {
-			if ((keyInPin == IN_RTS_CTS || keyInPin == IN_RTS_DSR) && txOutPin == OUT_RTS ||
-				(keyInPin == IN_DTR_CTS || keyInPin == IN_DTR_DSR) && txOutPin == OUT_DTR) {
+			if (((keyInPin == IN_RTS_CTS || keyInPin == IN_RTS_DSR) && txOutPin == OUT_RTS) ||
+				((keyInPin == IN_DTR_CTS || keyInPin == IN_DTR_DSR) && txOutPin == OUT_DTR)) {
 				::wxMessageBox(_("The Key In and Transmit Out may not conflict"), _("GUISetup Error"), wxICON_ERROR);
 				return;
 			}
