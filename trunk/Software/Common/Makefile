@@ -1,8 +1,8 @@
 all:		Common.a
 
-OBJS := 	AudioDevInfo.o Frequency.o GriffinPowerMate.o JackReaderWriter.o Log.o NullController.o NullReader.o NullWriter.o RingBuffer.o SDRDescrFile.o \
-					SerialControl.o SerialInterface.o SignalReader.o SI570Controller.o SoundCardReaderWriter.o SoundFileReader.o SoundFileWriter.o SRTXRXController.o \
-					ThreadReader.o ThreeToneReader.o TwoToneReader.o UDPDataReader.o UDPDataWriter.o UWSDRController.o UWSDRDataReader.o UWSDRDataWriter.o
+OBJS := 	AudioDevInfo.o Frequency.o GriffinPowerMate.o HackRFController.o JackReaderWriter.o Log.o NullController.o NullReader.o NullWriter.o RingBuffer.o \
+					SDRDescrFile.o SerialControl.o SerialInterface.o SignalReader.o SI570Controller.o SoundCardReaderWriter.o SoundFileReader.o SoundFileWriter.o \
+					SRTXRXController.o ThreadReader.o ThreeToneReader.o TwoToneReader.o UDPDataReader.o UDPDataWriter.o UWSDRController.o UWSDRDataReader.o UWSDRDataWriter.o
 
 Common.a:	$(OBJS)
 		ar rcs Common.a $(OBJS)
@@ -15,6 +15,9 @@ Frequency.o:	Frequency.cpp Frequency.h
 
 GriffinPowerMate.o: GriffinPowerMate.cpp GriffinPowerMate.h DialInterface.h DialCallback.h
 		$(CC) $(CFLAGS) -c GriffinPowerMate.cpp
+
+HackRFController.o:	HackRFController.cpp HackRFController.h ControlInterface.h Frequency.h SDRController.h
+		$(CC) $(CFLAGS) -c HackRFController.cpp
 
 JackReaderWriter.o: JackReaderWriter.cpp JackReaderWriter.h DataCallback.h DataReader.h DataWriter.h RingBuffer.h
 		$(CC) $(CFLAGS) -c JackReaderWriter.cpp
@@ -46,6 +49,9 @@ SerialInterface.o:	SerialInterface.cpp SerialInterface.h Common.h ExternalInterf
 SignalReader.o:	SignalReader.cpp SignalReader.h ThreadReader.h
 		$(CC) $(CFLAGS) -c SignalReader.cpp
 
+SI570Controller.o:	SI570Controller.cpp SI570Controller.h ControlInterface.h Frequency.h SDRController.h
+		$(CC) $(CFLAGS) -c SI570Controller.cpp
+
 SoundCardReaderWriter.o: SoundCardReaderWriter.cpp SoundCardReaderWriter.h DataCallback.h DataReader.h DataWriter.h RingBuffer.h
 		$(CC) $(CFLAGS) -c SoundCardReaderWriter.cpp
 
@@ -54,9 +60,6 @@ SoundFileReader.o: SoundFileReader.cpp SoundFileReader.h ThreadReader.h
 
 SoundFileWriter.o: SoundFileWriter.cpp SoundFileWriter.h DataWriter.h
 		$(CC) $(CFLAGS) -c SoundFileWriter.cpp
-
-SI570Controller.o:	SI570Controller.cpp SI570Controller.h ControlInterface.h Frequency.h SDRController.h
-		$(CC) $(CFLAGS) -c SI570Controller.cpp
 
 SRTXRXController.o:	SRTXRXController.cpp SRTXRXController.h ControlInterface.h Frequency.h SDRController.h SerialControl.h
 		$(CC) $(CFLAGS) -c SRTXRXController.cpp

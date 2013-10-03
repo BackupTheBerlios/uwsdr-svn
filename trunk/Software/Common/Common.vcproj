@@ -208,6 +208,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\HackRFController.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\JackReaderWriter.cpp"
 				>
 			</File>
@@ -508,6 +512,10 @@
 			</File>
 			<File
 				RelativePath=".\GriffinPowerMate.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HackRFController.h"
 				>
 			</File>
 			<File

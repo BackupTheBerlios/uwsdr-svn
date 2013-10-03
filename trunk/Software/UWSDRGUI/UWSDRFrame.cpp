@@ -22,6 +22,7 @@
 #include "UWSDRDefs.h"
 #include "NullController.h"
 #include "SI570Controller.h"
+#include "HackRFController.h"
 #include "SRTXRXController.h"
 #include "UWSDRController.h"
 #include "FreqKeypad.h"
@@ -294,7 +295,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			m_sdr = new CSI570Controller;
 			break;
 		case TYPE_HACKRF:
-//			m_sdr = new CHPSDRReaderWriter(BLOCK_SIZE, m_parameters->m_c0, m_parameters->m_c1, m_parameters->m_c2, m_parameters->m_c3, m_parameters->m_c4);
+			m_sdr = new CHackRFController;
 			break;
 		default:
 			m_sdr = new CNullController;
@@ -1507,6 +1508,12 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 						break;
 					case TYPE_UWSDR1:
 						type = _("UWSDR v1.0");
+						break;
+					case TYPE_SI570RX:
+						type = _("Si570 RX");
+						break;
+					case TYPE_SI570TXRX:
+						type = _("Si570 TX/RX");
 						break;
 					case TYPE_HACKRF:
 						type = _("HackRF");
