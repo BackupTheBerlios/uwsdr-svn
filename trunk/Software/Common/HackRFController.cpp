@@ -257,21 +257,21 @@ bool CHackRFController::open()
 	int result = ::libusb_set_configuration(m_device, 1);
 	if (result != 0) {
 		::wxLogError(wxT("Could not set the HackRF USB configuration"));
-		::libusb_close(usb_device);
+		::libusb_close(m_device);
 		return false;
 	}
 
 	result = ::libusb_claim_interface(m_device, 0);
 	if (result != 0) {
 		::wxLogError(wxT("Could not claim the HackRF USB interface"));
-		::libusb_close(usb_device);
+		::libusb_close(m_device);
 		return false;
 	}
 
-	result = ::libusb_control_transfer(device->usb_device, LIBUSB_ENDPOINT_OUT | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE, REQUEST_SET_TRANSMIT, 1U, 0U, NULL, 0UL, 0);
+	result = ::libusb_control_transfer(m_device, LIBUSB_ENDPOINT_OUT | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE, REQUEST_SET_TRANSMIT, 1U, 0U, NULL, 0UL, 0);
 	if (result < 0) {
-		::wxLogError(wxT("Error from libusb_control_transfer: err=%d"), n);
-		::libusb_close(usb_device);
+		::wxLogError(wxT("Error from libusb_control_transfer: err=%d"), result);
+		::libusb_close(m_device);
 		return false;
 	}
 
@@ -298,7 +298,7 @@ bool CHackRFController::setFrequency(const CFrequency& freq)
 	wxUint8 length = sizeof(setFreqParams);
 	int result = ::libusb_control_transfer(m_device, LIBUSB_ENDPOINT_OUT | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE, REQUEST_SET_FREQUENCY, 0, 0, (unsigned char*)&setFreqParams, length, 0);
 	if (result < 0) {
-		::wxLogError(wxT("Error from libusb_control_transfer: err=%d"), n);
+		::wxLogError(wxT("Error from libusb_control_transfer: err=%d"), result);
 		return false;
 	}
 
