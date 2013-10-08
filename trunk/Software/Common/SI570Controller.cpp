@@ -185,7 +185,7 @@ bool CSI570Controller::setTransmit(bool tx)
 	WINUSB_SETUP_PACKET packet;
 	packet.RequestType = (BMREQUEST_DEVICE_TO_HOST << 7) | (BMREQUEST_VENDOR << 5) | BMREQUEST_TO_DEVICE;
 	packet.Request = REQUEST_SET_TRANSMIT;
-	packet.Value = tx ? 0xFFFFU : 0x0000U;
+	packet.Value = tx ? 0x01U : 0x00U;
 	packet.Index = 0U;
 	packet.Length = 1U;
 
@@ -268,7 +268,7 @@ bool CSI570Controller::setFrequency(const CFrequency& freq)
 
 bool CSI570Controller::setTransmit(bool tx)
 {
-	uint16_t value = tx ? 0xFFFFU : 0x0000U;
+	uint16_t value = tx ? 0x01U : 0x00U;
 
 	unsigned char key;
 	int n = ::libusb_control_transfer(m_device, LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE | LIBUSB_ENDPOINT_IN, REQUEST_SET_TRANSMIT, value, 0U, &key, 1U, 500);
