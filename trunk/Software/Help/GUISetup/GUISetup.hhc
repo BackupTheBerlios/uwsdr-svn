@@ -34,9 +34,14 @@
                       <param name="Local" value="AudioAPI.htm">
                   </object>
             <li> <object type="text/sitemap">
-                     <param name="Name" value="Audio Device">
+                     <param name="Name" value="Read Device">
                      <param name="ID" value=11>
-                     <param name="Local" value="AudioDevice.htm">
+                     <param name="Local" value="ReadDevice.htm">
+                 </object>
+            <li> <object type="text/sitemap">
+                     <param name="Name" value="Write Device">
+                     <param name="ID" value=12>
+                     <param name="Local" value="WriteDevice.htm">
                  </object>
          </ul>
 
@@ -52,9 +57,14 @@
                       <param name="Local" value="AudioAPI.htm">
                   </object>
             <li> <object type="text/sitemap">
-                     <param name="Name" value="Audio Device">
+                     <param name="Name" value="Read Device">
                      <param name="ID" value=21>
-                     <param name="Local" value="AudioDevice.htm">
+                     <param name="Local" value="ReadDevice.htm">
+                 </object>
+            <li> <object type="text/sitemap">
+                     <param name="Name" value="Write Device">
+                     <param name="ID" value=22>
+                     <param name="Local" value="WriteDevice.htm">
                  </object>
          </ul>
 

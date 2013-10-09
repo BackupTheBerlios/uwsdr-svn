@@ -4,6 +4,7 @@ install:
 	install -g bin -o root -m 0664 23cms.sdr              $(DATADIR)
 	install -g bin -o root -m 0664 Demo.sdr               $(DATADIR)
 	install -g bin -o root -m 0664 CCW-SDR-4+.sdr         $(DATADIR)
+	install -g bin -o root -m 0664 CCW-Sentry.sdr         $(DATADIR)
 	install -g bin -o root -m 0664 HackRF.sdr             $(DATADIR)
 	install -g bin -o root -m 0664 HackRF-HF.sdr          $(DATADIR)
 	install -g bin -o root -m 0664 HackRF-HF-RX.sdr       $(DATADIR)

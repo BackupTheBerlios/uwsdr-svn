@@ -159,7 +159,12 @@ bool CUWSDRApp::OnInit()
 	if (!wxApp::OnInit())
 		return false;
 
-	wxLog* logger = new CLog(m_parameters->m_name + wxT(".log"));
+	wxFileName logFileName;
+	logFileName.AssignHomeDir();
+	logFileName.SetName(m_parameters->m_name);
+	logFileName.SetExt(wxT("log"));
+
+	wxLog* logger = new CLog(logFileName.GetFullPath());
 	wxLog::SetActiveTarget(logger);
 
 	::wxInitAllImageHandlers();

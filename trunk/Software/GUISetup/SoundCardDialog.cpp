@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,2007,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ const int API_COMBO       = 27545;
 const int NAME_COMBO      = 27546;
 
 const int BORDER_SIZE     = 5;
-const int DATA_WIDTH      = 150;
+const int DATA_WIDTH      = 250;
 
 BEGIN_EVENT_TABLE(CSoundCardDialog, wxDialog)
 	EVT_CHOICE(API_COMBO, CSoundCardDialog::onAPI)
@@ -34,7 +34,8 @@ END_EVENT_TABLE()
 CSoundCardDialog::CSoundCardDialog(wxWindow* parent, const wxString& title, SOUNDTYPE type, int inDev, int outDev, unsigned int minIn, unsigned int minOut, int id) :
 wxDialog(parent, id, title),
 m_apiChoice(NULL),
-m_devChoice(NULL),
+m_inDevChoice(NULL),
+m_outDevChoice(NULL),
 m_info(),
 m_type(type),
 m_inDev(inDev),
@@ -54,11 +55,17 @@ m_minOut(minOut)
 	m_apiChoice = new wxChoice(panel, API_COMBO, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
 	panelSizer->Add(m_apiChoice, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* label2 = new wxStaticText(panel, -1, _("Audio Device:"));
+	wxStaticText* label2 = new wxStaticText(panel, -1, _("Read Device:"));
 	panelSizer->Add(label2, 0, wxALL, BORDER_SIZE);
 
-	m_devChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
-	panelSizer->Add(m_devChoice, 0, wxALL, BORDER_SIZE);
+	m_inDevChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	panelSizer->Add(m_inDevChoice, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* label3 = new wxStaticText(panel, -1, _("Write Device:"));
+	panelSizer->Add(label3, 0, wxALL, BORDER_SIZE);
+
+	m_outDevChoice = new wxChoice(panel, -1, wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	panelSizer->Add(m_outDevChoice, 0, wxALL, BORDER_SIZE);
 
 	panel->SetSizer(panelSizer);
 
@@ -71,14 +78,12 @@ m_minOut(minOut)
 	mainSizer->SetSizeHints(this);
 
 	bool ret = m_info.enumerateAPIs();
-
 	if (!ret) {
 		::wxMessageBox(_("Cannot access the sound access system."), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
 	ret = m_info.enumerateDevs();
-
 	if (!ret) {
 		::wxMessageBox(_("Cannot access the sound access system."), _("GUISetup Error"), wxICON_ERROR);
 		return;
@@ -110,13 +115,19 @@ void CSoundCardDialog::onAPI(wxCommandEvent& WXUNUSED(event))
 
 void CSoundCardDialog::onOK(wxCommandEvent& WXUNUSED(event))
 {
-	int devChoice = m_devChoice->GetSelection();
+	int devChoice = m_inDevChoice->GetSelection();
 	if (devChoice == wxNOT_FOUND) {
-		::wxMessageBox(_("The Audio Device is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
+		::wxMessageBox(_("The Read Device is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
 		return;
 	}
 
-	CAudioDevDev* dev = (CAudioDevDev*)m_devChoice->GetClientData(devChoice);
+	devChoice = m_outDevChoice->GetSelection();
+	if (devChoice == wxNOT_FOUND) {
+		::wxMessageBox(_("The Write Device is not allowed to be empty"), _("GUISetup Error"), wxICON_ERROR);
+		return;
+	}
+
+	CAudioDevDev* dev = (CAudioDevDev*)m_inDevChoice->GetClientData(devChoice);
 
 	wxASSERT(dev != NULL);
 
@@ -141,6 +152,15 @@ void CSoundCardDialog::enumerateAPI()
 			CAudioDevDev* dev = m_info.getDevs().at(i);
 
 			if (m_type == dev->getType() && m_inDev == dev->getInDev()) {
+				defAPI = dev->getAPI();
+				break;
+			}
+		}
+	} else {
+		for (unsigned int i = 0U; i < m_info.getDevs().size(); i++) {
+			CAudioDevDev* dev = m_info.getDevs().at(i);
+
+			if (m_type == dev->getType() && m_outDev == dev->getOutDev()) {
 				defAPI = dev->getAPI();
 				break;
 			}
@@ -171,27 +191,40 @@ void CSoundCardDialog::enumerateAPI()
 
 void CSoundCardDialog::enumerateAudio(const CAudioDevAPI& api)
 {
-	m_devChoice->Clear();
+	m_inDevChoice->Clear();
+	m_outDevChoice->Clear();
 
-	unsigned int n = 0U;
+	unsigned int inN = 0U;
+	unsigned int outN = 0U;
 	for (unsigned int i = 0U; i < m_info.getDevs().size(); i++) {
 		CAudioDevDev* dev = m_info.getDevs().at(i);
 
-		if (dev->getAPI() == api.getAPI() && dev->getType() == api.getType() && dev->getInChannels() >= int(m_minIn) && dev->getOutChannels() >= int(m_minOut)) {
-			m_devChoice->Append(dev->getName(), dev);
+		if (dev->getAPI() == api.getAPI() && dev->getType() == api.getType() && dev->getInChannels() >= int(m_minIn)) {
+			m_inDevChoice->Append(dev->getName(), dev);
 
-			if (m_inDev != NO_DEV && m_inDev == dev->getInDev()) {
-				m_devChoice->SetSelection(n);
-				m_outDev = dev->getOutDev();
-			}
+			if (m_inDev != NO_DEV && m_inDev == dev->getInDev())
+				m_inDevChoice->SetSelection(inN);
 
 			if (m_inDev == NO_DEV && dev->getInDev() == api.getInDefault()) {
-				m_devChoice->SetSelection(n);
-				m_inDev  = dev->getInDev();
+				m_inDevChoice->SetSelection(inN);
+				m_inDev = dev->getInDev();
+			}
+
+			inN++;
+		}
+
+		if (dev->getAPI() == api.getAPI() && dev->getType() == api.getType() && dev->getOutChannels() >= int(m_minOut)) {
+			m_outDevChoice->Append(dev->getName(), dev);
+
+			if (m_outDev != NO_DEV && m_outDev == dev->getOutDev())
+				m_outDevChoice->SetSelection(outN);
+
+			if (m_outDev == NO_DEV && dev->getOutDev() == api.getOutDefault()) {
+				m_outDevChoice->SetSelection(outN);
 				m_outDev = dev->getOutDev();
 			}
 
-			n++;
+			outN++;
 		}
 	}
 }

@@ -10,7 +10,7 @@ type=demo
 lowFreq=2300
 highFreq=2450
 
-stepSize=48000.0
+stepSize=48000
 
 sampleRate=48000
 

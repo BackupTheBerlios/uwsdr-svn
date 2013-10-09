@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -80,8 +80,10 @@ void CVolumeDial::drawDial()
 	::wxGetOsVersion(&major, &minor);
 
 	wxColour bgColour;
-	if (major >= 6 || (major == 5 && minor >= 1))
-		bgColour = wxColour(0xEC, 0xE9, 0xD8);		// Windows XP and newer
+	if (major >= 6)
+		bgColour = wxColour(0xF0, 0xF0, 0xF0);		// Windows Vista and newer
+	else if (major == 5 && minor >= 1)
+		bgColour = wxColour(0xEC, 0xE9, 0xD8);		// Windows XP
 	else
 		bgColour = wxColour(0xD4, 0xD0, 0xC8);		// Windows 2000 and earlier
 #elif defined(__WXGTK__)

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,2007.2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -41,7 +41,8 @@ class CSoundCardDialog : public wxDialog {
 
     private:
 	wxChoice*     m_apiChoice;
-	wxChoice*     m_devChoice;
+	wxChoice*     m_inDevChoice;
+	wxChoice*     m_outDevChoice;
 	CAudioDevInfo m_info;
 	SOUNDTYPE     m_type;
 	int           m_inDev;

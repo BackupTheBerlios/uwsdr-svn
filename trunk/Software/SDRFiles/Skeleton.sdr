@@ -34,7 +34,7 @@ offset=116.0
 #
 # The local oscillator step size in Hertz. This is unused for the "audiorx" type.
 #
-stepSize=10000.0
+stepSize=10000
 
 #
 # This is the sample rate of the CODEC, this is somewhat important. The value

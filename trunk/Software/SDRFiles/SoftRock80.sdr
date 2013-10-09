@@ -10,7 +10,7 @@ type=audiorx
 lowFreq=3.527
 highFreq=3.527
 
-stepSize=0.0
+stepSize=0
 
 sampleRate=96000
 

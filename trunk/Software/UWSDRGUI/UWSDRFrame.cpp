@@ -1490,7 +1490,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 			break;
 		case MENU_HARDWARE_INFO: {
 				wxString stepSize;
-				stepSize.Printf(wxT("%.1f"), m_parameters->m_hardwareStepSize);
+				stepSize.Printf(wxT("%u"), m_parameters->m_hardwareStepSize);
 
 				wxString sampleRate;
 				sampleRate.Printf(wxT("%.0f"), m_parameters->m_hardwareSampleRate);
@@ -1523,9 +1523,9 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 				wxString transmit = (m_parameters->m_hardwareReceiveOnly) ? _("No") : _("Yes");
 
 				::wxMessageBox(_("The hardware parameters are:\n\nName:\t\t") + m_parameters->m_hardwareName +
-					_("\nMax. Freq:\t") + m_parameters->m_hardwareMaxFreq.getString(3) +
-					_(" MHz\nMin. Freq:\t") + m_parameters->m_hardwareMinFreq.getString(3) +
-					_(" MHz\nStep Size:\t") + stepSize + _(" Hz\nSample Rate:\t") + sampleRate +
+					_("\nMax. Frequency:\t") + m_parameters->m_hardwareMaxFreq.getString(3) +
+					_(" MHz\nMin. Frequency:\t") + m_parameters->m_hardwareMinFreq.getString(3) +
+					_(" MHz\nStep Size:\t\t") + stepSize + _(" Hz\nSample Rate:\t") + sampleRate +
 					_(" samples/sec\nType:\t\t") + type + _("\nTransmit:\t\t") + transmit,
 					_("SDR Hardware Information"),
 					wxICON_INFORMATION);
@@ -1541,7 +1541,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 
 #if defined(__WXMSW__)
 			::wxMessageBox(VERSION + wxT(" - ") + dateText +
-				_("\n\nA Software Define Radio for Microwaves\n\nHardware:\tChris Bartram, GW4DGU\n\t\tGrant Hodgson, G8UBN\n\t\tDavid Wrigley, G6GXK\n\t\tNeil Whiting, G4BRK\nFirmware:\tTobias Weber, DG3YEV\nSoftware:\tJonathan Naylor, G4KLX\nDTTSP:\t\tBob McGwier, N4HY\n\t\tFrank Brickle, AB2KT"),
+				_("\n\nA Software Define Radio for Microwaves\n\nHardware:\tChris Bartram, GW4DGU\n\tGrant Hodgson, G8UBN\n\tDavid Wrigley, G6GXK\n\tNeil Whiting, G4BRK\nFirmware:\tTobias Weber, DG3YEV\nSoftware:\tJonathan Naylor, G4KLX\nDTTSP:\tBob McGwier, N4HY\n\tFrank Brickle, AB2KT"),
 				_("About uWave SDR"),
 				wxICON_INFORMATION);
 #else

@@ -16,11 +16,6 @@
               </object>
 
          <li> <object type="text/sitemap">
-                  <param name="Name" value="Audio Device">
-                  <param name="Local" value="AudioDevice.htm">
-              </object>
-
-         <li> <object type="text/sitemap">
                   <param name="Name" value="Browse Button">
                   <param name="Local" value="SDRFileName.htm">
               </object>
@@ -86,6 +81,11 @@
               </object>
 
          <li> <object type="text/sitemap">
+                  <param name="Name" value="Read Device">
+                  <param name="Local" value="ReadDevice.htm">
+              </object>
+
+         <li> <object type="text/sitemap">
                   <param name="Name" value="SDR Audio Setup">
                   <param name="Local" value="SDRAudio.htm">
               </object>
@@ -125,4 +125,8 @@
                   <param name="Local" value="UserAudio.htm">
               </object>
 
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="Write Device">
+                  <param name="Local" value="WriteDevice.htm">
+              </object>
 </ul>

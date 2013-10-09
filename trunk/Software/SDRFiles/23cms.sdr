@@ -10,7 +10,7 @@ type=uwsdr1
 lowFreq=1265
 highFreq=1300
 
-stepSize=100.0
+stepSize=100
 
 sampleRate=48000
 

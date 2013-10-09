@@ -3,17 +3,17 @@
 # should not be modified.
 #
 
-name=CCW-SDR-4+
+name=CCW-Sentry
 
 type=si570rx
 
-lowFreq=0.85
+lowFreq=1.8
 highFreq=70.5
 
 stepSize=1
 
 sampleRate=48000
 
-receiveOnly=1
+receiveOnly=0
 
 #
