@@ -124,6 +124,8 @@ bool CSI570Controller::open()
 			::SetupDiDestroyDeviceInfoList(devInfo);
 			::free(detailData);
 
+wxLogInfo(wxT("Found the Si570 device"));
+
 			WINUSB_SETUP_PACKET packet;
 			packet.RequestType = (BMREQUEST_DEVICE_TO_HOST << 7) | (BMREQUEST_VENDOR << 5) | BMREQUEST_TO_DEVICE;
 			packet.Request = REQUEST_GET_VERSION;
@@ -131,16 +133,18 @@ bool CSI570Controller::open()
 			packet.Index = 0U;
 			packet.Length = 2U;
 
-			ULONG sent = 0UL;
+			ULONG rcvd = 0UL;
 			unsigned char version[2U];
-			BOOL result = ::WinUsb_ControlTransfer(m_handle, packet, version, 2UL, &sent, NULL);
+			BOOL result = ::WinUsb_ControlTransfer(m_handle, packet, version, 2UL, &rcvd, NULL);
+
+wxLogInfo(wxT("Si570 replied to version with %d, %lu 0x%02X 0x%02X"), int(result), rcvd, version[0U], version[1U]);
 
 			if (!result) {
 				::wxLogError(wxT("Error from WinUsb_ControlTransfer: err=%lu"), ::GetLastError());
 				::WinUsb_Free(m_handle);
 				::CloseHandle(m_file);
 				return false;
-			} else if (sent == 2) {
+			} else if (rcvd == 2) {
 				::wxLogMessage(wxT("SI570Controller version: %u.%u"), version[1U], version[0U]);
 				return true;
 			} else {
@@ -169,6 +173,8 @@ bool CSI570Controller::setFrequency(const CFrequency& freq)
 	double dFrequency = double(freq.get()) / 1000000.0;
 
 	wxUint32 frequency = wxUint32(dFrequency * (1UL << 21));
+
+wxLogInfo(wxT("Sent frequency %.6lf MHz: %lu to the Si570"), dFrequency, frequency);
 
 	ULONG sent = 0UL;
 	BOOL result = ::WinUsb_ControlTransfer(m_handle, packet, (UCHAR*)&frequency, 4UL, &sent, NULL);

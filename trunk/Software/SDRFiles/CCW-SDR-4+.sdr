@@ -10,7 +10,7 @@ type=si570rx
 lowFreq=0.85
 highFreq=70.5
 
-stepSize=1
+stepSize=50
 
 sampleRate=48000
 

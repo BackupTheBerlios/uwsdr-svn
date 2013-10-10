@@ -10,7 +10,7 @@ type=hackrf
 lowFreq=0.3
 highFreq=30
 
-stepSize=100
+stepSize=50
 
 sampleRate=192000
 

@@ -100,7 +100,7 @@ m_valid(false)
 		}
 	}
 
-	if (m_type == TYPE_AUDIORX)
+	if (m_type == TYPE_AUDIORX || m_type == TYPE_SI570RX)
 		m_receiveOnly = true;
 
 	m_valid = true;

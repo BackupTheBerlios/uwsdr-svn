@@ -29,7 +29,6 @@
 #include <IOKit/IOBSD.h>
 #include <sys/param.h>
 #elif defined(__WINDOWS__)
-#include <setupapi.h>
 #include <winioctl.h>
 #else
 #include <sys/ioctl.h>
@@ -87,41 +86,25 @@ wxArrayString CSerialControl::getDevs()
 
 	::IOObjectRelease(services);
 #elif defined(__WINDOWS__)
-	HDEVINFO devInfo = ::SetupDiGetClassDevs(&GUID_DEVINTERFACE_COMPORT, NULL, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
-	if (devInfo == INVALID_HANDLE_VALUE) {
-		::wxLogError(wxT("SetupDiGetClassDevs() failed, err=0x%lx"), ::GetLastError());
-		return devices;
-	}
-
-	SP_DEVICE_INTERFACE_DATA ifcData;
-	ifcData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
-
-	DWORD detDataSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA) + 256;
-	char* charData = new char[detDataSize];
-
-	SP_DEVICE_INTERFACE_DETAIL_DATA* detData = (SP_DEVICE_INTERFACE_DETAIL_DATA *)charData;
-	detData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
-
-	for (DWORD i = 0; ::SetupDiEnumDeviceInterfaces(devInfo, NULL, &GUID_DEVINTERFACE_COMPORT, i, &ifcData); i++) {
-		SP_DEVINFO_DATA devData;
-		devData.cbSize = sizeof(SP_DEVINFO_DATA);
-
-		BOOL ret = ::SetupDiGetDeviceInterfaceDetail(devInfo, &ifcData, detData, detDataSize, NULL, &devData);
-		if (!ret) {
-			::wxLogError(wxT("SetupDiGetDeviceInterfaceDetail() failed, err=0x%lx"), ::GetLastError());
-			return devices;
-		}
-
-		devices.Add(detData->DevicePath);
-	}
-
-	if (::GetLastError() != NO_ERROR && ::GetLastError() != ERROR_NO_MORE_ITEMS) {
-		::wxLogError(wxT("SetupDiEnumDeviceInterfaces() failed, err=0x%lx"), ::GetLastError());
-		return devices;
-	}
-
-	delete[] charData;
-	::SetupDiDestroyDeviceInfoList(devInfo);
+	devices.Add(wxT("\\\\.\\COM1"));
+	devices.Add(wxT("\\\\.\\COM2"));
+	devices.Add(wxT("\\\\.\\COM3"));
+	devices.Add(wxT("\\\\.\\COM4"));
+	devices.Add(wxT("\\\\.\\COM5"));
+	devices.Add(wxT("\\\\.\\COM6"));
+	devices.Add(wxT("\\\\.\\COM7"));
+	devices.Add(wxT("\\\\.\\COM8"));
+	devices.Add(wxT("\\\\.\\COM9"));
+	devices.Add(wxT("\\\\.\\COM10"));
+	devices.Add(wxT("\\\\.\\COM11"));
+	devices.Add(wxT("\\\\.\\COM12"));
+	devices.Add(wxT("\\\\.\\COM13"));
+	devices.Add(wxT("\\\\.\\COM14"));
+	devices.Add(wxT("\\\\.\\COM15"));
+	devices.Add(wxT("\\\\.\\COM16"));
+	devices.Add(wxT("\\\\.\\COM17"));
+	devices.Add(wxT("\\\\.\\COM18"));
+	devices.Add(wxT("\\\\.\\COM19"));
 #else
 	devices.Add(wxT("/dev/ttyS0"));
 	devices.Add(wxT("/dev/ttyS1"));
@@ -219,7 +202,7 @@ bool CSerialControl::open()
 
 	m_handle = ::CreateFile(m_dev.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
 	if (m_handle == INVALID_HANDLE_VALUE) {
-		::wxLogError(wxT("SerialControl: cannot open the serial port - %ld"), ::GetLastError());
+		::wxLogError(wxT("SerialControl: cannot open the serial port - %lu"), ::GetLastError());
 		return false;
 	}
 
@@ -227,7 +210,7 @@ bool CSerialControl::open()
 	if (::GetCommState(m_handle, &dcb) == 0) {
 		::ClearCommError(m_handle, &errCode, NULL);
 		::CloseHandle(m_handle);
-		::wxLogError(wxT("SerialControl: cannot get the serial port status - %ld"), ::GetLastError());
+		::wxLogError(wxT("SerialControl: cannot get the serial port status - %lu"), ::GetLastError());
 		return false;
 	}
 
@@ -239,7 +222,7 @@ bool CSerialControl::open()
 	if (::SetCommState(m_handle, &dcb) == 0) {
 		::ClearCommError(m_handle, &errCode, NULL);
 		::CloseHandle(m_handle);
-		::wxLogError(wxT("SerialControl: cannot set the serial port status - %ld"), ::GetLastError());
+		::wxLogError(wxT("SerialControl: cannot set the serial port status - %lu"), ::GetLastError());
 		return false;
 	}
 
@@ -264,7 +247,7 @@ void* CSerialControl::Entry()
 		DWORD errCode;
 		if (::GetCommModemStatus(m_handle, &status) == 0) {
 			::ClearCommError(m_handle, &errCode, NULL);
-			::wxLogError(wxT("SerialControl: cannot get the serial port status - %ld"), ::GetLastError());
+			::wxLogError(wxT("SerialControl: cannot get the serial port status - %lu"), ::GetLastError());
 		} else {
 			m_cts = (status & MS_CTS_ON) == MS_CTS_ON;
 			m_dsr = (status & MS_DSR_ON) == MS_DSR_ON;
@@ -292,7 +275,7 @@ bool CSerialControl::setRTS(bool set)
 
 	if (::EscapeCommFunction(m_handle, rts) == 0) {
 		::ClearCommError(m_handle, &errCode, NULL);
-		::wxLogError(wxT("SerialControl: cannot set RTS - %ld"), ::GetLastError());
+		::wxLogError(wxT("SerialControl: cannot set RTS - %lu"), ::GetLastError());
 		return false;
 	}
 
@@ -313,7 +296,7 @@ bool CSerialControl::setDTR(bool set)
 
 	if (::EscapeCommFunction(m_handle, dtr) == 0) {
 		::ClearCommError(m_handle, &errCode, NULL);
-		::wxLogError(wxT("SerialControl: cannot set DTR - %ld"), ::GetLastError());
+		::wxLogError(wxT("SerialControl: cannot set DTR - %lu"), ::GetLastError());
 		return false;
 	}
 
