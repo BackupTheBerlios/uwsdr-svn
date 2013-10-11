@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ const unsigned int HEADER_SIZE = 6;
 const unsigned int SAMPLE_SIZE = 4;
 
 
-CUWSDRDataWriter::CUWSDRDataWriter(CUDPDataWriter* writer, unsigned int version, unsigned int maxSamples, bool delay) :
+CUWSDRDataWriter::CUWSDRDataWriter(CUDPDataWriter* writer, unsigned int version, unsigned int WXUNUSED(maxSamples), bool delay) :
 wxThread(),
 m_writer(writer),
 m_version(version),
