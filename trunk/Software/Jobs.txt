@@ -16,6 +16,8 @@ Set of screenshots for all platforms
 
 Finish HackRF support
 
+Add TX audio equalisation.
+
 
 Future
 ------

@@ -23,8 +23,8 @@ The version of FFTW3 was obtained from the Power SDR distribution and cannot be
 built using Visual C++. I put the FFTW3 .lib and .h files into a sub-directory
 named FFTW3 from the UWSDR Software root directory.
 
-You'll need the WinUsb header and library files as well as the HID header and
-library files, both are these are from the Windows SDK from Microsoft.
+You'll need libusb-win32 for the Si570 support, and libusb-1.0 (libusbx) for
+libusb-1.0 support for all other USB hardware.
 
 Once built, if you want to build a proper installable version of the software,
 you should install the Nullsoft installation software, to be found at
@@ -93,9 +93,8 @@ should stop all sound daemons before using the UWSDR GUI as they don't interact
 nicely when using ALSA, they can be switched off from the Ubuntu menu from
 System -> Preferences -> Sound.
 
-You will need libusb-1.0 which is to be found at
-http://www.libusb.org/wiki/libusb-1.0 and should be built using the instructions
-given.
+You will need libusb-0.x and libusb-1.0 which are to be found at
+http://www.libusb.org and should be built using the instructions given.
 
 If you are using Jack then you'll have to install the Jack support files. These
 are named jackd, libjack, libjack-dev and qjackctl. This last program is used to

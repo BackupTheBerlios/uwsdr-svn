@@ -58,6 +58,7 @@ Section "UWSDR Program Files" SecProgram
 ; File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\SDRSetup.exe"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\libfftw3f-3.dll"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\libusb-1.0.dll"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\libusb0.dll"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\portaudio_x86.dll"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\wxbase28u_vc_custom.dll"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\wxbase28u_net_vc_custom.dll"

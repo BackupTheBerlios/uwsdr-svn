@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -53,8 +53,8 @@ bool CSDRHelpApp::OnInit()
 	fileName.SetFullName(wxT("GUISetup.zip"));
 	m_help->AddBook(fileName);
 
-	fileName.SetFullName(wxT("SDRSetup.zip"));
-	m_help->AddBook(fileName);
+	// fileName.SetFullName(wxT("SDRSetup.zip"));
+	// m_help->AddBook(fileName);
 
 	fileName.SetFullName(wxT("UWSDR.zip"));
 	m_help->AddBook(fileName);
