@@ -26,7 +26,8 @@ const unsigned int REQUEST_SET_TRANSMIT  = 0x50U;
 
 #if defined(_WIN32)
 
-CSI570Controller::CSI570Controller() :
+CSI570Controller::CSI570Controller(unsigned int freqMult) :
+m_freqMult(freqMult),
 m_handle(NULL),
 m_callback(NULL),
 m_frequency(),
@@ -56,13 +57,10 @@ bool CSI570Controller::open()
 					return false;
 				}
 
-wxLogInfo(wxT("Found the Si570 device"));
+				wxLogInfo(wxT("Found the Si570 USB device"));
 
 				char version[2U];
 				int n = ::usb_control_msg(m_handle, USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN, REQUEST_GET_VERSION, 0xE00U, 0U, version, 2U, 500);
-
-wxLogInfo(wxT("Si570 replied to version with %d, 0x%02X 0x%02X"), n, version[0U], version[1U]);
-
 				if (n < 0) {
 					wxString err(::usb_strerror(), wxConvLocal);
 					::wxLogError(wxT("Error from usb_control_msg: %s"), err.c_str());
@@ -88,9 +86,7 @@ bool CSI570Controller::setFrequency(const CFrequency& freq)
 {
 	double dFrequency = double(freq.get()) / 1000000.0;
 
-	wxUint32 frequency = wxUint32(dFrequency * (1UL << 21));
-
-wxLogInfo(wxT("Set frequency %.6lf MHz: %lu to the Si570"), dFrequency, frequency);
+	wxUint32 frequency = wxUint32(dFrequency * (1UL << 21)) * m_freqMult;
 
 	int n = ::usb_control_msg(m_handle, USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT, REQUEST_SET_FREQUENCY, 0U, 0U, (char*)&frequency, 4U, 500);
 	if (n < 0) {
@@ -125,7 +121,8 @@ void CSI570Controller::close()
 
 #else
 
-CSI570Controller::CSI570Controller() :
+CSI570Controller::CSI570Controller(unsigned int freqMult) :
+m_freqMult(freqMult),
 m_context(NULL),
 m_device(NULL),
 m_callback(NULL),
@@ -149,13 +146,10 @@ bool CSI570Controller::open()
 		return false;
 	}
 
-wxLogInfo(wxT("Found the Si570 device"));
+	wxLogInfo(wxT("Found the Si570 USB device"));
 
 	unsigned char version[2U];
 	int n = ::libusb_control_transfer(m_device, LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE | LIBUSB_ENDPOINT_IN, REQUEST_GET_VERSION, 0xE00U, 0U, version, 2U, 500);
-
-wxLogInfo(wxT("Si570 replied to version with %d, 0x%02X 0x%02X"), n, version[0U], version[1U]);
-
 	if (n < 0) {
 		::wxLogError(wxT("Error from libusb_control_transfer: err=%d"), n);
 		::libusb_close(m_device);
@@ -173,9 +167,7 @@ bool CSI570Controller::setFrequency(const CFrequency& freq)
 {
 	double dFrequency = double(freq.get()) / 1000000.0;
 
-	wxUint32 frequency = wxUint32(dFrequency * (1UL << 21));
-
-wxLogInfo(wxT("Set frequency %.6lf MHz: %lu to the Si570"), dFrequency, frequency);
+	wxUint32 frequency = wxUint32(dFrequency * (1UL << 21)) * m_freqMult;
 
 	int n = ::libusb_control_transfer(m_device, LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE | LIBUSB_ENDPOINT_OUT, REQUEST_SET_FREQUENCY, 0U, 0U, (unsigned char*)&frequency, 4U, 500);
 	if (n < 0) {

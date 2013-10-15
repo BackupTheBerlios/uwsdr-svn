@@ -292,7 +292,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			break;
 		case TYPE_SI570TXRX:
 		case TYPE_SI570RX:
-			m_sdr = new CSI570Controller;
+			m_sdr = new CSI570Controller(m_parameters->m_hardwareFreqMult);
 			break;
 		case TYPE_HACKRF:
 			m_sdr = new CHackRFController;
@@ -533,10 +533,11 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_dsp->setRXIAndQ(m_parameters->m_rxIQphase, m_parameters->m_rxIQgain);
 	m_dsp->setTXIAndQ(m_parameters->m_txIQphase, m_parameters->m_txIQgain);
 
-	m_dsp->swapIQ(m_parameters->m_swapIQ);
-
 	m_dsp->setBinaural(m_parameters->m_binaural);
 	m_dsp->setPan(m_parameters->m_pan);
+
+	if (m_parameters->m_hardwareSwapIQ)
+		m_dsp->swapIQ(true);
 
 	m_sMeter->setRXMeter(m_parameters->m_rxMeter);
 	m_sMeter->setTXMeter(m_parameters->m_txMeter);
@@ -1417,7 +1418,6 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 					m_dsp->setALCValue(m_parameters->m_alcAttack, m_parameters->m_alcDecay, m_parameters->m_alcHang);
 
 					m_dsp->setWeaver(m_parameters->m_weaver);
-					m_dsp->swapIQ(m_parameters->m_swapIQ);
 
 					m_dsp->setBinaural(m_parameters->m_binaural);
 					m_dsp->setPan(m_parameters->m_pan);
@@ -1495,6 +1495,9 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 				wxString sampleRate;
 				sampleRate.Printf(wxT("%.0f"), m_parameters->m_hardwareSampleRate);
 
+				wxString freqMult;
+				freqMult.Printf(wxT("%u"), m_parameters->m_hardwareFreqMult);
+
 				wxString type;
 				switch (m_parameters->m_hardwareType) {
 					case TYPE_AUDIORX:
@@ -1522,11 +1525,15 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 
 				wxString transmit = (m_parameters->m_hardwareReceiveOnly) ? _("No") : _("Yes");
 
+				wxString swapIQ = (m_parameters->m_hardwareSwapIQ) ? _("Yes") : _("No");
+
 				::wxMessageBox(_("The hardware parameters are:\n\nName:\t\t") + m_parameters->m_hardwareName +
 					_("\nMax. Frequency:\t") + m_parameters->m_hardwareMaxFreq.getString(3) +
 					_(" MHz\nMin. Frequency:\t") + m_parameters->m_hardwareMinFreq.getString(3) +
-					_(" MHz\nStep Size:\t\t") + stepSize + _(" Hz\nSample Rate:\t") + sampleRate +
-					_(" samples/sec\nType:\t\t") + type + _("\nTransmit:\t\t") + transmit,
+					_(" MHz\nFrequency Mult:\t") + freqMult +
+					_("\nStep Size:\t\t") + stepSize + _(" Hz\nSample Rate:\t") + sampleRate +
+					_(" samples/sec\nType:\t\t") + type + _("\nTransmit:\t\t") + transmit +
+					_("\nSwap I/Q:\t\t") + swapIQ,
 					_("SDR Hardware Information"),
 					wxICON_INFORMATION);
 			}

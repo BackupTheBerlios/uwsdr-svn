@@ -37,10 +37,12 @@ class CSDRParameters {
 	SDRTYPE	      m_hardwareType;
 	CFrequency    m_hardwareMaxFreq;
 	CFrequency    m_hardwareMinFreq;
+	unsigned int  m_hardwareFreqMult;
 	CFrequency    m_hardwareOffset;
 	unsigned int  m_hardwareStepSize;
 	float         m_hardwareSampleRate;
 	bool          m_hardwareReceiveOnly;
+	bool          m_hardwareSwapIQ;
 
 	wxString      m_fileName;
 	wxString      m_name;
@@ -74,7 +76,6 @@ class CSDRParameters {
 
 	UWSDRMODE     m_mode;
 	bool          m_weaver;
-	bool          m_swapIQ;
 	unsigned int  m_clockTune;
 
 	FMDEVIATION   m_deviationFMW;

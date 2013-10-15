@@ -27,10 +27,12 @@ m_name(),
 m_type(TYPE_UWSDR1),
 m_maxFreq(),
 m_minFreq(),
+m_freqMult(1U),
 m_offset(),
 m_stepSize(0U),
 m_sampleRate(0.0F),
 m_receiveOnly(true),
+m_swapIQ(false),
 m_valid(false)
 {
 	if (!wxFile::Exists(fileName))
@@ -48,9 +50,9 @@ m_valid(false)
 		wxString line = file.GetLine(i);
 
 		if (line.length() > 0 && line.GetChar(0) != wxT('#')) {
-			if (line.Left(5).Cmp(wxT("name=")) == 0)
+			if (line.Left(5).Cmp(wxT("name=")) == 0) {
 				m_name = line.Mid(5);
-			else if (line.Left(5).Cmp(wxT("type=")) == 0) {
+			} else if (line.Left(5).Cmp(wxT("type=")) == 0) {
 				wxString type = line.Mid(5);
 
 				if (type.Cmp(wxT("audiorx")) == 0)
@@ -71,13 +73,17 @@ m_valid(false)
 					::wxLogError(wxT("Unknown type - %s in the .sdr file"), type.c_str());
 					return;
 				}
-			} else if (line.Left(9).Cmp(wxT("highFreq=")) == 0)
+			} else if (line.Left(9).Cmp(wxT("highFreq=")) == 0) {
 				m_maxFreq.set(line.Mid(9));
-			else if (line.Left(8).Cmp(wxT("lowFreq=")) == 0)
+			} else if (line.Left(8).Cmp(wxT("lowFreq=")) == 0) {
 				m_minFreq.set(line.Mid(8));
-			else if (line.Left(8).Cmp(wxT("offset=")) == 0)
+			} else if (line.Left(9).Cmp(wxT("freqMult=")) == 0) {
+				unsigned long temp;
+				line.Mid(9).ToULong(&temp);
+				m_freqMult = temp;
+			} else if (line.Left(8).Cmp(wxT("offset=")) == 0) {
 				m_offset.set(line.Mid(7));
-			else if (line.Left(9).Cmp(wxT("stepSize=")) == 0) {
+			} else if (line.Left(9).Cmp(wxT("stepSize=")) == 0) {
 				unsigned long temp;
 				line.Mid(9).ToULong(&temp);
 				m_stepSize = temp;
@@ -89,6 +95,10 @@ m_valid(false)
 				unsigned long temp;
 				line.Mid(12).ToULong(&temp);
 				m_receiveOnly = temp == 1L;
+			} else if (line.Left(12).Cmp(wxT("swapIQ=")) == 0) {
+				unsigned long temp;
+				line.Mid(7).ToULong(&temp);
+				m_swapIQ = temp == 1L;
 			}
 		}
 	}
@@ -132,6 +142,11 @@ CFrequency CSDRDescrFile::getMinFreq() const
 	return m_minFreq;
 }
 
+unsigned int CSDRDescrFile::getFreqMult() const
+{
+	return m_freqMult;
+}
+
 CFrequency CSDRDescrFile::getOffset() const
 {
 	return m_offset;
@@ -150,6 +165,11 @@ float CSDRDescrFile::getSampleRate() const
 bool CSDRDescrFile::getReceiveOnly() const
 {
 	return m_receiveOnly;
+}
+
+bool CSDRDescrFile::getSwapIQ() const
+{
+	return m_swapIQ;
 }
 
 bool CSDRDescrFile::isValid() const

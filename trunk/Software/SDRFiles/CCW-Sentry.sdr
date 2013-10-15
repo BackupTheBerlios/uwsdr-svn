@@ -10,10 +10,14 @@ type=si570rx
 lowFreq=1.8
 highFreq=70.5
 
-stepSize=50
+freqMult=4
+
+stepSize=25
 
 sampleRate=48000
 
 receiveOnly=0
+
+swapIQ=1
 
 #

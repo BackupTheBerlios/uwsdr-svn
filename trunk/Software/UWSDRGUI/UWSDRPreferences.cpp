@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -96,8 +96,7 @@ m_rxIQGain(NULL),
 m_txIQPhase(NULL),
 m_txIQGain(NULL),
 m_method(NULL),
-m_clockTune(NULL),
-m_swapIQ(NULL)
+m_clockTune(NULL)
 {
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -218,19 +217,16 @@ m_swapIQ(NULL)
 	m_txIQGain->SetValue(m_parameters->m_txIQgain);
 
 	m_method->SetSelection(m_parameters->m_weaver ? 1 : 0);
-	m_swapIQ->SetValue(m_parameters->m_swapIQ);
 
 	m_clockTune->SetValue(m_parameters->m_clockTune);
 
-	if (m_parameters->m_hardwareStepSize > 100.0F      ||
+	if (m_parameters->m_hardwareStepSize >= 100.0F     ||
 	    m_parameters->m_hardwareType == TYPE_AUDIORX   ||
 	    m_parameters->m_hardwareType == TYPE_AUDIOTXRX ||
+	    m_parameters->m_hardwareType == TYPE_SI570RX   ||
+	    m_parameters->m_hardwareType == TYPE_SI570TXRX ||
 	    m_parameters->m_hardwareType == TYPE_DEMO)
 		m_method->Disable();
-
-	if (m_parameters->m_hardwareType != TYPE_AUDIORX &&
-	    m_parameters->m_hardwareType != TYPE_AUDIOTXRX)
-		m_swapIQ->Disable();
 
 	if (m_parameters->m_hardwareReceiveOnly) {
 		m_minTXFreq->Disable();
@@ -568,7 +564,6 @@ void CUWSDRPreferences::onOK(wxCommandEvent& WXUNUSED(event))
 	m_parameters->m_rxIQgain  = m_rxIQGain->GetValue();
 
 	m_parameters->m_weaver = m_method->GetSelection() == 1;
-	m_parameters->m_swapIQ = m_swapIQ->GetValue();
 
 	m_parameters->m_clockTune = m_clockTune->GetValue();
 
@@ -1091,12 +1086,6 @@ wxPanel* CUWSDRPreferences::createIQTab(wxNotebook* noteBook)
 	m_clockTune = new wxSpinCtrl(panel, CLOCK_TUNE, wxEmptyString, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
 	m_clockTune->SetRange(-32768, 38768);
 	sizer->Add(m_clockTune, 0, wxALL, BORDER_SIZE);
-
-	wxStaticText* label7 = new wxStaticText(panel, -1, _("Swap IQ"));
-	sizer->Add(label7, 0, wxALL, BORDER_SIZE);
-
-	m_swapIQ = new wxCheckBox(panel, -1, wxEmptyString);
-	sizer->Add(m_swapIQ, 0, wxALL, BORDER_SIZE);
 
 	mainSizer->Add(sizer, 0, wxTOP, BORDER_SIZE);
 

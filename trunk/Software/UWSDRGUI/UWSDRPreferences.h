@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -94,7 +94,6 @@ class CUWSDRPreferences : public wxDialog {
 	wxSpinCtrl*     m_txIQGain;
 	wxChoice*       m_method;
 	wxSpinCtrl*     m_clockTune;
-	wxCheckBox*     m_swapIQ;
 
 	DECLARE_EVENT_TABLE()
 

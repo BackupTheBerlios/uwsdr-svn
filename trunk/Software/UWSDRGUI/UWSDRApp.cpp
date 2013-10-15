@@ -54,7 +54,6 @@ const wxChar* KEY_STEP_SLOW          = wxT("/StepSlow");
 const wxChar* KEY_STEP_VERY_SLOW     = wxT("/StepVerySlow");
 const wxChar* KEY_MODE               = wxT("/Mode");
 const wxChar* KEY_WEAVER             = wxT("/Weaver");
-const wxChar* KEY_SWAP_IQ            = wxT("/SwapIQ");
 const wxChar* KEY_CLOCK_TUNE         = wxT("/ClockTune");
 const wxChar* KEY_DEV_FMW            = wxT("/DeviationFMW");
 const wxChar* KEY_DEV_FMN            = wxT("/DeviationFMN");
@@ -201,10 +200,12 @@ bool CUWSDRApp::OnInit()
 		m_parameters->m_hardwareStepSize = 10U;
 
 	// We cannot use Weaver on hardware with too large step sizes
-	if (m_parameters->m_hardwareStepSize > 100U        ||
-	    m_parameters->m_hardwareType == TYPE_AUDIORX   ||
-	    m_parameters->m_hardwareType == TYPE_AUDIOTXRX ||
-	    m_parameters->m_hardwareType == TYPE_DEMO)
+	if (m_parameters->m_hardwareStepSize >= 100U        ||
+	    m_parameters->m_hardwareType == TYPE_AUDIORX    ||
+	    m_parameters->m_hardwareType == TYPE_AUDIOTXRX  ||
+	    m_parameters->m_hardwareType == TYPE_DEMO       ||
+	    m_parameters->m_hardwareType == TYPE_SI570RX    ||
+	    m_parameters->m_hardwareType == TYPE_SI570TXRX)
 		m_parameters->m_weaver = false;
 
 	wxString title = VERSION + wxT(" - ") + m_parameters->m_name;
@@ -306,10 +307,12 @@ bool CUWSDRApp::readDescrFile()
 	m_parameters->m_hardwareType        = descrFile.getType();
 	m_parameters->m_hardwareMaxFreq     = descrFile.getMaxFreq();
 	m_parameters->m_hardwareMinFreq     = descrFile.getMinFreq();
+	m_parameters->m_hardwareFreqMult    = descrFile.getFreqMult();
 	m_parameters->m_hardwareOffset      = descrFile.getOffset();
 	m_parameters->m_hardwareStepSize    = descrFile.getStepSize();
 	m_parameters->m_hardwareSampleRate  = descrFile.getSampleRate();
 	m_parameters->m_hardwareReceiveOnly = descrFile.getReceiveOnly();
+	m_parameters->m_hardwareSwapIQ      = descrFile.getSwapIQ();
 
 	// Change the hardware frequency limits for SoftRock type radios
 	if (m_parameters->m_hardwareType == TYPE_AUDIORX || m_parameters->m_hardwareType == TYPE_AUDIOTXRX) {
@@ -355,7 +358,6 @@ bool CUWSDRApp::readConfig()
 	wxString keyStepVerySlow    = wxT("/") + m_parameters->m_name + KEY_STEP_VERY_SLOW;
 	wxString keyMode            = wxT("/") + m_parameters->m_name + KEY_MODE;
 	wxString keyWeaver          = wxT("/") + m_parameters->m_name + KEY_WEAVER;
-	wxString keySwapIQ          = wxT("/") + m_parameters->m_name + KEY_SWAP_IQ;
 	wxString keyClockTune       = wxT("/") + m_parameters->m_name + KEY_CLOCK_TUNE;
 	wxString keyFilter          = wxT("/") + m_parameters->m_name + KEY_FILTER;
 	wxString keyFilterFMW       = wxT("/") + m_parameters->m_name + KEY_FILTER_FMW;
@@ -524,7 +526,6 @@ bool CUWSDRApp::readConfig()
 	m_parameters->m_mode = UWSDRMODE(num);
 
 	profile->Read(keyWeaver,           &m_parameters->m_weaver, true);
-	profile->Read(keySwapIQ,           &m_parameters->m_swapIQ, false);
 	profile->Read(keyClockTune,        &num, 0L);
 	m_parameters->m_clockTune = num;
 
@@ -700,7 +701,6 @@ void CUWSDRApp::writeConfig()
 	wxString keyStepVerySlow  = wxT("/") + m_parameters->m_name + KEY_STEP_VERY_SLOW;
 	wxString keyMode          = wxT("/") + m_parameters->m_name + KEY_MODE;
 	wxString keyWeaver        = wxT("/") + m_parameters->m_name + KEY_WEAVER;
-	wxString keySwapIQ        = wxT("/") + m_parameters->m_name + KEY_SWAP_IQ;
 	wxString keyClockTune     = wxT("/") + m_parameters->m_name + KEY_CLOCK_TUNE;
 	wxString keyFilter        = wxT("/") + m_parameters->m_name + KEY_FILTER;
 	wxString keyFilterFMW     = wxT("/") + m_parameters->m_name + KEY_FILTER_FMW;
@@ -800,7 +800,6 @@ void CUWSDRApp::writeConfig()
 	profile->Write(keyStepVerySlow,     m_parameters->m_stepVerySlow);
 	profile->Write(keyMode,             m_parameters->m_mode);
 	profile->Write(keyWeaver,           m_parameters->m_weaver);
-	profile->Write(keySwapIQ,           m_parameters->m_swapIQ);
 	profile->Write(keyClockTune,        int(m_parameters->m_clockTune));
 	profile->Write(keyFilter,           m_parameters->m_filter);
 	profile->Write(keyFilterFMW,        m_parameters->m_filterFMW);

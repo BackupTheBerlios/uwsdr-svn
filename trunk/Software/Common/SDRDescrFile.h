@@ -43,10 +43,12 @@ class CSDRDescrFile {
 	SDRTYPE      getType() const;
 	CFrequency   getMaxFreq() const;
 	CFrequency   getMinFreq() const;
+	unsigned int getFreqMult() const;
 	CFrequency   getOffset() const;
 	unsigned int getStepSize() const;
 	float        getSampleRate() const;
 	bool         getReceiveOnly() const;
+	bool         getSwapIQ() const;
 	bool         isValid() const;
 
     private:
@@ -54,10 +56,12 @@ class CSDRDescrFile {
 	SDRTYPE      m_type;
 	CFrequency   m_maxFreq;
 	CFrequency   m_minFreq;
+	unsigned int m_freqMult;
 	CFrequency   m_offset;
 	unsigned int m_stepSize;
 	float        m_sampleRate;
 	bool         m_receiveOnly;
+	bool         m_swapIQ;
 	bool         m_valid;
 };
 

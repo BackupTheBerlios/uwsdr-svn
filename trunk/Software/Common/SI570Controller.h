@@ -33,7 +33,7 @@
 
 class CSI570Controller : public ISDRController {
 public:
-	CSI570Controller();
+	CSI570Controller(unsigned int freqMult = 1U);
 	virtual ~CSI570Controller();
 
 	virtual void setCallback(IControlInterface* callback);
@@ -47,6 +47,7 @@ public:
 	virtual void close();
 
 private:
+	unsigned int          m_freqMult;
 #if defined(_WIN32)
 	usb_dev_handle*       m_handle;
 #else

@@ -16,4 +16,6 @@ sampleRate=48000
 
 receiveOnly=0
 
+swapIQ=0
+
 #
