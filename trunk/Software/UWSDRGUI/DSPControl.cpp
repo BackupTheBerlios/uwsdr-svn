@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -48,6 +48,8 @@ m_rxRingBuffer(RINGBUFFER_SIZE, 2),
 m_txBuffer(NULL),
 m_rxBuffer(NULL),
 m_outBuffer(NULL),
+m_txLastBuffer(NULL),
+m_rxLastBuffer(NULL),
 m_record(NULL),
 m_transmit(false),
 m_running(false),
@@ -61,10 +63,10 @@ m_recordType(RECORD_MONO_AUDIO),
 m_clockId(-1),
 m_lastTXIn(false),
 m_lastKeyIn(false),
-m_rxUnderruns(0U),
 m_rxOverruns(0U),
-m_txUnderruns(0U),
-m_txOverruns(0U)
+m_rxFills(0U),
+m_txOverruns(0U),
+m_txFills(0U)
 {
 	m_dttsp = new CDTTSPControl();
 	m_dttsp->open(m_sampleRate, m_blockSize);
@@ -77,10 +79,12 @@ m_txOverruns(0U)
 	m_voiceKeyer->setCallback(this, VOICE_READER);
 	m_voiceKeyer->open(m_sampleRate, m_blockSize);
 
-	m_txBuffer = new float[m_blockSize * 2];
-	m_rxBuffer = new float[m_blockSize * 2];
-
+	m_txBuffer  = new float[m_blockSize * 2];
+	m_rxBuffer  = new float[m_blockSize * 2];
 	m_outBuffer = new float[m_blockSize * 2];
+
+	m_txLastBuffer = new float[m_blockSize * 2];
+	m_rxLastBuffer = new float[m_blockSize * 2];
 }
 
 CDSPControl::~CDSPControl()
@@ -88,6 +92,8 @@ CDSPControl::~CDSPControl()
 	delete[] m_txBuffer;
 	delete[] m_rxBuffer;
 	delete[] m_outBuffer;
+	delete[] m_txLastBuffer;
+	delete[] m_rxLastBuffer;
 }
 
 void CDSPControl::setTXReader(IDataReader* reader)
@@ -160,8 +166,14 @@ void* CDSPControl::Entry()
 		if (ret == wxSEMA_NO_ERROR) {
 			if (m_transmit) {
 				unsigned int nSamples = m_txRingBuffer.getData(m_txBuffer, m_blockSize);
-				if (nSamples != m_blockSize)
-					m_txUnderruns++;
+				if (nSamples != m_blockSize) {
+					// Copy the last buffer of good data to the output
+					::memcpy(m_txBuffer, m_txLastBuffer, m_blockSize * sizeof(float) * 2U);
+					m_txFills++;
+				} else {
+					// Save the last full buffer in case it's needed
+					::memcpy(m_txLastBuffer, m_txBuffer, m_blockSize * sizeof(float) * 2U);
+				}
 
 				if (nSamples > 0) {
 					scaleBuffer(m_txBuffer, nSamples, m_power, m_swap);
@@ -173,12 +185,18 @@ void* CDSPControl::Entry()
 
 			// Create silence on transmit if no sidetone is being transmitted
 			if (nSamples == 0 && m_transmit) {
-				::memset(m_rxBuffer, 0x00, m_blockSize * 2 * sizeof(float));
+				::memset(m_rxBuffer, 0x00, m_blockSize * 2U * sizeof(float));
 				nSamples = m_blockSize;
 			}
 
-			if (nSamples != m_blockSize)
-				m_rxUnderruns++;
+			if (nSamples != m_blockSize) {
+				// Copy the last buffer of good data to the output
+				::memcpy(m_rxBuffer, m_rxLastBuffer, m_blockSize * sizeof(float) * 2U);
+				m_rxFills++;
+			} else {
+				// Save the last full buffer in case it's needed
+				::memcpy(m_rxLastBuffer, m_rxBuffer, m_blockSize * sizeof(float) * 2U);
+			}
 
 			scaleBuffer(m_rxBuffer, nSamples, m_afGain);
 			m_rxWriter->write(m_rxBuffer, nSamples);
@@ -194,7 +212,8 @@ void* CDSPControl::Entry()
 	m_rxWriter->disable();
 	m_txWriter->disable();
 
-	::wxLogMessage(wxT("DSPControl: RX Overruns=%u RX Underruns=%u TX Overruns=%u TX Underruns=%u"), m_rxOverruns, m_rxUnderruns, m_txOverruns, m_txUnderruns);
+	::wxLogMessage(wxT("DSPControl: RX Overruns=%u, RX Fills=%u"), m_rxOverruns, m_rxFills);
+	::wxLogMessage(wxT("DSPControl: TX Overruns=%u, TX Fills=%u"), m_txOverruns, m_txFills);
 
 	closeIO();
 

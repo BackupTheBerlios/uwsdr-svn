@@ -5,7 +5,7 @@ common defs and code for parm update
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006-5 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008,2013 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@ m_inputI(NULL),
 m_inputQ(NULL),
 m_outputI(NULL),
 m_outputQ(NULL),
+m_lastOutput(NULL),
 m_bufferI(NULL),
 m_bufferQ(NULL),
 m_trx(RX),
@@ -82,6 +83,9 @@ m_frames(audioSize)
 	m_outputI = new CRingBuffer(RINGSIZE, 1U);
 	m_outputQ = new CRingBuffer(RINGSIZE, 1U);
 
+	m_lastOutput = new float[m_frames * 2U];
+	::memset(m_lastOutput, 0x00, m_frames * 2U * sizeof(float));
+
 	m_fade = m_frames / 5U;
 	m_tail = m_frames - m_fade;
 
@@ -111,6 +115,8 @@ CDttSP::~CDttSP()
 	delete m_inputQ;
 	delete m_outputI;
 	delete m_outputQ;;
+
+	delete[] m_lastOutput;
 }
 
 void CDttSP::setMode(SDRMODE m)
@@ -507,15 +513,16 @@ void CDttSP::audioEntry(const float* input, float* output, unsigned int nframes)
 			m_outputI->getData(&output[j], 1U);
 		for (i = 0U, j = 1U; i < nframes; i++, j += 2U)
 			m_outputQ->getData(&output[j], 1U);
+
+		// Save the data in case we have an underrun later
+		::memcpy(m_lastOutput, output, 2U * nframes * sizeof(float));
 	} else {
-		m_inputI->clear();
-		m_inputQ->clear();
+		// m_inputI->clear();
+		// m_inputQ->clear();
 		m_outputI->clear();
 		m_outputQ->clear();
 
-		::memset(output, 0x00, 2U * nframes * sizeof(float));
-
-		::wxLogError(wxT("Not enough data in the output ring buffer"));
+		::memcpy(output, m_lastOutput, 2U * nframes * sizeof(float));
 	}
 
 	// input: copy from port to ring
@@ -529,8 +536,8 @@ void CDttSP::audioEntry(const float* input, float* output, unsigned int nframes)
 	} else {
 		m_inputI->clear();
 		m_inputQ->clear();
-		m_outputI->clear();
-		m_outputQ->clear();
+		// m_outputI->clear();
+		// m_outputQ->clear();
 
 		::wxLogError(wxT("Not enough space in the input ring buffer"));
 	}

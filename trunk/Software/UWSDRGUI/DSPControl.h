@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@
 
 
 class CDSPControl : public wxThread, public IDataCallback {
-    public:
+public:
 	CDSPControl(float sampleRate, unsigned int blockSize);
 	virtual ~CDSPControl();
 
@@ -105,7 +105,7 @@ class CDSPControl : public wxThread, public IDataCallback {
 	virtual CWERROR    sendCW(unsigned int speed, const wxString& text, CWSTATUS state);
 	virtual VOICEERROR sendAudio(const wxString& fileName, VOICESTATUS state);
 
-    private:
+private:
 	CDTTSPControl*  m_dttsp;
 	CCWKeyer*       m_cwKeyer;
 	CVoiceKeyer*    m_voiceKeyer;
@@ -128,6 +128,8 @@ class CDSPControl : public wxThread, public IDataCallback {
 	float*          m_txBuffer;
 	float*          m_rxBuffer;
 	float*          m_outBuffer;
+	float*          m_txLastBuffer;
+	float*          m_rxLastBuffer;
 
 	CSoundFileWriter* m_record;
 
@@ -146,10 +148,10 @@ class CDSPControl : public wxThread, public IDataCallback {
 	bool            m_lastTXIn;
 	bool            m_lastKeyIn;
 
-	unsigned int    m_rxUnderruns;
 	unsigned int    m_rxOverruns;
-	unsigned int    m_txUnderruns;
+	unsigned int    m_rxFills;
 	unsigned int    m_txOverruns;
+	unsigned int    m_txFills;
 
 	void scaleBuffer(float* buffer, unsigned int nSamples, float scale, bool swap = false);
 

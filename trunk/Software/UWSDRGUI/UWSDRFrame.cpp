@@ -389,12 +389,14 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			// A self contained variant for demo's and testing
 			if (m_parameters->m_userAudioType == SOUND_JACK) {
 				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" User"), 2U, 2U);
-				m_dsp->setTXReader(new CThreeToneReader(500.0F, 1500.0F, 2000.0F, 0.25F, rw));
+				// m_dsp->setTXReader(new CThreeToneReader(500.0F, 1500.0F, 2000.0F, 0.25F, rw));
 				m_dsp->setRXWriter(rw);
+				m_dsp->setTXReader(rw);
 			} else {
 				CSoundCardReaderWriter* rw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 2U, 2U);
-				m_dsp->setTXReader(new CThreeToneReader(500.0F, 1500.0F, 2000.0F, 0.25F, rw));
+				// m_dsp->setTXReader(new CThreeToneReader(500.0F, 1500.0F, 2000.0F, 0.25F, rw));
 				m_dsp->setRXWriter(rw);
+				m_dsp->setTXReader(rw);
 			}
 
 			m_dsp->setTXWriter(new CNullWriter());
