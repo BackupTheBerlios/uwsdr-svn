@@ -724,7 +724,7 @@ void CDSPControl::setRecordOff()
 void CDSPControl::scaleBuffer(float* buffer, unsigned int nSamples, float scale, bool swap)
 {
 	wxASSERT(buffer != NULL);
-	wxASSERT(scale >= 0.0 && scale <= 1.0);
+	wxASSERT(scale >= 0.0);
 
 	if (swap) {
 		for (unsigned int i = 0; i < nSamples; i++) {

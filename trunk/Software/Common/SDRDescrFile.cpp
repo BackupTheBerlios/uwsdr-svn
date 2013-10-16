@@ -95,7 +95,7 @@ m_valid(false)
 				unsigned long temp;
 				line.Mid(12).ToULong(&temp);
 				m_receiveOnly = temp == 1L;
-			} else if (line.Left(12).Cmp(wxT("swapIQ=")) == 0) {
+			} else if (line.Left(7).Cmp(wxT("swapIQ=")) == 0) {
 				unsigned long temp;
 				line.Mid(7).ToULong(&temp);
 				m_swapIQ = temp == 1L;

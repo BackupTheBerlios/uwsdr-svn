@@ -199,7 +199,7 @@ m_clockTune(NULL)
 	m_panValue->SetValue(m_parameters->m_pan);
 
 	// Map 500 -> 1000 to -30 -> 0
-	unsigned int val = (unsigned int)(20.0 * ::log10(double(m_parameters->m_rfGain) / 1000.0) + 0.5);
+	unsigned int val = (unsigned int)(10.0 * ::log10(double(m_parameters->m_rfGain) / 1000.0) + 0.5);
 	m_rfValue->SetValue(val);
 
 	m_spButton->SetValue(m_parameters->m_spOn);
@@ -547,7 +547,7 @@ void CUWSDRPreferences::onOK(wxCommandEvent& WXUNUSED(event))
 
 	// Map -30 -> 0 to 1 -> 1000
 	double gainDb = double(m_rfValue->GetValue());
-	m_parameters->m_rfGain    = (unsigned int)(1000.0 * ::pow(10.0, gainDb / 20.0) + 0.5);
+	m_parameters->m_rfGain    = (unsigned int)(1000.0 * ::pow(10.0, gainDb / 10.0) + 0.5);
 
 	m_parameters->m_spOn         = m_spButton->IsChecked();
 	m_parameters->m_spValue      = m_spValue->GetValue();
@@ -918,13 +918,13 @@ wxPanel* CUWSDRPreferences::createReceiveTab(wxNotebook* noteBook)
 	m_panValue = new wxSlider(panel, -1, 0, -100, 100, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
 	sizer->Add(m_panValue, 0, wxALL, BORDER_SIZE);
 
-	wxStaticText* rfLabel = new wxStaticText(panel, -1, _("RF attenuator (dB)"));
+	wxStaticText* rfLabel = new wxStaticText(panel, -1, _("RF gain (dB)"));
 	sizer->Add(rfLabel, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* dummy1 = new wxStaticText(panel, -1, wxEmptyString);
 	sizer->Add(dummy1, 0, wxALL, BORDER_SIZE);
 
-	m_rfValue = new wxSlider(panel, RXRF_GAIN, 0, -30, 0, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
+	m_rfValue = new wxSlider(panel, RXRF_GAIN, 0, -30, 20, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
 	sizer->Add(m_rfValue, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* rawLabel1 = new wxStaticText(panel, -1, _("Record"));
