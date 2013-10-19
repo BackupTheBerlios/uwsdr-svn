@@ -1529,6 +1529,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 
 				wxString swapIQ = (m_parameters->m_hardwareSwapIQ) ? _("Yes") : _("No");
 
+#if defined(__WXMSW__)
 				::wxMessageBox(_("The hardware parameters are:\n\nName:\t\t") + m_parameters->m_hardwareName +
 					_("\nMax. Frequency:\t") + m_parameters->m_hardwareMaxFreq.getString(3) +
 					_(" MHz\nMin. Frequency:\t") + m_parameters->m_hardwareMinFreq.getString(3) +
@@ -1538,6 +1539,17 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 					_("\nSwap I/Q:\t\t") + swapIQ,
 					_("SDR Hardware Information"),
 					wxICON_INFORMATION);
+#else
+				::wxMessageBox(_("The hardware parameters are:\n\nName:\t\t\t\t") + m_parameters->m_hardwareName +
+					_("\nMax. Frequency:\t") + m_parameters->m_hardwareMaxFreq.getString(3) +
+					_(" MHz\nMin. Frequency:\t") + m_parameters->m_hardwareMinFreq.getString(3) +
+					_(" MHz\nFrequency Mult:\t") + freqMult +
+					_("\nStep Size:\t\t\t") + stepSize + _(" Hz\nSample Rate:\t\t") + sampleRate +
+					_(" samples/sec\nType:\t\t\t\t") + type + _("\nTransmit:\t\t\t") + transmit +
+					_("\nSwap I/Q:\t\t\t") + swapIQ,
+					_("SDR Hardware Information"),
+					wxICON_INFORMATION);
+#endif
 			}
 			break;
 		case wxID_ABOUT: {

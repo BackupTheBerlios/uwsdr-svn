@@ -90,7 +90,8 @@ void CFreqDial::drawDial()
 	else
 		bgColour = wxColour(0xD4, 0xD0, 0xC8);		// Windows 2000 and earlier
 #elif defined(__WXGTK__)
-	wxColour bgColour(0xED, 0xE9, 0xE3);
+	wxColour bgColour(0xF0, 0xF1, 0xF2);
+	// wxColour bgColour(0xED, 0xE9, 0xE3);
 #elif defined(__WXMAC__)
 	wxColour bgColour(0xF0, 0xF0, 0xF0);
 #else
