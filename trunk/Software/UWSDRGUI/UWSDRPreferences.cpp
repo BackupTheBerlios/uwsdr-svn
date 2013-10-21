@@ -1124,7 +1124,7 @@ void CUWSDRPreferences::onRFGainChanged(wxScrollEvent& WXUNUSED(event))
 {
 	double gainDb = double(m_rfValue->GetValue());
 
-	// Map -30 -> 0 to 1 -> 1000
+	// Map -30 -> 20 to 1 -> 100000
 	unsigned int gain = (unsigned int)(1000.0 * ::pow(10.0, gainDb / 10.0) + 0.5);
 
 	m_dsp->setRFGain(gain);

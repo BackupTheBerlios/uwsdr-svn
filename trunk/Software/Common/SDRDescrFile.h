@@ -34,8 +34,7 @@ enum SDRTYPE {
 };
 
 class CSDRDescrFile {
-
-    public:
+public:
 	CSDRDescrFile(const wxString& fileName);
 	~CSDRDescrFile();
 
@@ -50,8 +49,9 @@ class CSDRDescrFile {
 	bool         getReceiveOnly() const;
 	bool         getSwapIQ() const;
 	bool         isValid() const;
+	unsigned int getReceiveGainOffset() const;
 
-    private:
+private:
 	wxString     m_name;
 	SDRTYPE      m_type;
 	CFrequency   m_maxFreq;
@@ -63,6 +63,7 @@ class CSDRDescrFile {
 	bool         m_receiveOnly;
 	bool         m_swapIQ;
 	bool         m_valid;
+	unsigned int m_receiveGainOffset;
 };
 
 #endif

@@ -29,12 +29,13 @@ const int VOICE_READER = 77;
 
 const unsigned int RINGBUFFER_SIZE = 100001;
 
-CDSPControl::CDSPControl(float sampleRate, unsigned int blockSize) :
+CDSPControl::CDSPControl(float sampleRate, unsigned int receiveGainOffset, unsigned int blockSize) :
 wxThread(),
 m_dttsp(NULL),
 m_cwKeyer(NULL),
 m_voiceKeyer(NULL),
 m_sampleRate(sampleRate),
+m_receiveGainOffset(0.0F),
 m_blockSize(blockSize),
 m_txReader(NULL),
 m_txWriter(NULL),
@@ -68,6 +69,8 @@ m_rxFills(0U),
 m_txOverruns(0U),
 m_txFills(0U)
 {
+	m_receiveGainOffset = ::pow(10.0F, float(receiveGainOffset) / 10.0F);
+
 	m_dttsp = new CDTTSPControl();
 	m_dttsp->open(m_sampleRate, m_blockSize);
 
@@ -650,7 +653,7 @@ void CDSPControl::setAFGain(unsigned int value)
 
 void CDSPControl::setRFGain(unsigned int value)
 {
-	m_rfGain = float(value) / 1000.0F;
+	m_rfGain = float(value) / 1000.0F + m_receiveGainOffset;
 }
 
 void CDSPControl::setMicGain(unsigned int value)

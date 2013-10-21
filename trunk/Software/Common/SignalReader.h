@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -25,9 +25,8 @@
 
 
 class CSignalReader : public CThreadReader {
-
-    public:
-	CSignalReader(float frequency, float noiseAmplitude, float signalAmplitude, float balanceErr, float amplitudeErr, IDataReader* reader = NULL);
+public:
+	CSignalReader(float frequency, float noiseAmplitude, float signalAmplitude, float balanceErr, float amplitudeErr, bool swapIQ, IDataReader* reader = NULL);
 
 	virtual void setCallback(IDataCallback* callback, int id);
 
@@ -35,16 +34,17 @@ class CSignalReader : public CThreadReader {
 
 	virtual bool create();
 
-    protected:
+protected:
 	virtual ~CSignalReader();
 
-    private:
+private:
 	float          m_frequency;
 	float          m_noiseAmplitude;
 	float          m_signalAmplitude;
 	float          m_balanceErr;
 	float          m_amplitudeErr;
 	unsigned int   m_blockSize;
+	bool           m_swapIQ;
 	IDataCallback* m_callback;
 	int            m_id;
 	float*         m_buffer;

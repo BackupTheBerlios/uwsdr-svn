@@ -324,7 +324,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_spectrumDisplay->setDB(m_parameters->m_spectrumDB);
 	m_spectrumDisplay->setBandwidth(m_parameters->m_hardwareSampleRate);
 
-	m_dsp = new CDSPControl(m_parameters->m_hardwareSampleRate, BLOCK_SIZE);
+	m_dsp = new CDSPControl(m_parameters->m_hardwareSampleRate, m_parameters->m_hardwareReceiveGainOffset, BLOCK_SIZE);
 
 	switch (m_parameters->m_hardwareType) {
 		case TYPE_AUDIORX:
@@ -401,7 +401,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 			m_dsp->setTXWriter(new CNullWriter());
 			// m_dsp->setRXReader(new CSignalReader(1000.5F, 0.0F, 0.7F, 1.6F, 0.0F));
-			m_dsp->setRXReader(new CSignalReader(1000.5F, 0.0003F, 0.0004F, 0.0F, 0.0F));
+			m_dsp->setRXReader(new CSignalReader(1000.5F, 0.0003F, 0.0004F, 0.0F, 0.0F, m_parameters->m_hardwareSwapIQ));
 
 			if (m_parameters->m_txInEnable) {
 				CSerialInterface* control = new CSerialInterface(m_parameters->m_txInDev, m_parameters->m_txInPin);
@@ -1377,6 +1377,7 @@ void CUWSDRFrame::normaliseMode()
 	}
 
 	m_dsp->setFilter(filter);
+	m_spectrumDisplay->setFilter(filter, m_parameters->m_mode);
 
 	switch (speed) {
 		case SPEED_VERYFAST:

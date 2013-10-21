@@ -35,7 +35,7 @@
 
 class CDSPControl : public wxThread, public IDataCallback {
 public:
-	CDSPControl(float sampleRate, unsigned int blockSize);
+	CDSPControl(float sampleRate, unsigned int receiveGainOffset, unsigned int blockSize);
 	virtual ~CDSPControl();
 
 	virtual void  setTXReader(IDataReader* reader);
@@ -111,6 +111,7 @@ private:
 	CVoiceKeyer*    m_voiceKeyer;
 
 	float           m_sampleRate;
+	float           m_receiveGainOffset;
 	unsigned int    m_blockSize;
 
 	IDataReader*    m_txReader;

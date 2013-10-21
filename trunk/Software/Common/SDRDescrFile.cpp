@@ -33,7 +33,8 @@ m_stepSize(0U),
 m_sampleRate(0.0F),
 m_receiveOnly(true),
 m_swapIQ(false),
-m_valid(false)
+m_valid(false),
+m_receiveGainOffset(0U)
 {
 	if (!wxFile::Exists(fileName))
 		return;
@@ -99,6 +100,10 @@ m_valid(false)
 				unsigned long temp;
 				line.Mid(7).ToULong(&temp);
 				m_swapIQ = temp == 1L;
+			} else if (line.Left(18).Cmp(wxT("receiveGainOffset=")) == 0) {
+				unsigned long temp;
+				line.Mid(18).ToULong(&temp);
+				m_receiveGainOffset = temp;
 			}
 		}
 	}
@@ -175,4 +180,9 @@ bool CSDRDescrFile::getSwapIQ() const
 bool CSDRDescrFile::isValid() const
 {
 	return m_valid;
+}
+
+unsigned int CSDRDescrFile::getReceiveGainOffset() const
+{
+	return m_receiveGainOffset;
 }

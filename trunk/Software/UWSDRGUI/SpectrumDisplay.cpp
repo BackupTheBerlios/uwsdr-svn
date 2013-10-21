@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -71,6 +71,8 @@ m_background(NULL),
 m_bitmap(NULL),
 m_sampleRate(0.0F),
 m_bandwidth(0.0F),
+m_highFilter(0.0F),
+m_lowFilter(0.0F),
 m_menu(NULL),
 m_speedMenu(NULL),
 m_typeMenu(NULL),
@@ -207,6 +209,16 @@ void CSpectrumDisplay::createPanadapter()
 
 	dc.SetBackground(*wxBLACK_BRUSH);
 	dc.Clear();
+
+	if (m_lowFilter != 0.0F || m_highFilter != 0.0F) {
+		dc.SetPen(*wxMEDIUM_GREY_PEN);
+		dc.SetBrush(*wxMEDIUM_GREY_BRUSH);
+
+		wxCoord rxLow  = int(float(m_width - 5) / m_bandwidth * m_lowFilter) + m_width / 2;
+		wxCoord rxHigh = int(float(m_width - 5) / m_bandwidth * m_highFilter) + m_width / 2;
+
+		dc.DrawRectangle(rxLow, 2, rxHigh - rxLow, m_height - 16);
+	}
 
 	int left    = 2;
 	int right   = m_width - 3;
@@ -534,21 +546,30 @@ void CSpectrumDisplay::drawWaterfall(const float* spectrum, float bottom)
 		if (percent <= 0.33333333F) {			// use a gradient between low and mid colors
 			percent *= 3.0F;
 
-			r = (unsigned char)(percent * 255.0F + 0.5F);
+			b = (unsigned char)(percent * 255.0F + 0.5F);
 			g = 0;
-			b = 0;
+			r = 0;
+			// r = (unsigned char)(percent * 255.0F + 0.5F);
+			// g = 0;
+			// b = 0;
 		} else if (percent <= 0.66666666F) {		// use a gradient between mid and high colors
 			percent = (percent - 0.33333333F) * 3.0F;
 
-			r = 255;
+			b = 255;
 			g = (unsigned char)(percent * 255.0F + 0.5F);
-			b = 0;
+			r = 0;
+			// r = 255;
+			// g = (unsigned char)(percent * 255.0F + 0.5F);
+			// b = 0;
 		} else {
 			percent = (percent - 0.66666666F) * 3.0F;
 
-			r = 255;
+			b = 255;
 			g = 255;
-			b = (unsigned char)(percent * 255.0F + 0.5F);
+			r = (unsigned char)(percent * 255.0F + 0.5F);
+			// r = 255;
+			// g = 255;
+			// b = (unsigned char)(percent * 255.0F + 0.5F);
 		}
 
 		*imgOffset++ = r;
@@ -679,10 +700,20 @@ void CSpectrumDisplay::onLeftMouse(wxMouseEvent& event)
 
 	m_pick = m_bandwidth / 2.0F - m_bandwidth * x / width;
 
+	if (m_pick < -m_bandwidth / 2.0F) {
+		m_pick = 0.0F;
+		return;
+	} else if (m_pick > m_bandwidth / 2.0F) {
+		m_pick = 0.0F;
+		return;
+	}
+
+	m_pick += (m_highFilter + m_lowFilter) / 2.0F;
+
 	if (m_pick < -m_bandwidth / 2.0F)
-		m_pick = 0.0F;
+		m_pick = -m_bandwidth / 2.0F;
 	else if (m_pick > m_bandwidth / 2.0F)
-		m_pick = 0.0F;
+		m_pick = m_bandwidth / 2.0F;
 }
 
 void CSpectrumDisplay::onRightMouse(wxMouseEvent& event)
@@ -814,6 +845,165 @@ void CSpectrumDisplay::onMenu(wxCommandEvent& event)
 			::wxLogError(wxT("Unknown spectrum menu item = %d"), event.GetId());
 			break;
 	}
+}
+
+void CSpectrumDisplay::setFilter(FILTERWIDTH filter, UWSDRMODE mode)
+{
+	m_highFilter = 0.0F;
+	m_lowFilter  = 0.0F;
+
+	double width = 0.0;
+	switch (filter) {
+		case FILTER_20000:
+			width = 20000.0;
+			break;
+		case FILTER_15000:
+			width = 15000.0;
+			break;
+		case FILTER_10000:
+			width = 10000.0;
+			break;
+		case FILTER_6000:
+			width = 6000.0;
+			break;
+		case FILTER_4000:
+			width = 4000.0;
+			break;
+		case FILTER_2600:
+			width = 2600.0;
+			break;
+		case FILTER_2100:
+			width = 2100.0;
+			break;
+		case FILTER_1000:
+			width = 1000.0;
+			break;
+		case FILTER_500:
+			width = 500.0;
+			break;
+		case FILTER_250:
+			width = 250.0;
+			break;
+		case FILTER_100:
+			width = 100.0;
+			break;
+		case FILTER_50:
+			width = 50.0;
+			break;
+		case FILTER_25:
+			width = 25.0;
+			break;
+		case FILTER_AUTO:
+			return;
+	}
+
+	switch (mode) {
+		case MODE_FMW:
+		case MODE_FMN:
+		case MODE_AM:
+			m_highFilter =  width / 2.0;
+			m_lowFilter  = -width / 2.0;
+			break;
+
+		case MODE_USB:
+		case MODE_LSB:
+		case MODE_DIGL:
+		case MODE_DIGU:
+			switch (filter) {
+				case FILTER_20000:
+				case FILTER_15000:
+				case FILTER_10000:
+				case FILTER_6000:
+				case FILTER_4000:
+					m_highFilter = width + 100.0;
+					m_lowFilter  = 100.0;
+					break;
+				case FILTER_2600:
+				case FILTER_2100:
+				case FILTER_1000:
+					m_highFilter = width + 200.0;
+					m_lowFilter  = 200.0;
+					break;
+				case FILTER_500:
+					m_highFilter = 850.0;
+					m_lowFilter  = 350.0;
+					break;
+				case FILTER_250:
+					m_highFilter = 725.0;
+					m_lowFilter  = 475.0;
+					break;
+				case FILTER_100:
+					m_highFilter = 650.0;
+					m_lowFilter  = 550.0;
+					break;
+				case FILTER_50:
+					m_highFilter = 625.0;
+					m_lowFilter  = 575.0;
+					break;
+				case FILTER_25:
+					m_highFilter = 613.0;
+					m_lowFilter  = 587.0;
+					break;
+				case FILTER_AUTO:
+					return;
+			}
+			break;
+
+		case MODE_CWUW:
+		case MODE_CWUN:
+		case MODE_CWLW:
+		case MODE_CWLN:
+			switch (filter) {
+				case FILTER_20000:
+				case FILTER_15000:
+				case FILTER_10000:
+				case FILTER_6000:
+				case FILTER_4000:
+				case FILTER_2600:
+				case FILTER_2100:
+					m_highFilter = width + 100.0;
+					m_lowFilter  = 100.0;
+					break;
+				case FILTER_1000:
+					m_highFilter = CW_OFFSET + 500.0;
+					m_lowFilter  = CW_OFFSET - 500.0;
+					break;
+				case FILTER_500:
+					m_highFilter = CW_OFFSET + 250.0;
+					m_lowFilter  = CW_OFFSET - 250.0;
+					break;
+				case FILTER_250:
+					m_highFilter = CW_OFFSET + 125.0;
+					m_lowFilter  = CW_OFFSET - 125.0;
+					break;
+				case FILTER_100:
+					m_highFilter = CW_OFFSET + 50.0;
+					m_lowFilter  = CW_OFFSET - 50.0;
+					break;
+				case FILTER_50:
+					m_highFilter = CW_OFFSET + 25.0;
+					m_lowFilter  = CW_OFFSET - 25.0;
+					break;
+				case FILTER_25:
+					m_highFilter = CW_OFFSET + 13.0;
+					m_lowFilter  = CW_OFFSET - 12.0;
+					break;
+				case FILTER_AUTO:
+					return;
+			}
+			break;
+	}
+
+	// Swap the filter values over
+	if (mode == MODE_LSB || mode == MODE_CWLN || mode == MODE_CWLW || mode == MODE_DIGL) {
+		double swap;
+
+		swap   = m_lowFilter;
+		m_lowFilter  = -m_highFilter;
+		m_highFilter = -swap;
+	}
+
+	createPanadapter();
 }
 
 void CSpectrumDisplay::setType(SPECTRUMTYPE type)

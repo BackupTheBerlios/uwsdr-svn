@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -25,13 +25,13 @@
 
 
 class CSpectrumDisplay : public wxPanel {
-
-    public:
+public:
 	CSpectrumDisplay(wxWindow* parent, int id, const wxPoint& pos, const wxSize& size, long style = 0L, const wxString& name = wxPanelNameStr);
 	virtual ~CSpectrumDisplay();
 
 	virtual void setSampleRate(float sampleRate);
 	virtual void setBandwidth(float hertz);
+	virtual void setFilter(FILTERWIDTH filter, UWSDRMODE mode);
 
 	virtual void showSpectrum(const float* spectrum, float bottom = 0.0F, float offset = 0.0F);
 
@@ -50,7 +50,7 @@ class CSpectrumDisplay : public wxPanel {
 	void onRightMouse(wxMouseEvent& event);
 	void onMenu(wxCommandEvent& event);
 
-    private:
+private:
 	int           m_width;
 	int           m_height;
 	float         m_dbScale;
@@ -58,6 +58,8 @@ class CSpectrumDisplay : public wxPanel {
 	wxBitmap*     m_bitmap;
 	float         m_sampleRate;
 	float         m_bandwidth;
+	float         m_highFilter;
+	float         m_lowFilter;
 	wxMenu*       m_menu;
 	wxMenu*       m_speedMenu;
 	wxMenu*       m_typeMenu;

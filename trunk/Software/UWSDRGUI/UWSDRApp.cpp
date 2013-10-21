@@ -303,16 +303,17 @@ bool CUWSDRApp::readDescrFile()
 	if (!descrFile.isValid())
 		return false;
 
-	m_parameters->m_hardwareName        = descrFile.getName();
-	m_parameters->m_hardwareType        = descrFile.getType();
-	m_parameters->m_hardwareMaxFreq     = descrFile.getMaxFreq();
-	m_parameters->m_hardwareMinFreq     = descrFile.getMinFreq();
-	m_parameters->m_hardwareFreqMult    = descrFile.getFreqMult();
-	m_parameters->m_hardwareOffset      = descrFile.getOffset();
-	m_parameters->m_hardwareStepSize    = descrFile.getStepSize();
-	m_parameters->m_hardwareSampleRate  = descrFile.getSampleRate();
-	m_parameters->m_hardwareReceiveOnly = descrFile.getReceiveOnly();
-	m_parameters->m_hardwareSwapIQ      = descrFile.getSwapIQ();
+	m_parameters->m_hardwareName              = descrFile.getName();
+	m_parameters->m_hardwareType              = descrFile.getType();
+	m_parameters->m_hardwareMaxFreq           = descrFile.getMaxFreq();
+	m_parameters->m_hardwareMinFreq           = descrFile.getMinFreq();
+	m_parameters->m_hardwareFreqMult          = descrFile.getFreqMult();
+	m_parameters->m_hardwareOffset            = descrFile.getOffset();
+	m_parameters->m_hardwareStepSize          = descrFile.getStepSize();
+	m_parameters->m_hardwareSampleRate        = descrFile.getSampleRate();
+	m_parameters->m_hardwareReceiveOnly       = descrFile.getReceiveOnly();
+	m_parameters->m_hardwareSwapIQ            = descrFile.getSwapIQ();
+	m_parameters->m_hardwareReceiveGainOffset = descrFile.getReceiveGainOffset();
 
 	// Change the hardware frequency limits for SoftRock type radios
 	if (m_parameters->m_hardwareType == TYPE_AUDIORX || m_parameters->m_hardwareType == TYPE_AUDIOTXRX) {

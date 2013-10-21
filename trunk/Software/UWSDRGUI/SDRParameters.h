@@ -43,6 +43,7 @@ class CSDRParameters {
 	float         m_hardwareSampleRate;
 	bool          m_hardwareReceiveOnly;
 	bool          m_hardwareSwapIQ;
+	unsigned int  m_hardwareReceiveGainOffset;
 
 	wxString      m_fileName;
 	wxString      m_name;
