@@ -22,7 +22,7 @@
 #include <wx/wx.h>
 #include <wx/datetime.h>
 
-const wxString VERSION  = wxT("uWave SDR 0.9.1");
+const wxString VERSION  = wxT("UWSDR 0.9.1");
 
 const wxDateTime::wxDateTime_t REL_DATE_DAY   = 21;
 const wxDateTime::Month        REL_DATE_MONTH = wxDateTime::Oct;

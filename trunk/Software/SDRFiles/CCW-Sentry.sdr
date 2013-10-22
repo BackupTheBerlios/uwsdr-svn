@@ -5,7 +5,7 @@
 
 name=CCW-Sentry
 
-type=si570rx
+type=si570txrx
 
 lowFreq=1.8
 highFreq=70.5

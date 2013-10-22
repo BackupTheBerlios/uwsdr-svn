@@ -274,7 +274,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 		bool ret = m_tuning->open();
 		if (!ret) {
 			::wxLogError(wxT("Problems communicating with the tuning hardware"));
-			::wxMessageBox(_("Problems communicating with the tuning hardware"), _("uWave SDR Error"), wxICON_ERROR);
+			::wxMessageBox(_("Problems communicating with the tuning hardware"), _("UWSDR Error"), wxICON_ERROR);
 			Close(true);
 			return;
 		}
@@ -307,7 +307,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	bool ret = m_sdr->open();
 	if (!ret) {
 		::wxLogError(wxT("Problems communicating with the SDR"));
-		::wxMessageBox(_("Problems communicating with the SDR"), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("Problems communicating with the SDR"), _("UWSDR Error"), wxICON_ERROR);
 		Close(true);
 		return;
 	}
@@ -592,7 +592,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	ret = m_dsp->open();
 	if (!ret) {
 		::wxLogError(wxT("Problems opening the I/O ports"));
-		::wxMessageBox(_("Problems opening the input/output ports."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("Problems opening the input/output ports."), _("UWSDR Error"), wxICON_ERROR);
 		Close(true);
 		return;
 	}
@@ -615,7 +615,7 @@ void CUWSDRFrame::createMenu()
 	m_menu->AppendSeparator();
 	m_menu->Append(wxID_HELP,            _("Help\tF1"));
 	m_menu->Append(MENU_HARDWARE_INFO,   _("Hardware Info"));
-	m_menu->Append(wxID_ABOUT,           _("About uWave SDR"));
+	m_menu->Append(wxID_ABOUT,           _("About UWSDR"));
 	m_menu->AppendSeparator();
 	m_menu->Append(wxID_EXIT,            _("Exit\tALT-F4"));
 }
@@ -1482,7 +1482,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 
 				if (!ret) {
 					m_record = false;
-					::wxMessageBox(_("Cannot open the sound file for recording"), _("uWave SDR Error"), wxICON_ERROR);
+					::wxMessageBox(_("Cannot open the sound file for recording"), _("UWSDR Error"), wxICON_ERROR);
 				}
 			} else {
 				m_dsp->setRecordOff();
@@ -1563,7 +1563,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 
 #if defined(__WXMSW__)
 			::wxMessageBox(VERSION + wxT(" - ") + dateText +
-				_("\n\nA Software Defined Radio GUI\n\n\tJonathan Naylor, G4KLX\n\tBob McGwier, N4HY\n\tFrank Brickle, AB2KT"),
+				_("\n\nA Software Defined Radio GUI\n\nJonathan Naylor, G4KLX\nBob McGwier, N4HY\nFrank Brickle, AB2KT"),
 				_("About UWSDR"),
 				wxICON_INFORMATION);
 #else
@@ -1669,8 +1669,8 @@ void CUWSDRFrame::onClose(wxCloseEvent& event)
 		return;
 	}
 
-	int reply = ::wxMessageBox(_("Do you want to exit uWave SDR"),
-		_("Exit uWSDR"),
+	int reply = ::wxMessageBox(_("Do you want to exit UWSDR"),
+		_("Exit UWSDR"),
 		wxOK | wxCANCEL | wxICON_QUESTION);
 
 	if (reply == wxOK) {
@@ -1812,7 +1812,7 @@ void CUWSDRFrame::onCommandNak(wxEvent& event1)
 	wxString message = event2.GetString();
 
 	::wxLogError(wxT("Received a NAK from the SDR: ") + message);
-	::wxMessageBox(_("Received a NAK from the SDR\n") + message, _("uWave SDR Error"), wxICON_ERROR);
+	::wxMessageBox(_("Received a NAK from the SDR\n") + message, _("UWSDR Error"), wxICON_ERROR);
 }
 
 void CUWSDRFrame::onCommandError(wxEvent& event1)
@@ -1821,13 +1821,13 @@ void CUWSDRFrame::onCommandError(wxEvent& event1)
 	wxString message = event2.GetString();
 
 	::wxLogError(message);
-	::wxMessageBox(message, _("uWave SDR Error"), wxICON_ERROR);
+	::wxMessageBox(message, _("UWSDR Error"), wxICON_ERROR);
 }
 
 void CUWSDRFrame::onConnectionLost(wxEvent& WXUNUSED(event))
 {
 	::wxLogError(wxT("Connection to the SDR lost"));
-	::wxMessageBox(_("Connection to the SDR lost"), _("uWave SDR Error"), wxICON_ERROR);
+	::wxMessageBox(_("Connection to the SDR lost"), _("UWSDR Error"), wxICON_ERROR);
 
 	Close(true);
 }
