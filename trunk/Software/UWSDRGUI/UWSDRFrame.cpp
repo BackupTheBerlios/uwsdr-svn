@@ -1563,22 +1563,17 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 
 #if defined(__WXMSW__)
 			::wxMessageBox(VERSION + wxT(" - ") + dateText +
-				_("\n\nA Software Define Radio for Microwaves\n\nHardware:\tChris Bartram, GW4DGU\n\tGrant Hodgson, G8UBN\n\tDavid Wrigley, G6GXK\n\tNeil Whiting, G4BRK\nFirmware:\tTobias Weber, DG3YEV\nSoftware:\tJonathan Naylor, G4KLX\nDTTSP:\tBob McGwier, N4HY\n\tFrank Brickle, AB2KT"),
-				_("About uWave SDR"),
+				_("\n\nA Software Defined Radio GUI\n\n\tJonathan Naylor, G4KLX\n\tBob McGwier, N4HY\n\tFrank Brickle, AB2KT"),
+				_("About UWSDR"),
 				wxICON_INFORMATION);
 #else
 				wxAboutDialogInfo info;
 
 				info.SetName(wxT("UWSDR"));
 				info.SetVersion(VERSION + wxT(" - ") + dateText);
-				info.SetDescription(_("A software defined radio for microwaves"));
+				info.SetDescription(_("A Software Defined Radio GUI"));
 
 				info.AddDeveloper(wxT("Jonathan Naylor, G4KLX"));
-				info.AddDeveloper(wxT("Chris Bartram, GW4DGU"));
-				info.AddDeveloper(wxT("Grant Hodgson, G8UBN"));
-				info.AddDeveloper(wxT("Tobias Weber, DG3YEV"));
-				info.AddDeveloper(wxT("David Wrigley, G6GXK"));
-				info.AddDeveloper(wxT("Neil Whiting, G4BRK"));
 				info.AddDeveloper(wxT("Bob McGwier, N4HY"));
 				info.AddDeveloper(wxT("Frank Brickle, AB2KT"));
 
