@@ -3,7 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008,2013 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -54,8 +54,8 @@ Bridgewater, NJ 08807
 
 
 class CRX {
-    public:
-	CRX(unsigned int bufLen, unsigned int bits, float sampleRate, CMeter* meter, CSpectrum* spectrum);
+public:
+	CRX(unsigned int bufLen, unsigned int bits, float sampleRate, CMeter* meter, CSpectrum* spectrum, bool swapIQ);
 	~CRX();
 
 	void process(float* bufi, float* bufq, unsigned int n);
@@ -97,14 +97,19 @@ class CRX {
 
 	void setSpectrumType(RXSPECTRUMtype type);
 
+	void setAFGain(float gain);
+	void setRFGain(float gain);
+
 	float getOffset() const;
 
-    private:
+private:
 	float          m_sampleRate;
 
 	CMeter*        m_meter;
 	CSpectrum*     m_spectrum;
 	RXSPECTRUMtype m_type;
+
+	bool           m_swapIQ;
 
 	CXB*           m_iBuf;
 	CXB*           m_oBuf;
@@ -142,6 +147,8 @@ class CRX {
 	CSSBDemod*     m_ssbDemodulator;
 
 	CSquelch*      m_squelch;
+	float          m_afGain;
+	float          m_rfGain;
 
 	SDRMODE        m_mode;
 

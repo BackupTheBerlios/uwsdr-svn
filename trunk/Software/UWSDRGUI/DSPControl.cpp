@@ -29,13 +29,12 @@ const int VOICE_READER = 77;
 
 const unsigned int RINGBUFFER_SIZE = 100001;
 
-CDSPControl::CDSPControl(float sampleRate, unsigned int receiveGainOffset, unsigned int blockSize) :
+CDSPControl::CDSPControl(float sampleRate, unsigned int receiveGainOffset, unsigned int blockSize, bool swapIQ) :
 wxThread(),
 m_dttsp(NULL),
 m_cwKeyer(NULL),
 m_voiceKeyer(NULL),
 m_sampleRate(sampleRate),
-m_receiveGainOffset(0.0F),
 m_blockSize(blockSize),
 m_txReader(NULL),
 m_txWriter(NULL),
@@ -54,12 +53,7 @@ m_rxLastBuffer(NULL),
 m_record(NULL),
 m_transmit(false),
 m_running(false),
-m_afGain(0.0F),
-m_rfGain(0.0F),
-m_micGain(0.0F),
-m_power(0.0F),
 m_mode(MODE_USB),
-m_swap(false),
 m_recordType(RECORD_MONO_AUDIO),
 m_clockId(-1),
 m_lastTXIn(false),
@@ -69,10 +63,8 @@ m_rxFills(0U),
 m_txOverruns(0U),
 m_txFills(0U)
 {
-	m_receiveGainOffset = ::pow(10.0F, float(receiveGainOffset) / 10.0F);
-
 	m_dttsp = new CDTTSPControl();
-	m_dttsp->open(m_sampleRate, m_blockSize);
+	m_dttsp->open(m_sampleRate, receiveGainOffset, m_blockSize, swapIQ);
 
 	m_cwKeyer = new CCWKeyer();
 	m_cwKeyer->setCallback(this, CW_READER);
@@ -178,10 +170,8 @@ void* CDSPControl::Entry()
 					::memcpy(m_txLastBuffer, m_txBuffer, m_blockSize * sizeof(float) * 2U);
 				}
 
-				if (nSamples > 0) {
-					scaleBuffer(m_txBuffer, nSamples, m_power, m_swap);
+				if (nSamples > 0)
 					m_txWriter->write(m_txBuffer, nSamples);
-				}
 			}
 
 			unsigned int nSamples = m_rxRingBuffer.getData(m_rxBuffer, m_blockSize);
@@ -201,7 +191,6 @@ void* CDSPControl::Entry()
 				::memcpy(m_rxLastBuffer, m_rxBuffer, m_blockSize * sizeof(float) * 2U);
 			}
 
-			scaleBuffer(m_rxBuffer, nSamples, m_afGain);
 			m_rxWriter->write(m_rxBuffer, nSamples);
 
 			// Don't record when transmitting
@@ -375,8 +364,6 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 				if (m_record != NULL && m_recordType == RECORD_STEREO_IQ)
 					m_record->write(m_rxBuffer, nSamples);
 
-				scaleBuffer(inBuffer, nSamples, m_rfGain, m_swap);
-
 				m_dttsp->dataIO(inBuffer, m_outBuffer, nSamples);
 
 				unsigned int n = m_rxRingBuffer.addData(m_outBuffer, nSamples);
@@ -398,8 +385,6 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 				if (m_cwKeyer->isActive() && (m_mode == MODE_CWUN || m_mode == MODE_CWUW || m_mode == MODE_CWLN || m_mode == MODE_CWLW))
 					return;
 
-				scaleBuffer(inBuffer, nSamples, m_micGain);
-
 				m_dttsp->dataIO(inBuffer, m_outBuffer, nSamples);
 
 				unsigned int n = m_txRingBuffer.addData(m_outBuffer, nSamples);
@@ -418,8 +403,6 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 				if (m_mode == MODE_CWUN || m_mode == MODE_CWUW || m_mode == MODE_CWLN || m_mode == MODE_CWLW)
 					return;				
 
-				scaleBuffer(inBuffer, nSamples, m_micGain);
-
 				m_dttsp->dataIO(inBuffer, m_outBuffer, nSamples);
 
 				unsigned int n = m_txRingBuffer.addData(m_outBuffer, nSamples);
@@ -437,8 +420,6 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 
 				if (m_mode != MODE_CWUN && m_mode != MODE_CWUW && m_mode != MODE_CWLN && m_mode != MODE_CWLW)
 					return;
-
-				scaleBuffer(inBuffer, nSamples, 0.9F);
 
 				// Send the tone out for the side tone
 				unsigned int n1 = m_rxRingBuffer.addData(inBuffer, nSamples);
@@ -503,11 +484,6 @@ void CDSPControl::setMode(UWSDRMODE mode)
 void CDSPControl::setWeaver(bool onOff)
 {
 	m_dttsp->setWeaver(onOff);
-}
-
-void CDSPControl::swapIQ(bool swap)
-{
-	m_swap = swap;
 }
 
 void CDSPControl::setFilter(FILTERWIDTH filter)
@@ -648,22 +624,22 @@ void CDSPControl::getPhase(float* spectrum)
 
 void CDSPControl::setAFGain(unsigned int value)
 {
-	m_afGain = float(value) / 1000.0F;
+	m_dttsp->setAFGain(value);
 }
 
 void CDSPControl::setRFGain(unsigned int value)
 {
-	m_rfGain = float(value) / 1000.0F + m_receiveGainOffset;
+	m_dttsp->setRFGain(value);
 }
 
 void CDSPControl::setMicGain(unsigned int value)
 {
-	m_micGain = float(value) / 1000.0F;
+	m_dttsp->setMicGain(value);
 }
 
 void CDSPControl::setPower(unsigned int value)
 {
-	m_power = float(value) / 1000.0F;
+	m_dttsp->setPower(value);
 }
 
 void CDSPControl::setSquelch(unsigned int value)
@@ -721,23 +697,6 @@ void CDSPControl::setRecordOff()
 		sdfw->close();
 
 		::wxLogMessage(wxT("Closed sound file"));
-	}
-}
-
-void CDSPControl::scaleBuffer(float* buffer, unsigned int nSamples, float scale, bool swap)
-{
-	wxASSERT(buffer != NULL);
-	wxASSERT(scale >= 0.0);
-
-	if (swap) {
-		for (unsigned int i = 0; i < nSamples; i++) {
-			float val = buffer[i * 2 + 0];
-			buffer[i * 2 + 0] = buffer[i * 2 + 1] * scale;
-			buffer[i * 2 + 1] = val * scale;
-		}
-	} else {
-		for (unsigned int i = 0; i < nSamples * 2; i++)
-			buffer[i] *= scale;
 	}
 }
 

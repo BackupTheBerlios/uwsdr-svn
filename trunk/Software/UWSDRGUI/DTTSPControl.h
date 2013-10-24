@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -26,12 +26,11 @@
 
 
 class CDTTSPControl : public wxThread {
-
-    public:
+public:
 	CDTTSPControl();
 	virtual ~CDTTSPControl();
 
-	virtual void open(float sampleRate, unsigned int blockSize);
+	virtual void open(float sampleRate, unsigned int receiveGainOffset, unsigned int blockSize, bool swapIQ);
 
 	virtual void* Entry();
 
@@ -41,6 +40,11 @@ class CDTTSPControl : public wxThread {
 	virtual void setTXAndFreq(bool transmit, float freq);
 	virtual void setAGC(AGCSPEED agc);
 	virtual void setDeviation(FMDEVIATION value);
+
+	virtual void setAFGain(unsigned int value);
+	virtual void setRFGain(unsigned int value);
+	virtual void setMicGain(unsigned int value);
+	virtual void setPower(unsigned int value);
 	virtual void setSquelch(unsigned int value);
 
 	virtual void setNB(bool onOff);
@@ -73,9 +77,10 @@ class CDTTSPControl : public wxThread {
 
 	virtual void close();
 
-    private:
+private:
 	CDttSP*      m_dttsp;
 	float        m_sampleRate;
+	float        m_receiveGainOffset;
 	unsigned int m_blockSize;
 	FILTERWIDTH  m_filter;
 	UWSDRMODE    m_mode;
@@ -101,6 +106,10 @@ class CDTTSPControl : public wxThread {
 	int          m_txGain;
 	bool         m_binaural;
 	int          m_pan;
+	unsigned int m_afGain;
+	unsigned int m_rfGain;
+	unsigned int m_micGain;
+	unsigned int m_power;
 	unsigned int m_squelch;
 	bool         m_started;
 

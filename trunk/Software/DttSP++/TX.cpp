@@ -3,7 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008,2013 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -36,11 +36,12 @@ Bridgewater, NJ 08807
 
 #include <wx/wx.h>
 
-CTX::CTX(unsigned int bufLen, unsigned int bits, float sampleRate, CMeter* meter, CSpectrum* spectrum) :
+CTX::CTX(unsigned int bufLen, unsigned int bits, float sampleRate, CMeter* meter, CSpectrum* spectrum, bool swapIQ) :
 m_sampleRate(sampleRate),
 m_meter(meter),
 m_spectrum(spectrum),
 m_type(SPEC_TX_POST_FILT),
+m_swapIQ(swapIQ),
 m_iBuf(NULL),
 m_oBuf(NULL),
 m_iq(NULL),
@@ -54,6 +55,8 @@ m_amModulator(NULL),
 m_fmModulator(NULL),
 m_ssbModulator(NULL),
 m_alc(NULL),
+m_micGain(0.0F),
+m_power(0.0F),
 m_speechProc(NULL),
 m_speechProcFlag(false),
 m_mode(USB),
@@ -117,8 +120,8 @@ CTX::~CTX()
 void CTX::process(float* bufi, float* bufq, unsigned int n)
 {
 	for (unsigned int i = 0U; i < n; i++) {
-		CXBreal(m_iBuf, i) = bufi[i];
-		CXBimag(m_iBuf, i) = bufq[i];
+		CXBreal(m_iBuf, i) = bufi[i] * m_micGain;
+		CXBimag(m_iBuf, i) = bufq[i] * m_micGain;
 	}
 	CXBhave(m_iBuf) = n;
 
@@ -162,12 +165,21 @@ void CTX::process(float* bufi, float* bufq, unsigned int n)
 
 	m_iq->process();
 
+	CXBscl(m_oBuf, m_power);
+
 	meter(m_oBuf, TX_PWR);
 
 	n = CXBhave(m_oBuf);
-	for (unsigned int i = 0U; i < n; i++) {
-		bufi[i] = CXBreal(m_oBuf, i);
-		bufq[i] = CXBimag(m_oBuf, i);
+	if (m_swapIQ) {
+		for (unsigned int i = 0U; i < n; i++) {
+			bufq[i] = CXBreal(m_oBuf, i);
+			bufi[i] = CXBimag(m_oBuf, i);
+		}
+	} else {
+		for (unsigned int i = 0U; i < n; i++) {
+			bufi[i] = CXBreal(m_oBuf, i);
+			bufq[i] = CXBimag(m_oBuf, i);
+		}
 	}
 
 	m_tick++;
@@ -296,6 +308,16 @@ void CTX::setIQ(float phase, float gain)
 {
 	m_iq->setPhase(phase);
 	m_iq->setGain(gain);
+}
+
+void CTX::setMicGain(float gain)
+{
+	m_micGain = gain;
+}
+
+void CTX::setPower(float power)
+{
+	m_power = power;
 }
 
 void CTX::setALCAttack(float attack)

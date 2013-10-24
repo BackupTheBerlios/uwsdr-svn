@@ -3,7 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008,2013 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -41,11 +41,12 @@ using std::min;
 using std::max;
 
 
-CRX::CRX(unsigned int bufLen, unsigned int bits, float sampleRate, CMeter* meter, CSpectrum* spectrum) :
+CRX::CRX(unsigned int bufLen, unsigned int bits, float sampleRate, CMeter* meter, CSpectrum* spectrum, bool swapIQ) :
 m_sampleRate(sampleRate),
 m_meter(meter),
 m_spectrum(spectrum),
 m_type(SPEC_RX_POST_FILT),
+m_swapIQ(swapIQ),
 m_iBuf(NULL),
 m_oBuf(NULL),
 m_iq(NULL),
@@ -70,6 +71,8 @@ m_amDemodulator(NULL),
 m_fmDemodulator(NULL),
 m_ssbDemodulator(NULL),
 m_squelch(NULL),
+m_afGain(0.0F),
+m_rfGain(0.0F),
 m_mode(USB),
 m_binFlag(false),
 m_weaver(true),
@@ -181,9 +184,16 @@ void CRX::process(float* bufi, float* bufq, unsigned int n)
 	wxASSERT(bufi != NULL);
 	wxASSERT(bufq != NULL);
 
-	for (unsigned int i = 0U; i < n; i++) {
-		CXBreal(m_iBuf, i) = bufi[i];
-		CXBimag(m_iBuf, i) = bufq[i];
+	if (m_swapIQ) {
+		for (unsigned int i = 0U; i < n; i++) {
+			CXBreal(m_iBuf, i) = bufq[i] * m_rfGain;
+			CXBimag(m_iBuf, i) = bufi[i] * m_rfGain;
+		}
+	} else {
+		for (unsigned int i = 0U; i < n; i++) {
+			CXBreal(m_iBuf, i) = bufi[i] * m_rfGain;
+			CXBimag(m_iBuf, i) = bufq[i] * m_rfGain;
+		}
 	}
 	CXBhave(m_iBuf) = n;
 
@@ -256,8 +266,8 @@ void CRX::process(float* bufi, float* bufq, unsigned int n)
 
 	n = CXBhave(m_oBuf);
 	for (unsigned int i = 0U; i < n; i++) {
-		bufi[i] = CXBreal(m_oBuf, i);
-		bufq[i] = CXBimag(m_oBuf, i);
+		bufi[i] = CXBreal(m_oBuf, i) * m_afGain;
+		bufq[i] = CXBimag(m_oBuf, i) * m_afGain;
 	}
 
 	m_tick++;
@@ -384,6 +394,16 @@ void CRX::setSquelchFlag(bool flag)
 void CRX::setSquelchThreshold(float threshold)
 {
 	m_squelch->setThreshold(threshold);
+}
+
+void CRX::setAFGain(float gain)
+{
+	m_afGain = gain;
+}
+
+void CRX::setRFGain(float gain)
+{
+	m_rfGain = gain;
 }
 
 void CRX::setFMDeviation(float deviation)

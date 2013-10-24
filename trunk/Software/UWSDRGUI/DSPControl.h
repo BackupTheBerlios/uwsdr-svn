@@ -35,7 +35,7 @@
 
 class CDSPControl : public wxThread, public IDataCallback {
 public:
-	CDSPControl(float sampleRate, unsigned int receiveGainOffset, unsigned int blockSize);
+	CDSPControl(float sampleRate, unsigned int receiveGainOffset, unsigned int blockSize, bool swapIQ);
 	virtual ~CDSPControl();
 
 	virtual void  setTXReader(IDataReader* reader);
@@ -61,7 +61,6 @@ public:
 	// Many of these are pass throughs to DTTSP
 	virtual void setMode(UWSDRMODE mode);
 	virtual void setWeaver(bool onOff);
-	virtual void swapIQ(bool swap);
 	virtual void setFilter(FILTERWIDTH filter);
 	virtual void setAGC(AGCSPEED agc);
 	virtual void setDeviation(FMDEVIATION dev);
@@ -111,7 +110,6 @@ private:
 	CVoiceKeyer*    m_voiceKeyer;
 
 	float           m_sampleRate;
-	float           m_receiveGainOffset;
 	unsigned int    m_blockSize;
 
 	IDataReader*    m_txReader;
@@ -136,12 +134,7 @@ private:
 
 	bool            m_transmit;
 	bool            m_running;
-	float           m_afGain;
-	float           m_rfGain;
-	float           m_micGain;
-	float           m_power;
 	UWSDRMODE       m_mode;
-	bool            m_swap;
 	RECORDTYPE      m_recordType;
 
 	int             m_clockId;
@@ -153,8 +146,6 @@ private:
 	unsigned int    m_rxFills;
 	unsigned int    m_txOverruns;
 	unsigned int    m_txFills;
-
-	void scaleBuffer(float* buffer, unsigned int nSamples, float scale, bool swap = false);
 
 #if defined(__WXDEBUG__)
 	void dumpBuffer(const wxString& title, float* buffer, unsigned int nSamples) const;

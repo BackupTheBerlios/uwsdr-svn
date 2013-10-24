@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ CDTTSPControl::CDTTSPControl() :
 wxThread(),
 m_dttsp(NULL),
 m_sampleRate(0.0F),
+m_receiveGainOffset(0.0F),
 m_blockSize(0),
 m_filter(FILTER_2100),
 m_mode(MODE_USB),
@@ -48,7 +49,11 @@ m_txPhase(0),
 m_txGain(0),
 m_binaural(false),
 m_pan(0),
-m_squelch(999999),
+m_afGain(999999U),
+m_rfGain(999999U),
+m_micGain(999999U),
+m_power(999999U),
+m_squelch(999999U),
 m_started(false)
 {
 }
@@ -57,12 +62,14 @@ CDTTSPControl::~CDTTSPControl()
 {
 }
 
-void CDTTSPControl::open(float sampleRate, unsigned int blockSize)
+void CDTTSPControl::open(float sampleRate, unsigned int receiveGainOffset, unsigned int blockSize, bool swapIQ)
 {
 	m_sampleRate = sampleRate;
 	m_blockSize  = blockSize;
 
-	m_dttsp = new CDttSP(sampleRate, blockSize);
+	m_receiveGainOffset = ::pow(10.0F, float(receiveGainOffset) / 10.0F);
+
+	m_dttsp = new CDttSP(sampleRate, blockSize, swapIQ);
 	m_dttsp->releaseUpdate();
 	m_dttsp->setDCBlockFlag(true);
 	m_dttsp->setRXSquelchFlag(true);
@@ -344,6 +351,58 @@ void CDTTSPControl::setPan(int value)
 	m_dttsp->setRXPan(val);
 
 	m_pan = value;
+}
+
+void CDTTSPControl::setAFGain(unsigned int value)
+{
+	if (value == m_afGain)
+		return;
+
+	// Map 0 - 1000 to 0.0 - 1.0
+	float gain = float(value) / 1000.0F;
+
+	m_dttsp->setAFGain(gain);
+
+	m_afGain = value;
+}
+
+void CDTTSPControl::setRFGain(unsigned int value)
+{
+	if (value == m_rfGain)
+		return;
+
+	// Map 0 - 1000 to 0.0 - 1.0 plus receive gain offset
+	float gain = float(value) / 1000.0F + m_receiveGainOffset;
+
+	m_dttsp->setRFGain(gain);
+
+	m_rfGain = value;
+}
+
+void CDTTSPControl::setMicGain(unsigned int value)
+{
+	if (value == m_micGain)
+		return;
+
+	// Map 0 - 1000 to 0.0 - 1.0
+	float gain = float(value) / 1000.0F;
+
+	m_dttsp->setMicGain(gain);
+
+	m_micGain = value;
+}
+
+void CDTTSPControl::setPower(unsigned int value)
+{
+	if (value == m_power)
+		return;
+
+	// Map 0 - 1000 to 0.0 - 1.0
+	float power = float(value) / 1000.0F;
+
+	m_dttsp->setPower(power);
+
+	m_power = value;
 }
 
 void CDTTSPControl::setSquelch(unsigned int value)

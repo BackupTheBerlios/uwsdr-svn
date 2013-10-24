@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@
 
 
 class CUWSDRFrame : public wxFrame, public IDialCallback, public IControlInterface {
-    public:
+public:
 	CUWSDRFrame(const wxString& title = wxEmptyString);
 	virtual ~CUWSDRFrame();
 
@@ -82,7 +82,7 @@ class CUWSDRFrame : public wxFrame, public IDialCallback, public IControlInterfa
 	virtual void setTransmit(bool txOn);
 	virtual void setKey(bool keyOn);
 
-    private:
+private:
 	wxTimer           m_timer;
 	CSDRParameters*   m_parameters;
 	CDSPControl*      m_dsp;
@@ -116,6 +116,7 @@ class CUWSDRFrame : public wxFrame, public IDialCallback, public IControlInterfa
 	CVolumeDial*      m_squelch;
 
 	float*            m_spectrum;
+	CFrequency        m_frequency;
 
 	CVoiceKeyboard*   m_voiceKeyboard;
 	CCWKeyboard*      m_cwKeyboard;

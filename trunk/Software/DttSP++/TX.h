@@ -3,7 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008,2013 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -53,8 +53,8 @@ Bridgewater, NJ 08807
 
 
 class CTX {
-    public:
-	CTX(unsigned int bufLen, unsigned int bits, float sampleRate, CMeter* meter, CSpectrum* spectrum);
+public:
+	CTX(unsigned int bufLen, unsigned int bits, float sampleRate, CMeter* meter, CSpectrum* spectrum, bool swapIQ);
 	~CTX();
 
 	void process(float* bufi, float* bufq, unsigned int n);
@@ -88,14 +88,19 @@ class CTX {
 
 	void setSpectrumType(TXSPECTRUMtype type);
 
+	void setMicGain(float gain);
+	void setPower(float power);
+
 	float getOffset() const;
 
-    private:
+private:
 	float          m_sampleRate;
 
 	CMeter*        m_meter;
 	CSpectrum*     m_spectrum;
 	TXSPECTRUMtype m_type;
+
+	bool           m_swapIQ;
 
 	CXB*           m_iBuf;
 	CXB*           m_oBuf;
@@ -116,6 +121,8 @@ class CTX {
 	CSSBMod*       m_ssbModulator;
 
 	CAGC*          m_alc;
+	float          m_micGain;
+	float          m_power;
 
 	CSpeechProc*   m_speechProc;
 	bool           m_speechProcFlag;

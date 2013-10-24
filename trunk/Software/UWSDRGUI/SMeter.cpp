@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -133,17 +133,30 @@ void CSMeter::setLevel(float level)
 	int endX;
 	int endY;
 
-	if (level <= 54.0F) {	// S0 to S9
-		double angle = (M_PI / 180.0) * double(45.0F - level * 0.833333F);
-		endX = centreX - int((SMETER_WIDTH + 15) * ::sin(angle) / 2.0 + 0.5);
-		endY = centreY - int((SMETER_WIDTH + 15) * ::cos(angle) / 2.0 + 0.5);
-	} else {			// dB over S9
-		if (level > 94.0F)	// 40dB over S9
-			level = 94.0F;
-		double angle = (M_PI / 180.0) * double(level - 54.0F) * 1.125;
-		endX = centreX + int((SMETER_WIDTH + 15) * ::sin(angle) / 2.0 + 0.5);
-		endY = centreY - int((SMETER_WIDTH + 15) * ::cos(angle) / 2.0 + 0.5);
+	if (m_txOn && m_txMeter == METER_POWER) {
+		if (level <= 120.0F) {
+			double angle = (M_PI / 180.0) * double(45.0F - level * 0.375F);;
+			endX = centreX - int((SMETER_WIDTH + 15) * ::sin(angle) / 2.0 + 0.5);
+			endY = centreY - int((SMETER_WIDTH + 15) * ::cos(angle) / 2.0 + 0.5);
+		} else {
+			double angle = (M_PI / 180.0) * double(level - 120.0F) * 0.375;
+			endX = centreX + int((SMETER_WIDTH + 15) * ::sin(angle) / 2.0 + 0.5);
+			endY = centreY - int((SMETER_WIDTH + 15) * ::cos(angle) / 2.0 + 0.5);
+		}
+	} else {
+		if (level <= 54.0F) {	// S0 to S9
+			double angle = (M_PI / 180.0) * double(45.0F - level * 0.833333F);
+			endX = centreX - int((SMETER_WIDTH + 15) * ::sin(angle) / 2.0 + 0.5);
+			endY = centreY - int((SMETER_WIDTH + 15) * ::cos(angle) / 2.0 + 0.5);
+		} else {			// dB over S9
+			if (level > 94.0F)	// 40dB over S9
+				level = 94.0F;
+			double angle = (M_PI / 180.0) * double(level - 54.0F) * 1.125;
+			endX = centreX + int((SMETER_WIDTH + 15) * ::sin(angle) / 2.0 + 0.5);
+			endY = centreY - int((SMETER_WIDTH + 15) * ::cos(angle) / 2.0 + 0.5);
+		}
 	}
+
 	dc.DrawLine(centreX, centreY, endX, endY);
 
 	dc.SelectObject(wxNullBitmap);

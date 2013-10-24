@@ -170,6 +170,7 @@ m_power(NULL),
 m_afGain(NULL),
 m_squelch(NULL),
 m_spectrum(NULL),
+m_frequency(),
 m_voiceKeyboard(NULL),
 m_cwKeyboard(NULL)
 {
@@ -324,7 +325,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_spectrumDisplay->setDB(m_parameters->m_spectrumDB);
 	m_spectrumDisplay->setBandwidth(m_parameters->m_hardwareSampleRate);
 
-	m_dsp = new CDSPControl(m_parameters->m_hardwareSampleRate, m_parameters->m_hardwareReceiveGainOffset, BLOCK_SIZE);
+	m_dsp = new CDSPControl(m_parameters->m_hardwareSampleRate, m_parameters->m_hardwareReceiveGainOffset, BLOCK_SIZE, m_parameters->m_hardwareSwapIQ);
 
 	switch (m_parameters->m_hardwareType) {
 		case TYPE_AUDIORX:
@@ -389,18 +390,18 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			// A self contained variant for demo's and testing
 			if (m_parameters->m_userAudioType == SOUND_JACK) {
 				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" User"), 2U, 2U);
-				// m_dsp->setTXReader(new CThreeToneReader(500.0F, 1500.0F, 2000.0F, 0.25F, rw));
+				m_dsp->setTXReader(new CThreeToneReader(500.0F, 1500.0F, 2000.0F, 0.25F, rw));
 				m_dsp->setRXWriter(rw);
-				m_dsp->setTXReader(rw);
+				// m_dsp->setTXReader(rw);
 			} else {
 				CSoundCardReaderWriter* rw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 2U, 2U);
-				// m_dsp->setTXReader(new CThreeToneReader(500.0F, 1500.0F, 2000.0F, 0.25F, rw));
+				m_dsp->setTXReader(new CThreeToneReader(500.0F, 1500.0F, 2000.0F, 0.25F, rw));
 				m_dsp->setRXWriter(rw);
-				m_dsp->setTXReader(rw);
+				// m_dsp->setTXReader(rw);
 			}
 
 			m_dsp->setTXWriter(new CNullWriter());
-			// m_dsp->setRXReader(new CSignalReader(1000.5F, 0.0F, 0.7F, 1.6F, 0.0F));
+			// m_dsp->setRXReader(new CSignalReader(1000.5F, 0.0F, 0.7F, 1.6F, 0.0F, m_parameters->m_hardwareSwapIQ));
 			m_dsp->setRXReader(new CSignalReader(1000.5F, 0.0003F, 0.0004F, 0.0F, 0.0F, m_parameters->m_hardwareSwapIQ));
 
 			if (m_parameters->m_txInEnable) {
@@ -537,9 +538,6 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_dsp->setBinaural(m_parameters->m_binaural);
 	m_dsp->setPan(m_parameters->m_pan);
-
-	if (m_parameters->m_hardwareSwapIQ)
-		m_dsp->swapIQ(true);
 
 	m_sMeter->setRXMeter(m_parameters->m_rxMeter);
 	m_sMeter->setTXMeter(m_parameters->m_txMeter);
@@ -1215,48 +1213,46 @@ void CUWSDRFrame::normaliseFreq()
 	if (m_parameters == NULL)
 		return;
 
-	CFrequency freq;
-
 	if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift != VFO_SPLIT)
-		freq = m_parameters->m_vfoA;
+		m_frequency = m_parameters->m_vfoA;
 	else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift != VFO_SPLIT)
-		freq = m_parameters->m_vfoB;
+		m_frequency = m_parameters->m_vfoB;
 	else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift != VFO_SPLIT)
-		freq = m_parameters->m_vfoC;
+		m_frequency = m_parameters->m_vfoC;
 	else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift != VFO_SPLIT)
-		freq = m_parameters->m_vfoD;
+		m_frequency = m_parameters->m_vfoD;
 
 	else if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn == 0U)
-		freq = m_parameters->m_vfoA;
+		m_frequency = m_parameters->m_vfoA;
 	else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn == 0U)
-		freq = m_parameters->m_vfoB;
+		m_frequency = m_parameters->m_vfoB;
 	else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn == 0U)
-		freq = m_parameters->m_vfoC;
+		m_frequency = m_parameters->m_vfoC;
 	else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn == 0U)
-		freq = m_parameters->m_vfoD;
+		m_frequency = m_parameters->m_vfoD;
 
 	else if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn > 0U)
-		freq = m_parameters->m_vfoB;
+		m_frequency = m_parameters->m_vfoB;
 	else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn > 0U)
-		freq = m_parameters->m_vfoA;
+		m_frequency = m_parameters->m_vfoA;
 	else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn > 0U)
-		freq = m_parameters->m_vfoD;
+		m_frequency = m_parameters->m_vfoD;
 	else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn > 0U)
-		freq = m_parameters->m_vfoC;
+		m_frequency = m_parameters->m_vfoC;
 
 	if (m_txOn > 0U) {
 		switch (m_parameters->m_vfoSplitShift) {
 			case VFO_SHIFT1_MINUS:
-				freq -= m_parameters->m_freqShift1;
+				m_frequency -= m_parameters->m_freqShift1;
 				break;
 			case VFO_SHIFT1_PLUS:
-				freq += m_parameters->m_freqShift1;
+				m_frequency += m_parameters->m_freqShift1;
 				break;
 			case VFO_SHIFT2_MINUS:
-				freq -= m_parameters->m_freqShift2;
+				m_frequency -= m_parameters->m_freqShift2;
 				break;
 			case VFO_SHIFT2_PLUS:
-				freq += m_parameters->m_freqShift2;
+				m_frequency += m_parameters->m_freqShift2;
 				break;
 			default:
 				break;
@@ -1265,9 +1261,9 @@ void CUWSDRFrame::normaliseFreq()
 
 	// Set the RIT
 	if (m_parameters->m_ritOn && m_txOn == 0U)
-		freq += double(m_parameters->m_ritFreq);
+		m_frequency += double(m_parameters->m_ritFreq);
 
-	CFrequency dispFreq = freq;
+	CFrequency dispFreq = m_frequency;
 
 	// Adjust the display ONLY frequency
 	if (m_parameters->m_mode == MODE_CWUW || m_parameters->m_mode == MODE_CWUN)
@@ -1284,19 +1280,19 @@ void CUWSDRFrame::normaliseFreq()
 
 	// Subtract any offset frequency needed
 	if (m_txOn > 0U)
-		freq -= m_dsp->getTXOffset();
+		m_frequency -= m_dsp->getTXOffset();
 	else
-		freq -= m_dsp->getRXOffset();
+		m_frequency -= m_dsp->getRXOffset();
 
 	if (m_parameters->m_hardwareType == TYPE_AUDIORX || m_parameters->m_hardwareType == TYPE_AUDIOTXRX) {
 		wxInt64 hz = m_parameters->m_hardwareMinFreq.get() + wxInt64(m_parameters->m_hardwareSampleRate / 2.0F + 0.5F);
 
-		m_sdr->setTXAndFreq(m_txOn > 0U, freq);	// The frequency argument is unused
-		m_dsp->setTXAndFreq(m_txOn > 0U, freq.get() - hz);
+		m_sdr->setTXAndFreq(m_txOn > 0U, m_frequency);	// The frequency argument is unused
+		m_dsp->setTXAndFreq(m_txOn > 0U, m_frequency.get() - hz);
 	} else {
 		// Take into account the frequency steps of the SDR ...
 		unsigned int stepSize = m_parameters->m_hardwareStepSize;
-		wxInt64 hz            = freq.get();
+		wxInt64 hz            = m_frequency.get();
 		wxInt64 offset        = 0LL;
 
 		offset = hz % stepSize;
@@ -1308,10 +1304,10 @@ void CUWSDRFrame::normaliseFreq()
 			base   += stepSize;
 		}
 
-		freq.set(base);
+		m_frequency.set(base);
 
 		// Finally go to TX or RX
-		m_sdr->setTXAndFreq(m_txOn > 0U, freq);
+		m_sdr->setTXAndFreq(m_txOn > 0U, m_frequency);
 		m_dsp->setTXAndFreq(m_txOn > 0U, offset);
 	}
 }
@@ -1321,6 +1317,12 @@ void CUWSDRFrame::normaliseMode()
 	// We can be called too early
 	if (m_parameters == NULL)
 		return;
+
+	// FM Wide is mapped to FM Narrow below 30 MHz
+	if (m_parameters->m_mode == MODE_FMW && m_frequency.get() > 0ULL && m_frequency.get() < 30000000ULL) {
+		m_parameters->m_mode = MODE_FMN;
+		m_mode->SetSelection(MODE_FMN);
+	}
 
 	m_dsp->setMode(m_parameters->m_mode);
 
@@ -1441,19 +1443,19 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 
 				CFrequency freq;
 				if (m_parameters->m_vfoChoice == VFO_A)
-					freq = m_parameters->m_vfoA;
+					m_frequency = m_parameters->m_vfoA;
 				else if (m_parameters->m_vfoChoice == VFO_B)
-					freq = m_parameters->m_vfoB;
+					m_frequency = m_parameters->m_vfoB;
 				else if (m_parameters->m_vfoChoice == VFO_C)
-					freq = m_parameters->m_vfoC;
+					m_frequency = m_parameters->m_vfoC;
 				else if (m_parameters->m_vfoChoice == VFO_D)
-					freq = m_parameters->m_vfoD;
+					m_frequency = m_parameters->m_vfoD;
 
 				CFreqKeypad keypad(this, -1, freq, m_parameters->m_minReceiveFreq, m_parameters->m_maxReceiveFreq);
 				int reply = keypad.ShowModal();
 
 				if (reply == wxID_OK) {
-					CFrequency freq = keypad.getFrequency();
+					CFrequency m_frequency = keypad.getFrequency();
 
 					if (m_parameters->m_vfoChoice == VFO_A)
 						m_parameters->m_vfoA = freq;
@@ -1651,8 +1653,12 @@ void CUWSDRFrame::onTimer(wxTimerEvent& WXUNUSED(event))
 			m_spectrumDisplay->showSpectrum(m_spectrum, -35.0F, offset);
 
 			float freq = m_spectrumDisplay->getFreqPick();
-			if (freq != 0.0F)
-				freqChange(freq);
+			if (freq != 0.0F) {
+				if (m_parameters->m_hardwareSwapIQ)
+					freqChange(-freq);
+				else
+					freqChange(freq);
+			}
 		}
 	}
 }

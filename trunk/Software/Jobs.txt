@@ -4,15 +4,11 @@ List of Bugs and Jobs for the UWSDR Software
 BUGS
 ----
 
-GUI is too large on Mac OS X
+Output level on SSB does not match that of FM.
 
 
 TODO
 ----
-
-Upgrade GUISetup for Mac OS X icons and menu entries
-
-Set of screenshots for all platforms
 
 Finish HackRF support
 
@@ -23,9 +19,3 @@ Future
 ------
 
 I + Q storage for different frequencies
-
-Internationalisation
-
-Learn how to create a binary distribution for Ubuntu.
-
-Learn how to create a binary distribution for Mac OS X.

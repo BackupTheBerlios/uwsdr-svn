@@ -51,7 +51,7 @@ enum RUNMODE {
 
 class CDttSP {
 public:
-	CDttSP(float sampleRate, unsigned int audioSize);
+	CDttSP(float sampleRate, unsigned int audioSize, bool swapIQ);
 	~CDttSP();
 
 	void  releaseUpdate();
@@ -98,6 +98,10 @@ public:
 	float getMeter(METERTYPE mt);
 	void  setDeviation(float value);
 	void  setRXPan(float pos);
+	void  setAFGain(float value);
+	void  setRFGain(float value);
+	void  setMicGain(float value);
+	void  setPower(float value);
 
 	float getTXOffset() const;
 	float getRXOffset() const;

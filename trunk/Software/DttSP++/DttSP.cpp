@@ -38,7 +38,7 @@ Bridgewater, NJ 08807
 #include "Defs.h"
 
 
-CDttSP::CDttSP(float sampleRate, unsigned int audioSize) :
+CDttSP::CDttSP(float sampleRate, unsigned int audioSize, bool swapIQ) :
 m_sampleRate(sampleRate),
 m_running(true),
 m_suspend(false),
@@ -89,8 +89,8 @@ m_frames(audioSize)
 	m_fade = m_frames / 5U;
 	m_tail = m_frames - m_fade;
 
-	m_rx = new CRX(m_frames, FFTW_ESTIMATE, sampleRate, m_meter, m_spectrum);
-	m_tx = new CTX(m_frames, FFTW_ESTIMATE, sampleRate, m_meter, m_spectrum);
+	m_rx = new CRX(m_frames, FFTW_ESTIMATE, sampleRate, m_meter, m_spectrum, swapIQ);
+	m_tx = new CTX(m_frames, FFTW_ESTIMATE, sampleRate, m_meter, m_spectrum, swapIQ);
 
 	m_rx->setMode(DEFMODE);
 	m_tx->setMode(DEFMODE);
@@ -202,6 +202,26 @@ void CDttSP::setRXSquelchFlag(bool flag)
 void CDttSP::setRXSquelchThreshold(float threshold)
 {
 	m_rx->setSquelchThreshold(threshold);
+}
+
+void CDttSP::setAFGain(float gain)
+{
+	m_rx->setAFGain(gain);
+}
+
+void CDttSP::setRFGain(float gain)
+{
+	m_rx->setRFGain(gain);
+}
+
+void CDttSP::setMicGain(float gain)
+{
+	m_tx->setMicGain(gain);
+}
+
+void CDttSP::setPower(float power)
+{
+	m_tx->setPower(power);
 }
 
 void CDttSP::setANFFlag(bool flag)
