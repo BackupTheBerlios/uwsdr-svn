@@ -120,10 +120,12 @@ CTX::~CTX()
 void CTX::process(float* bufi, float* bufq, unsigned int n)
 {
 	for (unsigned int i = 0U; i < n; i++) {
-		CXBreal(m_iBuf, i) = bufi[i] * m_micGain;
-		CXBimag(m_iBuf, i) = bufq[i] * m_micGain;
+		CXBreal(m_iBuf, i) = bufi[i];
+		CXBimag(m_iBuf, i) = bufq[i];
 	}
 	CXBhave(m_iBuf) = n;
+
+	CXBscl(m_iBuf, m_micGain);
 
 /*
 	unsigned int n = CXBhave(m_iBuf);

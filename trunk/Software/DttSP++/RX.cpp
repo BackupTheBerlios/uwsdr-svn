@@ -186,16 +186,18 @@ void CRX::process(float* bufi, float* bufq, unsigned int n)
 
 	if (m_swapIQ) {
 		for (unsigned int i = 0U; i < n; i++) {
-			CXBreal(m_iBuf, i) = bufq[i] * m_rfGain;
-			CXBimag(m_iBuf, i) = bufi[i] * m_rfGain;
+			CXBreal(m_iBuf, i) = bufq[i];
+			CXBimag(m_iBuf, i) = bufi[i];
 		}
 	} else {
 		for (unsigned int i = 0U; i < n; i++) {
-			CXBreal(m_iBuf, i) = bufi[i] * m_rfGain;
-			CXBimag(m_iBuf, i) = bufq[i] * m_rfGain;
+			CXBreal(m_iBuf, i) = bufi[i];
+			CXBimag(m_iBuf, i) = bufq[i];
 		}
 	}
 	CXBhave(m_iBuf) = n;
+
+	CXBscl(m_iBuf, m_rfGain);
 
 	if (m_nbFlag)
 		m_nb->blank();
@@ -264,10 +266,12 @@ void CRX::process(float* bufi, float* bufq, unsigned int n)
 
 	spectrum(m_oBuf, SPEC_RX_POST_DET);
 
+	CXBscl(m_oBuf, m_afGain);
+
 	n = CXBhave(m_oBuf);
 	for (unsigned int i = 0U; i < n; i++) {
-		bufi[i] = CXBreal(m_oBuf, i) * m_afGain;
-		bufq[i] = CXBimag(m_oBuf, i) * m_afGain;
+		bufi[i] = CXBreal(m_oBuf, i);
+		bufq[i] = CXBimag(m_oBuf, i);
 	}
 
 	m_tick++;

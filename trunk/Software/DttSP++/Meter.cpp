@@ -136,7 +136,7 @@ void CMeter::setTXMeter(TXMETERTYPE type, CXB* buf, float alcGain)
 		case TX_PWR:
 			temp = 0.0000001F;
 			for (i = 0;	i < len; i++)
-				temp += Csqrmag(vec[i]);
+				temp += Cmag(vec[i]);
 			m_txval[TX_PWR] = temp / float(len);
 			break;
 
