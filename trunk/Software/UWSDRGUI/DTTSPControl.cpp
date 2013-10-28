@@ -384,8 +384,8 @@ void CDTTSPControl::setMicGain(unsigned int value)
 	if (value == m_micGain)
 		return;
 
-	// Map 0 - 1000 to 0.0 - 1.0
-	float gain = float(value) / 1000.0F;
+	// Map 0 - 1000 to 0.0 - 5.0
+	float gain = float(value) / 200.0F;
 
 	m_dttsp->setMicGain(gain);
 
@@ -463,22 +463,15 @@ float CDTTSPControl::getMeter(METERPOS type)
 			break;
 		case METER_MICROPHONE:
 			val = m_dttsp->getMeter(MIC);
-			if (val != -200.0F) {
-				val += 160.0F;
-				val /= 2.0F;
-			}
 			break;
 		case METER_POWER:
 			val = m_dttsp->getMeter(PWR);
-			if (val != -200.0F)
-				val *= 200.0F;
+			break;
+		case METER_COMPRESSED:
+			val = m_dttsp->getMeter(COMP);
 			break;
 		case METER_ALC:
 			val = m_dttsp->getMeter(ALC);
-			if (val != -200.0F) {
-				val += 160.0F;
-				val /= 2.0F;
-			}
 			break;
 	}
 

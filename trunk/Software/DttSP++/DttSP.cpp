@@ -454,20 +454,8 @@ float CDttSP::getMeter(METERTYPE mt)
 				case ALC:
 					returnval = m_meter->getTXMeter(TX_ALC);
 					break;
-				case EQtap:
-					returnval = m_meter->getTXMeter(TX_EQtap);
-					break;
-				case LEVELER:
-					returnval = m_meter->getTXMeter(TX_LEVELER);
-					break;
 				case COMP:
 					returnval = m_meter->getTXMeter(TX_COMP);
-					break;
-				case ALC_G:
-					returnval = m_meter->getTXMeter(TX_ALC_G);
-					break;
-				case LVL_G:
-					returnval = m_meter->getTXMeter(TX_LVL_G);
 					break;
 				default:
 					returnval = -200.0F;

@@ -1443,28 +1443,28 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 
 				CFrequency freq;
 				if (m_parameters->m_vfoChoice == VFO_A)
-					m_frequency = m_parameters->m_vfoA;
+					freq = m_parameters->m_vfoA;
 				else if (m_parameters->m_vfoChoice == VFO_B)
-					m_frequency = m_parameters->m_vfoB;
+					freq = m_parameters->m_vfoB;
 				else if (m_parameters->m_vfoChoice == VFO_C)
-					m_frequency = m_parameters->m_vfoC;
+					freq = m_parameters->m_vfoC;
 				else if (m_parameters->m_vfoChoice == VFO_D)
-					m_frequency = m_parameters->m_vfoD;
+					freq = m_parameters->m_vfoD;
 
 				CFreqKeypad keypad(this, -1, freq, m_parameters->m_minReceiveFreq, m_parameters->m_maxReceiveFreq);
 				int reply = keypad.ShowModal();
 
 				if (reply == wxID_OK) {
-					CFrequency m_frequency = keypad.getFrequency();
+					m_frequency = keypad.getFrequency();
 
 					if (m_parameters->m_vfoChoice == VFO_A)
-						m_parameters->m_vfoA = freq;
+						m_parameters->m_vfoA = m_frequency;
 					else if (m_parameters->m_vfoChoice == VFO_B)
-						m_parameters->m_vfoB = freq;
+						m_parameters->m_vfoB = m_frequency;
 					else if (m_parameters->m_vfoChoice == VFO_C)
-						m_parameters->m_vfoC = freq;
+						m_parameters->m_vfoC = m_frequency;
 					else if (m_parameters->m_vfoChoice == VFO_D)
-						m_parameters->m_vfoD = freq;
+						m_parameters->m_vfoD = m_frequency;
 
 					normaliseFreq();
 				}

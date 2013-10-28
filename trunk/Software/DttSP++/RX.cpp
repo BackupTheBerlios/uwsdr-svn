@@ -99,13 +99,13 @@ m_tick(0UL)
 				    m_oBuf,	// input buffer
 				    1.0F,	// Target output
 				    2.0F,	// Attack time constant in ms
-				    500,	// Decay time constant in ms
-				    1.0,	// Slope
-				    500,	//Hangtime in ms
+				    500.0F,	// Decay time constant in ms
+				    1.0F,	// Slope
+				    500.0F,	//Hangtime in ms
 				    sampleRate,	// Sample rate
 				    31622.8F,	// Maximum gain as a multipler, linear not dB
 				    0.00001F,	// Minimum gain as a multipler, linear not dB
-				    1.0); 	// Set the current gain
+				    1.0F); 	// Set the current gain
 
 	m_amDemodulator = new CAMDemod(sampleRate,	// float samprate
 			 0.0F,	// float f_initial

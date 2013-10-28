@@ -3,7 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006-5 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008,2013 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -47,11 +47,7 @@ enum METERTYPE {
 	MIC,
 	PWR,
 	ALC,
-	EQtap,
-	LEVELER,
 	COMP,
-	ALC_G,
-	LVL_G,
 	METERTYPE_COUNT
 };
 
@@ -75,38 +71,29 @@ enum TXMETERTYPE {
 	TX_MIC,
 	TX_PWR,
 	TX_ALC,
-	TX_EQtap,
-	TX_LEVELER,
 	TX_COMP,
-	TX_ALC_G,
-	TX_LVL_G,
 	TXMETERTYPE_COUNT
 };
 
 
 class CMeter {
-    public:
+public:
 	CMeter();
 	~CMeter();
 
 	void setRXMeter(RXMETERTAP tap, CXB* buf, float agcGain);
-	void setTXMeter(TXMETERTYPE type, CXB* buf, float alcGain);
+	void setTXMeter(TXMETERTYPE type, CXB* buf);
 
 	float getRXMeter(RXMETERTYPE type) const;
 	float getTXMeter(TXMETERTYPE type) const;
 
 	void reset();
 
-    private:
-	float       m_rxval[RXMETERTYPE_COUNT];
+private:
+	float*      m_rxval;
 	RXMETERTYPE m_rxmode;
-	float       m_txval[TXMETERTYPE_COUNT];
+	float*      m_txval;
 	TXMETERTYPE m_txmode;
-	float       m_micSave;
-	float       m_alcSave;
-	float       m_eqTapSave;
-	float       m_levelerSave;
-	float       m_compSave;
 };
 
 #endif

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -98,8 +98,8 @@ m_remote(NULL),
 m_locator(NULL),
 m_report(NULL),
 m_serial(NULL),
-m_text(),
-m_button(),
+m_text(NULL),
+m_button(NULL),
 m_realTime(NULL),
 m_speed(NULL),
 m_prevLen(0U)
@@ -156,6 +156,9 @@ m_prevLen(0U)
 	mainSizer->Add(line1, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* textSizer = new wxFlexGridSizer(3);
+
+	m_text   = new wxTextCtrl*[CWKEYBOARD_COUNT];
+	m_button = new wxRadioButton*[CWKEYBOARD_COUNT + 1U];
 
 	unsigned int i;
 	for (i = 0U; i < CWKEYBOARD_COUNT; i++) {
@@ -217,6 +220,8 @@ m_prevLen(0U)
 
 CCWKeyboard::~CCWKeyboard()
 {
+	// delete[] m_text;
+	// delete[] m_button;
 }
 
 void CCWKeyboard::setLocal(const wxString& text)

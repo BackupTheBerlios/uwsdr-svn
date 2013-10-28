@@ -29,6 +29,7 @@ enum {
 	MENU_MICROPHONE,
 	MENU_POWER,
 	MENU_ALC,
+	MENU_COMPRESSED,
 	MENU_RX_MENU,
 	MENU_TX_MENU
 };
@@ -43,6 +44,7 @@ BEGIN_EVENT_TABLE(CSMeter, wxPanel)
 	EVT_MENU(MENU_MICROPHONE, CSMeter::onMenu)
 	EVT_MENU(MENU_POWER,      CSMeter::onMenu)
 	EVT_MENU(MENU_ALC,        CSMeter::onMenu)
+	EVT_MENU(MENU_COMPRESSED, CSMeter::onMenu)
 	EVT_PAINT(CSMeter::onPaint)
 END_EVENT_TABLE()
 
@@ -70,12 +72,13 @@ m_txOn(false)
 	m_rxMenu->AppendRadioItem(MENU_Q_INPUT,    _("Q Input"));
 	m_rxMenu->AppendRadioItem(MENU_SIGNAL,     _("Strength"));
 	m_rxMenu->AppendRadioItem(MENU_AVG_SIGNAL, _("Avg Strength"));
-	m_rxMenu->AppendRadioItem(MENU_AGC,        _("AGC"));
+	m_rxMenu->AppendRadioItem(MENU_AGC,        _("Post AGC"));
 
 	m_txMenu = new wxMenu();
 	m_txMenu->AppendRadioItem(MENU_MICROPHONE, _("Microphone"));
+	m_txMenu->AppendRadioItem(MENU_COMPRESSED, _("Compressed"));
+	m_txMenu->AppendRadioItem(MENU_ALC,        _("Post ALC"));
 	m_txMenu->AppendRadioItem(MENU_POWER,      _("Power"));
-	m_txMenu->AppendRadioItem(MENU_ALC,        _("ALC"));
 
 	m_menu = new wxMenu();
 	m_menu->Append(MENU_RX_MENU, _("Receive"),  m_rxMenu);
@@ -133,13 +136,16 @@ void CSMeter::setLevel(float level)
 	int endX;
 	int endY;
 
-	if (m_txOn && m_txMeter == METER_POWER) {
-		if (level <= 90.0F) {
-			double angle = (M_PI / 180.0) * double(45.0F - level * 0.5F);;
+	if (m_txOn) {
+		if (level <= 0.75F) {
+			double angle = (M_PI / 180.0) * double(45.0F - level * 60.0F);;
 			endX = centreX - int((SMETER_WIDTH + 15) * ::sin(angle) / 2.0 + 0.5);
 			endY = centreY - int((SMETER_WIDTH + 15) * ::cos(angle) / 2.0 + 0.5);
 		} else {
-			double angle = (M_PI / 180.0) * double(level - 90.0F) * 0.5;
+			if (level > 1.5F)
+				level = 1.5F;
+
+			double angle = (M_PI / 180.0) * double(level - 0.75F) * 60.0;
 			endX = centreX + int((SMETER_WIDTH + 15) * ::sin(angle) / 2.0 + 0.5);
 			endY = centreY - int((SMETER_WIDTH + 15) * ::cos(angle) / 2.0 + 0.5);
 		}
@@ -151,6 +157,7 @@ void CSMeter::setLevel(float level)
 		} else {			// dB over S9
 			if (level > 94.0F)	// 40dB over S9
 				level = 94.0F;
+
 			double angle = (M_PI / 180.0) * double(level - 54.0F) * 1.125;
 			endX = centreX + int((SMETER_WIDTH + 15) * ::sin(angle) / 2.0 + 0.5);
 			endY = centreY - int((SMETER_WIDTH + 15) * ::cos(angle) / 2.0 + 0.5);
@@ -319,6 +326,9 @@ void CSMeter::onMouse(wxMouseEvent& event)
 		case METER_ALC:
 			m_txMenu->Check(MENU_ALC, true);
 			break;
+		case METER_COMPRESSED:
+			m_txMenu->Check(MENU_COMPRESSED, true);
+			break;
 		default:
 			::wxLogError(wxT("Unknown TX meter type = %d"), m_txMeter);
 			break;
@@ -356,6 +366,9 @@ void CSMeter::onMenu(wxCommandEvent& event)
 			break;
 		case MENU_ALC:
 			setTXMeter(METER_ALC);
+			break;
+		case MENU_COMPRESSED:
+			setTXMeter(METER_COMPRESSED);
 			break;
 	}
 }

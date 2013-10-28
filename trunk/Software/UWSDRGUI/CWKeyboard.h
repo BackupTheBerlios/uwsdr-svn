@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -57,16 +57,16 @@ class CCWKeyboard : public wxDialog {
 	virtual unsigned int getSpeed() const;
 
     private:
-	wxTextCtrl*    m_local;
-	wxTextCtrl*    m_remote;
-	wxTextCtrl*    m_locator;
-	wxTextCtrl*    m_report;
-	wxTextCtrl*    m_serial;
-	wxTextCtrl*    m_text[CWKEYBOARD_COUNT];
-	wxRadioButton* m_button[CWKEYBOARD_COUNT + 1];
-	wxTextCtrl*    m_realTime;
-	wxSpinCtrl*    m_speed;
-	unsigned int   m_prevLen;
+	wxTextCtrl*     m_local;
+	wxTextCtrl*     m_remote;
+	wxTextCtrl*     m_locator;
+	wxTextCtrl*     m_report;
+	wxTextCtrl*     m_serial;
+	wxTextCtrl**    m_text;
+	wxRadioButton** m_button;
+	wxTextCtrl*     m_realTime;
+	wxSpinCtrl*     m_speed;
+	unsigned int    m_prevLen;
 
 	DECLARE_EVENT_TABLE()
 };

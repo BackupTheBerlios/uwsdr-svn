@@ -89,12 +89,12 @@ m_tick(0UL)
 	m_alc = new CAGC(agcLONG,	// mode kept around for control reasons alone
 			    	m_iBuf,	// input buffer
 			    	1.2F,	// Target output
-			    	2,	// Attack time constant in ms
-			    	10,	// Decay time constant in ms
-			    	1,	// Slope
-			    	500,	//Hangtime in ms
+			    	2.0F,	// Attack time constant in ms
+			    	10.0F,	// Decay time constant in ms
+			    	1.0F,	// Slope
+			    	500.0F,	//Hangtime in ms
 			    	sampleRate,	// Sample rate
-					1.0,	// Maximum gain as a multipler, linear not dB
+					1.0F,	// Maximum gain as a multipler, linear not dB
 			    	0.000001F,	// Minimum gain as a multipler, linear not dB
 			    	1.0);		// Set the current gain
 
@@ -189,7 +189,7 @@ void CTX::process(float* bufi, float* bufq, unsigned int n)
 
 void CTX::meter(CXB* buf, TXMETERTYPE type)
 {
-	m_meter->setTXMeter(type, buf, m_alc->getGain());
+	m_meter->setTXMeter(type, buf);
 }
 
 void CTX::spectrum(CXB* buf, TXSPECTRUMtype type)

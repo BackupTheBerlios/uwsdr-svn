@@ -43,21 +43,21 @@ using std::max;
 
 
 CMeter::CMeter() :
-m_rxval(),
+m_rxval(NULL),
 m_rxmode(RX_SIGNAL_STRENGTH),
-m_txval(),
-m_txmode(TX_PWR),
-m_micSave(0.0F),
-m_alcSave(0.0F),
-m_eqTapSave(0.0F),
-m_levelerSave(0.0F),
-m_compSave(0.0F)
+m_txval(NULL),
+m_txmode(TX_PWR)
 {
+	m_rxval = new float[RXMETERTYPE_COUNT];
+	m_txval = new float[TXMETERTYPE_COUNT];
+
 	reset();
 }
 
 CMeter::~CMeter()
 {
+	delete[] m_rxval;
+	delete[] m_txval;
 }
 
 void CMeter::reset()
@@ -115,52 +115,25 @@ void CMeter::setRXMeter(RXMETERTAP tap, CXB* buf, float agcGain)
 	}
 }
 
-void CMeter::setTXMeter(TXMETERTYPE type, CXB* buf, float alcGain)
+void CMeter::setTXMeter(TXMETERTYPE type, CXB* buf)
 {
 	wxASSERT(buf != NULL);
 
-	COMPLEX *vec = CXBbase(buf);
+	COMPLEX* vec = CXBbase(buf);
 
 	unsigned int len = CXBhave(buf);
-	unsigned int i;
 
-	float temp;
+	float temp = 0.0F;
 
-	switch (type) {
-		case TX_MIC:
-			for (i = 0; i < len; i++)
-				m_micSave = float(0.9995 * m_micSave + 0.0005 * Csqrmag(vec[i]));
-			m_txval[TX_MIC] = float(10.0 * ::log10(m_micSave + 1e-16));
-			break;
+	for (unsigned int i = 0U; i < len; i++)
+		temp += Cmag(vec[i]);
 
-		case TX_PWR:
-			temp = 0.0000001F;
-			for (i = 0;	i < len; i++)
-				temp += Cmag(vec[i]);
-			m_txval[TX_PWR] = temp / float(len);
-			break;
-
-		case TX_ALC:
-			for (i = 0; i < len; i++)
-				m_alcSave = float(0.9995 * m_alcSave + 0.0005 * Csqrmag(vec[i]));
-			m_txval[TX_ALC]   = float(10.0 * ::log10(m_alcSave + 1e-16));
-			m_txval[TX_ALC_G] = float(20.0 * ::log10(alcGain + 1e-16));
-			break;
-
-		case TX_COMP:
-			for (i = 0; i < len; i++)
-				m_compSave = float(0.9995 * m_compSave + 0.0005 * Csqrmag(vec[i]));
-			m_txval[TX_COMP] = float(10.0 * ::log10(m_compSave + 1e-16));
-			break;
-
-		default:
-			break;
-	}
+	m_txval[type] = temp / float(len);
 }
 
 float CMeter::getRXMeter(RXMETERTYPE type) const
 {
-	return m_rxval[type];
+ 	return m_rxval[type];
 }
 
 float CMeter::getTXMeter(TXMETERTYPE type) const
