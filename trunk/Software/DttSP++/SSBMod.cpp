@@ -48,5 +48,5 @@ CSSBMod::~CSSBMod()
 
 void CSSBMod::modulate()
 {
-	CXBscl(m_buf, 4.0F);
+	CXBscl(m_buf, 3.5F);
 }

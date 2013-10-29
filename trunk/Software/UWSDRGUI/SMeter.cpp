@@ -137,15 +137,15 @@ void CSMeter::setLevel(float level)
 	int endY;
 
 	if (m_txOn) {
-		if (level <= 0.75F) {
-			double angle = (M_PI / 180.0) * double(45.0F - level * 60.0F);;
+		if (level <= 0.625F) {
+			double angle = (M_PI / 180.0) * double(45.0F - level * 72.0F);;
 			endX = centreX - int((SMETER_WIDTH + 15) * ::sin(angle) / 2.0 + 0.5);
 			endY = centreY - int((SMETER_WIDTH + 15) * ::cos(angle) / 2.0 + 0.5);
 		} else {
-			if (level > 1.5F)
-				level = 1.5F;
+			if (level > 1.25F)
+				level = 1.25F;
 
-			double angle = (M_PI / 180.0) * double(level - 0.75F) * 60.0;
+			double angle = (M_PI / 180.0) * double(level - 0.625F) * 72.0;
 			endX = centreX + int((SMETER_WIDTH + 15) * ::sin(angle) / 2.0 + 0.5);
 			endY = centreY - int((SMETER_WIDTH + 15) * ::cos(angle) / 2.0 + 0.5);
 		}
