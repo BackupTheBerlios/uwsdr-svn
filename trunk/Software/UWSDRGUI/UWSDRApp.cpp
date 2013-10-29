@@ -109,8 +109,16 @@ const wxChar* KEY_TX_IQ_GAIN         = wxT("/TransmitIQGain");
 const wxChar* KEY_AF_GAIN            = wxT("/AFGain");
 const wxChar* KEY_RF_GAIN            = wxT("/RFGain");
 const wxChar* KEY_SQUELCH            = wxT("/Squelch");
-const wxChar* KEY_MIC_GAIN           = wxT("/MicGain");
-const wxChar* KEY_POWER              = wxT("/Power");
+const wxChar* KEY_AM_MIC_GAIN        = wxT("/AMMicGain");
+const wxChar* KEY_AM_POWER           = wxT("/AMPower");
+const wxChar* KEY_CW_MIC_GAIN        = wxT("/CWMicGain");
+const wxChar* KEY_CW_POWER           = wxT("/CWPower");
+const wxChar* KEY_FM_MIC_GAIN        = wxT("/FMMicGain");
+const wxChar* KEY_FM_POWER           = wxT("/FMPower");
+const wxChar* KEY_SSB_MIC_GAIN       = wxT("/SSBMicGain");
+const wxChar* KEY_SSB_POWER          = wxT("/SSBPower");
+const wxChar* KEY_DIG_MIC_GAIN       = wxT("/DigMicGain");
+const wxChar* KEY_DIG_POWER          = wxT("/DigPower");
 const wxChar* KEY_BINAURAL           = wxT("/Binaural");
 const wxChar* KEY_PAN                = wxT("/Pan");
 const wxChar* KEY_RECORD_TYPE        = wxT("/RecordType");
@@ -408,10 +416,18 @@ bool CUWSDRApp::readConfig()
 	wxString keyAfGain          = wxT("/") + m_parameters->m_name + KEY_AF_GAIN;
 	wxString keyRfGain          = wxT("/") + m_parameters->m_name + KEY_RF_GAIN;
 	wxString keySquelch         = wxT("/") + m_parameters->m_name + KEY_SQUELCH;
-	wxString keyMicGain         = wxT("/") + m_parameters->m_name + KEY_MIC_GAIN;
+	wxString keyAmMicGain       = wxT("/") + m_parameters->m_name + KEY_AM_MIC_GAIN;
+	wxString keyAmPower         = wxT("/") + m_parameters->m_name + KEY_AM_POWER;
+	wxString keyCwMicGain       = wxT("/") + m_parameters->m_name + KEY_CW_MIC_GAIN;
+	wxString keyCwPower         = wxT("/") + m_parameters->m_name + KEY_CW_POWER;
+	wxString keyFmMicGain       = wxT("/") + m_parameters->m_name + KEY_FM_MIC_GAIN;
+	wxString keyFmPower         = wxT("/") + m_parameters->m_name + KEY_FM_POWER;
+	wxString keySsbMicGain      = wxT("/") + m_parameters->m_name + KEY_SSB_MIC_GAIN;
+	wxString keySsbPower        = wxT("/") + m_parameters->m_name + KEY_SSB_POWER;
+	wxString keyDigMicGain      = wxT("/") + m_parameters->m_name + KEY_DIG_MIC_GAIN;
+	wxString keyDigPower        = wxT("/") + m_parameters->m_name + KEY_DIG_POWER;
 	wxString keyBinaural        = wxT("/") + m_parameters->m_name + KEY_BINAURAL;
 	wxString keyPan             = wxT("/") + m_parameters->m_name + KEY_PAN;
-	wxString keyPower           = wxT("/") + m_parameters->m_name + KEY_POWER;
 	wxString keyRecordType      = wxT("/") + m_parameters->m_name + KEY_RECORD_TYPE;
 	wxString keyTuningHW        = wxT("/") + m_parameters->m_name + KEY_TUNING_HW;
 	wxString keyCwSpeed         = wxT("/") + m_parameters->m_name + KEY_CW_SPEED;
@@ -629,11 +645,35 @@ bool CUWSDRApp::readConfig()
 	profile->Read(keySquelch,          &num, 0);
 	m_parameters->m_squelch = num;
 
-	profile->Read(keyMicGain,          &num, 0);
-	m_parameters->m_micGain = num;
+	profile->Read(keyAmMicGain,        &num, 0);
+	m_parameters->m_amMicGain = num;
 
-	profile->Read(keyPower,            &num, 0);
-	m_parameters->m_power = num;
+	profile->Read(keyAmPower,          &num, 0);
+	m_parameters->m_amPower = num;
+
+	profile->Read(keyCwMicGain,        &num, 0);
+	m_parameters->m_cwMicGain = num;
+
+	profile->Read(keyCwPower,          &num, 0);
+	m_parameters->m_cwPower = num;
+
+	profile->Read(keyFmMicGain,        &num, 0);
+	m_parameters->m_fmMicGain = num;
+
+	profile->Read(keyFmPower,          &num, 0);
+	m_parameters->m_fmPower = num;
+
+	profile->Read(keySsbMicGain,       &num, 0);
+	m_parameters->m_ssbMicGain = num;
+
+	profile->Read(keySsbPower,         &num, 0);
+	m_parameters->m_ssbPower = num;
+
+	profile->Read(keyDigMicGain,       &num, 0);
+	m_parameters->m_digMicGain = num;
+
+	profile->Read(keyDigPower,         &num, 0);
+	m_parameters->m_digPower = num;
 
 	profile->Read(keyBinaural,         &m_parameters->m_binaural, false);
 	profile->Read(keyPan,              &m_parameters->m_pan,      0);
@@ -735,8 +775,16 @@ void CUWSDRApp::writeConfig()
 	wxString keyAfGain        = wxT("/") + m_parameters->m_name + KEY_AF_GAIN;
 	wxString keyRfGain        = wxT("/") + m_parameters->m_name + KEY_RF_GAIN;
 	wxString keySquelch       = wxT("/") + m_parameters->m_name + KEY_SQUELCH;
-	wxString keyMicGain       = wxT("/") + m_parameters->m_name + KEY_MIC_GAIN;
-	wxString keyPower         = wxT("/") + m_parameters->m_name + KEY_POWER;
+	wxString keyAmMicGain     = wxT("/") + m_parameters->m_name + KEY_AM_MIC_GAIN;
+	wxString keyAmPower       = wxT("/") + m_parameters->m_name + KEY_AM_POWER;
+	wxString keyCwMicGain     = wxT("/") + m_parameters->m_name + KEY_CW_MIC_GAIN;
+	wxString keyCwPower       = wxT("/") + m_parameters->m_name + KEY_CW_POWER;
+	wxString keyFmMicGain     = wxT("/") + m_parameters->m_name + KEY_FM_MIC_GAIN;
+	wxString keyFmPower       = wxT("/") + m_parameters->m_name + KEY_FM_POWER;
+	wxString keySsbMicGain    = wxT("/") + m_parameters->m_name + KEY_SSB_MIC_GAIN;
+	wxString keySsbPower      = wxT("/") + m_parameters->m_name + KEY_SSB_POWER;
+	wxString keyDigMicGain    = wxT("/") + m_parameters->m_name + KEY_DIG_MIC_GAIN;
+	wxString keyDigPower      = wxT("/") + m_parameters->m_name + KEY_DIG_POWER;
 	wxString keyBinaural      = wxT("/") + m_parameters->m_name + KEY_BINAURAL;
 	wxString keyPan           = wxT("/") + m_parameters->m_name + KEY_PAN;
 	wxString keyRecordType    = wxT("/") + m_parameters->m_name + KEY_RECORD_TYPE;
@@ -834,10 +882,18 @@ void CUWSDRApp::writeConfig()
 	profile->Write(keyAfGain,           int(m_parameters->m_afGain));
 	profile->Write(keyRfGain,           int(m_parameters->m_rfGain));
 	profile->Write(keySquelch,          int(m_parameters->m_squelch));
-	profile->Write(keyMicGain,          int(m_parameters->m_micGain));
+	profile->Write(keyAmMicGain,        int(m_parameters->m_amMicGain));
+	profile->Write(keyAmPower,          int(m_parameters->m_amPower));
+	profile->Write(keyCwMicGain,        int(m_parameters->m_cwMicGain));
+	profile->Write(keyCwPower,          int(m_parameters->m_cwPower));
+	profile->Write(keyFmMicGain,        int(m_parameters->m_fmMicGain));
+	profile->Write(keyFmPower,          int(m_parameters->m_fmPower));
+	profile->Write(keySsbMicGain,       int(m_parameters->m_ssbMicGain));
+	profile->Write(keySsbPower,         int(m_parameters->m_ssbPower));
+	profile->Write(keyDigMicGain,       int(m_parameters->m_digMicGain));
+	profile->Write(keyDigPower,         int(m_parameters->m_digPower));
 	profile->Write(keyBinaural,         m_parameters->m_binaural);
 	profile->Write(keyPan,              m_parameters->m_pan);
-	profile->Write(keyPower,            int(m_parameters->m_power));
 	profile->Write(keyRecordType,       m_parameters->m_recordType);
 	profile->Write(keyCwSpeed,          int(m_parameters->m_cwSpeed));
 	profile->Write(keyCwLocal,          m_parameters->m_cwLocal);

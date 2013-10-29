@@ -508,14 +508,9 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_ritCtrl->SetLabel(m_parameters->m_ritOn ? _("Off") : _("On"));
 	m_rit->setValue(m_parameters->m_ritFreq);
 
-	m_micGain->setValue(m_parameters->m_micGain);
-	m_dsp->setMicGain(m_parameters->m_micGain);
-
-	m_power->setValue(m_parameters->m_power);
-	m_dsp->setPower(m_parameters->m_power);
-
 	m_afGain->setValue(m_parameters->m_afGain);
 	m_dsp->setAFGain(m_parameters->m_afGain);
+
 	m_dsp->setRFGain(m_parameters->m_rfGain);
 
 	m_squelch->setValue(m_parameters->m_squelch);
@@ -871,11 +866,55 @@ void CUWSDRFrame::dialMoved(int id, int value)
 			normaliseFreq();
 			break;
 		case MIC_KNOB:
-			m_parameters->m_micGain = value;
+			switch (m_parameters->m_mode) {
+				case MODE_AM:
+					m_parameters->m_amMicGain = value;
+					break;
+				case MODE_CWUW:
+				case MODE_CWLW:
+				case MODE_CWUN:
+				case MODE_CWLN:
+					m_parameters->m_cwMicGain = value;
+					break;
+				case MODE_FMN:
+				case MODE_FMW:
+					m_parameters->m_fmMicGain = value;
+					break;
+				case MODE_USB:
+				case MODE_LSB:
+					m_parameters->m_ssbMicGain = value;
+					break;
+				case MODE_DIGU:
+				case MODE_DIGL:
+					m_parameters->m_digMicGain = value;
+					break;
+			}
 			m_dsp->setMicGain(value);
 			break;
 		case POWER_KNOB:
-			m_parameters->m_power = value;
+			switch (m_parameters->m_mode) {
+				case MODE_AM:
+					m_parameters->m_amPower = value;
+					break;
+				case MODE_CWUW:
+				case MODE_CWLW:
+				case MODE_CWUN:
+				case MODE_CWLN:
+					m_parameters->m_cwPower = value;
+					break;
+				case MODE_FMN:
+				case MODE_FMW:
+					m_parameters->m_fmPower = value;
+					break;
+				case MODE_USB:
+				case MODE_LSB:
+					m_parameters->m_ssbPower = value;
+					break;
+				case MODE_DIGU:
+				case MODE_DIGL:
+					m_parameters->m_digPower = value;
+					break;
+			}
 			m_dsp->setPower(value);
 			break;
 		case VOLUME_KNOB:
@@ -1329,54 +1368,77 @@ void CUWSDRFrame::normaliseMode()
 	VFOSPEED    speed  = SPEED_MEDIUM;
 	FILTERWIDTH filter = m_parameters->m_filter;
 
+	unsigned int micGain = 500U;
+	unsigned int power = 500U; 
+
 	switch (m_parameters->m_mode) {
 		case MODE_FMW:
 			if (filter == FILTER_AUTO)
 				filter = m_parameters->m_filterFMW;
 			m_dsp->setDeviation(m_parameters->m_deviationFMW);
-			speed = m_parameters->m_vfoSpeedFM;
+			speed   = m_parameters->m_vfoSpeedFM;
+			micGain = m_parameters->m_fmMicGain;
+			power   = m_parameters->m_fmPower;
 			break;
 		case MODE_FMN:
 			if (filter == FILTER_AUTO)
 				filter = m_parameters->m_filterFMN;
 			m_dsp->setDeviation(m_parameters->m_deviationFMN);
-			speed = m_parameters->m_vfoSpeedFM;
+			speed   = m_parameters->m_vfoSpeedFM;
+			micGain = m_parameters->m_fmMicGain;
+			power   = m_parameters->m_fmPower;
 			break;
 		case MODE_AM:
 			if (filter == FILTER_AUTO)
 				filter = m_parameters->m_filterAM;
 			m_dsp->setAGC(m_parameters->m_agcAM);
-			speed = m_parameters->m_vfoSpeedAM;
+			speed   = m_parameters->m_vfoSpeedAM;
+			micGain = m_parameters->m_amMicGain;
+			power   = m_parameters->m_amPower;
 			break;
 		case MODE_USB:
 		case MODE_LSB:
 			if (filter == FILTER_AUTO)
 				filter = m_parameters->m_filterSSB;
 			m_dsp->setAGC(m_parameters->m_agcSSB);
-			speed = m_parameters->m_vfoSpeedSSB;
+			speed   = m_parameters->m_vfoSpeedSSB;
+			micGain = m_parameters->m_ssbMicGain;
+			power   = m_parameters->m_ssbPower;
 			break;
 		case MODE_DIGU:
 		case MODE_DIGL:
 			if (filter == FILTER_AUTO)
 				filter = m_parameters->m_filterDig;
 			m_dsp->setAGC(m_parameters->m_agcDig);
-			speed = m_parameters->m_vfoSpeedDig;
+			speed   = m_parameters->m_vfoSpeedDig;
+			micGain = m_parameters->m_digMicGain;
+			power   = m_parameters->m_digPower;
 			break;
 		case MODE_CWUW:
 		case MODE_CWLW:
 			if (filter == FILTER_AUTO)
 				filter = m_parameters->m_filterCWW;
 			m_dsp->setAGC(m_parameters->m_agcCW);
-			speed = m_parameters->m_vfoSpeedCWW;
+			speed   = m_parameters->m_vfoSpeedCWW;
+			micGain = m_parameters->m_cwMicGain;
+			power   = m_parameters->m_cwPower;
 			break;
 		case MODE_CWUN:
 		case MODE_CWLN:
 			if (filter == FILTER_AUTO)
 				filter = m_parameters->m_filterCWN;
 			m_dsp->setAGC(m_parameters->m_agcCW);
-			speed = m_parameters->m_vfoSpeedCWN;
+			speed   = m_parameters->m_vfoSpeedCWN;
+			micGain = m_parameters->m_cwMicGain;
+			power   = m_parameters->m_cwPower;
 			break;
 	}
+
+	m_dsp->setMicGain(micGain);
+	m_micGain->setValue(micGain);
+
+	m_dsp->setPower(power);
+	m_power->setValue(power);
 
 	m_dsp->setFilter(filter);
 	m_spectrumDisplay->setFilter(filter, m_parameters->m_mode);

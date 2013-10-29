@@ -148,8 +148,21 @@ class CSDRParameters {
 	unsigned int  m_afGain;
 	unsigned int  m_rfGain;
 	unsigned int  m_squelch;
-	unsigned int  m_micGain;
-	unsigned int  m_power;
+
+	unsigned int  m_amMicGain;
+	unsigned int  m_amPower;
+
+	unsigned int  m_cwMicGain;
+	unsigned int  m_cwPower;
+
+	unsigned int  m_fmMicGain;
+	unsigned int  m_fmPower;
+
+	unsigned int  m_ssbMicGain;
+	unsigned int  m_ssbPower;
+
+	unsigned int  m_digMicGain;
+	unsigned int  m_digPower;
 
 	bool          m_binaural;
 	int           m_pan;
