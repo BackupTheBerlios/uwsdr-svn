@@ -12,6 +12,8 @@ highFreq=2450
 
 stepSize=48000
 
+receiveGainOffset=12
+
 sampleRate=48000
 
 receiveOnly=0
