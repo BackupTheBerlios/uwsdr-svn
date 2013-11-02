@@ -1357,7 +1357,7 @@ void CUWSDRFrame::normaliseMode()
 		return;
 
 	// FM Wide is mapped to FM Narrow below 30 MHz
-	if (m_parameters->m_mode == MODE_FMW && m_frequency.get() > 0ULL && m_frequency.get() < 30000000ULL) {
+	if (m_parameters->m_mode == MODE_FMW && m_frequency.get() > wxInt64(0) && m_frequency.get() < wxInt64(30000000)) {
 		m_parameters->m_mode = MODE_FMN;
 		m_mode->SetSelection(MODE_FMN);
 	}
