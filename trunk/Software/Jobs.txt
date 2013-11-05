@@ -4,8 +4,6 @@ List of Bugs and Jobs for the UWSDR Software
 BUGS
 ----
 
-Output level on SSB does not match that of FM.
-
 
 TODO
 ----
@@ -13,6 +11,7 @@ TODO
 Finish HackRF support
 
 Add TX audio equalisation.
+
 
 
 Future

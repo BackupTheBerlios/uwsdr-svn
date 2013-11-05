@@ -313,7 +313,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 		return;
 	}
 
-	if (!m_parameters->m_hardwareReceiveOnly)
+	if (!m_parameters->m_hardwareTXRange.isEmpty())
 		m_sdr->enableTX(true);
 	m_sdr->enableRX(true);
 
@@ -324,6 +324,8 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_spectrumDisplay->setSpeed(m_parameters->m_spectrumSpeed);
 	m_spectrumDisplay->setDB(m_parameters->m_spectrumDB);
 	m_spectrumDisplay->setBandwidth(m_parameters->m_hardwareSampleRate);
+
+	m_freqDisplay->setMaxFrequency(m_parameters->m_hardwareMaxFreq);
 
 	m_dsp = new CDSPControl(m_parameters->m_hardwareSampleRate, m_parameters->m_hardwareReceiveGainOffset, BLOCK_SIZE, m_parameters->m_hardwareSwapIQ);
 
@@ -443,7 +445,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			m_dsp->setTXWriter(new CUWSDRDataWriter(writer, 1U));
 			m_dsp->setRXReader(new CUWSDRDataReader(reader, 1U));
 
-			if (!m_parameters->m_hardwareReceiveOnly) {
+			if (!m_parameters->m_hardwareTXRange.isEmpty()) {
 				if (m_parameters->m_txInEnable) {
 					CSerialInterface* control = new CSerialInterface(m_parameters->m_txInDev, m_parameters->m_txInPin);
 					m_dsp->setTXInControl(control);
@@ -467,21 +469,21 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 //
 			if (m_parameters->m_userAudioType == SOUND_JACK) {
 				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" User"), 2U, 2U);
-				if (m_parameters->m_hardwareReceiveOnly)
+				if (m_parameters->m_hardwareTXRange.isEmpty())
 					m_dsp->setTXReader(new CNullReader());
 				else
 					m_dsp->setTXReader(rw);
 				m_dsp->setRXWriter(rw);
 			} else {
 				CSoundCardReaderWriter* rw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 2U, 2U);
-				if (m_parameters->m_hardwareReceiveOnly)
+				if (m_parameters->m_hardwareTXRange.isEmpty())
 					m_dsp->setTXWriter(new CNullWriter());
 				else
 					m_dsp->setTXWriter(rw);
 				m_dsp->setRXWriter(rw);
 			}
 
-			if (!m_parameters->m_hardwareReceiveOnly) {
+			if (!m_parameters->m_hardwareTXRange.isEmpty()) {
 				if (m_parameters->m_txInEnable) {
 					CSerialInterface* control = new CSerialInterface(m_parameters->m_txInDev, m_parameters->m_txInPin);
 					m_dsp->setTXInControl(control);
@@ -551,24 +553,6 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_timer.SetOwner(this, DISPLAY_TIMER);
 	m_timer.Start(200);
-
-	// If receive only disable/remove transmit possibilities
-	if (m_parameters->m_hardwareReceiveOnly) {
-		m_swap->Disable();
-		m_split->Disable();
-		m_shift1->Disable();
-		m_shift2->Disable();
-		m_mhzMinus->Disable();
-		m_mhzPlus->Disable();
-		m_ritCtrl->Disable();
-		m_rit->Disable();
-		m_transmit->Disable();
-		m_micGain->Disable();
-		m_power->Disable();
-		m_sMeter->setTXMenu(false);
-		m_menu->Enable(MENU_VOICE_KEYBOARD, false);
-		m_menu->Enable(MENU_CW_KEYBOARD, false);
-	}
 
 	// Mute only works with UWSDR hardware
 	if (m_parameters->m_hardwareType != TYPE_UWSDR1)
@@ -956,17 +940,16 @@ void CUWSDRFrame::freqChange(double value)
 		freq = m_parameters->m_vfoD + value;
 
 	if (m_txOn == 0U) {
-		if (freq >= m_parameters->m_maxReceiveFreq)
-			freq = (freq - m_parameters->m_maxReceiveFreq) + m_parameters->m_minReceiveFreq;
+		if (freq >= m_parameters->m_hardwareMaxFreq)
+			freq = (freq - m_parameters->m_hardwareMaxFreq) + m_parameters->m_hardwareMinFreq;
 
-		if (freq < m_parameters->m_minReceiveFreq)
-			freq = (freq - m_parameters->m_minReceiveFreq) + m_parameters->m_maxReceiveFreq;
+		if (freq < m_parameters->m_hardwareMinFreq)
+			freq = (freq - m_parameters->m_hardwareMinFreq) + m_parameters->m_hardwareMaxFreq;
 	} else {
-		if (freq >= m_parameters->m_maxTransmitFreq)
-			freq = (freq - m_parameters->m_maxTransmitFreq) + m_parameters->m_minTransmitFreq;
-
-		if (freq < m_parameters->m_minTransmitFreq)
-			freq = (freq - m_parameters->m_minTransmitFreq) + m_parameters->m_maxTransmitFreq;
+		if (!m_parameters->m_hardwareTXRange.inRange(freq)) {
+			::wxBell();
+			return;
+		}
 	}
 
 	if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn > 0U)
@@ -1215,7 +1198,7 @@ bool CUWSDRFrame::normaliseTransmit(bool txOn)
 		else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SHIFT2_PLUS)
 			freq = m_parameters->m_vfoD + m_parameters->m_freqShift2;
 
-		if (freq >= m_parameters->m_maxTransmitFreq || freq < m_parameters->m_minTransmitFreq) {
+		if (!m_parameters->m_hardwareTXRange.inRange(freq)) {
 			::wxBell();
 			return false;
 		}
@@ -1344,9 +1327,55 @@ void CUWSDRFrame::normaliseFreq()
 
 		m_frequency.set(base);
 
+		bool txInRange = m_parameters->m_hardwareTXRange.inRange(dispFreq);
+
+		// If out of transmit frequency range then disable/remove transmit possibilities
+		if (txInRange) {
+			if (!m_swap->IsEnabled()) {		// Optimisation
+				m_swap->Enable();
+				m_split->Enable();
+				m_shift1->Enable();
+				m_shift2->Enable();
+				m_mhzMinus->Enable();
+				m_mhzPlus->Enable();
+				m_ritCtrl->Enable();
+				m_rit->Enable();
+				m_transmit->Enable();
+				m_micGain->Enable();
+				m_power->Enable();
+				m_sMeter->setTXMenu(true);
+				m_menu->Enable(MENU_VOICE_KEYBOARD, true);
+				m_menu->Enable(MENU_CW_KEYBOARD, true);
+			}
+		} else {
+			if (m_swap->IsEnabled()) {		// Optimisation
+				m_swap->Disable();
+				m_split->Disable();
+				m_shift1->Disable();
+				m_shift2->Disable();
+				m_mhzMinus->Disable();
+				m_mhzPlus->Disable();
+				m_ritCtrl->Disable();
+				m_rit->Disable();
+				m_transmit->Disable();
+				m_micGain->Disable();
+				m_power->Disable();
+				m_sMeter->setTXMenu(false);
+				m_menu->Enable(MENU_VOICE_KEYBOARD, false);
+				m_menu->Enable(MENU_CW_KEYBOARD, false);
+			}
+		}
+
 		// Finally go to TX or RX
-		m_sdr->setTXAndFreq(m_txOn > 0U, m_frequency);
-		m_dsp->setTXAndFreq(m_txOn > 0U, offset);
+		if (m_txOn > 0U) {
+			if (txInRange) {
+				m_sdr->setTXAndFreq(true, m_frequency);
+				m_dsp->setTXAndFreq(true, offset);
+			}
+		} else {
+			m_sdr->setTXAndFreq(false, m_frequency);
+			m_dsp->setTXAndFreq(false, offset);
+		}
 	}
 }
 
@@ -1512,7 +1541,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 				else if (m_parameters->m_vfoChoice == VFO_D)
 					freq = m_parameters->m_vfoD;
 
-				CFreqKeypad keypad(this, -1, freq, m_parameters->m_minReceiveFreq, m_parameters->m_maxReceiveFreq);
+				CFreqKeypad keypad(this, -1, freq, m_parameters->m_hardwareMinFreq, m_parameters->m_hardwareMaxFreq);
 				int reply = keypad.ShowModal();
 
 				if (reply == wxID_OK) {
@@ -1564,6 +1593,9 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 				wxString freqMult;
 				freqMult.Printf(wxT("%u"), m_parameters->m_hardwareFreqMult);
 
+				wxString txRanges;
+				txRanges.Printf(wxT("%u"), m_parameters->m_hardwareTXRange.getCount());
+
 				wxString type;
 				switch (m_parameters->m_hardwareType) {
 					case TYPE_AUDIORX:
@@ -1589,8 +1621,6 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 						break;
 				}
 
-				wxString transmit = (m_parameters->m_hardwareReceiveOnly) ? _("No") : _("Yes");
-
 				wxString swapIQ = (m_parameters->m_hardwareSwapIQ) ? _("Yes") : _("No");
 
 #if defined(__WXMSW__)
@@ -1599,7 +1629,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 					_(" MHz\nMin. Frequency:\t") + m_parameters->m_hardwareMinFreq.getString(3) +
 					_(" MHz\nFrequency Mult:\t") + freqMult +
 					_("\nStep Size:\t\t") + stepSize + _(" Hz\nSample Rate:\t") + sampleRate +
-					_(" samples/sec\nType:\t\t") + type + _("\nTransmit:\t\t") + transmit +
+					_(" samples/sec\nType:\t\t") + type + _("\nTransmit Ranges:\t") + txRanges +
 					_("\nSwap I/Q:\t\t") + swapIQ,
 					_("SDR Hardware Information"),
 					wxICON_INFORMATION);
@@ -1609,7 +1639,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 					_(" MHz\nMin. Frequency:\t") + m_parameters->m_hardwareMinFreq.getString(3) +
 					_(" MHz\nFrequency Mult:\t") + freqMult +
 					_("\nStep Size:\t\t\t") + stepSize + _(" Hz\nSample Rate:\t\t") + sampleRate +
-					_(" samples/sec\nType:\t\t\t\t") + type + _("\nTransmit:\t\t\t") + transmit +
+					_(" samples/sec\nType:\t\t\t\t") + type + _("\nTransmit Ranges:\t\t") + txRanges +
 					_("\nSwap I/Q:\t\t\t") + swapIQ,
 					_("SDR Hardware Information"),
 					wxICON_INFORMATION);
@@ -1742,7 +1772,7 @@ void CUWSDRFrame::onClose(wxCloseEvent& event)
 
 	if (reply == wxOK) {
 		m_timer.Stop();
-		if (!m_parameters->m_hardwareReceiveOnly)
+		if (!m_parameters->m_hardwareTXRange.isEmpty())
 			m_sdr->enableTX(false);
 		m_sdr->enableRX(false);
 

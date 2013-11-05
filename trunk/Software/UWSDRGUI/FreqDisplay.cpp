@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -30,7 +30,8 @@ m_width(size.GetWidth()),
 m_height(size.GetHeight()),
 m_bitmap(NULL),
 m_lastFrequency(),
-m_lightColour(wxColour(0, 255, 255))
+m_lightColour(wxColour(0, 255, 255)),
+m_mhzDigits(0)
 {
 	m_bitmap = new wxBitmap(m_width, m_height);
 
@@ -41,6 +42,22 @@ m_lightColour(wxColour(0, 255, 255))
 CFreqDisplay::~CFreqDisplay()
 {
 	delete m_bitmap;
+}
+
+void CFreqDisplay::setMaxFrequency(const CFrequency& frequency)
+{
+	wxInt64 hz = frequency.get();
+
+	m_mhzDigits = 1;
+
+	if (hz >= 10000000000LL)		// 10 GHz
+		m_mhzDigits = 5;
+	else if (hz >= 1000000000LL)		// 1000 MHz
+		m_mhzDigits = 4;
+	else if (hz >= 100000000LL)		// 100 MHz
+		m_mhzDigits = 3;
+	else if (hz >= 10000000LL)		// 10 MHz
+		m_mhzDigits = 2;
 }
 
 void CFreqDisplay::setFrequency(const CFrequency& frequency)
@@ -56,15 +73,18 @@ void CFreqDisplay::setFrequency(const CFrequency& frequency)
 	wxMemoryDC memoryDC;
 	memoryDC.SelectObject(*m_bitmap);
 
-	int mhzDigits = 1;
-	if (hz >= 10000000000LL)		// 10 GHz
-		mhzDigits = 5;
-	else if (hz >= 1000000000LL)		// 1000 MHz
-		mhzDigits = 4;
-	else if (hz >= 100000000LL)		// 100 MHz
-		mhzDigits = 3;
-	else if (hz >= 10000000LL)		// 10 MHz
-		mhzDigits = 2;
+	int mhzDigits = m_mhzDigits;
+	if (mhzDigits == 0) {
+		mhzDigits = 1;
+		if (hz >= 10000000000LL)		// 10 GHz
+			mhzDigits = 5;
+		else if (hz >= 1000000000LL)		// 1000 MHz
+			mhzDigits = 4;
+		else if (hz >= 100000000LL)		// 100 MHz
+			mhzDigits = 3;
+		else if (hz >= 10000000LL)		// 10 MHz
+			mhzDigits = 2;
+	}
 
 	const int bigThickness    = 5;
 	const int littleThickness = 4;
@@ -107,7 +127,9 @@ void CFreqDisplay::setFrequency(const CFrequency& frequency)
 		wxInt64 n = rem % 10LL;
 		rem /= 10LL;
 
-		drawDigit(memoryDC, bigWidth, bigHeight, bigThickness, x, bigY, n, false);
+		if (rem != 0LL || (rem == 0LL && n != 0LL))
+			drawDigit(memoryDC, bigWidth, bigHeight, bigThickness, x, bigY, n, false);
+
 		x -= bigWidth;
 	}
 

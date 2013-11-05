@@ -26,8 +26,7 @@
 #include "PortDialog.h"
 
 class CGUISetupFrame : public wxFrame {
-
-    public:
+public:
 	CGUISetupFrame();
 	virtual ~CGUISetupFrame();
 
@@ -40,7 +39,7 @@ class CGUISetupFrame : public wxFrame {
 	void onTuning(wxCommandEvent& event);
 	void onCreate(wxCommandEvent& event);
 
-    private:
+private:
 	wxComboBox*    m_name;
 	wxTextCtrl*    m_filenameText;
 	wxCheckBox*    m_deskTop;
@@ -51,7 +50,6 @@ class CGUISetupFrame : public wxFrame {
 	wxButton*      m_tuning;
 	wxString       m_filename;
 	SDRTYPE        m_sdrType;
-	bool           m_rxonly;
 	SOUNDTYPE      m_userAudioType;
 	int            m_userAudioInDev;
 	int            m_userAudioOutDev;

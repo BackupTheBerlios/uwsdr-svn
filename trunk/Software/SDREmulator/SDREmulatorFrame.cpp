@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ BEGIN_EVENT_TABLE(CSDREmulatorFrame, wxFrame)
 END_EVENT_TABLE()
 
 CSDREmulatorFrame::CSDREmulatorFrame(const wxString& address, unsigned int port) :
-wxFrame(NULL, -1, wxString(wxT("uWave SDR Emulator")), wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX  | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN),
+wxFrame(NULL, -1, wxString(wxT("UWSDR Emulator")), wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX  | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN),
 m_minFreq(2299000000LL),
 m_maxFreq(2451000000LL),
 m_txFreq(),
@@ -313,7 +313,7 @@ void CSDREmulatorFrame::onClose(wxCloseEvent& event)
 		return;
 	}
 
-	int reply = ::wxMessageBox(wxT("Do you want to exit the uWave SDR Emulator"),
+	int reply = ::wxMessageBox(wxT("Do you want to exit the UWSDR Emulator"),
 		wxT("Exit"),
 		wxOK | wxCANCEL | wxICON_QUESTION);
 
@@ -331,7 +331,7 @@ void CSDREmulatorFrame::onExit(wxCommandEvent& WXUNUSED(event))
 	if (m_txOn)
 		return;
 
-	int reply = ::wxMessageBox(wxT("Do you want to exit the uWave SDR Emulator"),
+	int reply = ::wxMessageBox(wxT("Do you want to exit the UWSDR Emulator"),
 		wxT("Exit uWSDR"),
 		wxOK | wxCANCEL | wxICON_QUESTION);
 

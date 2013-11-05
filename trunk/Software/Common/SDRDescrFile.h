@@ -21,6 +21,7 @@
 
 #include <wx/wx.h>
 
+#include "FrequencyRangeArray.h"
 #include "Frequency.h"
 
 enum SDRTYPE {
@@ -38,32 +39,32 @@ public:
 	CSDRDescrFile(const wxString& fileName);
 	~CSDRDescrFile();
 
-	wxString     getName() const;
-	SDRTYPE      getType() const;
-	CFrequency   getMaxFreq() const;
-	CFrequency   getMinFreq() const;
-	unsigned int getFreqMult() const;
-	CFrequency   getOffset() const;
-	unsigned int getStepSize() const;
-	float        getSampleRate() const;
-	bool         getReceiveOnly() const;
-	bool         getSwapIQ() const;
-	bool         isValid() const;
-	unsigned int getReceiveGainOffset() const;
+	wxString             getName() const;
+	SDRTYPE              getType() const;
+	CFrequency           getMaxFreq() const;
+	CFrequency           getMinFreq() const;
+	CFrequencyRangeArray getTXRanges() const;
+	unsigned int         getFreqMult() const;
+	CFrequency           getOffset() const;
+	unsigned int         getStepSize() const;
+	float                getSampleRate() const;
+	bool                 getSwapIQ() const;
+	bool                 isValid() const;
+	unsigned int         getReceiveGainOffset() const;
 
 private:
-	wxString     m_name;
-	SDRTYPE      m_type;
-	CFrequency   m_maxFreq;
-	CFrequency   m_minFreq;
-	unsigned int m_freqMult;
-	CFrequency   m_offset;
-	unsigned int m_stepSize;
-	float        m_sampleRate;
-	bool         m_receiveOnly;
-	bool         m_swapIQ;
-	bool         m_valid;
-	unsigned int m_receiveGainOffset;
+	wxString             m_name;
+	SDRTYPE              m_type;
+	CFrequency           m_maxFreq;
+	CFrequency           m_minFreq;
+	CFrequencyRangeArray m_ranges;
+	unsigned int         m_freqMult;
+	CFrequency           m_offset;
+	unsigned int         m_stepSize;
+	float                m_sampleRate;
+	bool                 m_swapIQ;
+	bool                 m_valid;
+	unsigned int         m_receiveGainOffset;
 };
 
 #endif

@@ -7,18 +7,15 @@ name=CCW-SDR-4+
 
 type=si570rx
 
-lowFreq=0.85
-highFreq=70.5
+frequencyRange=0.85,70.5
 
-freqMult=4
+frequencyMultiplier=4
 
 stepSize=25
 
 receiveGainOffset=12
 
 sampleRate=48000
-
-receiveOnly=1
 
 swapIQ=1
 

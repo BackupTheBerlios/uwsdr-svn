@@ -28,10 +28,6 @@
 #include "Log.h"
 
 const wxChar* KEY_FILE_NAME          = wxT("/FileName");
-const wxChar* KEY_MAX_RX_FREQ        = wxT("/MaxReceiveFreq");
-const wxChar* KEY_MIN_RX_FREQ        = wxT("/MinReceiveFreq");
-const wxChar* KEY_MAX_TX_FREQ        = wxT("/MaxTransmitFreq");
-const wxChar* KEY_MIN_TX_FREQ        = wxT("/MinTransmitFreq");
 const wxChar* KEY_VFO_A              = wxT("/VfoA");
 const wxChar* KEY_VFO_B              = wxT("/VfoB");
 const wxChar* KEY_VFO_C              = wxT("/VfoC");
@@ -178,7 +174,7 @@ bool CUWSDRApp::OnInit()
 
 	wxFileSystem::AddHandler(new wxZipFSHandler);
 	m_help = new wxHtmlHelpController();
-	m_help->SetTitleFormat(_("uWave SDR Help: %s"));
+	m_help->SetTitleFormat(_("UWSDR Help: %s"));
 
 	wxFileName fileName;
 	fileName.AssignDir(getHelpDir());
@@ -190,13 +186,13 @@ bool CUWSDRApp::OnInit()
 
 	if (!readConfig()) {
 		::wxLogError(wxT("Cannot open the SDR configuration - ") + m_parameters->m_name);
-		::wxMessageBox(_("Cannot open the SDR configuration - ") + m_parameters->m_name, _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("Cannot open the SDR configuration - ") + m_parameters->m_name, _("UWSDR Error"), wxICON_ERROR);
 		return false;
 	}
 
 	if (!readDescrFile()) {
 		::wxLogError(wxT("Cannot open the SDR description file - ") + m_parameters->m_fileName);
-		::wxMessageBox(_("Cannot open the SDR description file - ") + m_parameters->m_fileName, _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("Cannot open the SDR description file - ") + m_parameters->m_fileName, _("UWSDR Error"), wxICON_ERROR);
 		return false;
 	}
 
@@ -216,50 +212,33 @@ bool CUWSDRApp::OnInit()
 	    m_parameters->m_hardwareType == TYPE_SI570TXRX)
 		m_parameters->m_weaver = false;
 
+	if (m_parameters->m_vfoA > m_parameters->m_hardwareMaxFreq)
+		m_parameters->m_vfoA = m_parameters->m_hardwareMaxFreq;
+
+	if (m_parameters->m_vfoA < m_parameters->m_hardwareMinFreq)
+		m_parameters->m_vfoA = m_parameters->m_hardwareMinFreq;
+
+	if (m_parameters->m_vfoB > m_parameters->m_hardwareMaxFreq)
+		m_parameters->m_vfoB = m_parameters->m_hardwareMaxFreq;
+
+	if (m_parameters->m_vfoB < m_parameters->m_hardwareMinFreq)
+		m_parameters->m_vfoB = m_parameters->m_hardwareMinFreq;
+
+	if (m_parameters->m_vfoC > m_parameters->m_hardwareMaxFreq)
+		m_parameters->m_vfoC = m_parameters->m_hardwareMaxFreq;
+
+	if (m_parameters->m_vfoC < m_parameters->m_hardwareMinFreq)
+		m_parameters->m_vfoC = m_parameters->m_hardwareMinFreq;
+
+	if (m_parameters->m_vfoD > m_parameters->m_hardwareMaxFreq)
+		m_parameters->m_vfoD = m_parameters->m_hardwareMaxFreq;
+
+	if (m_parameters->m_vfoD < m_parameters->m_hardwareMinFreq)
+		m_parameters->m_vfoD = m_parameters->m_hardwareMinFreq;
+
 	wxString title = VERSION + wxT(" - ") + m_parameters->m_name;
 
 	m_frame->SetTitle(title);
-
-	// Sanity checking for the frequencies
-	if (m_parameters->m_maxReceiveFreq > m_parameters->m_hardwareMaxFreq ||
-	    m_parameters->m_maxReceiveFreq < m_parameters->m_hardwareMinFreq)
-		m_parameters->m_maxReceiveFreq = m_parameters->m_hardwareMaxFreq;
-
-	if (m_parameters->m_minReceiveFreq < m_parameters->m_hardwareMinFreq ||
-	    m_parameters->m_minReceiveFreq > m_parameters->m_hardwareMaxFreq)
-		m_parameters->m_minReceiveFreq = m_parameters->m_hardwareMinFreq;
-
-	if (m_parameters->m_maxTransmitFreq > m_parameters->m_maxReceiveFreq ||
-	    m_parameters->m_maxTransmitFreq < m_parameters->m_minReceiveFreq)
-		m_parameters->m_maxTransmitFreq = m_parameters->m_maxReceiveFreq;
-
-	if (m_parameters->m_minTransmitFreq < m_parameters->m_minReceiveFreq ||
-	    m_parameters->m_minTransmitFreq > m_parameters->m_maxReceiveFreq)
-		m_parameters->m_minTransmitFreq = m_parameters->m_minReceiveFreq;
-
-	if (m_parameters->m_vfoA > m_parameters->m_maxReceiveFreq)
-		m_parameters->m_vfoA = m_parameters->m_maxReceiveFreq;
-
-	if (m_parameters->m_vfoA < m_parameters->m_minReceiveFreq)
-		m_parameters->m_vfoA = m_parameters->m_minReceiveFreq;
-
-	if (m_parameters->m_vfoB > m_parameters->m_maxReceiveFreq)
-		m_parameters->m_vfoB = m_parameters->m_maxReceiveFreq;
-
-	if (m_parameters->m_vfoB < m_parameters->m_minReceiveFreq)
-		m_parameters->m_vfoB = m_parameters->m_minReceiveFreq;
-
-	if (m_parameters->m_vfoC > m_parameters->m_maxReceiveFreq)
-		m_parameters->m_vfoC = m_parameters->m_maxReceiveFreq;
-
-	if (m_parameters->m_vfoC < m_parameters->m_minReceiveFreq)
-		m_parameters->m_vfoC = m_parameters->m_minReceiveFreq;
-
-	if (m_parameters->m_vfoD > m_parameters->m_maxReceiveFreq)
-		m_parameters->m_vfoD = m_parameters->m_maxReceiveFreq;
-
-	if (m_parameters->m_vfoD < m_parameters->m_minReceiveFreq)
-		m_parameters->m_vfoD = m_parameters->m_minReceiveFreq;
 
 	m_frame->setParameters(m_parameters);
 
@@ -295,7 +274,7 @@ bool CUWSDRApp::OnCmdLineParsed(wxCmdLineParser& parser)
 
 int CUWSDRApp::OnExit()
 {
-	::wxLogMessage(wxT("Ending uWave SDR"));
+	::wxLogMessage(wxT("Ending UWSDR"));
 
 	writeConfig();
 
@@ -315,11 +294,11 @@ bool CUWSDRApp::readDescrFile()
 	m_parameters->m_hardwareType              = descrFile.getType();
 	m_parameters->m_hardwareMaxFreq           = descrFile.getMaxFreq();
 	m_parameters->m_hardwareMinFreq           = descrFile.getMinFreq();
+	m_parameters->m_hardwareTXRange           = descrFile.getTXRanges();
 	m_parameters->m_hardwareFreqMult          = descrFile.getFreqMult();
 	m_parameters->m_hardwareOffset            = descrFile.getOffset();
 	m_parameters->m_hardwareStepSize          = descrFile.getStepSize();
 	m_parameters->m_hardwareSampleRate        = descrFile.getSampleRate();
-	m_parameters->m_hardwareReceiveOnly       = descrFile.getReceiveOnly();
 	m_parameters->m_hardwareSwapIQ            = descrFile.getSwapIQ();
 	m_parameters->m_hardwareReceiveGainOffset = descrFile.getReceiveGainOffset();
 
@@ -335,10 +314,6 @@ bool CUWSDRApp::readDescrFile()
 bool CUWSDRApp::readConfig()
 {
 	wxString keyFileName        = wxT("/") + m_parameters->m_name + KEY_FILE_NAME;
-	wxString keyMaxRxFreq       = wxT("/") + m_parameters->m_name + KEY_MAX_RX_FREQ;
-	wxString keyMinRxFreq       = wxT("/") + m_parameters->m_name + KEY_MIN_RX_FREQ;
-	wxString keyMaxTxFreq       = wxT("/") + m_parameters->m_name + KEY_MAX_TX_FREQ;
-	wxString keyMinTxFreq       = wxT("/") + m_parameters->m_name + KEY_MIN_TX_FREQ;
 	wxString keyVfoA            = wxT("/") + m_parameters->m_name + KEY_VFO_A;
 	wxString keyVfoB            = wxT("/") + m_parameters->m_name + KEY_VFO_B;
 	wxString keyVfoC            = wxT("/") + m_parameters->m_name + KEY_VFO_C;
@@ -467,18 +442,6 @@ bool CUWSDRApp::readConfig()
 	}
 
 	wxString freq;
-	profile->Read(keyMaxRxFreq,        &freq, wxT("9999999.0"));
-	m_parameters->m_maxReceiveFreq.set(freq);
-
-	profile->Read(keyMinRxFreq,        &freq, wxT("0.0"));
-	m_parameters->m_minReceiveFreq.set(freq);
-
-	profile->Read(keyMaxTxFreq,        &freq, wxT("9999999.0"));
-	m_parameters->m_maxTransmitFreq.set(freq);
-
-	profile->Read(keyMinTxFreq,        &freq, wxT("0.0"));
-	m_parameters->m_minTransmitFreq.set(freq);
-
 	profile->Read(keyVfoA,             &freq, wxT("0.0"));
 	m_parameters->m_vfoA.set(freq);
 
@@ -710,10 +673,6 @@ bool CUWSDRApp::readConfig()
 
 void CUWSDRApp::writeConfig()
 {
-	wxString keyMaxRxFreq     = wxT("/") + m_parameters->m_name + KEY_MAX_RX_FREQ;
-	wxString keyMinRxFreq     = wxT("/") + m_parameters->m_name + KEY_MIN_RX_FREQ;
-	wxString keyMaxTxFreq     = wxT("/") + m_parameters->m_name + KEY_MAX_TX_FREQ;
-	wxString keyMinTxFreq     = wxT("/") + m_parameters->m_name + KEY_MIN_TX_FREQ;
 	wxString keyVfoA          = wxT("/") + m_parameters->m_name + KEY_VFO_A;
 	wxString keyVfoB          = wxT("/") + m_parameters->m_name + KEY_VFO_B;
 	wxString keyVfoC          = wxT("/") + m_parameters->m_name + KEY_VFO_C;
@@ -817,10 +776,6 @@ void CUWSDRApp::writeConfig()
 	wxConfig* profile = new wxConfig(APPNAME);
 	wxASSERT(profile != NULL);
 
-	profile->Write(keyMaxRxFreq,        m_parameters->m_maxReceiveFreq.getString());
-	profile->Write(keyMinRxFreq,        m_parameters->m_minReceiveFreq.getString());
-	profile->Write(keyMaxTxFreq,        m_parameters->m_maxTransmitFreq.getString());
-	profile->Write(keyMinTxFreq,        m_parameters->m_minTransmitFreq.getString());
 	profile->Write(keyVfoA,             m_parameters->m_vfoA.getString());
 	profile->Write(keyVfoB,             m_parameters->m_vfoB.getString());
 	profile->Write(keyVfoC,             m_parameters->m_vfoC.getString());

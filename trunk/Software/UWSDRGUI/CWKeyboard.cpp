@@ -354,11 +354,11 @@ void CCWKeyboard::onTransmit(wxCommandEvent& WXUNUSED(event))
 
 	switch (ret) {
 		case CW_ERROR_MODE:
-			::wxMessageBox(_("SDR is in the wrong mode"), _("uWave SDR Error"), wxICON_ERROR);
+			::wxMessageBox(_("SDR is in the wrong mode"), _("UWSDR Error"), wxICON_ERROR);
 			break;
 
 		case CW_ERROR_TX:
-			::wxMessageBox(_("Already sending a message"), _("uWave SDR Error"), wxICON_ERROR);
+			::wxMessageBox(_("Already sending a message"), _("UWSDR Error"), wxICON_ERROR);
 			break;
 
 		default:
@@ -397,11 +397,11 @@ void CCWKeyboard::onRealTime(wxCommandEvent& WXUNUSED(event))
 
 	switch (ret) {
 		case CW_ERROR_MODE:
-			::wxMessageBox(_("SDR is in the wrong mode"), _("uWave SDR Error"), wxICON_ERROR);
+			::wxMessageBox(_("SDR is in the wrong mode"), _("UWSDR Error"), wxICON_ERROR);
 			break;
 
 		case CW_ERROR_TX:
-			::wxMessageBox(_("Already sending a message"), _("uWave SDR Error"), wxICON_ERROR);
+			::wxMessageBox(_("Already sending a message"), _("UWSDR Error"), wxICON_ERROR);
 			break;
 
 		default:

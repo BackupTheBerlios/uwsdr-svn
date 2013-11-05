@@ -27,11 +27,11 @@ m_name(),
 m_type(TYPE_UWSDR1),
 m_maxFreq(),
 m_minFreq(),
+m_ranges(),
 m_freqMult(1U),
 m_offset(),
 m_stepSize(0U),
 m_sampleRate(0.0F),
-m_receiveOnly(true),
 m_swapIQ(false),
 m_valid(false),
 m_receiveGainOffset(0U)
@@ -74,16 +74,31 @@ m_receiveGainOffset(0U)
 					::wxLogError(wxT("Unknown type - %s in the .sdr file"), type.c_str());
 					return;
 				}
-			} else if (line.Left(9).Cmp(wxT("highFreq=")) == 0) {
-				m_maxFreq.set(line.Mid(9));
-			} else if (line.Left(8).Cmp(wxT("lowFreq=")) == 0) {
-				m_minFreq.set(line.Mid(8));
-			} else if (line.Left(9).Cmp(wxT("freqMult=")) == 0) {
+			} else if (line.Left(15).Cmp(wxT("frequencyRange=")) == 0) {
+				wxString freqs = line.Mid(15);
+				int pos = freqs.Find(wxT(','));
+				if (pos != wxNOT_FOUND) {
+					m_minFreq.set(freqs.Left(pos));
+					m_maxFreq.set(freqs.Mid(pos + 1));
+				} else {
+					::wxLogError(wxT("The frequencyRange entry is invalid - \"%s\""), line.c_str());
+					return;
+				}
+			} else if (line.Left(13).Cmp(wxT("transmitBand=")) == 0) {
+				wxString freqs = line.Mid(13);
+				int pos = freqs.Find(wxT(','));
+				if (pos != wxNOT_FOUND) {
+					m_ranges.addRange(freqs.Left(pos), freqs.Mid(pos + 1));
+				} else {
+					::wxLogError(wxT("A transmitBand entry is invalid - \"%s\""), line.c_str());
+					return;
+				}
+			} else if (line.Left(20).Cmp(wxT("frequencyMultiplier=")) == 0) {
 				unsigned long temp;
-				line.Mid(9).ToULong(&temp);
+				line.Mid(20).ToULong(&temp);
 				m_freqMult = temp;
-			} else if (line.Left(8).Cmp(wxT("offset=")) == 0) {
-				m_offset.set(line.Mid(7));
+			} else if (line.Left(16).Cmp(wxT("frequencyOffset=")) == 0) {
+				m_offset.set(line.Mid(16));
 			} else if (line.Left(9).Cmp(wxT("stepSize=")) == 0) {
 				unsigned long temp;
 				line.Mid(9).ToULong(&temp);
@@ -92,10 +107,6 @@ m_receiveGainOffset(0U)
 				double temp;
 				line.Mid(11).ToDouble(&temp);
 				m_sampleRate = temp;
-			} else if (line.Left(12).Cmp(wxT("receiveOnly=")) == 0) {
-				unsigned long temp;
-				line.Mid(12).ToULong(&temp);
-				m_receiveOnly = temp == 1L;
 			} else if (line.Left(7).Cmp(wxT("swapIQ=")) == 0) {
 				unsigned long temp;
 				line.Mid(7).ToULong(&temp);
@@ -114,9 +125,6 @@ m_receiveGainOffset(0U)
 			return;
 		}
 	}
-
-	if (m_type == TYPE_AUDIORX || m_type == TYPE_SI570RX)
-		m_receiveOnly = true;
 
 	m_valid = true;
 
@@ -147,6 +155,11 @@ CFrequency CSDRDescrFile::getMinFreq() const
 	return m_minFreq;
 }
 
+CFrequencyRangeArray CSDRDescrFile::getTXRanges() const
+{
+	return m_ranges;
+}
+
 unsigned int CSDRDescrFile::getFreqMult() const
 {
 	return m_freqMult;
@@ -165,11 +178,6 @@ unsigned int CSDRDescrFile::getStepSize() const
 float CSDRDescrFile::getSampleRate() const
 {
 	return m_sampleRate;
-}
-
-bool CSDRDescrFile::getReceiveOnly() const
-{
-	return m_receiveOnly;
 }
 
 bool CSDRDescrFile::getSwapIQ() const

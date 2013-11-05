@@ -42,14 +42,10 @@ BEGIN_EVENT_TABLE(CUWSDRPreferences, wxDialog)
 END_EVENT_TABLE()
 
 CUWSDRPreferences::CUWSDRPreferences(wxWindow* parent, int id, CSDRParameters* parameters, CDSPControl* dsp) :
-wxDialog(parent, id, wxString(_("uWave SDR Preferences"))),
+wxDialog(parent, id, wxString(_("UWSDR Preferences"))),
 m_parameters(parameters),
 m_dsp(dsp),
 m_noteBook(NULL),
-m_maxRXFreq(NULL),
-m_minRXFreq(NULL),
-m_maxTXFreq(NULL),
-m_minTXFreq(NULL),
 m_freqShift1(NULL),
 m_freqShift2(NULL),
 m_freqOffset(NULL),
@@ -127,12 +123,6 @@ m_clockTune(NULL)
 	mainSizer->SetSizeHints(this);
 
 	SetSizer(mainSizer);
-
-	m_minRXFreq->SetValue(m_parameters->m_minReceiveFreq.getString(3));
-	m_maxRXFreq->SetValue(m_parameters->m_maxReceiveFreq.getString(3));
-
-	m_minTXFreq->SetValue(m_parameters->m_minTransmitFreq.getString(3));
-	m_maxTXFreq->SetValue(m_parameters->m_maxTransmitFreq.getString(3));
 
 	wxString text;
 	text.Printf(wxT("%u"), m_parameters->m_freqShift1 / 1000);
@@ -228,9 +218,7 @@ m_clockTune(NULL)
 	    m_parameters->m_hardwareType == TYPE_DEMO)
 		m_method->Disable();
 
-	if (m_parameters->m_hardwareReceiveOnly) {
-		m_minTXFreq->Disable();
-		m_maxTXFreq->Disable();
+	if (m_parameters->m_hardwareTXRange.isEmpty()) {
 		m_freqShift1->Disable();
 		m_freqShift2->Disable();
 
@@ -261,80 +249,10 @@ CUWSDRPreferences::~CUWSDRPreferences()
 
 void CUWSDRPreferences::onOK(wxCommandEvent& WXUNUSED(event))
 {
-	wxString text = m_minRXFreq->GetValue();
+	wxString text = m_freqShift1->GetValue();
 
 	if (text.IsEmpty()) {
-		::wxMessageBox(_("The Min RX frequency may not empty."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
-
-	CFrequency minRXFreq(text);
-
-	if (minRXFreq < m_parameters->m_hardwareMinFreq ||
-	    minRXFreq > m_parameters->m_hardwareMaxFreq) {
-		::wxMessageBox(_("The Min RX frequency may not be outside the\nrange of the hardware."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
-
-	text = m_maxRXFreq->GetValue();
-
-	if (text.IsEmpty()) {
-		::wxMessageBox(_("The Max RX frequency may not empty."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
-
-	CFrequency maxRXFreq(text);
-
-	if (maxRXFreq < m_parameters->m_hardwareMinFreq ||
-	    maxRXFreq > m_parameters->m_hardwareMaxFreq) {
-		::wxMessageBox(_("The Max RX frequency may not be outside the\nrange of the hardware."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
-
-	if (maxRXFreq <= minRXFreq) {
-		::wxMessageBox(_("The Max RX frequency must be higher than the\nMin RX frequency."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
-
-	text = m_minTXFreq->GetValue();
-
-	if (text.IsEmpty()) {
-		::wxMessageBox(_("The Min TX frequency may not empty."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
-
-	CFrequency minTXFreq(text);
-
-	if (minTXFreq < minRXFreq ||
-	    minTXFreq > maxRXFreq) {
-		::wxMessageBox(_("The Min TX frequency may not be outside the\nrange of the receive frequencies."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
-
-	text = m_maxTXFreq->GetValue();
-
-	if (text.IsEmpty()) {
-		::wxMessageBox(_("The Max TX frequency may not empty."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
-
-	CFrequency maxTXFreq(text);
-
-	if (maxTXFreq < minRXFreq ||
-	    maxTXFreq > maxRXFreq) {
-		::wxMessageBox(_("The Max TX frequency may not be outside the\nrange of the receive frequencies."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
-
-	if (maxTXFreq <= minTXFreq) {
-		::wxMessageBox(_("The Max TX frequency must be higher than the\nMin TX frequency."), _("uWave SDR Error"), wxICON_ERROR);
-		return;
-	}
-
-	text = m_freqShift1->GetValue();
-
-	if (text.IsEmpty()) {
-		::wxMessageBox(_("Shift 1 may not be empty."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("Shift 1 may not be empty."), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -342,19 +260,19 @@ void CUWSDRPreferences::onOK(wxCommandEvent& WXUNUSED(event))
 	bool ret = text.ToLong(&shift1);
 
 	if (!ret) {
-		::wxMessageBox(_("Shift 1 is not a valid number."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("Shift 1 is not a valid number."), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
 
 	if (shift1 < 0L) {
-		::wxMessageBox(_("Shift 1 may not be negative."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("Shift 1 may not be negative."), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
 
 	text = m_freqShift2->GetValue();
 
 	if (text.IsEmpty()) {
-		::wxMessageBox(_("Shift 2 may not be empty."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("Shift 2 may not be empty."), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -362,19 +280,19 @@ void CUWSDRPreferences::onOK(wxCommandEvent& WXUNUSED(event))
 	ret = text.ToLong(&shift2);
 
 	if (!ret) {
-		::wxMessageBox(_("Shift 2 is not a valid number."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("Shift 2 is not a valid number."), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
 
 	if (shift2 < 0L) {
-		::wxMessageBox(_("Shift 2 may not be negative."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("Shift 2 may not be negative."), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
 
 	text = m_freqOffset->GetValue();
 
 	if (text.IsEmpty()) {
-		::wxMessageBox(_("The Offset may not empty."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("The Offset may not empty."), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -382,14 +300,14 @@ void CUWSDRPreferences::onOK(wxCommandEvent& WXUNUSED(event))
 	ret = text.ToDouble(&offset);
 
 	if (!ret) {
-		::wxMessageBox(_("The offset is not a valid number."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("The offset is not a valid number."), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
 
 	text = m_stepVeryFast->GetValue();
 
 	if (text.IsEmpty()) {
-		::wxMessageBox(_("The Very fast step size may not empty."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("The Very fast step size may not empty."), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -397,19 +315,19 @@ void CUWSDRPreferences::onOK(wxCommandEvent& WXUNUSED(event))
 	ret = text.ToDouble(&stepVeryFast);
 
 	if (!ret) {
-		::wxMessageBox(_("The Very fast step size is not a valid number."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("The Very fast step size is not a valid number."), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
 
 	if (stepVeryFast <= 0.0) {
-		::wxMessageBox(_("The Very fast step size may not be zero or negative."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("The Very fast step size may not be zero or negative."), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
 
 	text = m_stepFast->GetValue();
 
 	if (text.IsEmpty()) {
-		::wxMessageBox(_("The Fast step size may not empty."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("The Fast step size may not empty."), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -417,19 +335,19 @@ void CUWSDRPreferences::onOK(wxCommandEvent& WXUNUSED(event))
 	ret = text.ToDouble(&stepFast);
 
 	if (!ret) {
-		::wxMessageBox(_("The Fast step size is not a valid number."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("The Fast step size is not a valid number."), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
 
 	if (stepFast <= 0.0) {
-		::wxMessageBox(_("The Fast step size may not be zero or negative."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("The Fast step size may not be zero or negative."), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
 
 	text = m_stepMedium->GetValue();
 
 	if (text.IsEmpty()) {
-		::wxMessageBox(_("The Medium step size may not empty."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("The Medium step size may not empty."), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -437,19 +355,19 @@ void CUWSDRPreferences::onOK(wxCommandEvent& WXUNUSED(event))
 	ret = text.ToDouble(&stepMedium);
 
 	if (!ret) {
-		::wxMessageBox(_("The Medium step size is not a valid number."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("The Medium step size is not a valid number."), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
 
 	if (stepMedium <= 0.0) {
-		::wxMessageBox(_("The Medium step size may not be zero or negative."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("The Medium step size may not be zero or negative."), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
 
 	text = m_stepSlow->GetValue();
 
 	if (text.IsEmpty()) {
-		::wxMessageBox(_("The Slow step size may not empty."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("The Slow step size may not empty."), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -457,19 +375,19 @@ void CUWSDRPreferences::onOK(wxCommandEvent& WXUNUSED(event))
 	ret = text.ToDouble(&stepSlow);
 
 	if (!ret) {
-		::wxMessageBox(_("The Slow step size is not a valid number."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("The Slow step size is not a valid number."), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
 
 	if (stepSlow <= 0.0) {
-		::wxMessageBox(_("The Slow step size may not be zero or negative."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("The Slow step size may not be zero or negative."), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
 
 	text = m_stepVerySlow->GetValue();
 
 	if (text.IsEmpty()) {
-		::wxMessageBox(_("The Very slow step size may not empty."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("The Very slow step size may not empty."), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -477,20 +395,14 @@ void CUWSDRPreferences::onOK(wxCommandEvent& WXUNUSED(event))
 	ret = text.ToDouble(&stepVerySlow);
 
 	if (!ret) {
-		::wxMessageBox(_("The Very slow step size is not a valid number."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("The Very slow step size is not a valid number."), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
 
 	if (stepVerySlow <= 0.0) {
-		::wxMessageBox(_("The Very slow step size may not be zero or negative."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("The Very slow step size may not be zero or negative."), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
-
-	m_parameters->m_minReceiveFreq  = minRXFreq;
-	m_parameters->m_maxReceiveFreq  = maxRXFreq;
-
-	m_parameters->m_minTransmitFreq = minTXFreq;
-	m_parameters->m_maxTransmitFreq = maxTXFreq;
 
 	m_parameters->m_freqShift1 = shift1 * 1000U;
 	m_parameters->m_freqShift2 = shift2 * 1000U;
@@ -590,34 +502,10 @@ wxPanel* CUWSDRPreferences::createFrequencyTab(wxNotebook* noteBook)
 
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
-	wxStaticText* labelZ = new wxStaticText(panel, -1, _("Set the transmit and receive frequency limits.."));
+	wxStaticText* labelZ = new wxStaticText(panel, -1, _("Set the frequency shifts and offset."));
 	mainSizer->Add(labelZ, 0, wxALL, BORDER_SIZE);
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(2);
-
-	wxStaticText* label1 = new wxStaticText(panel, -1, _("Min RX frequency (MHz)"));
-	sizer->Add(label1, 0, wxALL, BORDER_SIZE);
-
-	m_minRXFreq = new wxTextCtrl(panel, -1);
-	sizer->Add(m_minRXFreq, 0, wxALL, BORDER_SIZE);
-
-	wxStaticText* label2 = new wxStaticText(panel, -1, _("Max RX frequency (MHz)"));
-	sizer->Add(label2, 0, wxALL, BORDER_SIZE);
-
-	m_maxRXFreq = new wxTextCtrl(panel, -1);
-	sizer->Add(m_maxRXFreq, 0, wxALL, BORDER_SIZE);
-
-	wxStaticText* label3 = new wxStaticText(panel, -1, _("Min TX frequency (MHz)"));
-	sizer->Add(label3, 0, wxALL, BORDER_SIZE);
-
-	m_minTXFreq = new wxTextCtrl(panel, -1);
-	sizer->Add(m_minTXFreq, 0, wxALL, BORDER_SIZE);
-
-	wxStaticText* label4 = new wxStaticText(panel, -1, _("Max TX frequency (MHz)"));
-	sizer->Add(label4, 0, wxALL, BORDER_SIZE);
-
-	m_maxTXFreq = new wxTextCtrl(panel, -1);
-	sizer->Add(m_maxTXFreq, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label5 = new wxStaticText(panel, -1, _("Shift 1 (kHz)"));
 	sizer->Add(label5, 0, wxALL, BORDER_SIZE);

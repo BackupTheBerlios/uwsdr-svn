@@ -7,13 +7,10 @@ name=HackRF
 
 type=hackrf
 
-lowFreq=30
-highFreq=6000
+frequencyRange=30.0,6000.0
 
-stepSize=50
+stepSize=25
 
 sampleRate=192000
-
-receiveOnly=1
 
 #

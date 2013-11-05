@@ -88,7 +88,7 @@ END_EVENT_TABLE()
 
 
 CGUISetupFrame::CGUISetupFrame() :
-wxFrame(NULL, -1, wxString(_("uWave SDR GUI Setup")), wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX  | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN),
+wxFrame(NULL, -1, wxString(_("UWSDR GUI Setup")), wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX  | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN),
 m_name(NULL),
 m_filenameText(NULL),
 m_deskTop(NULL),
@@ -99,7 +99,6 @@ m_port(NULL),
 m_tuning(NULL),
 m_filename(),
 m_sdrType(TYPE_UWSDR1),
-m_rxonly(false),
 m_userAudioType(),
 m_userAudioInDev(NO_DEV),
 m_userAudioOutDev(NO_DEV),
@@ -289,7 +288,6 @@ void CGUISetupFrame::onBrowse(wxCommandEvent& WXUNUSED(event))
 	}
 
 	m_sdrType = file.getType();
-	m_rxonly  = file.getReceiveOnly();
 
 	if (featureList[m_sdrType].sdrAudioButton)
 		m_sdrAudio->Enable();
@@ -538,7 +536,7 @@ void CGUISetupFrame::onCreate(wxCommandEvent& WXUNUSED(event))
 
 	delete config;
 
-	::wxMessageBox(_("uWave SDR configuration written."));
+	::wxMessageBox(_("UWSDR configuration written."));
 
 	Close(true);
 }
@@ -631,7 +629,6 @@ void CGUISetupFrame::readConfig(const wxString& name)
 	delete config;
 
 	m_sdrType = file.getType();
-	m_rxonly  = file.getReceiveOnly();
 
 	if (featureList[m_sdrType].sdrAudioButton)
 		m_sdrAudio->Enable();

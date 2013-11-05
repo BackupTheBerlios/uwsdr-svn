@@ -208,6 +208,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\FrequencyRangeArray.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\GriffinPowerMate.cpp"
 				>
 			</File>
@@ -520,6 +524,10 @@
 			</File>
 			<File
 				RelativePath="Frequency.h"
+				>
+			</File>
+			<File
+				RelativePath=".\FrequencyRangeArray.h"
 				>
 			</File>
 			<File

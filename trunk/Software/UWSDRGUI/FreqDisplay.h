@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,21 +24,23 @@
 #include "Frequency.h"
 
 class CFreqDisplay : public wxPanel {
-
-    public:
+public:
 	CFreqDisplay(wxWindow* parent, int id, const wxPoint& pos, const wxSize& size, long style = 0L, const wxString& name = wxPanelNameStr);
 	virtual ~CFreqDisplay();
+
+	virtual void setMaxFrequency(const CFrequency& frequency);
 
 	virtual void setFrequency(const CFrequency& frequency);
 
 	void onPaint(wxPaintEvent& event);
 
-    private:
-	int           m_width;
-	int           m_height;
-	wxBitmap*     m_bitmap;
-	CFrequency    m_lastFrequency;
-	wxColour      m_lightColour;
+private:
+	int        m_width;
+	int        m_height;
+	wxBitmap*  m_bitmap;
+	CFrequency m_lastFrequency;
+	wxColour   m_lightColour;
+	int        m_mhzDigits;
 
 	DECLARE_EVENT_TABLE()
 

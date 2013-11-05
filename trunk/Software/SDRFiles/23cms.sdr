@@ -7,13 +7,12 @@ name=23cms SDR
 
 type=uwsdr1
 
-lowFreq=1265
-highFreq=1300
+frequencyRange=1240.0,1325.0
+
+transmitBand=1240.0,1325.0
 
 stepSize=100
 
 sampleRate=48000
-
-receiveOnly=0
 
 #

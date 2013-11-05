@@ -41,7 +41,7 @@ InfoBox.o:	InfoBox.cpp InfoBox.h UWSDRDefs.h
 		$(CC) $(CFLAGS) -c InfoBox.cpp
 
 SDRParameters.o: SDRParameters.cpp SDRParameters.h UWSDRDefs.h ../Common/AudioDevInfo.h ../Common/Common.h ../Common/Frequency.h \
-		../Common/SDRDescrFile.h
+		../Common/SDRDescrFile.h ../Common/FrequencyRangeArray.h
 		$(CC) $(CFLAGS) -c SDRParameters.cpp
 
 SMeter.o:	SMeter.cpp SMeter.h UWSDRDefs.h
@@ -58,7 +58,7 @@ UWSDRFrame.o:	UWSDRFrame.cpp UWSDRFrame.h ../Common/ControlInterface.h CWKeyboar
 		../Common/Frequency.h InfoBox.h ../Common/NullController.h ../Common/UDPDataReader.h ../Common/UDPDataWriter.h SDRParameters.h ../Common/SerialInterface.h \
 		SMeter.h ../Common/JackReaderWriter.h ../Common/SoundCardReaderWriter.h ../Common/SoundFileWriter.h SpectrumDisplay.h	../Common/SRTXRXController.h UWSDRApp.h \
 		../Common/UWSDRController.h UWSDRDefs.h UWSDRPreferences.h UWSDR.xpm ../Common/Common.h  ../Common/UWSDRDataReader.h ../Common/UWSDRDataWriter.h \
-		VoiceKeyboard.h ../Common/DialInterface.h ../Common/GriffinPowerMate.h ../Common/SI570Controller.h ../Common/HackRFController.h
+		VoiceKeyboard.h ../Common/DialInterface.h ../Common/GriffinPowerMate.h ../Common/SI570Controller.h ../Common/HackRFController.h ../Common/FrequencyRangeArray.h
 		$(CC) $(CFLAGS) -c UWSDRFrame.cpp
 
 UWSDRPreferences.o: UWSDRPreferences.cpp UWSDRPreferences.h DSPControl.h SDRParameters.h UWSDRApp.h UWSDRDefs.h

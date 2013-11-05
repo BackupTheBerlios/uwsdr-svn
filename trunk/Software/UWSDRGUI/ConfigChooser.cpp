@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2007,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ void CConfigChooser::onOK(wxCommandEvent& WXUNUSED(event))
 {
 	int choice = m_configChoice->GetSelection();
 	if (choice == wxNOT_FOUND) {
-		::wxMessageBox(_("No SDR Name has been chosen"), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("No SDR Name has been chosen"), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
 

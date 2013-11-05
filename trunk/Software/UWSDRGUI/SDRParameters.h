@@ -24,6 +24,7 @@
 #include "Common.h"
 #include "AudioDevInfo.h"
 #include "UWSDRDefs.h"
+#include "FrequencyRangeArray.h"
 #include "Frequency.h"
 #include "SDRDescrFile.h"
 
@@ -33,24 +34,20 @@ class CSDRParameters {
 	CSDRParameters();
 	~CSDRParameters();
 
-	wxString      m_hardwareName;
-	SDRTYPE	      m_hardwareType;
-	CFrequency    m_hardwareMaxFreq;
-	CFrequency    m_hardwareMinFreq;
-	unsigned int  m_hardwareFreqMult;
-	CFrequency    m_hardwareOffset;
-	unsigned int  m_hardwareStepSize;
-	float         m_hardwareSampleRate;
-	bool          m_hardwareReceiveOnly;
-	bool          m_hardwareSwapIQ;
-	unsigned int  m_hardwareReceiveGainOffset;
+	wxString             m_hardwareName;
+	SDRTYPE	             m_hardwareType;
+	CFrequency           m_hardwareMaxFreq;
+	CFrequency           m_hardwareMinFreq;
+	CFrequencyRangeArray m_hardwareTXRange;
+	unsigned int         m_hardwareFreqMult;
+	CFrequency           m_hardwareOffset;
+	unsigned int         m_hardwareStepSize;
+	float                m_hardwareSampleRate;
+	bool                 m_hardwareSwapIQ;
+	unsigned int         m_hardwareReceiveGainOffset;
 
 	wxString      m_fileName;
 	wxString      m_name;
-	CFrequency    m_maxReceiveFreq;
-	CFrequency    m_minReceiveFreq;
-	CFrequency    m_maxTransmitFreq;
-	CFrequency    m_minTransmitFreq;
 
 	CFrequency    m_vfoA;
 	CFrequency    m_vfoB;

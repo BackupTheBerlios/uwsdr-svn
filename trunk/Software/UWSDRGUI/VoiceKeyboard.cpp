@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -154,7 +154,7 @@ void CVoiceKeyboard::onTransmit(wxCommandEvent& WXUNUSED(event))
 {
 	wxString fileName = m_filename->GetValue();
 	if (fileName.IsEmpty()) {
-		::wxMessageBox(_("No file name entered or selected."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("No file name entered or selected."), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -166,7 +166,7 @@ void CVoiceKeyboard::onTransmit(wxCommandEvent& WXUNUSED(event))
 
 	bool ret = wxFile::Exists(fileName);
 	if (!ret) {
-		::wxMessageBox(_("Cannot find the file specified."), _("uWave SDR Error"), wxICON_ERROR);
+		::wxMessageBox(_("Cannot find the file specified."), _("UWSDR Error"), wxICON_ERROR);
 		return;
 	}
 
@@ -180,15 +180,15 @@ void CVoiceKeyboard::onTransmit(wxCommandEvent& WXUNUSED(event))
 
 	switch (vret) {
 		case VOICE_ERROR_MODE:
-			::wxMessageBox(_("SDR is in the wrong mode"), _("uWave SDR Error"), wxICON_ERROR);
+			::wxMessageBox(_("SDR is in the wrong mode"), _("UWSDR Error"), wxICON_ERROR);
 			break;
 
 		case VOICE_ERROR_TX:
-			::wxMessageBox(_("Already sending a file"), _("uWave SDR Error"), wxICON_ERROR);
+			::wxMessageBox(_("Already sending a file"), _("UWSDR Error"), wxICON_ERROR);
 			break;
 
 		case VOICE_ERROR_FILE:
-			::wxMessageBox(_("Unable to open the sound file"), _("uWave SDR Error"), wxICON_ERROR);
+			::wxMessageBox(_("Unable to open the sound file"), _("UWSDR Error"), wxICON_ERROR);
 			break;
 
 		default:

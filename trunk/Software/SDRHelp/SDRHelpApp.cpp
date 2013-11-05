@@ -45,7 +45,7 @@ bool CSDRHelpApp::OnInit()
 	wxFileSystem::AddHandler(new wxZipFSHandler);
 
 	m_help = new wxHtmlHelpController();
-	m_help->SetTitleFormat(_("uWave SDR Help: %s"));
+	m_help->SetTitleFormat(_("UWSDR Help: %s"));
 
 	wxFileName fileName;
 	fileName.AssignDir(getHelpDir());

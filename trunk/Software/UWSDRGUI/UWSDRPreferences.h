@@ -43,10 +43,6 @@ class CUWSDRPreferences : public wxDialog {
 	CSDRParameters* m_parameters;
 	CDSPControl*    m_dsp;
 	wxNotebook*     m_noteBook;
-	wxTextCtrl*     m_maxRXFreq;
-	wxTextCtrl*     m_minRXFreq;
-	wxTextCtrl*     m_maxTXFreq;
-	wxTextCtrl*     m_minTXFreq;
 	wxTextCtrl*     m_freqShift1;
 	wxTextCtrl*     m_freqShift2;
 	wxTextCtrl*     m_freqOffset;

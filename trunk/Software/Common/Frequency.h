@@ -22,8 +22,7 @@
 #include <wx/wx.h>
 
 class CFrequency {
-
-    public:
+public:
 	CFrequency(wxInt64 hz);
 	CFrequency(const CFrequency& frequency);
 	CFrequency(const wxString& freq);
@@ -115,7 +114,7 @@ class CFrequency {
 		return freq.m_hz <= this->m_hz;
 	}
 
-    private:
+private:
 	wxInt64 m_hz;
 };
 
