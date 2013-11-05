@@ -26,6 +26,12 @@ m_stop()
 	m_stop.set(stop);
 }
 
+CFrequencyRange::CFrequencyRange(const CFrequencyRange& range) :
+m_start(range.m_start),
+m_stop(range.m_stop)
+{
+}
+
 CFrequencyRange::~CFrequencyRange()
 {
 }
@@ -33,6 +39,16 @@ CFrequencyRange::~CFrequencyRange()
 bool CFrequencyRange::inRange(const CFrequency& freq) const
 {
 	return freq >= m_start && freq <= m_stop;
+}
+
+CFrequencyRange& CFrequencyRange::operator=(const CFrequencyRange& range)
+{
+	if (this != &range) {
+		m_start = range.m_start;
+		m_stop  = range.m_stop;
+	}
+
+	return *this;
 }
 
 CFrequencyRangeArray::CFrequencyRangeArray() :

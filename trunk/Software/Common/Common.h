@@ -24,8 +24,8 @@
 
 const wxString VERSION  = wxT("UWSDR 0.9.1");
 
-const wxDateTime::wxDateTime_t REL_DATE_DAY   = 29;
-const wxDateTime::Month        REL_DATE_MONTH = wxDateTime::Oct;
+const wxDateTime::wxDateTime_t REL_DATE_DAY   = 5;
+const wxDateTime::Month        REL_DATE_MONTH = wxDateTime::Nov;
 const unsigned int             REL_DATE_YEAR  = 2013;
 
 enum INPIN {

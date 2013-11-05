@@ -28,9 +28,12 @@
 class CFrequencyRange {
 public:
 	CFrequencyRange(const wxString& start, const wxString& stop);
+	CFrequencyRange(const CFrequencyRange& range);
 	~CFrequencyRange();
 
 	bool inRange(const CFrequency& freq) const;
+
+	CFrequencyRange& operator=(const CFrequencyRange& range);
 
 private:
 	CFrequency m_start;

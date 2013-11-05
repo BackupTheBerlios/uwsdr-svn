@@ -1284,6 +1284,26 @@ void CUWSDRFrame::normaliseFreq()
 	if (m_parameters->m_ritOn && m_txOn == 0U)
 		m_frequency += double(m_parameters->m_ritFreq);
 
+	// FM Wide is mapped to FM Narrow below 30 MHz
+	if (m_parameters->m_mode == MODE_FMW && m_frequency.get() > wxInt64(0) && m_frequency.get() < wxInt64(30000000)) {
+		m_parameters->m_mode = MODE_FMN;
+		m_mode->SetSelection(MODE_FMN);
+		normaliseMode();
+	}
+
+	// LSB below 10 MHz, USB above
+	if (m_parameters->m_mode == MODE_USB && m_frequency.get() > wxInt64(0) && m_frequency.get() < wxInt64(10000000)) {
+		m_parameters->m_mode = MODE_LSB;
+		m_mode->SetSelection(MODE_LSB);
+		normaliseMode();
+	}
+
+	if (m_parameters->m_mode == MODE_LSB && m_frequency.get() >= wxInt64(10000000)) {
+		m_parameters->m_mode = MODE_USB;
+		m_mode->SetSelection(MODE_USB);
+		normaliseMode();
+	}
+
 	CFrequency dispFreq = m_frequency;
 
 	// Adjust the display ONLY frequency
@@ -1384,12 +1404,6 @@ void CUWSDRFrame::normaliseMode()
 	// We can be called too early
 	if (m_parameters == NULL)
 		return;
-
-	// FM Wide is mapped to FM Narrow below 30 MHz
-	if (m_parameters->m_mode == MODE_FMW && m_frequency.get() > wxInt64(0) && m_frequency.get() < wxInt64(30000000)) {
-		m_parameters->m_mode = MODE_FMN;
-		m_mode->SetSelection(MODE_FMN);
-	}
 
 	m_dsp->setMode(m_parameters->m_mode);
 
