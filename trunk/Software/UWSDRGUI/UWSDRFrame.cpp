@@ -148,6 +148,7 @@ m_rxOn(true),
 m_txOn(0U),
 m_stepSize(0.0),
 m_record(false),
+m_txInRange(false),
 m_menu(NULL),
 m_swap(NULL),
 m_split(NULL),
@@ -852,27 +853,30 @@ void CUWSDRFrame::dialMoved(int id, int value)
 			switch (m_parameters->m_mode) {
 				case MODE_AM:
 					m_parameters->m_amMicGain = value;
+					m_dsp->setMicGain(value);
 					break;
 				case MODE_CWUW:
 				case MODE_CWLW:
 				case MODE_CWUN:
 				case MODE_CWLN:
-					m_parameters->m_cwMicGain = value;
+					m_dsp->setMicGain(1000U);
 					break;
 				case MODE_FMN:
 				case MODE_FMW:
 					m_parameters->m_fmMicGain = value;
+					m_dsp->setMicGain(value);
 					break;
 				case MODE_USB:
 				case MODE_LSB:
 					m_parameters->m_ssbMicGain = value;
+					m_dsp->setMicGain(value);
 					break;
 				case MODE_DIGU:
 				case MODE_DIGL:
 					m_parameters->m_digMicGain = value;
+					m_dsp->setMicGain(value);
 					break;
 			}
-			m_dsp->setMicGain(value);
 			break;
 		case POWER_KNOB:
 			switch (m_parameters->m_mode) {
@@ -1291,19 +1295,6 @@ void CUWSDRFrame::normaliseFreq()
 		normaliseMode();
 	}
 
-	// LSB below 10 MHz, USB above
-	if (m_parameters->m_mode == MODE_USB && m_frequency.get() > wxInt64(0) && m_frequency.get() < wxInt64(10000000)) {
-		m_parameters->m_mode = MODE_LSB;
-		m_mode->SetSelection(MODE_LSB);
-		normaliseMode();
-	}
-
-	if (m_parameters->m_mode == MODE_LSB && m_frequency.get() >= wxInt64(10000000)) {
-		m_parameters->m_mode = MODE_USB;
-		m_mode->SetSelection(MODE_USB);
-		normaliseMode();
-	}
-
 	CFrequency dispFreq = m_frequency;
 
 	// Adjust the display ONLY frequency
@@ -1347,10 +1338,10 @@ void CUWSDRFrame::normaliseFreq()
 
 		m_frequency.set(base);
 
-		bool txInRange = m_parameters->m_hardwareTXRange.inRange(dispFreq);
+		m_txInRange = m_parameters->m_hardwareTXRange.inRange(dispFreq);
 
 		// If out of transmit frequency range then disable/remove transmit possibilities
-		if (txInRange) {
+		if (m_txInRange) {
 			if (!m_swap->IsEnabled()) {		// Optimisation
 				m_swap->Enable();
 				m_split->Enable();
@@ -1361,7 +1352,10 @@ void CUWSDRFrame::normaliseFreq()
 				m_ritCtrl->Enable();
 				m_rit->Enable();
 				m_transmit->Enable();
-				m_micGain->Enable();
+				// Only re-enable the mic gain when not in CW mode
+				if (m_parameters->m_mode != MODE_CWUN && m_parameters->m_mode != MODE_CWLN &&
+					m_parameters->m_mode != MODE_CWUW && m_parameters->m_mode != MODE_CWLW)
+					m_micGain->Enable();
 				m_power->Enable();
 				m_sMeter->setTXMenu(true);
 				m_menu->Enable(MENU_VOICE_KEYBOARD, true);
@@ -1388,7 +1382,7 @@ void CUWSDRFrame::normaliseFreq()
 
 		// Finally go to TX or RX
 		if (m_txOn > 0U) {
-			if (txInRange) {
+			if (m_txInRange) {
 				m_sdr->setTXAndFreq(true, m_frequency);
 				m_dsp->setTXAndFreq(true, offset);
 			}
@@ -1417,6 +1411,8 @@ void CUWSDRFrame::normaliseMode()
 		case MODE_FMW:
 			if (filter == FILTER_AUTO)
 				filter = m_parameters->m_filterFMW;
+			if (m_txInRange && !m_micGain->IsEnabled())
+				m_micGain->Enable();
 			m_dsp->setDeviation(m_parameters->m_deviationFMW);
 			speed   = m_parameters->m_vfoSpeedFM;
 			micGain = m_parameters->m_fmMicGain;
@@ -1425,6 +1421,8 @@ void CUWSDRFrame::normaliseMode()
 		case MODE_FMN:
 			if (filter == FILTER_AUTO)
 				filter = m_parameters->m_filterFMN;
+			if (m_txInRange && !m_micGain->IsEnabled())
+				m_micGain->Enable();
 			m_dsp->setDeviation(m_parameters->m_deviationFMN);
 			speed   = m_parameters->m_vfoSpeedFM;
 			micGain = m_parameters->m_fmMicGain;
@@ -1433,6 +1431,8 @@ void CUWSDRFrame::normaliseMode()
 		case MODE_AM:
 			if (filter == FILTER_AUTO)
 				filter = m_parameters->m_filterAM;
+			if (m_txInRange && !m_micGain->IsEnabled())
+				m_micGain->Enable();
 			m_dsp->setAGC(m_parameters->m_agcAM);
 			speed   = m_parameters->m_vfoSpeedAM;
 			micGain = m_parameters->m_amMicGain;
@@ -1442,6 +1442,8 @@ void CUWSDRFrame::normaliseMode()
 		case MODE_LSB:
 			if (filter == FILTER_AUTO)
 				filter = m_parameters->m_filterSSB;
+			if (m_txInRange && !m_micGain->IsEnabled())
+				m_micGain->Enable();
 			m_dsp->setAGC(m_parameters->m_agcSSB);
 			speed   = m_parameters->m_vfoSpeedSSB;
 			micGain = m_parameters->m_ssbMicGain;
@@ -1451,6 +1453,8 @@ void CUWSDRFrame::normaliseMode()
 		case MODE_DIGL:
 			if (filter == FILTER_AUTO)
 				filter = m_parameters->m_filterDig;
+			if (m_txInRange && !m_micGain->IsEnabled())
+				m_micGain->Enable();
 			m_dsp->setAGC(m_parameters->m_agcDig);
 			speed   = m_parameters->m_vfoSpeedDig;
 			micGain = m_parameters->m_digMicGain;
@@ -1460,18 +1464,22 @@ void CUWSDRFrame::normaliseMode()
 		case MODE_CWLW:
 			if (filter == FILTER_AUTO)
 				filter = m_parameters->m_filterCWW;
+			if (m_txInRange && m_micGain->IsEnabled())
+				m_micGain->Disable();
 			m_dsp->setAGC(m_parameters->m_agcCW);
 			speed   = m_parameters->m_vfoSpeedCWW;
-			micGain = m_parameters->m_cwMicGain;
+			micGain = 1000U;
 			power   = m_parameters->m_cwPower;
 			break;
 		case MODE_CWUN:
 		case MODE_CWLN:
 			if (filter == FILTER_AUTO)
 				filter = m_parameters->m_filterCWN;
+			if (m_txInRange && m_micGain->IsEnabled())
+				m_micGain->Disable();
 			m_dsp->setAGC(m_parameters->m_agcCW);
 			speed   = m_parameters->m_vfoSpeedCWN;
-			micGain = m_parameters->m_cwMicGain;
+			micGain = 1000U;
 			power   = m_parameters->m_cwPower;
 			break;
 	}

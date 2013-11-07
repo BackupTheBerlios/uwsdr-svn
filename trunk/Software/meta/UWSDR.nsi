@@ -86,14 +86,6 @@ Section "UWSDR Program Files" SecProgram
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\HackRF-HF-RX.sdr"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\HackRF-RX.sdr"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\Skeleton.sdr"
-  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\SoftRock30.sdr"
-  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\SoftRock40.sdr"
-  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\SoftRock80.sdr"
-  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\SoftRock160.sdr"
-  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\SoftRock-RXTX-3508.sdr"
-  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\SoftRock-RXTX-3528.sdr"
-  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\SoftRock-RXTX-7015.sdr"
-  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\SoftRock-RXTX-7056.sdr"
 
   ;Create start menu entry
   CreateDirectory "$SMPROGRAMS\UWSDR"

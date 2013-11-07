@@ -107,7 +107,6 @@ const wxChar* KEY_RF_GAIN            = wxT("/RFGain");
 const wxChar* KEY_SQUELCH            = wxT("/Squelch");
 const wxChar* KEY_AM_MIC_GAIN        = wxT("/AM/MicGain");
 const wxChar* KEY_AM_POWER           = wxT("/AM/Power");
-const wxChar* KEY_CW_MIC_GAIN        = wxT("/CW/MicGain");
 const wxChar* KEY_CW_POWER           = wxT("/CW/Power");
 const wxChar* KEY_FM_MIC_GAIN        = wxT("/FM/MicGain");
 const wxChar* KEY_FM_POWER           = wxT("/FM/Power");
@@ -393,7 +392,6 @@ bool CUWSDRApp::readConfig()
 	wxString keySquelch         = wxT("/") + m_parameters->m_name + KEY_SQUELCH;
 	wxString keyAmMicGain       = wxT("/") + m_parameters->m_name + KEY_AM_MIC_GAIN;
 	wxString keyAmPower         = wxT("/") + m_parameters->m_name + KEY_AM_POWER;
-	wxString keyCwMicGain       = wxT("/") + m_parameters->m_name + KEY_CW_MIC_GAIN;
 	wxString keyCwPower         = wxT("/") + m_parameters->m_name + KEY_CW_POWER;
 	wxString keyFmMicGain       = wxT("/") + m_parameters->m_name + KEY_FM_MIC_GAIN;
 	wxString keyFmPower         = wxT("/") + m_parameters->m_name + KEY_FM_POWER;
@@ -614,9 +612,6 @@ bool CUWSDRApp::readConfig()
 	profile->Read(keyAmPower,          &num, 0);
 	m_parameters->m_amPower = num;
 
-	profile->Read(keyCwMicGain,        &num, 0);
-	m_parameters->m_cwMicGain = num;
-
 	profile->Read(keyCwPower,          &num, 0);
 	m_parameters->m_cwPower = num;
 
@@ -736,7 +731,6 @@ void CUWSDRApp::writeConfig()
 	wxString keySquelch       = wxT("/") + m_parameters->m_name + KEY_SQUELCH;
 	wxString keyAmMicGain     = wxT("/") + m_parameters->m_name + KEY_AM_MIC_GAIN;
 	wxString keyAmPower       = wxT("/") + m_parameters->m_name + KEY_AM_POWER;
-	wxString keyCwMicGain     = wxT("/") + m_parameters->m_name + KEY_CW_MIC_GAIN;
 	wxString keyCwPower       = wxT("/") + m_parameters->m_name + KEY_CW_POWER;
 	wxString keyFmMicGain     = wxT("/") + m_parameters->m_name + KEY_FM_MIC_GAIN;
 	wxString keyFmPower       = wxT("/") + m_parameters->m_name + KEY_FM_POWER;
@@ -839,7 +833,6 @@ void CUWSDRApp::writeConfig()
 	profile->Write(keySquelch,          int(m_parameters->m_squelch));
 	profile->Write(keyAmMicGain,        int(m_parameters->m_amMicGain));
 	profile->Write(keyAmPower,          int(m_parameters->m_amPower));
-	profile->Write(keyCwMicGain,        int(m_parameters->m_cwMicGain));
 	profile->Write(keyCwPower,          int(m_parameters->m_cwPower));
 	profile->Write(keyFmMicGain,        int(m_parameters->m_fmMicGain));
 	profile->Write(keyFmPower,          int(m_parameters->m_fmPower));

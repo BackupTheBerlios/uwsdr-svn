@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -95,7 +95,8 @@ bool CCWKeyer::create()
 				createCW(m_text, m_speed);
 				m_text.Clear();
 			} else {
-				end();
+				if (m_state == CW_SEND_TEXT)
+					end();
 				return true;
 			}
 		}
@@ -133,7 +134,7 @@ void CCWKeyer::setCallback(IDataCallback* callback, int id)
  */
 CWERROR CCWKeyer::send(unsigned int speed, const wxString& text, CWSTATUS state)
 {
-	if (state == CW_STOP && m_bitsLen > 0U) {
+	if (state == CW_STOP) {
 		end();
 		return CW_ERROR_NONE;
 	}
@@ -193,8 +194,7 @@ void CCWKeyer::end()
 
 	m_text.Clear();
 
-	if (m_state == CW_SEND_TEXT)
-		::wxGetApp().sendCW(0U, wxEmptyString, CW_TX_OFF);
+	::wxGetApp().sendCW(0U, wxEmptyString, CW_TX_OFF);
 
 	m_state = CW_STOP;
 }

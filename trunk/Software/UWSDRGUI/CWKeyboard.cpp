@@ -102,6 +102,7 @@ m_text(NULL),
 m_button(NULL),
 m_realTime(NULL),
 m_speed(NULL),
+m_abortButton(NULL),
 m_prevLen(0U)
 {
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
@@ -160,8 +161,7 @@ m_prevLen(0U)
 	m_text   = new wxTextCtrl*[CWKEYBOARD_COUNT];
 	m_button = new wxRadioButton*[CWKEYBOARD_COUNT + 1U];
 
-	unsigned int i;
-	for (i = 0U; i < CWKEYBOARD_COUNT; i++) {
+	for (unsigned int i = 0U; i < CWKEYBOARD_COUNT; i++) {
 		wxString text;
 		text.Printf(_("Message %d:"), i + 1);
 
@@ -184,9 +184,9 @@ m_prevLen(0U)
 	m_realTime->SetMaxLength(1000);
 	textSizer->Add(m_realTime, 0, wxALL, BORDER_SIZE);
 
-	m_button[i] = new wxRadioButton(this, -1, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-	m_button[i]->SetValue(false);
-	textSizer->Add(m_button[i], 0, wxALL, BORDER_SIZE);
+	m_button[CWKEYBOARD_COUNT] = new wxRadioButton(this, -1, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	m_button[CWKEYBOARD_COUNT]->SetValue(false);
+	textSizer->Add(m_button[CWKEYBOARD_COUNT], 0, wxALL, BORDER_SIZE);
 
 	mainSizer->Add(textSizer, 0, wxALL, BORDER_SIZE);
 
@@ -198,8 +198,8 @@ m_prevLen(0U)
 	wxButton* transmitButton = new wxButton(this, BUTTON_TRANSMIT, _("Transmit"));
 	buttonSizer->Add(transmitButton, 0, wxALL, BORDER_SIZE);
 
-	wxButton* abortButton = new wxButton(this, BUTTON_ABORT, _("Abort"));
-	buttonSizer->Add(abortButton, 0, wxALL, BORDER_SIZE);
+	m_abortButton = new wxButton(this, BUTTON_ABORT, _("Abort"));
+	buttonSizer->Add(m_abortButton, 0, wxALL, BORDER_SIZE);
 
 	wxButton* closeButton = new wxButton(this, wxID_CANCEL, _("Close"));
 	buttonSizer->Add(closeButton, 0, wxALL, BORDER_SIZE);
@@ -220,8 +220,6 @@ m_prevLen(0U)
 
 CCWKeyboard::~CCWKeyboard()
 {
-	// delete[] m_text;
-	// delete[] m_button;
 }
 
 void CCWKeyboard::setLocal(const wxString& text)
@@ -323,8 +321,31 @@ void CCWKeyboard::onTransmit(wxCommandEvent& WXUNUSED(event))
 	}
 
 	// It could be the real time part ....
-	if (!found)
+	if (!found) {
+		if (!m_button[CWKEYBOARD_COUNT]->GetValue())
+			return;
+
+		CWERROR ret = ::wxGetApp().sendCW(0U, wxEmptyString, CW_TX_ON);
+
+		switch (ret) {
+			case CW_ERROR_MODE:
+				::wxMessageBox(_("SDR is in the wrong mode"), _("UWSDR Error"), wxICON_ERROR);
+				break;
+
+			case CW_ERROR_TX:
+				::wxMessageBox(_("Already sending a message"), _("UWSDR Error"), wxICON_ERROR);
+				break;
+
+			default:
+				m_abortButton->SetLabel(_("End"));
+				break;
+		}
+
 		return;
+	}
+
+	// Just in case we switch back to one of the non real-time messages
+	m_abortButton->SetLabel(_("Abort"));
 
 	text.UpperCase();
 

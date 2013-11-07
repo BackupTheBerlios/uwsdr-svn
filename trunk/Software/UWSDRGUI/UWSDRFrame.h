@@ -92,6 +92,7 @@ private:
 	unsigned int      m_txOn;
 	double            m_stepSize;
 	bool              m_record;
+	bool              m_txInRange;
 
 	wxMenu*           m_menu;
 	wxButton*         m_swap;

@@ -42,6 +42,7 @@ private:
 
 class CFrequencyRangeArray {
 public:
+	CFrequencyRangeArray(const CFrequencyRangeArray& range);
 	CFrequencyRangeArray();
 	~CFrequencyRangeArray();
 
@@ -53,8 +54,10 @@ public:
 
 	unsigned int getCount() const;
 
+	CFrequencyRangeArray& operator=(const CFrequencyRangeArray& range);
+
 private:
-	std::vector<CFrequencyRange*> m_range;
+	std::vector<CFrequencyRange> m_range;
 };
 
 #endif

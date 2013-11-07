@@ -149,7 +149,6 @@ class CSDRParameters {
 	unsigned int  m_amMicGain;
 	unsigned int  m_amPower;
 
-	unsigned int  m_cwMicGain;
 	unsigned int  m_cwPower;
 
 	unsigned int  m_fmMicGain;

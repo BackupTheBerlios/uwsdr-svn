@@ -51,6 +51,11 @@ CFrequencyRange& CFrequencyRange::operator=(const CFrequencyRange& range)
 	return *this;
 }
 
+CFrequencyRangeArray::CFrequencyRangeArray(const CFrequencyRangeArray& range) :
+m_range(range.m_range)
+{
+}
+
 CFrequencyRangeArray::CFrequencyRangeArray() :
 m_range()
 {
@@ -58,21 +63,19 @@ m_range()
 
 CFrequencyRangeArray::~CFrequencyRangeArray()
 {
-	// for (std::vector<CFrequencyRange*>::const_iterator it = m_range.begin(); it != m_range.end(); ++it)
-	//	delete (*it);
 }
 
 void CFrequencyRangeArray::addRange(const wxString& start, const wxString& stop)
 {
-	CFrequencyRange* range = new CFrequencyRange(start, stop);
+	CFrequencyRange range(start, stop);
 
 	m_range.push_back(range);
 }
 
 bool CFrequencyRangeArray::inRange(const CFrequency& freq) const
 {
-	for (std::vector<CFrequencyRange*>::const_iterator it = m_range.begin(); it != m_range.end(); ++it) {
-		if ((*it)->inRange(freq))
+	for (std::vector<CFrequencyRange>::const_iterator it = m_range.begin(); it != m_range.end(); ++it) {
+		if ((*it).inRange(freq))
 			return true;
 	}
 
@@ -87,4 +90,12 @@ bool CFrequencyRangeArray::isEmpty() const
 unsigned int CFrequencyRangeArray::getCount() const
 {
 	return m_range.size();
+}
+
+CFrequencyRangeArray& CFrequencyRangeArray::operator=(const CFrequencyRangeArray& range)
+{
+	if (this != &range)
+		m_range = range.m_range;
+
+	return *this;
 }

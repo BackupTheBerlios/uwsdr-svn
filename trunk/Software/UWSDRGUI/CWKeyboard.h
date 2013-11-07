@@ -66,6 +66,7 @@ class CCWKeyboard : public wxDialog {
 	wxRadioButton** m_button;
 	wxTextCtrl*     m_realTime;
 	wxSpinCtrl*     m_speed;
+	wxButton*       m_abortButton;
 	unsigned int    m_prevLen;
 
 	DECLARE_EVENT_TABLE()
