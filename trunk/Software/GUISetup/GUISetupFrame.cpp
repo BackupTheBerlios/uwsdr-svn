@@ -21,6 +21,7 @@
 #include "EthernetDialog.h"
 #include "SoundCardDialog.h"
 #include "TuningDialog.h"
+#include "ExternalDialog.h"
 
 #include <wx/config.h>
 #include <wx/filename.h>
@@ -47,17 +48,16 @@ const struct {
 	bool sdrAudioButton;
 	bool ethernetButton;
 	bool portButton;
-	bool tuningButton;
 	bool txOutData;
 	bool audioCheck;
 } featureList[] = {
-	{true,  false, false, true, false, false},	// TYPE_AUDIORX
-	{true,  false, true,  true, true,  true},	// TYPE_AUDIOTXRX
-	{false, false, true,  true, false, false},	// TYPE_DEMO
-	{false, true,  true,  true, false, false},	// TYPE_UWSDR1
-	{false, false, false, true, false, false},	// TYPE_HACKRF
-	{true,  false, false, true, false, false},	// TYPE_SI570RX
-	{true,  false, true,  true, true,  true}	// TYPE_SI570TXRX
+	{true,  false, false, false, false},	// TYPE_AUDIORX
+	{true,  false, true,  true,  true},		// TYPE_AUDIOTXRX
+	{false, false, true,  false, false},	// TYPE_DEMO
+	{false, true,  true,  false, false},	// TYPE_UWSDR1
+	{false, false, false, false, false},	// TYPE_HACKRF
+	{true,  false, false, false, false},	// TYPE_SI570RX
+	{true,  false, true,  true,  true}		// TYPE_SI570TXRX
 };
 
 const int CREATE_BUTTON     = 27543;
@@ -68,6 +68,7 @@ const int ETHERNET_BUTTON   = 27547;
 const int PORT_BUTTON       = 27548;
 const int TUNING_BUTTON     = 27550;
 const int NAME_COMBO        = 27551;
+const int EXTERNAL_BUTTON   = 27552;
 
 
 const int BORDER_SIZE     = 5;
@@ -84,6 +85,7 @@ BEGIN_EVENT_TABLE(CGUISetupFrame, wxFrame)
 	EVT_BUTTON(ETHERNET_BUTTON,   CGUISetupFrame::onEthernet)
 	EVT_BUTTON(PORT_BUTTON,       CGUISetupFrame::onPort)
 	EVT_BUTTON(TUNING_BUTTON,     CGUISetupFrame::onTuning)
+	EVT_BUTTON(EXTERNAL_BUTTON,   CGUISetupFrame::onExternal)
 END_EVENT_TABLE()
 
 
@@ -96,7 +98,6 @@ m_userAudio(NULL),
 m_sdrAudio(NULL),
 m_ethernet(NULL),
 m_port(NULL),
-m_tuning(NULL),
 m_filename(),
 m_sdrType(TYPE_UWSDR1),
 m_userAudioType(),
@@ -115,7 +116,9 @@ m_keyInDev(),
 m_keyInPin(IN_NONE),
 m_txOutDev(),
 m_txOutPin(OUT_NONE),
-m_tuningHW(TUNINGHW_NONE)
+m_tuningHW(TUNINGHW_NONE),
+m_externalName(),
+m_externalAddr(EXTERNALADDRS_LOCAL)
 {
 	SetIcon(wxICON(GUISetup));
 
@@ -185,33 +188,41 @@ m_tuningHW(TUNINGHW_NONE)
 	wxStaticText* label8 = new wxStaticText(panel, -1, _("Tuning Hardware:"));
 	panelSizer->Add(label8, 0, wxALL, BORDER_SIZE);
 
-	m_tuning = new wxButton(panel, TUNING_BUTTON, _("Set"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
-	m_tuning->Disable();
-	panelSizer->Add(m_tuning, 0, wxALL, BORDER_SIZE);
+	wxButton* tuning = new wxButton(panel, TUNING_BUTTON, _("Set"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	panelSizer->Add(tuning, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* dummy7 = new wxStaticText(panel, -1, wxEmptyString);
 	panelSizer->Add(dummy7, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* label9 = new wxStaticText(panel, -1, _("External Programs:"));
+	panelSizer->Add(label9, 0, wxALL, BORDER_SIZE);
+
+	wxButton* external = new wxButton(panel, EXTERNAL_BUTTON, _("Set"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
+	panelSizer->Add(external, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* dummy8 = new wxStaticText(panel, -1, wxEmptyString);
+	panelSizer->Add(dummy8, 0, wxALL, BORDER_SIZE);
 
 #if !defined(__WXMAC__)
 #if defined(__WXGTK__)
 	wxString dir;
 	if (getDesktopDir(dir)) {
 #endif
-		wxStaticText* label9 = new wxStaticText(panel, -1, _("Create Desktop icon:"));
-		panelSizer->Add(label9, 0, wxALL, BORDER_SIZE);
+		wxStaticText* label10 = new wxStaticText(panel, -1, _("Create Desktop icon:"));
+		panelSizer->Add(label10, 0, wxALL, BORDER_SIZE);
 
 		m_deskTop = new wxCheckBox(panel, -1, wxEmptyString);
 		panelSizer->Add(m_deskTop, 0, wxALL, BORDER_SIZE);
 
-		wxStaticText* dummy8 = new wxStaticText(panel, -1, wxEmptyString);
-		panelSizer->Add(dummy8, 0, wxALL, BORDER_SIZE);
+		wxStaticText* dummy9 = new wxStaticText(panel, -1, wxEmptyString);
+		panelSizer->Add(dummy9, 0, wxALL, BORDER_SIZE);
 #if defined(__WXGTK__)
 	}
 #endif
 #endif
 
-	wxStaticText* dummy9 = new wxStaticText(panel, -1, wxEmptyString);
-	panelSizer->Add(dummy9, 0, wxALL, BORDER_SIZE);
+	wxStaticText* dummy10 = new wxStaticText(panel, -1, wxEmptyString);
+	panelSizer->Add(dummy10, 0, wxALL, BORDER_SIZE);
 
 	wxButton* create = new wxButton(panel, CREATE_BUTTON, _("Create"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
 	panelSizer->Add(create, 0, wxALL, BORDER_SIZE);
@@ -279,7 +290,6 @@ void CGUISetupFrame::onBrowse(wxCommandEvent& WXUNUSED(event))
 	m_sdrAudio->Disable();
 	m_ethernet->Disable();
 	m_port->Disable();
-	m_tuning->Disable();
 
 	CSDRDescrFile file(m_filename);
 	if (!file.isValid()) {
@@ -295,8 +305,6 @@ void CGUISetupFrame::onBrowse(wxCommandEvent& WXUNUSED(event))
 		m_ethernet->Enable();
 	if (featureList[m_sdrType].portButton)
 		m_port->Enable();
-	if (featureList[m_sdrType].tuningButton)
-		m_tuning->Enable();
 }
 
 void CGUISetupFrame::onCreate(wxCommandEvent& WXUNUSED(event))
@@ -381,6 +389,8 @@ void CGUISetupFrame::onCreate(wxCommandEvent& WXUNUSED(event))
 	wxString txOutDevKey        = wxT("/") + name + wxT("/TXOutDev");
 	wxString txOutPinKey        = wxT("/") + name + wxT("/TXOutPin");
 	wxString tuningKey          = wxT("/") + name + wxT("/TuningHW");
+	wxString extNameKey         = wxT("/") + name + wxT("/ExternalName");
+	wxString extAddrKey         = wxT("/") + name + wxT("/ExternalAddrs");
 
 	wxString test;
 	if (config->Read(fileNameKey, &test)) {
@@ -460,7 +470,7 @@ void CGUISetupFrame::onCreate(wxCommandEvent& WXUNUSED(event))
 			return;
 		}
 
-		ret = config->Write(txInPinKey, m_txInPin);
+		ret = config->Write(txInPinKey, long(m_txInPin));
 		if (!ret) {
 			::wxMessageBox(_("Unable to write configuration data - TXInPin"), _("GUISetup Error"), wxICON_ERROR);
 			return;
@@ -478,7 +488,7 @@ void CGUISetupFrame::onCreate(wxCommandEvent& WXUNUSED(event))
 			return;
 		}
 
-		ret = config->Write(keyInPinKey, m_keyInPin);
+		ret = config->Write(keyInPinKey, long(m_keyInPin));
 		if (!ret) {
 			::wxMessageBox(_("Unable to write configuration data - KeyInPin"), _("GUISetup Error"), wxICON_ERROR);
 			return;
@@ -491,7 +501,7 @@ void CGUISetupFrame::onCreate(wxCommandEvent& WXUNUSED(event))
 				return;
 			}
 
-			ret = config->Write(txOutPinKey, m_txOutPin);
+			ret = config->Write(txOutPinKey, long(m_txOutPin));
 			if (!ret) {
 				::wxMessageBox(_("Unable to write configuration data - TXOutPin"), _("GUISetup Error"), wxICON_ERROR);
 				return;
@@ -499,12 +509,22 @@ void CGUISetupFrame::onCreate(wxCommandEvent& WXUNUSED(event))
 		}
 	}
 
-	if (featureList[m_sdrType].tuningButton) {
-		bool ret = config->Write(tuningKey, m_tuningHW);
-		if (!ret) {
-			::wxMessageBox(_("Unable to write configuration data - TuningHW"), _("GUISetup Error"), wxICON_ERROR);
-			return;
-		}
+	ret = config->Write(tuningKey, long(m_tuningHW));
+	if (!ret) {
+		::wxMessageBox(_("Unable to write configuration data - TuningHW"), _("GUISetup Error"), wxICON_ERROR);
+		return;
+	}
+
+	ret = config->Write(extNameKey, m_externalName);
+	if (!ret) {
+		::wxMessageBox(_("Unable to write configuration data - ExternalName"), _("GUISetup Error"), wxICON_ERROR);
+		return;
+	}
+
+	ret = config->Write(extAddrKey, long(m_externalAddr));
+	if (!ret) {
+		::wxMessageBox(_("Unable to write configuration data - ExternalAddrs"), _("GUISetup Error"), wxICON_ERROR);
+		return;
 	}
 
 #if defined(__WXMSW__)
@@ -564,7 +584,6 @@ void CGUISetupFrame::readConfig(const wxString& name)
 	m_sdrAudio->Disable();
 	m_ethernet->Disable();
 	m_port->Disable();
-	m_tuning->Disable();
 
 	m_filenameText->Clear();
 
@@ -588,6 +607,8 @@ void CGUISetupFrame::readConfig(const wxString& name)
 	wxString txOutDevKey        = wxT("/") + name + wxT("/TXOutDev");
 	wxString txOutPinKey        = wxT("/") + name + wxT("/TXOutPin");
 	wxString tuningKey          = wxT("/") + name + wxT("/TuningHW");
+	wxString extNameKey         = wxT("/") + name + wxT("/ExternalName");
+	wxString extAddrKey         = wxT("/") + name + wxT("/ExternalAddrs");
 
 	bool ret = config->Read(fileNameKey, &m_filename);
 	if (!ret)
@@ -626,6 +647,10 @@ void CGUISetupFrame::readConfig(const wxString& name)
 
 	config->Read(tuningKey,      (int*)&m_tuningHW);
 
+	config->Read(extNameKey,     &m_externalName);
+
+	config->Read(extAddrKey,     (int*)&m_externalAddr);
+
 	delete config;
 
 	m_sdrType = file.getType();
@@ -636,8 +661,6 @@ void CGUISetupFrame::readConfig(const wxString& name)
 		m_ethernet->Enable();
 	if (featureList[m_sdrType].portButton)
 		m_port->Enable();
-	if (featureList[m_sdrType].tuningButton)
-		m_tuning->Enable();
 }
 
 void CGUISetupFrame::onUserAudio(wxCommandEvent& WXUNUSED(event))
@@ -715,6 +738,18 @@ void CGUISetupFrame::onTuning(wxCommandEvent& WXUNUSED(event))
 		return;
 
 	m_tuningHW = dialog.getTuningHW();
+}
+
+void CGUISetupFrame::onExternal(wxCommandEvent& WXUNUSED(event))
+{
+	CExternalDialog dialog(this, _("External Program Setup"), m_externalName, m_externalAddr);
+
+	int ret = dialog.ShowModal();
+	if (ret != wxID_OK)
+		return;
+
+	m_externalName = dialog.getName();
+	m_externalAddr = dialog.getAddr();
 }
 
 #if defined(__WXMSW__)

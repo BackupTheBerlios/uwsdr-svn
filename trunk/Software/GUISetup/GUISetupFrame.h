@@ -37,6 +37,7 @@ public:
 	void onEthernet(wxCommandEvent& event);
 	void onPort(wxCommandEvent& event);
 	void onTuning(wxCommandEvent& event);
+	void onExternal(wxCommandEvent& event);
 	void onCreate(wxCommandEvent& event);
 
 private:
@@ -47,7 +48,6 @@ private:
 	wxButton*      m_sdrAudio;
 	wxButton*      m_ethernet;
 	wxButton*      m_port;
-	wxButton*      m_tuning;
 	wxString       m_filename;
 	SDRTYPE        m_sdrType;
 	SOUNDTYPE      m_userAudioType;
@@ -67,6 +67,8 @@ private:
 	wxString       m_txOutDev;
 	OUTPIN         m_txOutPin;
 	TUNINGHW       m_tuningHW;
+	wxString       m_externalName;
+	EXTERNALADDRS  m_externalAddr;
 
 	DECLARE_EVENT_TABLE()
 

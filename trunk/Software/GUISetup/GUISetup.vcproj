@@ -224,6 +224,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ExternalDialog.cpp"
+				>
+			</File>
+			<File
 				RelativePath="GUISetupApp.cpp"
 				>
 				<FileConfiguration
@@ -286,6 +290,10 @@
 			>
 			<File
 				RelativePath=".\EthernetDialog.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ExternalDialog.h"
 				>
 			</File>
 			<File

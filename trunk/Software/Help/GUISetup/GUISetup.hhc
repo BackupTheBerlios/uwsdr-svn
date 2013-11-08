@@ -116,13 +116,19 @@
               </object>
 
          <li> <object type="text/sitemap">
-                  <param name="Name" value="Create Desktop icon">
+                  <param name="Name" value="External Program Setup">
                   <param name="ID" value=11>
+                  <param name="Local" value="External.htm">
+              </object>
+
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="Create Desktop icon">
+                  <param name="ID" value=12>
                   <param name="Local" value="CreateDesktopIcon.htm">
               </object>
          <li> <object type="text/sitemap">
                   <param name="Name" value="Create Button">
-                  <param name="ID" value=12>
+                  <param name="ID" value=13>
                   <param name="Local" value="CreateButton.htm">
               </object>
        </ul>
