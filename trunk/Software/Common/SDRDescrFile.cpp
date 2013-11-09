@@ -24,7 +24,7 @@
 
 CSDRDescrFile::CSDRDescrFile(const wxString& fileName) :
 m_name(),
-m_type(TYPE_UWSDR1),
+m_type(TYPE_DEMO),
 m_maxFreq(),
 m_minFreq(),
 m_ranges(),
@@ -33,8 +33,8 @@ m_offset(),
 m_stepSize(0U),
 m_sampleRate(0.0F),
 m_swapIQ(false),
-m_valid(false),
-m_receiveGainOffset(0U)
+m_receiveGainOffset(0U),
+m_valid(false)
 {
 	if (!wxFile::Exists(fileName))
 		return;
@@ -56,14 +56,8 @@ m_receiveGainOffset(0U)
 			} else if (line.Left(5).Cmp(wxT("type=")) == 0) {
 				wxString type = line.Mid(5);
 
-				if (type.Cmp(wxT("audiorx")) == 0)
-					m_type = TYPE_AUDIORX;
-				else if (type.Cmp(wxT("audiotxrx")) == 0)
-					m_type = TYPE_AUDIOTXRX;
-				else if (type.Cmp(wxT("demo")) == 0)
+				if (type.Cmp(wxT("demo")) == 0)
 					m_type = TYPE_DEMO;
-				else if (type.Cmp(wxT("uwsdr1")) == 0)
-					m_type = TYPE_UWSDR1;
 				else if (type.Cmp(wxT("hackrf")) == 0)
 					m_type = TYPE_HACKRF;
 				else if (type.Cmp(wxT("si570rx")) == 0)
@@ -116,13 +110,6 @@ m_receiveGainOffset(0U)
 				line.Mid(18).ToULong(&temp);
 				m_receiveGainOffset = temp;
 			}
-		}
-	}
-
-	if (m_type == TYPE_AUDIORX || m_type == TYPE_AUDIOTXRX) {
-		if (m_minFreq != m_maxFreq) {
-			::wxLogError(wxT("The min and max frequencies must be the same for \"type=audiorx\" or \"type=audiotxrx\""));
-			return;
 		}
 	}
 

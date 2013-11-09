@@ -244,11 +244,3 @@ void CSI570Controller::setTXAndFreq(bool transmit, const CFrequency& freq)
 		m_tx = transmit;
 	}
 }
-
-void CSI570Controller::sendCommand(const char* WXUNUSED(command))
-{
-}
-
-void CSI570Controller::setClockTune(unsigned int WXUNUSED(clock))
-{
-}

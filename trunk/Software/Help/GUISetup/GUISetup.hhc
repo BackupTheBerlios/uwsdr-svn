@@ -68,11 +68,6 @@
                  </object>
          </ul>
 
-         <li> <object type="text/sitemap">
-                  <param name="Name" value="Ethernet Setup">
-                  <param name="ID" value=7>
-                  <param name="Local" value="Ethernet.htm">
-              </object>
          <ul>
              <li> <object type="text/sitemap">
                       <param name="Name" value="SDR IP Address">

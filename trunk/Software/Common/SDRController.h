@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -32,8 +32,6 @@ class ISDRController {
 	virtual void enableTX(bool on) = 0;
 	virtual void enableRX(bool on) = 0;
 	virtual void setTXAndFreq(bool transmit, const CFrequency& freq) = 0;
-
-	virtual void setClockTune(unsigned int clock) = 0;
 
 	virtual void close() = 0;
 };

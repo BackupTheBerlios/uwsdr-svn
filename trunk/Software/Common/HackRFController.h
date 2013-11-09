@@ -42,8 +42,6 @@ public:
 	virtual void enableTX(bool on);
 	virtual void enableRX(bool on);
 	virtual void setTXAndFreq(bool transmit, const CFrequency& freq);
-	virtual void sendCommand(const char* command);
-	virtual void setClockTune(unsigned int clock);
 	virtual void close();
 
 private:

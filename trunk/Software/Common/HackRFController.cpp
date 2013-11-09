@@ -167,11 +167,3 @@ void CHackRFController::setTXAndFreq(bool transmit, const CFrequency& freq)
 		m_tx = transmit;
 	}
 }
-
-void CHackRFController::sendCommand(const char* WXUNUSED(command))
-{
-}
-
-void CHackRFController::setClockTune(unsigned int WXUNUSED(clock))
-{
-}

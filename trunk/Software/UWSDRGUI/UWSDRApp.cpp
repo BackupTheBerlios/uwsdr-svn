@@ -50,7 +50,6 @@ const wxChar* KEY_STEP_SLOW          = wxT("/StepSlow");
 const wxChar* KEY_STEP_VERY_SLOW     = wxT("/StepVerySlow");
 const wxChar* KEY_MODE               = wxT("/Mode");
 const wxChar* KEY_WEAVER             = wxT("/Weaver");
-const wxChar* KEY_CLOCK_TUNE         = wxT("/ClockTune");
 const wxChar* KEY_DEV_FMW            = wxT("/FM/DeviationW");
 const wxChar* KEY_DEV_FMN            = wxT("/FM/DeviationN");
 const wxChar* KEY_AGC_AM             = wxT("/AM/AGC");
@@ -65,8 +64,6 @@ const wxChar* KEY_FILTER_SSB         = wxT("/SSB/Filter");
 const wxChar* KEY_FILTER_CWW         = wxT("/CW/FilterW");
 const wxChar* KEY_FILTER_CWN         = wxT("/CW/FilterN");
 const wxChar* KEY_FILTER_DIG         = wxT("/Digital/Filter");
-const wxChar* KEY_IP_ADDRESS         = wxT("/IPAddress");
-const wxChar* KEY_CONTROL_PORT       = wxT("/ControlPort");
 const wxChar* KEY_TX_IN_ENABLE       = wxT("/TXInEnable");
 const wxChar* KEY_TX_IN_DEV          = wxT("/TXInDev");
 const wxChar* KEY_TX_IN_PIN          = wxT("/TXInPin");
@@ -197,15 +194,8 @@ bool CUWSDRApp::OnInit()
 
 	::wxLogMessage(wxT("Using hardware configuration file: ") + m_parameters->m_fileName);
 
-	// We interpolate so that we don't send too many commands to the hardware
-	if (m_parameters->m_hardwareStepSize < 10U &&
-		m_parameters->m_hardwareType == TYPE_UWSDR1)
-		m_parameters->m_hardwareStepSize = 10U;
-
 	// We cannot use Weaver on hardware with too large step sizes
 	if (m_parameters->m_hardwareStepSize >= 100U        ||
-	    m_parameters->m_hardwareType == TYPE_AUDIORX    ||
-	    m_parameters->m_hardwareType == TYPE_AUDIOTXRX  ||
 	    m_parameters->m_hardwareType == TYPE_DEMO       ||
 	    m_parameters->m_hardwareType == TYPE_SI570RX    ||
 	    m_parameters->m_hardwareType == TYPE_SI570TXRX)
@@ -301,12 +291,6 @@ bool CUWSDRApp::readDescrFile()
 	m_parameters->m_hardwareSwapIQ            = descrFile.getSwapIQ();
 	m_parameters->m_hardwareReceiveGainOffset = descrFile.getReceiveGainOffset();
 
-	// Change the hardware frequency limits for SoftRock type radios
-	if (m_parameters->m_hardwareType == TYPE_AUDIORX || m_parameters->m_hardwareType == TYPE_AUDIOTXRX) {
-		m_parameters->m_hardwareMaxFreq += m_parameters->m_hardwareSampleRate / 2.0F;
-		m_parameters->m_hardwareMinFreq -= m_parameters->m_hardwareSampleRate / 2.0F;
-	}
-
 	return true;
 }
 
@@ -341,7 +325,6 @@ bool CUWSDRApp::readConfig()
 	wxString keyStepVerySlow    = wxT("/") + m_parameters->m_name + KEY_STEP_VERY_SLOW;
 	wxString keyMode            = wxT("/") + m_parameters->m_name + KEY_MODE;
 	wxString keyWeaver          = wxT("/") + m_parameters->m_name + KEY_WEAVER;
-	wxString keyClockTune       = wxT("/") + m_parameters->m_name + KEY_CLOCK_TUNE;
 	wxString keyFilter          = wxT("/") + m_parameters->m_name + KEY_FILTER;
 	wxString keyFilterFMW       = wxT("/") + m_parameters->m_name + KEY_FILTER_FMW;
 	wxString keyFilterFMN       = wxT("/") + m_parameters->m_name + KEY_FILTER_FMN;
@@ -350,8 +333,6 @@ bool CUWSDRApp::readConfig()
 	wxString keyFilterCWW       = wxT("/") + m_parameters->m_name + KEY_FILTER_CWW;
 	wxString keyFilterCWN       = wxT("/") + m_parameters->m_name + KEY_FILTER_CWN;
 	wxString keyFilterDig       = wxT("/") + m_parameters->m_name + KEY_FILTER_DIG;
-	wxString keyIpAddress       = wxT("/") + m_parameters->m_name + KEY_IP_ADDRESS;
-	wxString keyControlPort     = wxT("/") + m_parameters->m_name + KEY_CONTROL_PORT;
 	wxString keyTXInEnable      = wxT("/") + m_parameters->m_name + KEY_TX_IN_ENABLE;
 	wxString keyTXInDev         = wxT("/") + m_parameters->m_name + KEY_TX_IN_DEV;
 	wxString keyTXInPin         = wxT("/") + m_parameters->m_name + KEY_TX_IN_PIN;
@@ -504,8 +485,6 @@ bool CUWSDRApp::readConfig()
 	m_parameters->m_mode = UWSDRMODE(num);
 
 	profile->Read(keyWeaver,           &m_parameters->m_weaver, true);
-	profile->Read(keyClockTune,        &num, 0L);
-	m_parameters->m_clockTune = num;
 
 	profile->Read(keyFilter,           &num, FILTER_AUTO);
 	m_parameters->m_filter =    FILTERWIDTH(num);
@@ -523,11 +502,6 @@ bool CUWSDRApp::readConfig()
 	m_parameters->m_filterCWN = FILTERWIDTH(num);
 	profile->Read(keyFilterDig,        &num, FILTER_2100);
 	m_parameters->m_filterDig = FILTERWIDTH(num);
-
-	profile->Read(keyIpAddress,        &m_parameters->m_ipAddress);
-
-	profile->Read(keyControlPort,      &num);
-	m_parameters->m_controlPort = num;
 
 	profile->Read(keyTXInEnable,       &m_parameters->m_txInEnable, false);
 	profile->Read(keyTXInDev,          &m_parameters->m_txInDev,    wxEmptyString);
@@ -696,7 +670,6 @@ void CUWSDRApp::writeConfig()
 	wxString keyStepVerySlow  = wxT("/") + m_parameters->m_name + KEY_STEP_VERY_SLOW;
 	wxString keyMode          = wxT("/") + m_parameters->m_name + KEY_MODE;
 	wxString keyWeaver        = wxT("/") + m_parameters->m_name + KEY_WEAVER;
-	wxString keyClockTune     = wxT("/") + m_parameters->m_name + KEY_CLOCK_TUNE;
 	wxString keyFilter        = wxT("/") + m_parameters->m_name + KEY_FILTER;
 	wxString keyFilterFMW     = wxT("/") + m_parameters->m_name + KEY_FILTER_FMW;
 	wxString keyFilterFMN     = wxT("/") + m_parameters->m_name + KEY_FILTER_FMN;
@@ -798,7 +771,6 @@ void CUWSDRApp::writeConfig()
 	profile->Write(keyStepVerySlow,     m_parameters->m_stepVerySlow);
 	profile->Write(keyMode,             m_parameters->m_mode);
 	profile->Write(keyWeaver,           m_parameters->m_weaver);
-	profile->Write(keyClockTune,        int(m_parameters->m_clockTune));
 	profile->Write(keyFilter,           m_parameters->m_filter);
 	profile->Write(keyFilterFMW,        m_parameters->m_filterFMW);
 	profile->Write(keyFilterFMN,        m_parameters->m_filterFMN);

@@ -46,11 +46,6 @@
               </object>
 
          <li> <object type="text/sitemap">
-                  <param name="Name" value="Ethernet Setup">
-                  <param name="Local" value="Ethernet.htm">
-              </object>
-
-         <li> <object type="text/sitemap">
                   <param name="Name" value="External Program Setup">
                   <param name="Local" value="External.htm">
               </object>

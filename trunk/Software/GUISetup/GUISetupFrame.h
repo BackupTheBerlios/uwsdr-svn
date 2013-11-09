@@ -34,7 +34,6 @@ public:
 	void onBrowse(wxCommandEvent& event);
 	void onUserAudio(wxCommandEvent& event);
 	void onSDRAudio(wxCommandEvent& event);
-	void onEthernet(wxCommandEvent& event);
 	void onPort(wxCommandEvent& event);
 	void onTuning(wxCommandEvent& event);
 	void onExternal(wxCommandEvent& event);
@@ -46,7 +45,6 @@ private:
 	wxCheckBox*    m_deskTop;
 	wxButton*      m_userAudio;
 	wxButton*      m_sdrAudio;
-	wxButton*      m_ethernet;
 	wxButton*      m_port;
 	wxString       m_filename;
 	SDRTYPE        m_sdrType;
@@ -56,8 +54,6 @@ private:
 	SOUNDTYPE      m_sdrAudioType;
 	int            m_sdrAudioInDev;
 	int            m_sdrAudioOutDev;
-	wxString       m_ipAddress;
-	long           m_controlPort;
 	bool           m_txInEnable;
 	wxString       m_txInDev;
 	INPIN          m_txInPin;

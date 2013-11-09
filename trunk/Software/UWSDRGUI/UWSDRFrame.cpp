@@ -23,16 +23,12 @@
 #include "NullController.h"
 #include "SI570Controller.h"
 #include "HackRFController.h"
-#include "SRTXRXController.h"
-#include "UWSDRController.h"
 #include "FreqKeypad.h"
 #include "NullReader.h"
 #include "NullWriter.h"
 #include "SignalReader.h"
 #include "TwoToneReader.h"
 #include "ThreeToneReader.h"
-#include "UWSDRDataReader.h"
-#include "UWSDRDataWriter.h"
 #include "SerialInterface.h"
 #include "SoundFileReader.h"
 #include "SoundFileWriter.h"
@@ -259,9 +255,6 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_parameters = parameters;
 
-	CUDPDataReader* reader = NULL;
-	CUDPDataWriter* writer = NULL;
-
 	switch (m_parameters->m_tuning) {
 		case TUNINGHW_POWERMATE:
 			m_tuning = new CGriffinPowerMate();
@@ -283,15 +276,6 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	}
 
 	switch (m_parameters->m_hardwareType) {
-		case TYPE_UWSDR1:
-			reader = new CUDPDataReader(m_parameters->m_ipAddress, m_parameters->m_controlPort);
-			writer = new CUDPDataWriter(m_parameters->m_ipAddress, m_parameters->m_controlPort);
-
-			m_sdr = new CUWSDRController(reader, writer, 1);
-			break;
-		case TYPE_AUDIOTXRX:
-			m_sdr = new CSRTXRXController(m_parameters->m_txOutDev, m_parameters->m_txOutPin);
-			break;
 		case TYPE_SI570TXRX:
 		case TYPE_SI570RX:
 			m_sdr = new CSI570Controller(m_parameters->m_hardwareFreqMult);
@@ -318,8 +302,6 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 		m_sdr->enableTX(true);
 	m_sdr->enableRX(true);
 
-	m_sdr->setClockTune(m_parameters->m_clockTune);
-
 	m_spectrumDisplay->setSampleRate(m_parameters->m_hardwareSampleRate);
 	m_spectrumDisplay->setType(m_parameters->m_spectrumType);
 	m_spectrumDisplay->setSpeed(m_parameters->m_spectrumSpeed);
@@ -331,7 +313,6 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_dsp = new CDSPControl(m_parameters->m_hardwareSampleRate, m_parameters->m_hardwareReceiveGainOffset, BLOCK_SIZE, m_parameters->m_hardwareSwapIQ);
 
 	switch (m_parameters->m_hardwareType) {
-		case TYPE_AUDIORX:
 		case TYPE_SI570RX:
 			// TX is disabled, RX is from audio card for signal input and audio output
 			m_dsp->setTXReader(new CNullReader());
@@ -355,7 +336,6 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			}
 			break;
 
-		case TYPE_AUDIOTXRX:
 		case TYPE_SI570TXRX:
 			// TX and RX are from audio cards for signal input and audio output, also simple TX/RX control
 			if (m_parameters->m_sdrAudioType == SOUND_JACK) {
@@ -414,48 +394,6 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 			if (m_parameters->m_keyInEnable) {
 				CSerialInterface* control = new CSerialInterface(m_parameters->m_keyInDev, m_parameters->m_keyInPin);
 				m_dsp->setKeyInControl(control);
-			}
-			break;
-
-		case TYPE_UWSDR1:
-			wxASSERT(reader != NULL);
-			wxASSERT(writer != NULL);
-
-			if (m_parameters->m_userAudioType == SOUND_JACK) {
-				CJackReaderWriter* rw = new CJackReaderWriter(m_parameters->m_name + wxT(" User"), 2U, 2U);
-				m_dsp->setRXWriter(rw);
-#if defined(TOBIAS)
-				// UDP in/out with audio on loudspeaker and two-tone audio on transmit
-				m_dsp->setTXReader(new CTwoToneReader(1000.0F, 1300.0F, 0.4F, rw));
-#else
-				// The standard configuration, UDP in/out and sound card for the user
-				m_dsp->setTXReader(rw);
-#endif
-			} else {
-				CSoundCardReaderWriter* rw = new CSoundCardReaderWriter(m_parameters->m_userAudioInDev, m_parameters->m_userAudioOutDev, 2U, 2U);
-				m_dsp->setRXWriter(rw);
-#if defined(TOBIAS)
-				// UDP in/out with audio on loudspeaker and two-tone audio on transmit
-				m_dsp->setTXReader(new CTwoToneReader(1000.0F, 1300.0F, 0.4F, rw));
-#else
-				// The standard configuration, UDP in/out and sound card for the user
-				m_dsp->setTXReader(rw);
-#endif
-			}
-
-			m_dsp->setTXWriter(new CUWSDRDataWriter(writer, 1U));
-			m_dsp->setRXReader(new CUWSDRDataReader(reader, 1U));
-
-			if (!m_parameters->m_hardwareTXRange.isEmpty()) {
-				if (m_parameters->m_txInEnable) {
-					CSerialInterface* control = new CSerialInterface(m_parameters->m_txInDev, m_parameters->m_txInPin);
-					m_dsp->setTXInControl(control);
-				}
-
-				if (m_parameters->m_keyInEnable) {
-					CSerialInterface* control = new CSerialInterface(m_parameters->m_keyInDev, m_parameters->m_keyInPin);
-					m_dsp->setKeyInControl(control);
-				}
 			}
 			break;
 
@@ -556,8 +494,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	m_timer.Start(200);
 
 	// Mute only works with UWSDR hardware
-	if (m_parameters->m_hardwareType != TYPE_UWSDR1)
-		m_mute->Disable();
+	m_mute->Disable();
 
 	normaliseMode();
 
@@ -1316,68 +1253,61 @@ void CUWSDRFrame::normaliseFreq()
 	else
 		m_frequency -= m_dsp->getRXOffset();
 
-	if (m_parameters->m_hardwareType == TYPE_AUDIORX || m_parameters->m_hardwareType == TYPE_AUDIOTXRX) {
-		wxInt64 hz = m_parameters->m_hardwareMinFreq.get() + wxInt64(m_parameters->m_hardwareSampleRate / 2.0F + 0.5F);
+	// Take into account the frequency steps of the SDR ...
+	unsigned int stepSize = m_parameters->m_hardwareStepSize;
+	wxInt64 hz            = m_frequency.get();
+	wxInt64 offset        = 0LL;
 
-		m_sdr->setTXAndFreq(m_txOn > 0U, m_frequency);	// The frequency argument is unused
-		m_dsp->setTXAndFreq(m_txOn > 0U, m_frequency.get() - hz);
-	} else {
-		// Take into account the frequency steps of the SDR ...
-		unsigned int stepSize = m_parameters->m_hardwareStepSize;
-		wxInt64 hz            = m_frequency.get();
-		wxInt64 offset        = 0LL;
+	offset = hz % stepSize;
 
-		offset = hz % stepSize;
+	wxInt64 base = hz - offset;
 
-		wxInt64 base = hz - offset;
+	if (offset >= stepSize / 2U) {
+		offset -= stepSize;
+		base   += stepSize;
+	}
 
-		if (offset >= stepSize / 2U) {
-			offset -= stepSize;
-			base   += stepSize;
+	m_frequency.set(base);
+
+	m_txInRange = m_parameters->m_hardwareTXRange.inRange(dispFreq);
+
+	// If out of transmit frequency range then disable/remove transmit possibilities
+	if (m_txInRange) {
+		if (!m_swap->IsEnabled()) {		// Optimisation
+			m_swap->Enable();
+			m_split->Enable();
+			m_shift1->Enable();
+			m_shift2->Enable();
+			m_mhzMinus->Enable();
+			m_mhzPlus->Enable();
+			m_ritCtrl->Enable();
+			m_rit->Enable();
+			m_transmit->Enable();
+			// Only re-enable the mic gain when not in CW mode
+			if (m_parameters->m_mode != MODE_CWUN && m_parameters->m_mode != MODE_CWLN &&
+				m_parameters->m_mode != MODE_CWUW && m_parameters->m_mode != MODE_CWLW)
+			m_micGain->Enable();
+			m_power->Enable();
+			m_sMeter->setTXMenu(true);
+			m_menu->Enable(MENU_VOICE_KEYBOARD, true);
+			m_menu->Enable(MENU_CW_KEYBOARD, true);
 		}
-
-		m_frequency.set(base);
-
-		m_txInRange = m_parameters->m_hardwareTXRange.inRange(dispFreq);
-
-		// If out of transmit frequency range then disable/remove transmit possibilities
-		if (m_txInRange) {
-			if (!m_swap->IsEnabled()) {		// Optimisation
-				m_swap->Enable();
-				m_split->Enable();
-				m_shift1->Enable();
-				m_shift2->Enable();
-				m_mhzMinus->Enable();
-				m_mhzPlus->Enable();
-				m_ritCtrl->Enable();
-				m_rit->Enable();
-				m_transmit->Enable();
-				// Only re-enable the mic gain when not in CW mode
-				if (m_parameters->m_mode != MODE_CWUN && m_parameters->m_mode != MODE_CWLN &&
-					m_parameters->m_mode != MODE_CWUW && m_parameters->m_mode != MODE_CWLW)
-					m_micGain->Enable();
-				m_power->Enable();
-				m_sMeter->setTXMenu(true);
-				m_menu->Enable(MENU_VOICE_KEYBOARD, true);
-				m_menu->Enable(MENU_CW_KEYBOARD, true);
-			}
-		} else {
-			if (m_swap->IsEnabled()) {		// Optimisation
-				m_swap->Disable();
-				m_split->Disable();
-				m_shift1->Disable();
-				m_shift2->Disable();
-				m_mhzMinus->Disable();
-				m_mhzPlus->Disable();
-				m_ritCtrl->Disable();
-				m_rit->Disable();
-				m_transmit->Disable();
-				m_micGain->Disable();
-				m_power->Disable();
-				m_sMeter->setTXMenu(false);
-				m_menu->Enable(MENU_VOICE_KEYBOARD, false);
-				m_menu->Enable(MENU_CW_KEYBOARD, false);
-			}
+	} else {
+		if (m_swap->IsEnabled()) {		// Optimisation
+			m_swap->Disable();
+			m_split->Disable();
+			m_shift1->Disable();
+			m_shift2->Disable();
+			m_mhzMinus->Disable();
+			m_mhzPlus->Disable();
+			m_ritCtrl->Disable();
+			m_rit->Disable();
+			m_transmit->Disable();
+			m_micGain->Disable();
+			m_power->Disable();
+			m_sMeter->setTXMenu(false);
+			m_menu->Enable(MENU_VOICE_KEYBOARD, false);
+			m_menu->Enable(MENU_CW_KEYBOARD, false);
 		}
 
 		// Finally go to TX or RX
@@ -1521,8 +1451,6 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 				if (reply == wxID_OK) {
 					normaliseMode();
 
-					m_sdr->setClockTune(m_parameters->m_clockTune);
-
 					m_dsp->setNB(m_parameters->m_nbOn);
 					m_dsp->setNBValue(m_parameters->m_nbValue);
 					m_dsp->setNB2(m_parameters->m_nb2On);
@@ -1620,17 +1548,8 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 
 				wxString type;
 				switch (m_parameters->m_hardwareType) {
-					case TYPE_AUDIORX:
-						type = _("Audio RX");
-						break;
-					case TYPE_AUDIOTXRX:
-						type = _("Audio TX/RX");
-						break;
 					case TYPE_DEMO:
 						type = _("Demo");
-						break;
-					case TYPE_UWSDR1:
-						type = _("UWSDR v1.0");
 						break;
 					case TYPE_SI570RX:
 						type = _("Si570 RX");

@@ -91,8 +91,7 @@ m_rxIQPhase(NULL),
 m_rxIQGain(NULL),
 m_txIQPhase(NULL),
 m_txIQGain(NULL),
-m_method(NULL),
-m_clockTune(NULL)
+m_method(NULL)
 {
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -208,11 +207,7 @@ m_clockTune(NULL)
 
 	m_method->SetSelection(m_parameters->m_weaver ? 1 : 0);
 
-	m_clockTune->SetValue(m_parameters->m_clockTune);
-
 	if (m_parameters->m_hardwareStepSize >= 100.0F     ||
-	    m_parameters->m_hardwareType == TYPE_AUDIORX   ||
-	    m_parameters->m_hardwareType == TYPE_AUDIOTXRX ||
 	    m_parameters->m_hardwareType == TYPE_SI570RX   ||
 	    m_parameters->m_hardwareType == TYPE_SI570TXRX ||
 	    m_parameters->m_hardwareType == TYPE_DEMO)
@@ -235,11 +230,6 @@ m_clockTune(NULL)
 
 		m_txIQPhase->Disable();
 		m_txIQGain->Disable();
-	}
-
-	if (m_parameters->m_hardwareType != TYPE_UWSDR1) {
-		m_freqOffset->Disable();
-		m_clockTune->Disable();
 	}
 }
 
@@ -476,8 +466,6 @@ void CUWSDRPreferences::onOK(wxCommandEvent& WXUNUSED(event))
 	m_parameters->m_rxIQgain  = m_rxIQGain->GetValue();
 
 	m_parameters->m_weaver = m_method->GetSelection() == 1;
-
-	m_parameters->m_clockTune = m_clockTune->GetValue();
 
 	if (IsModal()) {
 		EndModal(wxID_OK);
@@ -967,13 +955,6 @@ wxPanel* CUWSDRPreferences::createIQTab(wxNotebook* noteBook)
 	m_method->Append(_("Hilbert"));
 	m_method->Append(_("Weaver"));
 	sizer->Add(m_method, 0, wxALL, BORDER_SIZE);
-
-	wxStaticText* label6 = new wxStaticText(panel, -1, _("Clock tune"));
-	sizer->Add(label6, 0, wxALL, BORDER_SIZE);
-
-	m_clockTune = new wxSpinCtrl(panel, CLOCK_TUNE, wxEmptyString, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
-	m_clockTune->SetRange(-32768, 38768);
-	sizer->Add(m_clockTune, 0, wxALL, BORDER_SIZE);
 
 	mainSizer->Add(sizer, 0, wxTOP, BORDER_SIZE);
 

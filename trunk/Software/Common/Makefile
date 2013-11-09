@@ -2,8 +2,8 @@ all:		Common.a
 
 OBJS := 	AudioDevInfo.o Downsampler.o Frequency.o FrequencyRangeArray.o GriffinPowerMate.o HackRFController.o JackReaderWriter.o Log.o \
 					NullController.o NullReader.o NullWriter.o RingBuffer.o SDRDescrFile.o SerialControl.o SerialInterface.o SignalReader.o \
-					SI570Controller.o SoundCardReaderWriter.o SoundFileReader.o SoundFileWriter.o SRTXRXController.o ThreadReader.o ThreeToneReader.o \
-					TwoToneReader.o UDPDataReader.o UDPDataWriter.o Upsampler.o UWSDRController.o UWSDRDataReader.o UWSDRDataWriter.o
+					SI570Controller.o SoundCardReaderWriter.o SoundFileReader.o SoundFileWriter.o ThreadReader.o ThreeToneReader.o \
+					TwoToneReader.o Upsampler.o
 
 Common.a:	$(OBJS)
 		ar rcs Common.a $(OBJS)
@@ -68,9 +68,6 @@ SoundFileReader.o: SoundFileReader.cpp SoundFileReader.h ThreadReader.h
 SoundFileWriter.o: SoundFileWriter.cpp SoundFileWriter.h DataWriter.h
 		$(CC) $(CFLAGS) -c SoundFileWriter.cpp
 
-SRTXRXController.o:	SRTXRXController.cpp SRTXRXController.h ControlInterface.h Frequency.h SDRController.h SerialControl.h
-		$(CC) $(CFLAGS) -c SRTXRXController.cpp
-
 ThreadReader.o:	ThreadReader.cpp ThreadReader.h DataReader.h DataCallback.h
 		$(CC) $(CFLAGS) -c ThreadReader.cpp
 
@@ -80,24 +77,8 @@ ThreeToneReader.o:	ThreeToneReader.cpp ThreeToneReader.h ThreadReader.h
 TwoToneReader.o:		TwoToneReader.cpp TwoToneReader.h ThreadReader.h
 		$(CC) $(CFLAGS) -c TwoToneReader.cpp
 
-UDPDataReader.o:		UDPDataReader.cpp UDPDataReader.h RawDataCallback.h
-		$(CC) $(CFLAGS) -c UDPDataReader.cpp
-
-UDPDataWriter.o:		UDPDataWriter.cpp UDPDataWriter.h
-		$(CC) $(CFLAGS) -c UDPDataWriter.cpp
-
 Upsampler.o:				Upsampler.cpp Upsampler.h
 		$(CC) $(CFLAGS) -c Upsampler.cpp
-
-UWSDRController.o:	UWSDRController.cpp UWSDRController.h SDRController.h Frequency.h ControlInterface.h UDPDataReader.h \
-			UDPDataWriter.h RawDataCallback.h
-		$(CC) $(CFLAGS) -c UWSDRController.cpp
-
-UWSDRDataReader.o:	UWSDRDataReader.cpp UWSDRDataReader.h DataReader.h RingBuffer.h  UDPDataReader.h RawDataCallback.h
-		$(CC) $(CFLAGS) -c UWSDRDataReader.cpp
-
-UWSDRDataWriter.o:	UWSDRDataWriter.cpp UWSDRDataWriter.h RingBuffer.h UDPDataWriter.h DataWriter.h
-		$(CC) $(CFLAGS) -c UWSDRDataWriter.cpp
 
 clean:
 		rm -f core Common.a *.o *~ *.bak

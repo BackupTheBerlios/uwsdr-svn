@@ -25,10 +25,7 @@
 #include "Frequency.h"
 
 enum SDRTYPE {
-	TYPE_AUDIORX,
-	TYPE_AUDIOTXRX,
 	TYPE_DEMO,
-	TYPE_UWSDR1,
 	TYPE_HACKRF,
 	TYPE_SI570RX,
 	TYPE_SI570TXRX
@@ -49,8 +46,8 @@ public:
 	unsigned int         getStepSize() const;
 	float                getSampleRate() const;
 	bool                 getSwapIQ() const;
-	bool                 isValid() const;
 	unsigned int         getReceiveGainOffset() const;
+	bool                 isValid() const;
 
 private:
 	wxString             m_name;
@@ -63,8 +60,8 @@ private:
 	unsigned int         m_stepSize;
 	float                m_sampleRate;
 	bool                 m_swapIQ;
-	bool                 m_valid;
 	unsigned int         m_receiveGainOffset;
+	bool                 m_valid;
 };
 
 #endif

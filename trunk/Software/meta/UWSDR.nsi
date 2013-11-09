@@ -53,9 +53,7 @@ Section "UWSDR Program Files" SecProgram
   
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\UWSDR.exe"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\GUISetup.exe"
-; File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\SDREmulator.exe"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\SDRHelp.exe"
-; File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\SDRSetup.exe"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\libfftw3f-3.dll"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\libusb-1.0.dll"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\libusb0.dll"
@@ -65,7 +63,6 @@ Section "UWSDR Program Files" SecProgram
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\wxmsw28u_core_vc_custom.dll"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Release\wxmsw28u_html_vc_custom.dll"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Help\GUISetup\GUISetup.zip"
-; File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Help\SDRSetup\SDRSetup.zip"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Help\UWSDR\UWSDR.zip"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Copying.txt"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Changes.txt"
@@ -76,8 +73,6 @@ Section "UWSDR Program Files" SecProgram
   SetOutPath "$INSTDIR\SDR Files"
 
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\Readme.txt"
-  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\13cms.sdr"
-  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\23cms.sdr"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\CCW-SDR-4+.sdr"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\CCW-Sentry.sdr"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SDRFiles\Demo.sdr"
@@ -97,7 +92,6 @@ Section "UWSDR Program Files" SecProgram
   CreateShortCut "$SMPROGRAMS\UWSDR\Changes.lnk"   "$INSTDIR\Changes.txt"
   CreateShortCut "$SMPROGRAMS\UWSDR\Install.lnk"   "$INSTDIR\Install.txt"
   CreateShortCut "$SMPROGRAMS\UWSDR\TODO.lnk"      "$INSTDIR\Jobs.txt"
-  CreateShortCut "$SMPROGRAMS\UWSDR\SoftRock.lnk"  "$INSTDIR\SoftRock.txt"
   CreateShortCut "$SMPROGRAMS\UWSDR\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
 
   ;Store install folder

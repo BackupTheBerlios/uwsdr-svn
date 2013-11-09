@@ -33,19 +33,13 @@ export CFLAGS := -O2 -Wall -Wno-non-virtual-dtor -Wno-strict-aliasing -march=$(A
 
 export LDFLAGS :=
 
-all:		GUISetup/GUISetup SDREmulator/SDREmulator SDRHelp/SDRHelp SDRSetup/SDRSetup UWSDRGUI/UWSDR
+all:		GUISetup/GUISetup SDRHelp/SDRHelp UWSDRGUI/UWSDR
 
 GUISetup/GUISetup:	Common/Common.a
 		make -C GUISetup
 
-SDREmulator/SDREmulator: Common/Common.a
-		make -C SDREmulator
-
 SDRHelp/SDRHelp:
 		make -C SDRHelp
-
-SDRSetup/SDRSetup:
-		make -C SDRSetup
 
 UWSDRGUI/UWSDR:	Common/Common.a DttSP++/DttSP.a
 		make -C UWSDRGUI
@@ -63,13 +57,10 @@ install:	all
 		install -g bin -o root -m 0664 Copying.txt  $(DATADIR)
 		install -g bin -o root -m 0664 Install.txt  $(DATADIR)
 		install -g bin -o root -m 0664 Jobs.txt     $(DATADIR)
-		install -g bin -o root -m 0664 SoftRock.txt $(DATADIR)
 
 		make -C GUISetup install
-		make -C SDREmulator install
 		make -C SDRFiles install
 		make -C SDRHelp install
-		make -C SDRSetup install
 		make -C UWSDRGUI install
 		make -C Help install
 		make -C meta install
@@ -79,8 +70,6 @@ clean:
 		make -C Common clean
 		make -C DttSP++ clean
 		make -C GUISetup clean
-		make -C SDREmulator clean
 		make -C SDRHelp clean
-		make -C SDRSetup clean
 		make -C UWSDRGUI clean
 		make -C Help clean

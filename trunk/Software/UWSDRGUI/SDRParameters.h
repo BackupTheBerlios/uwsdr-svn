@@ -74,7 +74,6 @@ class CSDRParameters {
 
 	UWSDRMODE     m_mode;
 	bool          m_weaver;
-	unsigned int  m_clockTune;
 
 	FMDEVIATION   m_deviationFMW;
 	FMDEVIATION   m_deviationFMN;
@@ -91,9 +90,6 @@ class CSDRParameters {
 	FILTERWIDTH   m_filterCWW;
 	FILTERWIDTH   m_filterCWN;
 	FILTERWIDTH   m_filterDig;
-
-	wxString      m_ipAddress;
-	unsigned int  m_controlPort;
 
 	bool          m_txInEnable;
 	wxString      m_txInDev;

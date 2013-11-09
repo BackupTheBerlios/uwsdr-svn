@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -46,14 +46,6 @@ void CNullController::enableRX(bool WXUNUSED(on))
 }
 
 void CNullController::setTXAndFreq(bool WXUNUSED(transmit), const CFrequency& WXUNUSED(freq))
-{
-}
-
-void CNullController::sendCommand(const char* WXUNUSED(command))
-{
-}
-
-void CNullController::setClockTune(unsigned int WXUNUSED(clock))
 {
 }
 

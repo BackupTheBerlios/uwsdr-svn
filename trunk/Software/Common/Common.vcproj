@@ -420,10 +420,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\SRTXRXController.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\ThreadReader.cpp"
 				>
 			</File>
@@ -454,27 +450,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\UDPDataReader.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\UDPDataWriter.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Upsampler.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\UWSDRController.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\UWSDRDataReader.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\UWSDRDataWriter.cpp"
 				>
 			</File>
 		</Filter>
@@ -603,10 +579,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SRTXRXController.h"
-				>
-			</File>
-			<File
 				RelativePath=".\ThreadReader.h"
 				>
 			</File>
@@ -619,27 +591,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\UDPDataReader.h"
-				>
-			</File>
-			<File
-				RelativePath=".\UDPDataWriter.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Upsampler.h"
-				>
-			</File>
-			<File
-				RelativePath=".\UWSDRController.h"
-				>
-			</File>
-			<File
-				RelativePath=".\UWSDRDataReader.h"
-				>
-			</File>
-			<File
-				RelativePath=".\UWSDRDataWriter.h"
 				>
 			</File>
 		</Filter>

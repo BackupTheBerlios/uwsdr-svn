@@ -28,8 +28,7 @@
 
 
 class CUWSDRPreferences : public wxDialog {
-
-    public:
+public:
 	CUWSDRPreferences(wxWindow* parent, int id, CSDRParameters* parameters, CDSPControl* dsp);
 	virtual ~CUWSDRPreferences();
 
@@ -39,7 +38,7 @@ class CUWSDRPreferences : public wxDialog {
 	void onOK(wxCommandEvent& event);
 	void onHelp(wxCommandEvent& event);
 
-    private:
+private:
 	CSDRParameters* m_parameters;
 	CDSPControl*    m_dsp;
 	wxNotebook*     m_noteBook;
@@ -89,7 +88,6 @@ class CUWSDRPreferences : public wxDialog {
 	wxSpinCtrl*     m_txIQPhase;
 	wxSpinCtrl*     m_txIQGain;
 	wxChoice*       m_method;
-	wxSpinCtrl*     m_clockTune;
 
 	DECLARE_EVENT_TABLE()
 
