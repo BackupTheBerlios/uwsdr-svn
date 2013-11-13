@@ -204,11 +204,6 @@ void CDttSP::setRXSquelchThreshold(float threshold)
 	m_rx->setSquelchThreshold(threshold);
 }
 
-void CDttSP::setAFGain(float gain)
-{
-	m_rx->setAFGain(gain);
-}
-
 void CDttSP::setRFGain(float gain)
 {
 	m_rx->setRFGain(gain);
@@ -433,9 +428,6 @@ float CDttSP::getMeter(METERTYPE mt)
 					break;
 				case ADC_IMAG:
 					returnval = m_meter->getRXMeter(RX_ADC_IMAG);
-					break;
-				case AGC_GAIN:
-					returnval = m_meter->getRXMeter(RX_AGC_GAIN);
 					break;
 				default:
 					returnval = -200.0F;

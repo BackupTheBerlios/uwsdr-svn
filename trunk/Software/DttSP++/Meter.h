@@ -43,7 +43,6 @@ enum METERTYPE {
 	AVG_SIGNAL_STRENGTH,
 	ADC_REAL,
 	ADC_IMAG,
-	AGC_GAIN,
 	MIC,
 	PWR,
 	ALC,
@@ -54,7 +53,6 @@ enum METERTYPE {
 enum RXMETERTAP {
 	RXMETER_PRE_CONV,
 	RXMETER_POST_FILT,
-	RXMETER_POST_AGC,
 	RXMETERTAP_COUNT
 };
 
@@ -63,7 +61,6 @@ enum RXMETERTYPE {
 	RX_AVG_SIGNAL_STRENGTH,
 	RX_ADC_REAL,
 	RX_ADC_IMAG,
-	RX_AGC_GAIN,
 	RXMETERTYPE_COUNT
 };
 
@@ -81,7 +78,7 @@ public:
 	CMeter();
 	~CMeter();
 
-	void setRXMeter(RXMETERTAP tap, CXB* buf, float agcGain);
+	void setRXMeter(RXMETERTAP tap, CXB* buf);
 	void setTXMeter(TXMETERTYPE type, CXB* buf);
 
 	float getRXMeter(RXMETERTYPE type) const;

@@ -22,6 +22,7 @@
 #include <wx/wx.h>
 
 #include "UWSDRDefs.h"
+#include "Common.h"
 
 
 class CSpectrumDisplay : public wxPanel {

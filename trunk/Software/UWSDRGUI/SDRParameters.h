@@ -173,6 +173,9 @@ class CSDRParameters {
 
 	wxString      m_voiceDir;
 	wxString      m_voiceFile[VOICEKEYER_COUNT];
+
+	wxString      m_externalName;
+	EXTERNALADDRS m_externalAddrs;
 };
 
 #endif

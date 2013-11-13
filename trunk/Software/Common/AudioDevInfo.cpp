@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -102,25 +102,6 @@ bool CAudioDevInfo::enumerateDevs()
 		const PaDeviceInfo* device = ::Pa_GetDeviceInfo(i);
 
 		wxString name(device->name, wxConvLocal);
-
-#if defined(__WINDOWS__)
-		// Map the seperate names for the sound mapper under Windows MME to one name
-		if (name.IsSameAs(wxT("Microsoft Sound Mapper - Input")))
-			name = wxT("Microsoft Sound Mapper");
-		if (name.IsSameAs(wxT("Microsoft Sound Mapper - Output")))
-			name = wxT("Microsoft Sound Mapper");
-
-		// Map the seperate names for the sound mapper under Windows DirectAudio to one name
-		if (name.IsSameAs(wxT("Primary Sound Capture Driver")))
-			name = wxT("Primary Sound Driver");
-#endif
-#if defined(__APPLE__) && defined(__MACH__)
-		// Map the separate names for the built-in sound driver under Mac OS X to one name
-		if (name.IsSameAs(wxT("Built-in Input")))
-			name = wxT("Built-in");
-		if (name.IsSameAs(wxT("Built-in Output")))
-			name = wxT("Built-in");
-#endif
 
 		if (device->maxInputChannels > 0) {
 			CAudioDevDev* dev = findDev(name, SOUND_PORTAUDIO);

@@ -186,6 +186,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ExternalProtocolHandler.cpp"
+				>
+			</File>
+			<File
 				RelativePath="Frequency.cpp"
 				>
 				<FileConfiguration
@@ -450,6 +454,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\UDPReaderWriter.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Upsampler.cpp"
 				>
 			</File>
@@ -495,7 +503,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ExternalControlInterface.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ExternalInterface.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ExternalProtocolHandler.h"
 				>
 			</File>
 			<File
@@ -588,6 +604,10 @@
 			</File>
 			<File
 				RelativePath="TwoToneReader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UDPReaderWriter.h"
 				>
 			</File>
 			<File

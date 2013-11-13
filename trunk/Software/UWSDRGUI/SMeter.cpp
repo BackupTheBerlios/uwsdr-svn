@@ -25,7 +25,6 @@ enum {
 	MENU_Q_INPUT,
 	MENU_SIGNAL,
 	MENU_AVG_SIGNAL,
-	MENU_AGC,
 	MENU_MICROPHONE,
 	MENU_POWER,
 	MENU_ALC,
@@ -40,7 +39,6 @@ BEGIN_EVENT_TABLE(CSMeter, wxPanel)
 	EVT_MENU(MENU_Q_INPUT,    CSMeter::onMenu)
 	EVT_MENU(MENU_SIGNAL,     CSMeter::onMenu)
 	EVT_MENU(MENU_AVG_SIGNAL, CSMeter::onMenu)
-	EVT_MENU(MENU_AGC,        CSMeter::onMenu)
 	EVT_MENU(MENU_MICROPHONE, CSMeter::onMenu)
 	EVT_MENU(MENU_POWER,      CSMeter::onMenu)
 	EVT_MENU(MENU_ALC,        CSMeter::onMenu)
@@ -72,7 +70,6 @@ m_txOn(false)
 	m_rxMenu->AppendRadioItem(MENU_Q_INPUT,    _("Q Input"));
 	m_rxMenu->AppendRadioItem(MENU_SIGNAL,     _("Strength"));
 	m_rxMenu->AppendRadioItem(MENU_AVG_SIGNAL, _("Avg Strength"));
-	m_rxMenu->AppendRadioItem(MENU_AGC,        _("Post AGC"));
 
 	m_txMenu = new wxMenu();
 	m_txMenu->AppendRadioItem(MENU_MICROPHONE, _("Microphone"));
@@ -308,9 +305,6 @@ void CSMeter::onMouse(wxMouseEvent& event)
 		case METER_AVG_SIGNAL:
 			m_rxMenu->Check(MENU_AVG_SIGNAL, true);
 			break;
-		case METER_AGC:
-			m_rxMenu->Check(MENU_AGC, true);
-			break;
 		default:
 			::wxLogError(wxT("Unknown RX meter type = %d"), m_rxMeter);
 			break;
@@ -354,9 +348,6 @@ void CSMeter::onMenu(wxCommandEvent& event)
 			break;
 		case MENU_AVG_SIGNAL:
 			setRXMeter(METER_AVG_SIGNAL);
-			break;
-		case MENU_AGC:
-			setRXMeter(METER_AGC);
 			break;
 		case MENU_MICROPHONE:
 			setTXMeter(METER_MICROPHONE);

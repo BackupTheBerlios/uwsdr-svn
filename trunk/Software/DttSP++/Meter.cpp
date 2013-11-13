@@ -69,7 +69,7 @@ void CMeter::reset()
 		m_txval[i] = -200.0F;
 }
 
-void CMeter::setRXMeter(RXMETERTAP tap, CXB* buf, float agcGain)
+void CMeter::setRXMeter(RXMETERTAP tap, CXB* buf)
 {
 	wxASSERT(buf != NULL);
 
@@ -104,10 +104,6 @@ void CMeter::setRXMeter(RXMETERTAP tap, CXB* buf, float agcGain)
 			temp1 = m_rxval[RX_SIGNAL_STRENGTH];
 			temp2 = m_rxval[RX_AVG_SIGNAL_STRENGTH];
 			m_rxval[RX_AVG_SIGNAL_STRENGTH] = float(0.95 * temp2 + 0.05 * temp1);
-			break;
-
-		case RXMETER_POST_AGC:
-			m_rxval[RX_AGC_GAIN] = float(20.0 * ::log10(agcGain + 1e-10));
 			break;
 
 		default:

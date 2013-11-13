@@ -124,6 +124,8 @@ const wxChar* KEY_CW_SERIAL          = wxT("/CW/SerialNumber");
 const wxChar* KEY_CW_MESSAGE         = wxT("/CW/Message");
 const wxChar* KEY_VOICE_DIR          = wxT("/VoiceDir");
 const wxChar* KEY_VOICE_FILE         = wxT("/VoiceFile");
+const wxChar* KEY_EXT_NAME           = wxT("/ExternalName");
+const wxChar* KEY_EXT_ADDRS          = wxT("/ExternalAddrs");
 
 #if defined(__WXMSW__)
 const wxChar* KEY_INST_PATH          = wxT("/InstPath");
@@ -391,6 +393,8 @@ bool CUWSDRApp::readConfig()
 	wxString keyCwReport        = wxT("/") + m_parameters->m_name + KEY_CW_REPORT;
 	wxString keyCwSerial        = wxT("/") + m_parameters->m_name + KEY_CW_SERIAL;
 	wxString keyVoiceDir        = wxT("/") + m_parameters->m_name + KEY_VOICE_DIR;
+	wxString keyExtName         = wxT("/") + m_parameters->m_name + KEY_EXT_NAME;
+	wxString keyExtAddrs        = wxT("/") + m_parameters->m_name + KEY_EXT_ADDRS;
 
 	wxString keyCwMessage[CWKEYBOARD_COUNT];
 	for (unsigned int i = 0; i < CWKEYBOARD_COUNT; i++) {
@@ -633,6 +637,10 @@ bool CUWSDRApp::readConfig()
 	for (unsigned int m = 0; m < VOICEKEYER_COUNT; m++)
 		profile->Read(keyVoiceFile[m], &m_parameters->m_voiceFile[m], wxEmptyString);
 
+	profile->Read(keyExtName,          &m_parameters->m_externalName, wxEmptyString);
+	profile->Read(keyExtAddrs,         &num, EXTERNALADDRS_HOST);
+	m_parameters->m_externalAddrs = EXTERNALADDRS(num);
+
 	profile->Flush();
 
 	delete profile;
@@ -721,6 +729,8 @@ void CUWSDRApp::writeConfig()
 	wxString keyCwReport      = wxT("/") + m_parameters->m_name + KEY_CW_REPORT;
 	wxString keyCwSerial      = wxT("/") + m_parameters->m_name + KEY_CW_SERIAL;
 	wxString keyVoiceDir      = wxT("/") + m_parameters->m_name + KEY_VOICE_DIR;
+	wxString keyExtName       = wxT("/") + m_parameters->m_name + KEY_EXT_NAME;
+	wxString keyExtAddrs      = wxT("/") + m_parameters->m_name + KEY_EXT_ADDRS;
 
 	wxString keyCwMessage[CWKEYBOARD_COUNT];
 	for (unsigned int i = 0; i < CWKEYBOARD_COUNT; i++) {
@@ -829,6 +839,9 @@ void CUWSDRApp::writeConfig()
 
 	for (unsigned int m = 0; m < CWKEYBOARD_COUNT; m++)
 		profile->Write(keyVoiceFile[m], m_parameters->m_voiceFile[m]);
+
+	profile->Write(keyExtName,          m_parameters->m_externalName);
+	profile->Write(keyExtAddrs,         int(m_parameters->m_externalAddrs));
 
 	profile->Flush();
 

@@ -24,9 +24,23 @@
 
 const wxString VERSION  = wxT("UWSDR 0.9.1");
 
-const wxDateTime::wxDateTime_t REL_DATE_DAY   = 5;
+const wxDateTime::wxDateTime_t REL_DATE_DAY   = 14;
 const wxDateTime::Month        REL_DATE_MONTH = wxDateTime::Nov;
 const unsigned int             REL_DATE_YEAR  = 2013;
+
+enum UWSDRMODE {
+	MODE_AM,
+	MODE_CWLN,
+	MODE_CWLW,
+	MODE_CWUN,
+	MODE_CWUW,
+	MODE_DIGL,
+	MODE_DIGU,
+	MODE_FMN,
+	MODE_FMW,
+	MODE_LSB,
+	MODE_USB
+};
 
 enum INPIN {
 	IN_NONE = -1,
@@ -48,8 +62,8 @@ enum TUNINGHW {
 };
 
 enum EXTERNALADDRS {
-	EXTERNALADDRS_LOCAL = 0,
-	EXTERNALADDRS_PRIVATE,
+	EXTERNALADDRS_HOST = 0,
+	EXTERNALADDRS_LOCAL,
 	EXTERNALADDRS_ALL
 };
 

@@ -1,9 +1,9 @@
 all:		Common.a
 
-OBJS := 	AudioDevInfo.o Downsampler.o Frequency.o FrequencyRangeArray.o GriffinPowerMate.o HackRFController.o JackReaderWriter.o Log.o \
-					NullController.o NullReader.o NullWriter.o RingBuffer.o SDRDescrFile.o SerialControl.o SerialInterface.o SignalReader.o \
-					SI570Controller.o SoundCardReaderWriter.o SoundFileReader.o SoundFileWriter.o ThreadReader.o ThreeToneReader.o \
-					TwoToneReader.o Upsampler.o
+OBJS := 	AudioDevInfo.o Downsampler.o ExternalProtocolHandler.o Frequency.o FrequencyRangeArray.o GriffinPowerMate.o HackRFController.o \
+					JackReaderWriter.o Log.o NullController.o NullReader.o NullWriter.o RingBuffer.o SDRDescrFile.o SerialControl.o SerialInterface.o \
+					SignalReader.o SI570Controller.o SoundCardReaderWriter.o SoundFileReader.o SoundFileWriter.o ThreadReader.o ThreeToneReader.o \
+					TwoToneReader.o UDPReaderWriter.o Upsampler.o
 
 Common.a:	$(OBJS)
 		ar rcs Common.a $(OBJS)
@@ -13,6 +13,9 @@ AudioDevInfo.o:	AudioDevInfo.cpp AudioDevInfo.h Common.h
 
 Downsampler.o:		Downsampler.cpp Downsampler.h
 		$(CC) $(CFLAGS) -c Downsampler.cpp
+
+ExternalProtocolHandler.o:	ExternalProtocolHandler.cpp ExternalProtocolHandler.h UDPReaderWriter.h ExternalControlInterface.h DataCallbback.h
+		$(CC) $(CFLAGS) -c ExternalProtocolHandler.cpp
 
 Frequency.o:	Frequency.cpp Frequency.h
 		$(CC) $(CFLAGS) -c Frequency.cpp
@@ -76,6 +79,9 @@ ThreeToneReader.o:	ThreeToneReader.cpp ThreeToneReader.h ThreadReader.h
 
 TwoToneReader.o:		TwoToneReader.cpp TwoToneReader.h ThreadReader.h
 		$(CC) $(CFLAGS) -c TwoToneReader.cpp
+
+UDPReaderWriter.o:	UDPReaderWriter.cpp UDPReaderWriter.h Common.h
+		$(CC) $(CFLAGS) -c UDPReaderWriter.cpp
 
 Upsampler.o:				Upsampler.cpp Upsampler.h
 		$(CC) $(CFLAGS) -c Upsampler.cpp

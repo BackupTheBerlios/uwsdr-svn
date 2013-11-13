@@ -20,8 +20,8 @@ CWKeyboard.o:	CWKeyboard.cpp CWKeyboard.h UWSDRApp.h UWSDRDefs.h
 CWKeyer.o:	CWKeyer.cpp CWKeyer.h ../Common/ThreadReader.h UWSDRApp.h UWSDRDefs.h
 		$(CC) $(CFLAGS) -c CWKeyer.cpp
 
-DSPControl.o:	DSPControl.cpp DSPControl.h CWKeyer.h ../Common/DataCallback.h ../Common/DataReader.h \
-		../Common/DataWriter.h DTTSPControl.h ../Common/RingBuffer.h ../Common/ExternalInterface.h \
+DSPControl.o:	DSPControl.cpp DSPControl.h CWKeyer.h ../Common/DataCallback.h ../Common/DataReader.h ../Common/Common.h \
+		../Common/DataWriter.h DTTSPControl.h ../Common/RingBuffer.h ../Common/ExternalInterface.h ../Common/ExternalProtocolHandler.h \
 		../Common/SoundFileWriter.h UWSDRApp.h UWSDRDefs.h VoiceKeyer.h
 		$(CC) $(CFLAGS) -c DSPControl.cpp
 
@@ -47,7 +47,7 @@ SDRParameters.o: SDRParameters.cpp SDRParameters.h UWSDRDefs.h ../Common/AudioDe
 SMeter.o:	SMeter.cpp SMeter.h UWSDRDefs.h
 		$(CC) $(CFLAGS) -c SMeter.cpp
 
-SpectrumDisplay.o: SpectrumDisplay.cpp SpectrumDisplay.h UWSDRDefs.h
+SpectrumDisplay.o: SpectrumDisplay.cpp SpectrumDisplay.h UWSDRDefs.h ../Common/Common.h
 		$(CC) $(CFLAGS) -c SpectrumDisplay.cpp
 
 UWSDRApp.o:	UWSDRApp.cpp UWSDRApp.h ConfigChooser.h ../Common/Log.h SDRParameters.h UWSDRDefs.h UWSDRFrame.h \
@@ -57,7 +57,7 @@ UWSDRApp.o:	UWSDRApp.cpp UWSDRApp.h ConfigChooser.h ../Common/Log.h SDRParameter
 UWSDRFrame.o:	UWSDRFrame.cpp UWSDRFrame.h ../Common/ControlInterface.h CWKeyboard.h ../Common/DialCallback.h DSPControl.h FreqDial.h FreqDisplay.h FreqKeypad.h \
 		../Common/Frequency.h InfoBox.h ../Common/NullController.h SDRParameters.h ../Common/SerialInterface.h \
 		SMeter.h ../Common/JackReaderWriter.h ../Common/SoundCardReaderWriter.h ../Common/SoundFileWriter.h SpectrumDisplay.h	UWSDRApp.h \
-		UWSDRDefs.h UWSDRPreferences.h UWSDR.xpm ../Common/Common.h \
+		UWSDRDefs.h UWSDRPreferences.h UWSDR.xpm ../Common/Common.h ../Common/ExternalControlInterface.h ../Common/ExternalProtocolHandler.h \
 		VoiceKeyboard.h ../Common/DialInterface.h ../Common/GriffinPowerMate.h ../Common/SI570Controller.h ../Common/HackRFController.h ../Common/FrequencyRangeArray.h
 		$(CC) $(CFLAGS) -c UWSDRFrame.cpp
 

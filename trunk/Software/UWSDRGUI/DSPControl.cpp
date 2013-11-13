@@ -22,10 +22,11 @@
 #include <wx/datetime.h>
 
 
-const int TX_READER    = 44;
-const int RX_READER    = 55;
-const int CW_READER    = 66;
-const int VOICE_READER = 77;
+const int TX_READER       = 44;
+const int RX_READER       = 55;
+const int CW_READER       = 66;
+const int VOICE_READER    = 77;
+const int EXTERNAL_READER = 88;
 
 const unsigned int RINGBUFFER_SIZE = 100001;
 
@@ -51,17 +52,19 @@ m_outBuffer(NULL),
 m_txLastBuffer(NULL),
 m_rxLastBuffer(NULL),
 m_record(NULL),
-m_transmit(false),
+m_transmit(TXSTATE_RX),
 m_running(false),
 m_mode(MODE_USB),
 m_recordType(RECORD_MONO_AUDIO),
+m_afGain(0.0F),
 m_clockId(-1),
 m_lastTXIn(false),
 m_lastKeyIn(false),
 m_rxOverruns(0U),
 m_rxFills(0U),
 m_txOverruns(0U),
-m_txFills(0U)
+m_txFills(0U),
+m_extHandler(NULL)
 {
 	m_dttsp = new CDTTSPControl();
 	m_dttsp->open(m_sampleRate, receiveGainOffset, m_blockSize, swapIQ);
@@ -159,7 +162,7 @@ void* CDSPControl::Entry()
 		wxSemaError ret = m_waiting.WaitTimeout(500UL);
 
 		if (ret == wxSEMA_NO_ERROR) {
-			if (m_transmit) {
+			if (m_transmit == TXSTATE_INT || m_transmit == TXSTATE_EXT) {
 				unsigned int nSamples = m_txRingBuffer.getData(m_txBuffer, m_blockSize);
 				if (nSamples != m_blockSize) {
 					// Copy the last buffer of good data to the output
@@ -170,17 +173,21 @@ void* CDSPControl::Entry()
 					::memcpy(m_txLastBuffer, m_txBuffer, m_blockSize * sizeof(float) * 2U);
 				}
 
-				if (nSamples > 0)
+				if (nSamples > 0U)
 					m_txWriter->write(m_txBuffer, nSamples);
 			}
 
 			unsigned int nSamples = m_rxRingBuffer.getData(m_rxBuffer, m_blockSize);
 
 			// Create silence on transmit if no sidetone is being transmitted
-			if (nSamples == 0 && m_transmit) {
-				::memset(m_rxBuffer, 0x00, m_blockSize * 2U * sizeof(float));
+			if (nSamples == 0U && (m_transmit == TXSTATE_INT || m_transmit == TXSTATE_EXT)) {
+				::memset(m_rxBuffer, 0x00U, m_blockSize * 2U * sizeof(float));
 				nSamples = m_blockSize;
 			}
+
+			// Only send audio to the external protocol handler when not transmitting
+			if (m_extHandler != NULL && m_transmit != TXSTATE_EXT)
+				m_extHandler->writeAudio(m_rxBuffer, nSamples);
 
 			if (nSamples != m_blockSize) {
 				// Copy the last buffer of good data to the output
@@ -191,11 +198,15 @@ void* CDSPControl::Entry()
 				::memcpy(m_rxLastBuffer, m_rxBuffer, m_blockSize * sizeof(float) * 2U);
 			}
 
-			m_rxWriter->write(m_rxBuffer, nSamples);
-
 			// Don't record when transmitting
-			if (m_record != NULL && (m_recordType == RECORD_MONO_AUDIO || m_recordType == RECORD_STEREO_AUDIO) && !m_transmit)
+			if (m_record != NULL && (m_recordType == RECORD_MONO_AUDIO || m_recordType == RECORD_STEREO_AUDIO) && m_transmit == TXSTATE_RX)
 				m_record->write(m_rxBuffer, nSamples);
+
+			// Scale the audio by the AF Gain setting
+			for (unsigned int i = 0U; i < (nSamples * 2U); i++)
+				m_rxBuffer[i] *= m_afGain;
+
+			m_rxWriter->write(m_rxBuffer, nSamples);
 		}
 	}
 
@@ -257,6 +268,19 @@ bool CDSPControl::openIO()
 		return false;
 	}
 
+	if (m_extHandler != NULL) {
+		m_extHandler->setCallback(this, EXTERNAL_READER);
+
+		ret = m_extHandler->open(m_sampleRate, m_blockSize);
+		if (!ret) {
+			m_dttsp->close();
+			m_cwKeyer->close();
+			m_voiceKeyer->close();
+
+			return false;
+		}
+	}
+
 	// Open the TX In port and set the relevant output pin high to be shorted to the relevant input pin
 	if (m_txInControl != NULL) {
 		ret = m_txInControl->open();
@@ -313,6 +337,9 @@ void CDSPControl::closeIO()
 	if (m_keyInControl != NULL)
 		m_keyInControl->close();
 
+	if (m_extHandler != NULL)
+		m_extHandler->close();
+
 	m_dttsp->close();
 	m_cwKeyer->close();
 	m_voiceKeyer->close();
@@ -334,7 +361,7 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 
 	// Use whatever clock is available to run everything
 	if (id == m_clockId) {
-		if (m_transmit) {
+		if (m_transmit == TXSTATE_INT || m_transmit == TXSTATE_EXT) {
 			if (id != TX_READER)
 				m_txReader->clock();
 
@@ -353,16 +380,23 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 
 		if (m_keyInControl != NULL)
 			m_keyInControl->clock();
+
+		if (m_extHandler != NULL)
+			m_extHandler->clock();
 	}
 
 	switch (id) {
 		case RX_READER: {
-				if (m_transmit)
+				if (m_transmit != TXSTATE_RX)
 					return;
 
 				// Don't record when transmitting
 				if (m_record != NULL && m_recordType == RECORD_STEREO_IQ)
-					m_record->write(m_rxBuffer, nSamples);
+					m_record->write(inBuffer, nSamples);
+
+				// Only send data to the external protocol handler when not transmitting
+				if (m_extHandler != NULL)
+					m_extHandler->writeRaw(inBuffer, nSamples);
 
 				m_dttsp->dataIO(inBuffer, m_outBuffer, nSamples);
 
@@ -370,13 +404,13 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 				if (n != nSamples)
 					m_rxOverruns++;
 
-				if (n > 0)
+				if (n > 0U)
 					m_waiting.Post();
 			}
 			break;
 
 		case TX_READER: {
-				if (!m_transmit)
+				if (m_transmit != TXSTATE_INT)
 					return;
 
 				// If the voice or CW keyer are active, exit
@@ -391,13 +425,13 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 				if (n != nSamples)
 					m_txOverruns++;
 
-				if (n > 0)
+				if (n > 0U)
 					m_waiting.Post();
 			}
 			break;
 
 		case VOICE_READER: {
-				if (!m_transmit)
+				if (m_transmit != TXSTATE_INT)
 					return;
 
 				if (m_mode == MODE_CWUN || m_mode == MODE_CWUW || m_mode == MODE_CWLN || m_mode == MODE_CWLW)
@@ -409,13 +443,13 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 				if (n != nSamples)
 					m_txOverruns++;
 
-				if (n > 0)
+				if (n > 0U)
 					m_waiting.Post();
 			}
 			break;
 
 		case CW_READER: {
-				if (!m_transmit)
+				if (m_transmit != TXSTATE_INT)
 					return;
 
 				if (m_mode != MODE_CWUN && m_mode != MODE_CWUW && m_mode != MODE_CWLN && m_mode != MODE_CWLW)
@@ -433,7 +467,22 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 				if (n2 != nSamples)
 					m_txOverruns++;
 
-				if (n1 > 0 || n2 > 0)
+				if (n1 > 0U || n2 > 0U)
+					m_waiting.Post();
+			}
+			break;
+
+		case EXTERNAL_READER: {
+				if (m_transmit != TXSTATE_EXT)
+					return;
+
+				m_dttsp->dataIO(inBuffer, m_outBuffer, nSamples);
+
+				unsigned int n = m_txRingBuffer.addData(m_outBuffer, nSamples);
+				if (n != nSamples)
+					m_txOverruns++;
+
+				if (n > 0U)
 					m_waiting.Post();
 			}
 			break;
@@ -501,12 +550,12 @@ void CDSPControl::setDeviation(FMDEVIATION dev)
 	m_dttsp->setDeviation(dev);
 }
 
-void CDSPControl::setTXAndFreq(bool transmit, float freq)
+void CDSPControl::setTXAndFreq(TXSTATE transmit, float freq)
 {
 	// On a change from transmit to receive and vice versa we empty the ring buffers and
 	// drain the semaphore. We mute the transmit writer when on receive.
 	if (transmit != m_transmit) {
-		if (transmit)
+		if (transmit == TXSTATE_INT || transmit == TXSTATE_EXT)
 			m_txWriter->enable();
 		else
 			m_txWriter->disable();
@@ -529,7 +578,7 @@ void CDSPControl::setTXAndFreq(bool transmit, float freq)
 
 	m_transmit = transmit;
 
-	m_dttsp->setTXAndFreq(transmit, freq);
+	m_dttsp->setTXAndFreq(transmit == TXSTATE_INT || transmit == TXSTATE_EXT, freq);
 }
 
 void CDSPControl::setNB(bool onOff)
@@ -624,7 +673,8 @@ void CDSPControl::getPhase(float* spectrum)
 
 void CDSPControl::setAFGain(unsigned int value)
 {
-	m_dttsp->setAFGain(value);
+	// Map 0 - 1000 to 0.0 - 1.0
+	m_afGain = float(value) / 1000.0F;
 }
 
 void CDSPControl::setRFGain(unsigned int value)
@@ -708,6 +758,13 @@ CWERROR CDSPControl::sendCW(unsigned int speed, const wxString& text, CWSTATUS s
 VOICEERROR CDSPControl::sendAudio(const wxString& fileName, VOICESTATUS state)
 {
 	return m_voiceKeyer->send(fileName, state);
+}
+
+void CDSPControl::setExternalHandler(CExternalProtocolHandler* handler)
+{
+	wxASSERT(handler != NULL);
+
+	m_extHandler = handler;
 }
 
 #if defined(__WXDEBUG__)

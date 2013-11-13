@@ -68,7 +68,6 @@ Section "UWSDR Program Files" SecProgram
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Changes.txt"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Install.txt"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\Jobs.txt"
-  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\uwsdr\Software\SoftRock.txt"
 
   SetOutPath "$INSTDIR\SDR Files"
 

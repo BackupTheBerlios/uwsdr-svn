@@ -71,7 +71,6 @@ m_amDemodulator(NULL),
 m_fmDemodulator(NULL),
 m_ssbDemodulator(NULL),
 m_squelch(NULL),
-m_afGain(0.0F),
 m_rfGain(0.0F),
 m_mode(USB),
 m_binFlag(false),
@@ -230,7 +229,6 @@ void CRX::process(float* bufi, float* bufq, unsigned int n)
 	else
 		m_agc->process();
 
-	meter(m_oBuf,RXMETER_POST_AGC);
 	spectrum(m_oBuf, SPEC_RX_POST_AGC);
 
 	m_demodulator->demodulate();
@@ -261,14 +259,12 @@ void CRX::process(float* bufi, float* bufq, unsigned int n)
 //			CXBimag(m_oBuf, i) = CXBreal(m_oBuf, i);
 	}
 
+	n = CXBhave(m_oBuf);
 	if (!m_squelch->isSet())
 		m_squelch->noSquelch();
 
 	spectrum(m_oBuf, SPEC_RX_POST_DET);
 
-	CXBscl(m_oBuf, m_afGain);
-
-	n = CXBhave(m_oBuf);
 	for (unsigned int i = 0U; i < n; i++) {
 		bufi[i] = CXBreal(m_oBuf, i);
 		bufq[i] = CXBimag(m_oBuf, i);
@@ -279,7 +275,7 @@ void CRX::process(float* bufi, float* bufq, unsigned int n)
 
 void CRX::meter(CXB* buf, RXMETERTAP tap)
 {
-	m_meter->setRXMeter(tap, buf, m_agc->getGain());
+	m_meter->setRXMeter(tap, buf);
 }
 
 void CRX::spectrum(CXB* buf, RXSPECTRUMtype type)
@@ -398,11 +394,6 @@ void CRX::setSquelchFlag(bool flag)
 void CRX::setSquelchThreshold(float threshold)
 {
 	m_squelch->setThreshold(threshold);
-}
-
-void CRX::setAFGain(float gain)
-{
-	m_afGain = gain;
 }
 
 void CRX::setRFGain(float gain)

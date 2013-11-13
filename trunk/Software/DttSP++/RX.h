@@ -52,7 +52,6 @@ Bridgewater, NJ 08807
 #include "SSBDemod.h"
 #include "Squelch.h"
 
-
 class CRX {
 public:
 	CRX(unsigned int bufLen, unsigned int bits, float sampleRate, CMeter* meter, CSpectrum* spectrum, bool swapIQ);
@@ -97,7 +96,6 @@ public:
 
 	void setSpectrumType(RXSPECTRUMtype type);
 
-	void setAFGain(float gain);
 	void setRFGain(float gain);
 
 	float getOffset() const;
@@ -147,7 +145,6 @@ private:
 	CSSBDemod*     m_ssbDemodulator;
 
 	CSquelch*      m_squelch;
-	float          m_afGain;
 	float          m_rfGain;
 
 	SDRMODE        m_mode;

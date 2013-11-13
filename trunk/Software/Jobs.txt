@@ -12,6 +12,7 @@ Finish HackRF support
 
 Add TX audio equalisation.
 
+Finish the external protocol handler.
 
 
 Future

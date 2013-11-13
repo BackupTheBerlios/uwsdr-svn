@@ -127,7 +127,9 @@ m_cwReport(),
 m_cwSerial(),
 m_cwMessage(),
 m_voiceDir(),
-m_voiceFile()
+m_voiceFile(),
+m_externalName(),
+m_externalAddrs(EXTERNALADDRS_HOST)
 {
 }
 

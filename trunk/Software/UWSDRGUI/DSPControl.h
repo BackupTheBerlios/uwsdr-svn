@@ -31,6 +31,7 @@
 #include "DataReader.h"
 #include "DataWriter.h"
 #include "RingBuffer.h"
+#include "ExternalProtocolHandler.h"
 
 
 class CDSPControl : public wxThread, public IDataCallback {
@@ -64,7 +65,7 @@ public:
 	virtual void setFilter(FILTERWIDTH filter);
 	virtual void setAGC(AGCSPEED agc);
 	virtual void setDeviation(FMDEVIATION dev);
-	virtual void setTXAndFreq(bool transmit, float freq);
+	virtual void setTXAndFreq(TXSTATE transmit, float freq);
 
 	virtual void setNB(bool onOff);
 	virtual void setNBValue(unsigned int value);
@@ -104,6 +105,8 @@ public:
 	virtual CWERROR    sendCW(unsigned int speed, const wxString& text, CWSTATUS state);
 	virtual VOICEERROR sendAudio(const wxString& fileName, VOICESTATUS state);
 
+	virtual void  setExternalHandler(CExternalProtocolHandler* handler);
+
 private:
 	CDTTSPControl*  m_dttsp;
 	CCWKeyer*       m_cwKeyer;
@@ -132,10 +135,12 @@ private:
 
 	CSoundFileWriter* m_record;
 
-	bool            m_transmit;
+	TXSTATE         m_transmit;
 	bool            m_running;
 	UWSDRMODE       m_mode;
 	RECORDTYPE      m_recordType;
+
+	float           m_afGain;
 
 	int             m_clockId;
 
@@ -146,6 +151,8 @@ private:
 	unsigned int    m_rxFills;
 	unsigned int    m_txOverruns;
 	unsigned int    m_txFills;
+
+	CExternalProtocolHandler* m_extHandler;
 
 #if defined(__WXDEBUG__)
 	void dumpBuffer(const wxString& title, float* buffer, unsigned int nSamples) const;

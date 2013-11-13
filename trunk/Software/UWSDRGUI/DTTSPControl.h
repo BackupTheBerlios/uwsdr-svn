@@ -22,6 +22,7 @@
 #include <wx/wx.h>
 
 #include "UWSDRDefs.h"
+#include "Common.h"
 #include "DttSP.h"
 
 
@@ -41,7 +42,6 @@ public:
 	virtual void setAGC(AGCSPEED agc);
 	virtual void setDeviation(FMDEVIATION value);
 
-	virtual void setAFGain(unsigned int value);
 	virtual void setRFGain(unsigned int value);
 	virtual void setMicGain(unsigned int value);
 	virtual void setPower(unsigned int value);
@@ -106,7 +106,6 @@ private:
 	int          m_txGain;
 	bool         m_binaural;
 	int          m_pan;
-	unsigned int m_afGain;
 	unsigned int m_rfGain;
 	unsigned int m_micGain;
 	unsigned int m_power;

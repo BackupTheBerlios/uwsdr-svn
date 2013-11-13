@@ -98,7 +98,6 @@ public:
 	float getMeter(METERTYPE mt);
 	void  setDeviation(float value);
 	void  setRXPan(float pos);
-	void  setAFGain(float value);
 	void  setRFGain(float value);
 	void  setMicGain(float value);
 	void  setPower(float value);

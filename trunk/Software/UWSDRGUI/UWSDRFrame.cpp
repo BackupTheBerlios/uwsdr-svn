@@ -35,6 +35,7 @@
 #include "JackReaderWriter.h"
 #include "SoundCardReaderWriter.h"
 #include "GriffinPowerMate.h"
+#include "ExternalProtocolHandler.h"
 
 #if defined(__WXGTK__) || defined(__WXMAC__)
 #include "UWSDR.xpm"
@@ -129,9 +130,7 @@ BEGIN_EVENT_TABLE(CUWSDRFrame, wxFrame)
 	EVT_CUSTOM(TUNING_EVENT, wxID_ANY, CUWSDRFrame::onTune)
 END_EVENT_TABLE()
 
-
-const unsigned int BLOCK_SIZE      = 2048;		// XXXX
-
+const unsigned int BLOCK_SIZE      = 2048U;
 
 CUWSDRFrame::CUWSDRFrame(const wxString& title) :
 wxFrame(NULL, -1, title),
@@ -141,7 +140,8 @@ m_dsp(NULL),
 m_sdr(NULL),
 m_tuning(NULL),
 m_rxOn(true),
-m_txOn(0U),
+m_txIntOn(0U),
+m_txExtOn(false),
 m_stepSize(0.0),
 m_record(false),
 m_txInRange(false),
@@ -254,6 +254,10 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 	wxASSERT(parameters != NULL);
 
 	m_parameters = parameters;
+
+	CExternalProtocolHandler* extHandler = NULL;
+	if (!m_parameters->m_externalName.IsEmpty())
+		extHandler = new CExternalProtocolHandler(m_parameters->m_externalName, m_parameters->m_externalAddrs, this);
 
 	switch (m_parameters->m_tuning) {
 		case TUNINGHW_POWERMATE:
@@ -453,6 +457,9 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_dsp->setRFGain(m_parameters->m_rfGain);
 
+	if (extHandler != NULL)
+		m_dsp->setExternalHandler(extHandler);
+
 	m_squelch->setValue(m_parameters->m_squelch);
 	m_dsp->setSquelch(m_parameters->m_squelch);
 
@@ -495,6 +502,8 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	// Mute only works with UWSDR hardware
 	m_mute->Disable();
+
+	normaliseFreq();
 
 	normaliseMode();
 
@@ -796,7 +805,7 @@ void CUWSDRFrame::dialMoved(int id, int value)
 				case MODE_CWLW:
 				case MODE_CWUN:
 				case MODE_CWLN:
-					m_dsp->setMicGain(1000U);
+					m_dsp->setMicGain(75U);
 					break;
 				case MODE_FMN:
 				case MODE_FMW:
@@ -862,13 +871,13 @@ void CUWSDRFrame::freqChange(double value)
 {
 	CFrequency freq;
 
-	if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn > 0U)
+	if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txIntOn > 0U)
 		freq = m_parameters->m_vfoB + value;
-	else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn > 0U)
+	else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txIntOn > 0U)
 		freq = m_parameters->m_vfoA + value;
-	else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn > 0U)
+	else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txIntOn > 0U)
 		freq = m_parameters->m_vfoD + value;
-	else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn > 0U)
+	else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txIntOn > 0U)
 		freq = m_parameters->m_vfoC + value;
 
 	else if (m_parameters->m_vfoChoice == VFO_A)
@@ -880,7 +889,7 @@ void CUWSDRFrame::freqChange(double value)
 	else if (m_parameters->m_vfoChoice == VFO_D)
 		freq = m_parameters->m_vfoD + value;
 
-	if (m_txOn == 0U) {
+	if (m_txIntOn == 0U) {
 		if (freq >= m_parameters->m_hardwareMaxFreq)
 			freq = (freq - m_parameters->m_hardwareMaxFreq) + m_parameters->m_hardwareMinFreq;
 
@@ -893,13 +902,13 @@ void CUWSDRFrame::freqChange(double value)
 		}
 	}
 
-	if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn > 0U)
+	if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txIntOn > 0U)
 		m_parameters->m_vfoB = freq;
-	else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn > 0U)
+	else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txIntOn > 0U)
 		m_parameters->m_vfoA = freq;
-	else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn > 0U)
+	else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txIntOn > 0U)
 		m_parameters->m_vfoD = freq;
-	else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn > 0U)
+	else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txIntOn > 0U)
 		m_parameters->m_vfoC = freq;
 
 	else if (m_parameters->m_vfoChoice == VFO_A)
@@ -923,7 +932,7 @@ void CUWSDRFrame::onMenuButton(wxCommandEvent& WXUNUSED(event))
 
 void CUWSDRFrame::onVFOButton(wxCommandEvent& event)
 {
-	if (m_txOn > 0U)
+	if (m_txIntOn > 0U || m_txExtOn)
 		return;
 
 	switch (event.GetId()) {
@@ -1000,7 +1009,7 @@ void CUWSDRFrame::onVFOButton(wxCommandEvent& event)
 
 void CUWSDRFrame::onMHzButton(wxCommandEvent& event)
 {
-	if (m_txOn > 0U)
+	if (m_txIntOn > 0U || m_txExtOn)
 		return;
 
 	switch (event.GetId()) {
@@ -1039,7 +1048,7 @@ void CUWSDRFrame::onRITButton(wxCommandEvent& event)
 
 	m_ritCtrl->SetLabel(m_parameters->m_ritOn ? _("Off") : _("On"));
 
-	if (m_txOn > 0U)
+	if (m_txIntOn > 0U || m_txExtOn)
 		return;
 
 	normaliseFreq();
@@ -1058,7 +1067,7 @@ void CUWSDRFrame::onTXButton(wxCommandEvent& event)
 {
 	bool txOn = event.IsChecked();
 
-	bool ret = normaliseTransmit(txOn);
+	bool ret = normaliseIntTransmit(txOn);
 	if (!ret) {
 		m_transmit->SetValue(false);
 		return;
@@ -1067,23 +1076,26 @@ void CUWSDRFrame::onTXButton(wxCommandEvent& event)
 	m_transmit->SetLabel(txOn ? _("Off") : _("On"));
 }
 
-bool CUWSDRFrame::normaliseTransmit(bool txOn)
+bool CUWSDRFrame::normaliseIntTransmit(bool txOn)
 {
-	if (!txOn && m_txOn == 0U)
+	if (m_txExtOn)
 		return false;
 
-	if (txOn && m_txOn > 0U) {
-		m_txOn++;
+	if (!txOn && m_txIntOn == 0U)
+		return false;
+
+	if (txOn && m_txIntOn > 0U) {
+		m_txIntOn++;
 		return true;
 	}
 
-	if (!txOn && m_txOn > 1U) {
-		m_txOn--;
+	if (!txOn && m_txIntOn > 1U) {
+		m_txIntOn--;
 		return true;
 	}
 
 	// Sanity check on the transmit frequency
-	if (m_txOn == 0U) {
+	if (m_txIntOn == 0U) {
 		CFrequency freq;
 		if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_NONE)
 			freq = m_parameters->m_vfoA;
@@ -1146,34 +1158,117 @@ bool CUWSDRFrame::normaliseTransmit(bool txOn)
 	}
 
 	if (txOn)
-		m_txOn++;
+		m_txIntOn++;
 	else
-		m_txOn--;
+		m_txIntOn--;
 
-	if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn > 0U)
+	if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txIntOn > 0U)
 		m_infoBox->setVFO(VFO_B);
-	else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn > 0U)
+	else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txIntOn > 0U)
 		m_infoBox->setVFO(VFO_A);
-	else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn > 0U)
+	else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txIntOn > 0U)
 		m_infoBox->setVFO(VFO_D);
-	else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn > 0U)
+	else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txIntOn > 0U)
 		m_infoBox->setVFO(VFO_C);
 	else
 		m_infoBox->setVFO(m_parameters->m_vfoChoice);
 
-	m_infoBox->setTX(m_txOn > 0U);
-	m_sMeter->setTX(m_txOn > 0U);
+	m_infoBox->setTX(m_txIntOn > 0U);
+	m_sMeter->setTX(m_txIntOn > 0U);
 
-	normaliseFreq();
-
-	return true;
+	return normaliseFreq();
 }
 
-void CUWSDRFrame::normaliseFreq()
+bool CUWSDRFrame::normaliseExtTransmit(bool txOn)
+{
+	if (m_txIntOn > 0U)
+		return false;
+
+	// Sanity check on the transmit frequency
+	if (!m_txExtOn) {
+		CFrequency freq;
+		if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_NONE)
+			freq = m_parameters->m_vfoA;
+		else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_NONE)
+			freq = m_parameters->m_vfoB;
+		else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_NONE)
+			freq = m_parameters->m_vfoC;
+		else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_NONE)
+			freq = m_parameters->m_vfoD;
+
+		else if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SPLIT)
+			freq = m_parameters->m_vfoB;
+		else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SPLIT)
+			freq = m_parameters->m_vfoA;
+		else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SPLIT)
+			freq = m_parameters->m_vfoD;
+		else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SPLIT)
+			freq = m_parameters->m_vfoC;
+
+		else if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SHIFT1_MINUS)
+			freq = m_parameters->m_vfoA - m_parameters->m_freqShift1;
+		else if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SHIFT1_PLUS)
+			freq = m_parameters->m_vfoA + m_parameters->m_freqShift1;
+		else if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SHIFT2_MINUS)
+			freq = m_parameters->m_vfoA - m_parameters->m_freqShift2;
+		else if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SHIFT2_PLUS)
+			freq = m_parameters->m_vfoA + m_parameters->m_freqShift2;
+
+		else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SHIFT1_MINUS)
+			freq = m_parameters->m_vfoB - m_parameters->m_freqShift1;
+		else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SHIFT1_PLUS)
+			freq = m_parameters->m_vfoB + m_parameters->m_freqShift1;
+		else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SHIFT2_MINUS)
+			freq = m_parameters->m_vfoB - m_parameters->m_freqShift2;
+		else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SHIFT2_PLUS)
+			freq = m_parameters->m_vfoB + m_parameters->m_freqShift2;
+
+		else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SHIFT1_MINUS)
+			freq = m_parameters->m_vfoC - m_parameters->m_freqShift1;
+		else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SHIFT1_PLUS)
+			freq = m_parameters->m_vfoC + m_parameters->m_freqShift1;
+		else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SHIFT2_MINUS)
+			freq = m_parameters->m_vfoC - m_parameters->m_freqShift2;
+		else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SHIFT2_PLUS)
+			freq = m_parameters->m_vfoC + m_parameters->m_freqShift2;
+
+		else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SHIFT1_MINUS)
+			freq = m_parameters->m_vfoD - m_parameters->m_freqShift1;
+		else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SHIFT1_PLUS)
+			freq = m_parameters->m_vfoD + m_parameters->m_freqShift1;
+		else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SHIFT2_MINUS)
+			freq = m_parameters->m_vfoD - m_parameters->m_freqShift2;
+		else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SHIFT2_PLUS)
+			freq = m_parameters->m_vfoD + m_parameters->m_freqShift2;
+
+		if (!m_parameters->m_hardwareTXRange.inRange(freq))
+			return false;
+	}
+
+	m_txExtOn = txOn;
+
+	if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txExtOn)
+		m_infoBox->setVFO(VFO_B);
+	else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txExtOn)
+		m_infoBox->setVFO(VFO_A);
+	else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txExtOn)
+		m_infoBox->setVFO(VFO_D);
+	else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txExtOn)
+		m_infoBox->setVFO(VFO_C);
+	else
+		m_infoBox->setVFO(m_parameters->m_vfoChoice);
+
+	m_infoBox->setTX(m_txExtOn);
+	m_sMeter->setTX(m_txExtOn);
+
+	return normaliseFreq();
+}
+
+bool CUWSDRFrame::normaliseFreq()
 {
 	// We can be called too early ...
 	if (m_parameters == NULL)
-		return;
+		return false;
 
 	if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift != VFO_SPLIT)
 		m_frequency = m_parameters->m_vfoA;
@@ -1184,25 +1279,25 @@ void CUWSDRFrame::normaliseFreq()
 	else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift != VFO_SPLIT)
 		m_frequency = m_parameters->m_vfoD;
 
-	else if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn == 0U)
+	else if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txIntOn == 0U && !m_txExtOn)
 		m_frequency = m_parameters->m_vfoA;
-	else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn == 0U)
+	else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txIntOn == 0U && !m_txExtOn)
 		m_frequency = m_parameters->m_vfoB;
-	else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn == 0U)
+	else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txIntOn == 0U && !m_txExtOn)
 		m_frequency = m_parameters->m_vfoC;
-	else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn == 0U)
+	else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txIntOn == 0U && !m_txExtOn)
 		m_frequency = m_parameters->m_vfoD;
 
-	else if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn > 0U)
+	else if (m_parameters->m_vfoChoice == VFO_A && m_parameters->m_vfoSplitShift == VFO_SPLIT && (m_txIntOn > 0U || m_txExtOn))
 		m_frequency = m_parameters->m_vfoB;
-	else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn > 0U)
+	else if (m_parameters->m_vfoChoice == VFO_B && m_parameters->m_vfoSplitShift == VFO_SPLIT && (m_txIntOn > 0U || m_txExtOn))
 		m_frequency = m_parameters->m_vfoA;
-	else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn > 0U)
+	else if (m_parameters->m_vfoChoice == VFO_C && m_parameters->m_vfoSplitShift == VFO_SPLIT && (m_txIntOn > 0U || m_txExtOn))
 		m_frequency = m_parameters->m_vfoD;
-	else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SPLIT && m_txOn > 0U)
+	else if (m_parameters->m_vfoChoice == VFO_D && m_parameters->m_vfoSplitShift == VFO_SPLIT && (m_txIntOn > 0U || m_txExtOn))
 		m_frequency = m_parameters->m_vfoC;
 
-	if (m_txOn > 0U) {
+	if (m_txIntOn > 0U || m_txExtOn) {
 		switch (m_parameters->m_vfoSplitShift) {
 			case VFO_SHIFT1_MINUS:
 				m_frequency -= m_parameters->m_freqShift1;
@@ -1222,7 +1317,7 @@ void CUWSDRFrame::normaliseFreq()
 	}
 
 	// Set the RIT
-	if (m_parameters->m_ritOn && m_txOn == 0U)
+	if (m_parameters->m_ritOn && m_txIntOn == 0U && !m_txExtOn)
 		m_frequency += double(m_parameters->m_ritFreq);
 
 	// FM Wide is mapped to FM Narrow below 30 MHz
@@ -1248,7 +1343,7 @@ void CUWSDRFrame::normaliseFreq()
 	m_freqDisplay->setFrequency(dispFreq);
 
 	// Subtract any offset frequency needed
-	if (m_txOn > 0U)
+	if (m_txIntOn > 0U || m_txExtOn)
 		m_frequency -= m_dsp->getTXOffset();
 	else
 		m_frequency -= m_dsp->getRXOffset();
@@ -1309,25 +1404,37 @@ void CUWSDRFrame::normaliseFreq()
 			m_menu->Enable(MENU_VOICE_KEYBOARD, false);
 			m_menu->Enable(MENU_CW_KEYBOARD, false);
 		}
+	}
 
-		// Finally go to TX or RX
-		if (m_txOn > 0U) {
-			if (m_txInRange) {
-				m_sdr->setTXAndFreq(true, m_frequency);
-				m_dsp->setTXAndFreq(true, offset);
-			}
-		} else {
-			m_sdr->setTXAndFreq(false, m_frequency);
-			m_dsp->setTXAndFreq(false, offset);
+	// Finally go to TX or RX
+	if (m_txIntOn > 0U) {
+		if (m_txInRange) {
+			m_sdr->setTXAndFreq(true, m_frequency);
+			m_dsp->setTXAndFreq(TXSTATE_INT, offset);
+			return true;
 		}
+
+		return false;
+	} else if (m_txExtOn) {
+		if (m_txInRange) {
+			m_sdr->setTXAndFreq(true, m_frequency);
+			m_dsp->setTXAndFreq(TXSTATE_EXT, offset);
+			return true;
+		}
+
+		return false;
+	} else {
+		m_sdr->setTXAndFreq(false, m_frequency);
+		m_dsp->setTXAndFreq(TXSTATE_RX, offset);
+		return true;
 	}
 }
 
-void CUWSDRFrame::normaliseMode()
+bool CUWSDRFrame::normaliseMode()
 {
 	// We can be called too early
 	if (m_parameters == NULL)
-		return;
+		return false;
 
 	m_dsp->setMode(m_parameters->m_mode);
 
@@ -1398,7 +1505,7 @@ void CUWSDRFrame::normaliseMode()
 				m_micGain->Disable();
 			m_dsp->setAGC(m_parameters->m_agcCW);
 			speed   = m_parameters->m_vfoSpeedCWW;
-			micGain = 1000U;
+			micGain = 75U;
 			power   = m_parameters->m_cwPower;
 			break;
 		case MODE_CWUN:
@@ -1409,7 +1516,7 @@ void CUWSDRFrame::normaliseMode()
 				m_micGain->Disable();
 			m_dsp->setAGC(m_parameters->m_agcCW);
 			speed   = m_parameters->m_vfoSpeedCWN;
-			micGain = 1000U;
+			micGain = 75U;
 			power   = m_parameters->m_cwPower;
 			break;
 	}
@@ -1440,6 +1547,8 @@ void CUWSDRFrame::normaliseMode()
 			m_stepSize = m_parameters->m_stepVerySlow;
 			break;
 	}
+
+	return true;
 }
 
 void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
@@ -1478,7 +1587,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 			}
 			break;
 		case MENU_KEYPAD: {
-				if (m_txOn > 0U)
+				if (m_txIntOn > 0U || m_txExtOn)
 					return;
 
 				CFrequency freq;
@@ -1616,7 +1725,7 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 			}
 			break;
  		case wxID_EXIT:
-			if (m_txOn > 0U)
+			if (m_txIntOn > 0U || m_txExtOn)
 				return;
 			Close(false);
 			break;
@@ -1629,7 +1738,7 @@ void CUWSDRFrame::onTimer(wxTimerEvent& WXUNUSED(event))
 	m_parameters->m_spectrumSpeed = m_spectrumDisplay->getSpeed();
 	m_parameters->m_spectrumDB    = m_spectrumDisplay->getDB();
 
-	if (m_txOn > 0U) {
+	if (m_txIntOn > 0U || m_txExtOn) {
 		METERPOS meter = m_sMeter->getTXMeter();
 		m_parameters->m_txMeter = meter;
 
@@ -1702,7 +1811,7 @@ void CUWSDRFrame::onClose(wxCloseEvent& event)
 		return;
 	}
 
-	if (m_txOn > 0U) {
+	if (m_txIntOn > 0U || m_txExtOn) {
 		event.Veto();
 		return;
 	}
@@ -1799,12 +1908,12 @@ void CUWSDRFrame::setKey(bool keyOn)
 
 void CUWSDRFrame::onTransmitOn(wxEvent& WXUNUSED(event))
 {
-	normaliseTransmit(true);
+	normaliseIntTransmit(true);
 }
 
 void CUWSDRFrame::onTransmitOff(wxEvent& WXUNUSED(event))
 {
-	normaliseTransmit(false);
+	normaliseIntTransmit(false);
 }
 
 void CUWSDRFrame::onKeyOn(wxEvent& WXUNUSED(event))
@@ -1876,4 +1985,40 @@ void CUWSDRFrame::onTune(wxEvent& event1)
 	int value = event2.GetInt();
 
 	dialMoved(FREQ_KNOB, value);
+}
+
+bool CUWSDRFrame::setExtTransmit(bool txOn)
+{
+	return normaliseExtTransmit(txOn);
+}
+
+bool CUWSDRFrame::setExtFrequency(const CFrequency& freq)
+{
+	if (freq >= m_parameters->m_hardwareMaxFreq)
+		return false;
+
+	if (freq < m_parameters->m_hardwareMinFreq)
+		return false;
+
+	if (m_parameters->m_vfoChoice == VFO_A)
+		m_parameters->m_vfoA = freq;
+	else if (m_parameters->m_vfoChoice == VFO_B)
+		m_parameters->m_vfoB = freq;
+	else if (m_parameters->m_vfoChoice == VFO_C)
+		m_parameters->m_vfoC = freq;
+	else if (m_parameters->m_vfoChoice == VFO_D)
+		m_parameters->m_vfoD = freq;
+
+	return normaliseFreq();
+}
+
+bool CUWSDRFrame::setExtMode(UWSDRMODE mode)
+{
+	m_parameters->m_mode = mode;
+
+	bool ret = normaliseMode();
+	if (!ret)
+		return false;
+
+	return normaliseFreq();
 }

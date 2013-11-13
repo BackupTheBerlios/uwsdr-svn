@@ -49,7 +49,6 @@ m_txPhase(0),
 m_txGain(0),
 m_binaural(false),
 m_pan(0),
-m_afGain(999999U),
 m_rfGain(999999U),
 m_micGain(999999U),
 m_power(999999U),
@@ -353,19 +352,6 @@ void CDTTSPControl::setPan(int value)
 	m_pan = value;
 }
 
-void CDTTSPControl::setAFGain(unsigned int value)
-{
-	if (value == m_afGain)
-		return;
-
-	// Map 0 - 1000 to 0.0 - 1.0
-	float gain = float(value) / 1000.0F;
-
-	m_dttsp->setAFGain(gain);
-
-	m_afGain = value;
-}
-
 void CDTTSPControl::setRFGain(unsigned int value)
 {
 	if (value == m_rfGain)
@@ -455,11 +441,6 @@ float CDTTSPControl::getMeter(METERPOS type)
 			val = m_dttsp->getMeter(AVG_SIGNAL_STRENGTH);
 			if (val != -200.0F)
 				val += 45.0F;
-			break;
-		case METER_AGC:
-			val = m_dttsp->getMeter(AGC_GAIN);
-			if (val != -200.0F)
-				val -= 62.0F;
 			break;
 		case METER_MICROPHONE:
 			val = m_dttsp->getMeter(MIC);

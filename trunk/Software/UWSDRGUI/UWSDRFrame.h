@@ -28,6 +28,7 @@
 #include "SDRController.h"
 #include "DialCallback.h"
 #include "ControlInterface.h"
+#include "ExternalControlInterface.h"
 #include "DSPControl.h"
 #include "VolumeDial.h"
 #include "FreqDisplay.h"
@@ -40,7 +41,7 @@
 #include "DialInterface.h"
 
 
-class CUWSDRFrame : public wxFrame, public IDialCallback, public IControlInterface {
+class CUWSDRFrame : public wxFrame, public IDialCallback, public IControlInterface, public IExternalControlInterface {
 public:
 	CUWSDRFrame(const wxString& title = wxEmptyString);
 	virtual ~CUWSDRFrame();
@@ -76,6 +77,10 @@ public:
 	virtual void commandError(const wxString& message);
 	virtual void connectionLost();
 
+	virtual bool setExtTransmit(bool onOn);
+	virtual bool setExtFrequency(const CFrequency& freq);
+	virtual bool setExtMode(UWSDRMODE mode);
+
 	virtual CWERROR    sendCW(unsigned int speed, const wxString& text, CWSTATUS state);
 	virtual VOICEERROR sendAudio(const wxString& fileName, VOICESTATUS state);
 
@@ -89,7 +94,8 @@ private:
 	ISDRController*   m_sdr;
 	IDialInterface*   m_tuning;
 	bool              m_rxOn;
-	unsigned int      m_txOn;
+	unsigned int      m_txIntOn;
+	bool              m_txExtOn;
 	double            m_stepSize;
 	bool              m_record;
 	bool              m_txInRange;
@@ -145,10 +151,12 @@ private:
 	DECLARE_EVENT_TABLE()
 
 	void freqChange(double value);
-	void normaliseFreq();
-	void normaliseMode();
 
-	bool normaliseTransmit(bool txOn);
+	bool normaliseFreq();
+	bool normaliseMode();
+
+	bool normaliseIntTransmit(bool txOn);
+	bool normaliseExtTransmit(bool txOn);
 };
 
 #endif
