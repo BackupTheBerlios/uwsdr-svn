@@ -90,6 +90,8 @@ public:
 	void  setSpectrumPolyphaseFlag(bool flag);											// Unused by the GUI
 	void  setCompressionFlag(bool flag);
 	void  setCompressionLevel(float level);
+	void  setEqualiserFlag(bool flag);
+	void  setEqualiserLevels(unsigned int n, const int* vals);
 	void  setTRX(TRXMODE trx);
 	void  setALCGainTop(float gain);													// Unused by the GUI
 	void  getSpectrum(float *results);

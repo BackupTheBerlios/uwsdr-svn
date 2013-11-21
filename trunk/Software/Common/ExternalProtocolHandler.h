@@ -22,22 +22,24 @@
 #include "ExternalControlInterface.h"
 #include "UDPReaderWriter.h"
 #include "DataCallback.h"
+#include "Upsampler.h"
 #include "Common.h"
 
 #include <wx/wx.h>
 
 enum CONNECTTYPE {
 	CONNECTTYPE_NONE,
+	CONNECTTYPE_CONTROL,
 	CONNECTTYPE_AUDIO,
 	CONNECTTYPE_RAW
 };
 
 class CExternalProtocolHandler {
 public:
-	CExternalProtocolHandler(const wxString& name, EXTERNALADDRS addrs, IExternalControlInterface* iface);
+	CExternalProtocolHandler(float sampleRate, unsigned int blockSize, const wxString& name, EXTERNALADDRS addrs, IExternalControlInterface* iface);
 	~CExternalProtocolHandler();
 
-	bool open(float sampleRate, unsigned int blockSize);
+	bool open();
 
 	void setCallback(IDataCallback* callback, int id);
 
@@ -49,9 +51,10 @@ public:
 	void close();
 
 private:
-	unsigned int               m_blockSize;
 	float                      m_sampleRate;
+	unsigned int               m_blockSize;
 	unsigned int               m_skipFactor;
+	CUpsampler*                m_upsampler;
 	IExternalControlInterface* m_control;
 	CUDPReaderWriter*          m_socket;
 	EXTERNALADDRS              m_addrs;

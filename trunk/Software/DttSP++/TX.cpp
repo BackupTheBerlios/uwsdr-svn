@@ -59,6 +59,8 @@ m_micGain(0.0F),
 m_power(0.0F),
 m_speechProc(NULL),
 m_speechProcFlag(false),
+m_equaliser(NULL),
+m_equaliserFlag(false),
 m_mode(USB),
 m_weaver(true),
 m_freq(0.0),
@@ -99,10 +101,13 @@ m_tick(0UL)
 			    	1.0);		// Set the current gain
 
 	m_speechProc = new CSpeechProc(0.4F, 3.0, m_iBuf);
+
+	m_equaliser = new CEqualiser(sampleRate, bits, m_iBuf);
 }
 
 CTX::~CTX()
 {
+	delete m_equaliser;
 	delete m_speechProc;
 	delete m_alc;
 	delete m_ssbModulator;
@@ -138,6 +143,9 @@ void CTX::process(float* bufi, float* bufq, unsigned int n)
 
 	spectrum(m_iBuf, SPEC_TX_MIC);
 	meter(m_iBuf, TX_MIC);
+
+	if (m_equaliserFlag && (m_mode == USB || m_mode == LSB || m_mode == AM || m_mode == SAM || m_mode == FMN))
+		m_equaliser->process();
 
 	if (m_speechProcFlag && (m_mode == USB || m_mode == LSB))
 		m_speechProc->process();
@@ -374,3 +382,12 @@ float CTX::getOffset() const
 	}
 }
 
+void CTX::setEqualiserFlag(bool flag)
+{
+	m_equaliserFlag = flag;
+}
+
+void CTX::setEqualiserLevels(unsigned int n, const int* vals)
+{
+	m_equaliser->setValues(n, vals);
+}

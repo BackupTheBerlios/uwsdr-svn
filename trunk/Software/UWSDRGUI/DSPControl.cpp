@@ -271,7 +271,7 @@ bool CDSPControl::openIO()
 	if (m_extHandler != NULL) {
 		m_extHandler->setCallback(this, EXTERNAL_READER);
 
-		ret = m_extHandler->open(m_sampleRate, m_blockSize);
+		ret = m_extHandler->open();
 		if (!ret) {
 			m_dttsp->close();
 			m_cwKeyer->close();
@@ -609,6 +609,16 @@ void CDSPControl::setSP(bool onOff)
 void CDSPControl::setSPValue(unsigned int value)
 {
 	m_dttsp->setSPValue(value);
+}
+
+void CDSPControl::setEQ(bool onOff)
+{
+	m_dttsp->setEQ(onOff);
+}
+
+void CDSPControl::setEQLevels(unsigned int n, const int* levels)
+{
+	m_dttsp->setEQLevels(n, levels);
 }
 
 void CDSPControl::setCarrierLevel(unsigned int value)

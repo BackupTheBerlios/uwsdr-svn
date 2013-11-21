@@ -207,6 +207,11 @@
                   <param name="ID" value=407>
                   <param name="Local" value="IQPref.htm">
               </object>
+         <li> <object type="text/sitemap">
+                  <param name="Name" value="TX EQ">
+                  <param name="ID" value=408>
+                  <param name="Local" value="TXEQPref.htm">
+              </object>
        </ul>
 
   <li> <object type="text/sitemap">

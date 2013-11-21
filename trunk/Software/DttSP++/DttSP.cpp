@@ -657,3 +657,13 @@ void CDttSP::processSamples(float* bufi, float* bufq, unsigned int n)
 			break;
 	}
 }
+
+void CDttSP::setEqualiserFlag(bool flag)
+{
+	m_tx->setEqualiserFlag(flag);
+}
+
+void CDttSP::setEqualiserLevels(unsigned int n, const int* vals)
+{
+	m_tx->setEqualiserLevels(n, vals);
+}

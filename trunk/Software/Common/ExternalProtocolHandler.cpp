@@ -29,10 +29,11 @@ const unsigned int MAX_SILENCE_FRAMES = 5U;
 
 const unsigned int MAX_MISSING_FRAMES = 20U;
 
-CExternalProtocolHandler::CExternalProtocolHandler(const wxString& name, EXTERNALADDRS addrs, IExternalControlInterface* iface) :
-m_blockSize(0U),
-m_sampleRate(0.0F),
+CExternalProtocolHandler::CExternalProtocolHandler(float sampleRate, unsigned int blockSize, const wxString& name, EXTERNALADDRS addrs, IExternalControlInterface* iface) :
+m_sampleRate(sampleRate),
+m_blockSize(blockSize),
 m_skipFactor(0U),
+m_upsampler(NULL),
 m_control(iface),
 m_socket(NULL),
 m_addrs(addrs),
@@ -52,6 +53,13 @@ m_outSerial(0U),
 m_inSerial(0U)
 {
 	wxASSERT(iface != NULL);
+
+	m_skipFactor = (unsigned int)sampleRate / EXT_SAMPLE_RATE;
+
+	m_upsampler = new CUpsampler(float(EXT_SAMPLE_RATE), sampleRate);
+
+	m_pingInTimeout  = 30U * (unsigned int)(sampleRate / blockSize);
+	m_pingOutTimeout = 10U * (unsigned int)(sampleRate / blockSize);
 
 	unsigned int port;
 	if (name.IsSameAs(wxT("SDR 1")))
@@ -78,21 +86,14 @@ m_inSerial(0U)
 CExternalProtocolHandler::~CExternalProtocolHandler()
 {
 	delete m_socket;
+	delete m_upsampler;
 
 	delete[] m_netBuffer;
 	delete[] m_audioBuffer;
 }
 
-bool CExternalProtocolHandler::open(float sampleRate, unsigned int blockSize)
+bool CExternalProtocolHandler::open()
 {
-	m_blockSize  = blockSize;
-	m_sampleRate = sampleRate;
-
-	m_skipFactor = (unsigned int)sampleRate / EXT_SAMPLE_RATE;
-
-	m_pingInTimeout  = 30U * (unsigned int)(sampleRate / blockSize);
-	m_pingOutTimeout = 10U * (unsigned int)(sampleRate / blockSize);
-
 	return m_socket->open();
 }
 
@@ -141,7 +142,7 @@ void CExternalProtocolHandler::clock()
 
 	if (m_connected != CONNECTTYPE_NONE) {
 		// Ensure that the incoming packet matches our partner
-		if (m_remoteAddress.S_un.S_addr != address.S_un.S_addr || m_remotePort != port)
+		if (m_remoteAddress.s_addr != address.s_addr || m_remotePort != port)
 			return;
 
 		if (m_netBuffer[0U] == 0xFFU) {
@@ -167,13 +168,17 @@ void CExternalProtocolHandler::clock()
 					m_callback->callback(m_audioBuffer, audioSize * m_skipFactor, m_id);
 
 				const wxFloat32* p1 = (wxFloat32*)(m_netBuffer + 4U);
-				float* p2 = m_audioBuffer;
 
-				// XXX upsampling here
+				m_upsampler->process(p1, audioSize, m_audioBuffer);
 
-				for (unsigned int i = 0U; i < audioSize; i++, p1++) {
-					*p2++ = *p1;	// L
-					*p2++ = *p1;	// R
+				// Shuffle it all down
+				float* p2 = m_audioBuffer + (audioSize * m_skipFactor) - 1U;
+				float* p3 = m_audioBuffer + (audioSize * m_skipFactor * 2U) - 1U;
+
+				for (unsigned int i = 0U; i < (audioSize * m_skipFactor); i++) {
+					*p3-- = *p2;	// L
+					*p3-- = *p2;	// R
+					p2--;
 				}
 
 				m_callback->callback(m_audioBuffer, audioSize * m_skipFactor, m_id);
@@ -182,7 +187,7 @@ void CExternalProtocolHandler::clock()
 			}
 		} else if (m_netBuffer[0U] == 0xFEU) {
 			// Quietly ignore
-		} else if (::memcmp(m_netBuffer, "PING", 4U) == 0) {
+		} else if (::memcmp(m_netBuffer, "PING\n", 5U) == 0) {
 			m_pingInTimer = 0U;
 		} else if (::memcmp(m_netBuffer, "FREQ ", 5U) == 0) {
 			if (m_transmit) {
@@ -199,7 +204,7 @@ void CExternalProtocolHandler::clock()
 			}
 
 			m_socket->write((unsigned char*)"ACK\n", 4U, address, port);
-		} else if (::memcmp(m_netBuffer, "MODE USB", 8U) == 0) {
+		} else if (::memcmp(m_netBuffer, "MODE USB\n", 9U) == 0) {
 			if (m_transmit) {
 				m_socket->write((unsigned char*)"NAK Transmitting\n", 17U, address, port);
 				return;
@@ -212,7 +217,7 @@ void CExternalProtocolHandler::clock()
 			}
 
 			m_socket->write((unsigned char*)"ACK\n", 4U, address, port);
-		} else if (::memcmp(m_netBuffer, "MODE LSB", 8U) == 0) {
+		} else if (::memcmp(m_netBuffer, "MODE LSB\n", 9U) == 0) {
 			if (m_transmit) {
 				m_socket->write((unsigned char*)"NAK Transmitting\n", 17U, address, port);
 				return;
@@ -225,7 +230,7 @@ void CExternalProtocolHandler::clock()
 			}
 
 			m_socket->write((unsigned char*)"ACK\n", 4U, address, port);
-		} else if (::memcmp(m_netBuffer, "MODE CW", 7U) == 0) {
+		} else if (::memcmp(m_netBuffer, "MODE CW\n", 8U) == 0) {
 			if (m_transmit) {
 				m_socket->write((unsigned char*)"NAK Transmitting\n", 17U, address, port);
 				return;
@@ -238,7 +243,7 @@ void CExternalProtocolHandler::clock()
 			}
 
 			m_socket->write((unsigned char*)"ACK\n", 4U, address, port);
-		} else if (::memcmp(m_netBuffer, "MODE FM", 7U) == 0) {
+		} else if (::memcmp(m_netBuffer, "MODE FM\n", 8U) == 0) {
 			if (m_transmit) {
 				m_socket->write((unsigned char*)"NAK Transmitting\n", 17U, address, port);
 				return;
@@ -251,7 +256,7 @@ void CExternalProtocolHandler::clock()
 			}
 
 			m_socket->write((unsigned char*)"ACK\n", 4U, address, port);
-		} else if (::memcmp(m_netBuffer, "MODE AM", 7U) == 0) {
+		} else if (::memcmp(m_netBuffer, "MODE AM\n", 8U) == 0) {
 			if (m_transmit) {
 				m_socket->write((unsigned char*)"NAK Transmitting\n", 17U, address, port);
 				return;
@@ -264,7 +269,7 @@ void CExternalProtocolHandler::clock()
 			}
 
 			m_socket->write((unsigned char*)"ACK\n", 4U, address, port);
-		} else if (::memcmp(m_netBuffer, "PTT True", 8U) == 0) {
+		} else if (::memcmp(m_netBuffer, "PTT True\n", 9U) == 0) {
 			if (m_connected != CONNECTTYPE_AUDIO) {
 				m_socket->write((unsigned char*)"NAK Wrong mode\n", 15U, address, port);
 				return;
@@ -282,7 +287,7 @@ void CExternalProtocolHandler::clock()
 			}
 
 			m_socket->write((unsigned char*)"ACK\n", 4U, address, port);
-		} else if (::memcmp(m_netBuffer, "PTT False", 9U) == 0) {
+		} else if (::memcmp(m_netBuffer, "PTT False\n", 10U) == 0) {
 			if (m_connected != CONNECTTYPE_AUDIO) {
 				m_socket->write((unsigned char*)"NAK Wrong mode\n", 15U, address, port);
 				return;
@@ -294,7 +299,7 @@ void CExternalProtocolHandler::clock()
 			}
 
 			m_socket->write((unsigned char*)"ACK\n", 4U, address, port);
-		} else if (::memcmp(m_netBuffer, "STOP", 4U) == 0) {
+		} else if (::memcmp(m_netBuffer, "STOP\n", 5U) == 0) {
 			if (m_transmit)
 				m_control->setExtTransmit(false);
 
@@ -312,7 +317,7 @@ void CExternalProtocolHandler::clock()
 			// XXX FIXME
 		}
 
-		if (::memcmp(m_netBuffer, "START AUDIO", 11U) == 0) {
+		if (::memcmp(m_netBuffer, "START AUDIO\n", 12U) == 0) {
 			m_inSerial  = 0U;
 			m_outSerial = 0U;
 
@@ -326,7 +331,7 @@ void CExternalProtocolHandler::clock()
 			m_remotePort    = port;
 
 			m_socket->write((unsigned char*)"ACK 8000 F32 I\n", 15U, address, port);
-		} else if (::memcmp(m_netBuffer, "START RAW", 9U) == 0) {
+		} else if (::memcmp(m_netBuffer, "START RAW\n", 10U) == 0) {
 			m_inSerial  = 0U;
 			m_outSerial = 0U;
 
@@ -343,6 +348,17 @@ void CExternalProtocolHandler::clock()
 			::sprintf(reply, "ACK %.0f F32 IQ\n", m_sampleRate);
 
 			m_socket->write((unsigned char*)reply, ::strlen(reply), address, port);
+		} else if (::memcmp(m_netBuffer, "START\n", 6U) == 0) {
+			m_connected = CONNECTTYPE_CONTROL;
+			m_transmit  = false;
+
+			m_pingInTimer  = 0U;
+			m_pingOutTimer = 0U;
+
+			m_remoteAddress = address;
+			m_remotePort    = port;
+
+			m_socket->write((unsigned char*)"ACK\n", 4U, address, port);
 		}
 	}
 }

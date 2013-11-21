@@ -19,16 +19,19 @@
 #ifndef	Upsampler_H
 #define	Upsampler_H
 
+#include "Complex.h"
+
 #include <wx/wx.h>
 
 class CUpsampler {
 public:
-	CUpsampler(unsigned int n);
+	CUpsampler(float fromSampleRate, float toSampleRate);
 	~CUpsampler();
 
 	unsigned int process(const float* in, unsigned int len, float* out);
 
 private:
+	COMPLEX*     m_taps;
 	unsigned int m_n;
 	float*       m_buffer;
 	unsigned int m_pos;

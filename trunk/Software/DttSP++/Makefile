@@ -2,9 +2,8 @@ all:		DttSP.a
 
 CFLAGS :=	-I../Common $(CFLAGS)
 
-OBJS :=		AGC.o AMDemod.o AMMod.o BlockLMS.o CorrectIQ.o CXB.o DCBlock.o DttSP.o FIR.o FMDemod.o \
-		FMMod.o FilterOVSV.o LMS.o Meter.o NoiseBlanker.o Oscillator.o RX.o Spectrum.o \
-		SpeechProc.o Squelch.o TX.o Window.o SSBDemod.o SSBMod.o Utils.o
+OBJS :=		AGC.o AMDemod.o AMMod.o BlockLMS.o CorrectIQ.o CXB.o DCBlock.o Downsampler.o DttSP.o Equaliser.o FIR.o FMDemod.o FMMod.o FilterOVSV.o \
+					LMS.o Meter.o NoiseBlanker.o Oscillator.o RX.o Spectrum.o SpeechProc.o Squelch.o TX.o Window.o SSBDemod.o SSBMod.o Upsampler.o Utils.o
 
 DttSP.a:	$(OBJS)
 		ar rcs DttSP.a $(OBJS)
@@ -30,8 +29,14 @@ CXB.o:		CXB.cpp CXB.h Complex.h CXOps.h
 DCBlock.o:	DCBlock.cpp DCBlock.h Complex.h CXB.h Meter.h Spectrum.h
 		$(CC) $(CFLAGS) -c DCBlock.cpp
 
+Downsampler.o:	Downsampler.cpp Downsampler.h FIR.h COMPLEX.h
+		$(CC) $(CFLAGS) -c Downsampler.cpp
+
 DttSP.o:	DttSP.cpp DttSP.h Defs.h ../Common/RingBuffer.h RX.h TX.h
 		$(CC) $(CFLAGS) -c DttSP.cpp
+
+Equaliser.o:		Equaliser.cpp Equaliser.h Complex.h CXB.h FilterOVSV.h FIR.h
+		$(CC) $(CFLAGS) -c Equaliser.cpp
 
 FIR.o:		FIR.cpp FIR.h Complex.h CXB.h Window.h Utils.h
 		$(CC) $(CFLAGS) -c FIR.cpp
@@ -77,8 +82,11 @@ SSBMod.o:	SSBMod.cpp SSBMod.h Complex.h CXB.h Mod.h
 		$(CC) $(CFLAGS) -c SSBMod.cpp
 
 TX.o:		TX.cpp TX.h AGC.h AMMod.h CorrectIQ.h CXB.h DCBlock.h Defs.h FilterOVSV.h FMMod.h \
-		Meter.h Mod.h Oscillator.h Spectrum.h SpeechProc.h Squelch.h SSBMod.h
+		Meter.h Mod.h Oscillator.h Spectrum.h SpeechProc.h Squelch.h SSBMod.h Equaliser.h
 		$(CC) $(CFLAGS) -c TX.cpp
+
+Upsampler.o:	Upsampler.cpp Upsampler.h FIR.h COMPLEX.h
+		$(CC) $(CFLAGS) -c Upsampler.cpp
 
 Utils.o:	Utils.cpp Utils.h CXB.h
 		$(CC) $(CFLAGS) -c Utils.cpp

@@ -50,6 +50,7 @@ Bridgewater, NJ 08807
 #include "SpeechProc.h"
 #include "Meter.h"
 #include "Spectrum.h"
+#include "Equaliser.h"
 
 
 class CTX {
@@ -87,6 +88,9 @@ public:
 	void setCompressionLevel(float level);
 
 	void setSpectrumType(TXSPECTRUMtype type);
+
+	void setEqualiserFlag(bool flag);
+	void setEqualiserLevels(unsigned int n, const int* vals);
 
 	void setMicGain(float gain);
 	void setPower(float power);
@@ -126,6 +130,9 @@ private:
 
 	CSpeechProc*   m_speechProc;
 	bool           m_speechProcFlag;
+
+	CEqualiser*    m_equaliser;
+	bool           m_equaliserFlag;
 
 	SDRMODE        m_mode;
 	bool           m_weaver;

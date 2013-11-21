@@ -126,6 +126,11 @@ const wxChar* KEY_VOICE_DIR          = wxT("/VoiceDir");
 const wxChar* KEY_VOICE_FILE         = wxT("/VoiceFile");
 const wxChar* KEY_EXT_NAME           = wxT("/ExternalName");
 const wxChar* KEY_EXT_ADDRS          = wxT("/ExternalAddrs");
+const wxChar* KEY_TXEQ_ENABLE        = wxT("/TXEQEnable");
+const wxChar* KEY_TXEQ_PREAMP        = wxT("/TXEQPreamp");
+const wxChar* KEY_TXEQ_GAIN1         = wxT("/TXEQGain1");
+const wxChar* KEY_TXEQ_GAIN2         = wxT("/TXEQGain2");
+const wxChar* KEY_TXEQ_GAIN3         = wxT("/TXEQGain3");
 
 #if defined(__WXMSW__)
 const wxChar* KEY_INST_PATH          = wxT("/InstPath");
@@ -395,6 +400,11 @@ bool CUWSDRApp::readConfig()
 	wxString keyVoiceDir        = wxT("/") + m_parameters->m_name + KEY_VOICE_DIR;
 	wxString keyExtName         = wxT("/") + m_parameters->m_name + KEY_EXT_NAME;
 	wxString keyExtAddrs        = wxT("/") + m_parameters->m_name + KEY_EXT_ADDRS;
+	wxString keyTxEqEnable      = wxT("/") + m_parameters->m_name + KEY_TXEQ_ENABLE;
+	wxString keyTxEqPreamp      = wxT("/") + m_parameters->m_name + KEY_TXEQ_PREAMP;
+	wxString keyTxEqGain1       = wxT("/") + m_parameters->m_name + KEY_TXEQ_GAIN1;
+	wxString keyTxEqGain2       = wxT("/") + m_parameters->m_name + KEY_TXEQ_GAIN2;
+	wxString keyTxEqGain3       = wxT("/") + m_parameters->m_name + KEY_TXEQ_GAIN3;
 
 	wxString keyCwMessage[CWKEYBOARD_COUNT];
 	for (unsigned int i = 0; i < CWKEYBOARD_COUNT; i++) {
@@ -641,6 +651,12 @@ bool CUWSDRApp::readConfig()
 	profile->Read(keyExtAddrs,         &num, EXTERNALADDRS_HOST);
 	m_parameters->m_externalAddrs = EXTERNALADDRS(num);
 
+	profile->Read(keyTxEqEnable,       &m_parameters->m_txEqOn,     false);
+	profile->Read(keyTxEqPreamp,       &m_parameters->m_txEqPreamp, 0);
+	profile->Read(keyTxEqGain1,        &m_parameters->m_txEqGain0,  0);
+	profile->Read(keyTxEqGain2,        &m_parameters->m_txEqGain1,  0);
+	profile->Read(keyTxEqGain3,        &m_parameters->m_txEqGain2,  0);
+
 	profile->Flush();
 
 	delete profile;
@@ -731,6 +747,11 @@ void CUWSDRApp::writeConfig()
 	wxString keyVoiceDir      = wxT("/") + m_parameters->m_name + KEY_VOICE_DIR;
 	wxString keyExtName       = wxT("/") + m_parameters->m_name + KEY_EXT_NAME;
 	wxString keyExtAddrs      = wxT("/") + m_parameters->m_name + KEY_EXT_ADDRS;
+	wxString keyTxEqEnable    = wxT("/") + m_parameters->m_name + KEY_TXEQ_ENABLE;
+	wxString keyTxEqPreamp    = wxT("/") + m_parameters->m_name + KEY_TXEQ_PREAMP;
+	wxString keyTxEqGain1     = wxT("/") + m_parameters->m_name + KEY_TXEQ_GAIN1;
+	wxString keyTxEqGain2     = wxT("/") + m_parameters->m_name + KEY_TXEQ_GAIN2;
+	wxString keyTxEqGain3     = wxT("/") + m_parameters->m_name + KEY_TXEQ_GAIN3;
 
 	wxString keyCwMessage[CWKEYBOARD_COUNT];
 	for (unsigned int i = 0; i < CWKEYBOARD_COUNT; i++) {
@@ -842,6 +863,12 @@ void CUWSDRApp::writeConfig()
 
 	profile->Write(keyExtName,          m_parameters->m_externalName);
 	profile->Write(keyExtAddrs,         int(m_parameters->m_externalAddrs));
+
+	profile->Write(keyTxEqEnable,       m_parameters->m_txEqOn);
+	profile->Write(keyTxEqPreamp,       m_parameters->m_txEqPreamp);
+	profile->Write(keyTxEqGain1,        m_parameters->m_txEqGain0);
+	profile->Write(keyTxEqGain2,        m_parameters->m_txEqGain1);
+	profile->Write(keyTxEqGain3,        m_parameters->m_txEqGain2);
 
 	profile->Flush();
 

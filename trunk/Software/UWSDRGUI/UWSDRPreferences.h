@@ -34,6 +34,8 @@ public:
 
 	void onIQChanged(wxSpinEvent& event);
 	void onRFGainChanged(wxScrollEvent& event);
+	void onTXEQEnabled(wxCommandEvent& event);
+	void onTXEQChanged(wxScrollEvent& event);
 
 	void onOK(wxCommandEvent& event);
 	void onHelp(wxCommandEvent& event);
@@ -88,6 +90,11 @@ private:
 	wxSpinCtrl*     m_txIQPhase;
 	wxSpinCtrl*     m_txIQGain;
 	wxChoice*       m_method;
+	wxChoice*       m_txEqEnable;
+	wxSlider*       m_txEqPreamp;
+	wxSlider*       m_txEqGain0;
+	wxSlider*       m_txEqGain1;
+	wxSlider*       m_txEqGain2;
 
 	DECLARE_EVENT_TABLE()
 
@@ -98,6 +105,7 @@ private:
 	wxPanel* createTransmitTab(wxNotebook* noteBook);
 	wxPanel* createALCTab(wxNotebook* noteBook);
 	wxPanel* createIQTab(wxNotebook* noteBook);
+	wxPanel* createTXEQTab(wxNotebook* noteBook);
 
 	wxChoice* createDeviationChoice(wxPanel* panel);
 	wxChoice* createAGCChoice(wxPanel* panel);

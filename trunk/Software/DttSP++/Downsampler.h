@@ -19,16 +19,19 @@
 #ifndef	Downsampler_H
 #define	Downsampler_H
 
+#include "Complex.h"
+
 #include <wx/wx.h>
 
 class CDownsampler {
 public:
-	CDownsampler(unsigned int n);
+	CDownsampler(float fromSampleRate, float toSampleRate);
 	~CDownsampler();
 
 	unsigned int process(const float* in, unsigned int len, float* out);
 
 private:
+	COMPLEX*     m_taps;
 	unsigned int m_n;
 	unsigned int m_count;
 	float*       m_buffer;

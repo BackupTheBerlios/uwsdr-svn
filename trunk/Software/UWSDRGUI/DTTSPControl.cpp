@@ -39,6 +39,8 @@ m_nb2(false),
 m_nb2Value(0),
 m_sp(false),
 m_spValue(0),
+m_eq(false),
+m_eqLevels(NULL),
 m_carrierLevel(100),
 m_attack(0),
 m_decay(0),
@@ -55,10 +57,14 @@ m_power(999999U),
 m_squelch(999999U),
 m_started(false)
 {
+	m_eqLevels = new int[4U];
+
+	::memset(m_eqLevels, 0x00U, 4U * sizeof(int));
 }
 
 CDTTSPControl::~CDTTSPControl()
 {
+	delete[] m_eqLevels;
 }
 
 void CDTTSPControl::open(float sampleRate, unsigned int receiveGainOffset, unsigned int blockSize, bool swapIQ)
@@ -282,6 +288,29 @@ void CDTTSPControl::setSPValue(unsigned int value)
 	m_dttsp->setCompressionLevel(float(value));
 
 	m_spValue = value;
+}
+
+void CDTTSPControl::setEQ(bool onOff)
+{
+	if (onOff == m_eq)
+		return;
+
+	m_dttsp->setEqualiserFlag(onOff);
+
+	m_eq = onOff;
+}
+
+void CDTTSPControl::setEQLevels(unsigned int n, const int* levels)
+{
+	if (levels[0U] == m_eqLevels[0U] && levels[1U] == m_eqLevels[1U] && levels[2U] == m_eqLevels[2U] && levels[3U] == m_eqLevels[3U])
+		return;
+
+	m_dttsp->setEqualiserLevels(n, levels);
+
+	m_eqLevels[0U] = levels[0U];
+	m_eqLevels[1U] = levels[1U];
+	m_eqLevels[2U] = levels[2U];
+	m_eqLevels[3U] = levels[3U];
 }
 
 void CDTTSPControl::setCarrierLevel(unsigned int value)

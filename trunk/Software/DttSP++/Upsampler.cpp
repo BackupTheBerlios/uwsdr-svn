@@ -18,18 +18,21 @@
 
 #include "Upsampler.h"
 
-const float FIR_COEFFS[] = {
-	0.00F, 0.00F
-};
+#include "FIR.h"
 
 const unsigned int FIR_COEFFS_LEN = 50U;
 
-CUpsampler::CUpsampler(unsigned int n) :
-m_n(n - 1U),
+CUpsampler::CUpsampler(float fromSampleRate, float toSampleRate) :
+m_taps(NULL),
+m_n(0U),
 m_buffer(NULL),
 m_pos(0U)
 {
-	wxASSERT(n > 2U);
+	float f = fromSampleRate * 0.4F;
+
+	m_taps = CFIR::lowpass(f, toSampleRate, FIR_COEFFS_LEN);
+
+	m_n = (unsigned int)(toSampleRate / fromSampleRate);
 
 	m_buffer = new float[FIR_COEFFS_LEN];
 	::memset(m_buffer, 0x00U, FIR_COEFFS_LEN * sizeof(float));
@@ -37,6 +40,7 @@ m_pos(0U)
 
 CUpsampler::~CUpsampler()
 {
+	delete[] m_taps;
 	delete[] m_buffer;
 }
 
@@ -45,23 +49,25 @@ unsigned int CUpsampler::process(const float *in, unsigned int len, float *out)
 	wxASSERT(in != NULL);
 	wxASSERT(out != NULL);
 
-	unsigned int m = 0U;
+	float* p = out;
 
 	for (unsigned int i = 0U; i < len; i++) {
 		m_buffer[m_pos++] = in[i];
-		m_pos %= FIR_COEFFS_LEN;
+		if (m_pos >= FIR_COEFFS_LEN)
+			m_pos = 0U;
 
-		out[m++] = calculate();
+		*p++ = calculate();
 
-		for (unsigned int j = 0U; j < m_n; j++) {
+		for (unsigned int j = 0U; j < (m_n - 1U); j++) {
 			m_buffer[m_pos++] = 0.0F;
-			m_pos %= FIR_COEFFS_LEN;
+			if (m_pos >= FIR_COEFFS_LEN)
+				m_pos = 0U;
 
-			out[m++] = calculate();
+			*p++ = calculate();
 		}
 	}
 
-	return m;
+	return p - out;
 }
 
 float CUpsampler::calculate() const
@@ -71,8 +77,9 @@ float CUpsampler::calculate() const
 	unsigned int pos = m_pos;
 
 	for (unsigned int i = 0U; i < FIR_COEFFS_LEN; i++) {
-		acc += m_buffer[pos++] * FIR_COEFFS[i];
-		pos %= FIR_COEFFS_LEN;
+		acc += m_buffer[pos++] * m_taps[i].re;
+		if (pos >= FIR_COEFFS_LEN)
+			pos = 0U;
 	}
 
 	return acc;

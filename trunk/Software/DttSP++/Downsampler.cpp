@@ -18,19 +18,22 @@
 
 #include "Downsampler.h"
 
-const float FIR_COEFFS[] = {
-	0.00F, 0.00F
-};
+#include "FIR.h"
 
 const unsigned int FIR_COEFFS_LEN = 50U;
 
-CDownsampler::CDownsampler(unsigned int n) :
-m_n(n),
+CDownsampler::CDownsampler(float fromSampleRate, float toSampleRate) :
+m_taps(NULL),
+m_n(0U),
 m_count(0U),
 m_buffer(NULL),
 m_pos(0U)
 {
-	wxASSERT(n > 2U);
+	float f = toSampleRate * 0.4F;
+
+	m_taps = CFIR::lowpass(f, fromSampleRate, FIR_COEFFS_LEN);
+
+	m_n = (unsigned int)(fromSampleRate / toSampleRate);
 
 	m_buffer = new float[FIR_COEFFS_LEN];
 	::memset(m_buffer, 0x00U, FIR_COEFFS_LEN * sizeof(float));
@@ -38,6 +41,7 @@ m_pos(0U)
 
 CDownsampler::~CDownsampler()
 {
+	delete[] m_taps;
 	delete[] m_buffer;
 }
 
@@ -46,20 +50,22 @@ unsigned int CDownsampler::process(const float *in, unsigned int len, float *out
 	wxASSERT(in != NULL);
 	wxASSERT(out != NULL);
 
-	unsigned int m = 0U;
+	float* p = out;
 
 	for (unsigned int i = 0U; i < len; i++) {
 		m_buffer[m_pos++] = in[i];
-		m_pos %= FIR_COEFFS_LEN;
+		if (m_pos >= FIR_COEFFS_LEN)
+			m_pos = 0U;
 
+		// XXX is this correct?
 		m_count++;
 		if (m_count >= m_n) {
-			out[m++] = calculate();
+			*p++ = calculate();
 			m_count = 0U;
 		}
 	}
 
-	return m;
+	return p - out;
 }
 
 float CDownsampler::calculate() const
@@ -69,8 +75,9 @@ float CDownsampler::calculate() const
 	unsigned int pos = m_pos;
 
 	for (unsigned int i = 0U; i < FIR_COEFFS_LEN; i++) {
-		acc += m_buffer[pos++] * FIR_COEFFS[i];
-		pos %= FIR_COEFFS_LEN;
+		acc += m_buffer[pos++] * m_taps[i].re;
+		if (pos >= FIR_COEFFS_LEN)
+			pos = 0U;
 	}
 
 	return acc;

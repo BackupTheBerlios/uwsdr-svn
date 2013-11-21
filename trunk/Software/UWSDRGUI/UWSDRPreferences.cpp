@@ -28,17 +28,26 @@ enum {
 	TXIQ_PHASE,
 	TXIQ_GAIN,
 	RXRF_GAIN,
-	CLOCK_TUNE
+	TXEQ_ENABLE,
+	TXEQ_PREAMP,
+	TXEQ_GAIN0,
+	TXEQ_GAIN1,
+	TXEQ_GAIN2
 };
 
 BEGIN_EVENT_TABLE(CUWSDRPreferences, wxDialog)
-	EVT_SPINCTRL(RXIQ_PHASE,      CUWSDRPreferences::onIQChanged)
-	EVT_SPINCTRL(RXIQ_GAIN,       CUWSDRPreferences::onIQChanged)
-	EVT_SPINCTRL(TXIQ_PHASE,      CUWSDRPreferences::onIQChanged)
-	EVT_SPINCTRL(TXIQ_GAIN,       CUWSDRPreferences::onIQChanged)
-	EVT_COMMAND_SCROLL(RXRF_GAIN, CUWSDRPreferences::onRFGainChanged)
-	EVT_BUTTON(wxID_OK,           CUWSDRPreferences::onOK)
-	EVT_BUTTON(wxID_HELP,         CUWSDRPreferences::onHelp)
+	EVT_SPINCTRL(RXIQ_PHASE,        CUWSDRPreferences::onIQChanged)
+	EVT_SPINCTRL(RXIQ_GAIN,         CUWSDRPreferences::onIQChanged)
+	EVT_SPINCTRL(TXIQ_PHASE,        CUWSDRPreferences::onIQChanged)
+	EVT_SPINCTRL(TXIQ_GAIN,         CUWSDRPreferences::onIQChanged)
+	EVT_COMMAND_SCROLL(RXRF_GAIN,   CUWSDRPreferences::onRFGainChanged)
+	EVT_CHOICE(TXEQ_ENABLE,         CUWSDRPreferences::onTXEQEnabled)
+	EVT_COMMAND_SCROLL(TXEQ_PREAMP, CUWSDRPreferences::onTXEQChanged)
+	EVT_COMMAND_SCROLL(TXEQ_GAIN0,  CUWSDRPreferences::onTXEQChanged)
+	EVT_COMMAND_SCROLL(TXEQ_GAIN1,  CUWSDRPreferences::onTXEQChanged)
+	EVT_COMMAND_SCROLL(TXEQ_GAIN2,  CUWSDRPreferences::onTXEQChanged)
+	EVT_BUTTON(wxID_OK,             CUWSDRPreferences::onOK)
+	EVT_BUTTON(wxID_HELP,           CUWSDRPreferences::onHelp)
 END_EVENT_TABLE()
 
 CUWSDRPreferences::CUWSDRPreferences(wxWindow* parent, int id, CSDRParameters* parameters, CDSPControl* dsp) :
@@ -91,7 +100,12 @@ m_rxIQPhase(NULL),
 m_rxIQGain(NULL),
 m_txIQPhase(NULL),
 m_txIQGain(NULL),
-m_method(NULL)
+m_method(NULL),
+m_txEqEnable(NULL),
+m_txEqPreamp(NULL),
+m_txEqGain0(NULL),
+m_txEqGain1(NULL),
+m_txEqGain2(NULL)
 {
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -110,6 +124,8 @@ m_method(NULL)
 	m_noteBook->AddPage(createALCTab(m_noteBook), _("ALC"), false);
 
 	m_noteBook->AddPage(createIQTab(m_noteBook), _("I + Q"), false);
+
+	m_noteBook->AddPage(createTXEQTab(m_noteBook), _("TX EQ"), false);
 
 	mainSizer->Add(m_noteBook, 1, wxALL | wxGROW, BORDER_SIZE);
 
@@ -206,6 +222,12 @@ m_method(NULL)
 	m_txIQGain->SetValue(m_parameters->m_txIQgain);
 
 	m_method->SetSelection(m_parameters->m_weaver ? 1 : 0);
+
+	m_txEqEnable->SetSelection(m_parameters->m_txEqOn ? 1 : 0);
+	m_txEqPreamp->SetValue(m_parameters->m_txEqPreamp);
+	m_txEqGain0->SetValue(m_parameters->m_txEqGain0);
+	m_txEqGain1->SetValue(m_parameters->m_txEqGain1);
+	m_txEqGain2->SetValue(m_parameters->m_txEqGain2);
 
 	if (m_parameters->m_hardwareStepSize >= 100.0F     ||
 	    m_parameters->m_hardwareType == TYPE_SI570RX   ||
@@ -466,6 +488,12 @@ void CUWSDRPreferences::onOK(wxCommandEvent& WXUNUSED(event))
 	m_parameters->m_rxIQgain  = m_rxIQGain->GetValue();
 
 	m_parameters->m_weaver = m_method->GetSelection() == 1;
+
+	m_parameters->m_txEqOn     = m_txEqEnable->GetSelection() == 1;
+	m_parameters->m_txEqPreamp = m_txEqPreamp->GetValue();
+	m_parameters->m_txEqGain0  = m_txEqGain0->GetValue();
+	m_parameters->m_txEqGain1  = m_txEqGain1->GetValue();
+	m_parameters->m_txEqGain2  = m_txEqGain2->GetValue();
 
 	if (IsModal()) {
 		EndModal(wxID_OK);
@@ -968,6 +996,61 @@ wxPanel* CUWSDRPreferences::createIQTab(wxNotebook* noteBook)
 	return panel;
 }
 
+wxPanel* CUWSDRPreferences::createTXEQTab(wxNotebook* noteBook)
+{
+	wxPanel* panel = new wxPanel(noteBook, -1);
+
+	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
+
+	wxStaticText* labelZ = new wxStaticText(panel, -1, _("Set the parameters for transmit audio equaliser."));
+	mainSizer->Add(labelZ, 0, wxALL, BORDER_SIZE);
+
+	wxFlexGridSizer* sizer = new wxFlexGridSizer(2);
+
+	wxStaticText* label1 = new wxStaticText(panel, -1, _("Enabled"));
+	sizer->Add(label1, 0, wxALL, BORDER_SIZE);
+
+	m_txEqEnable = new wxChoice(panel, TXEQ_ENABLE, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
+	m_txEqEnable->Append(_("Off"));
+	m_txEqEnable->Append(_("On"));
+	sizer->Add(m_txEqEnable, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* label2 = new wxStaticText(panel, -1, _("Preamp gain (dB)"));
+	sizer->Add(label2, 0, wxALL, BORDER_SIZE);
+
+	m_txEqPreamp = new wxSlider(panel, TXEQ_PREAMP, 0, -10, 10, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
+	sizer->Add(m_txEqPreamp, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* label3 = new wxStaticText(panel, -1, _("Gain < 400Hz (dB)"));
+	sizer->Add(label3, 0, wxALL, BORDER_SIZE);
+
+	m_txEqGain0 = new wxSlider(panel, TXEQ_GAIN0, 0, -10, 10, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
+	sizer->Add(m_txEqGain0, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* label4 = new wxStaticText(panel, -1, _("Gain 400-1500Hz (dB)"));
+	sizer->Add(label4, 0, wxALL, BORDER_SIZE);
+
+	m_txEqGain1 = new wxSlider(panel, TXEQ_GAIN1, 0, -10, 10, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
+	sizer->Add(m_txEqGain1, 0, wxALL, BORDER_SIZE);
+
+	wxStaticText* label5 = new wxStaticText(panel, -1, _("Gain > 1500Hz (dB)"));
+	sizer->Add(label5, 0, wxALL, BORDER_SIZE);
+
+	m_txEqGain2 = new wxSlider(panel, TXEQ_GAIN2, 0, -10, 10, wxDefaultPosition, wxSize(SLIDER_WIDTH, -1), wxSL_HORIZONTAL | wxSL_LABELS | wxSL_BOTTOM);
+	sizer->Add(m_txEqGain2, 0, wxALL, BORDER_SIZE);
+
+	mainSizer->Add(sizer, 0, wxTOP, BORDER_SIZE);
+
+	panel->SetAutoLayout(true);
+
+	sizer->Fit(panel);
+	sizer->SetSizeHints(panel);
+
+	panel->SetSizer(mainSizer);
+
+	return panel;
+}
+
 void CUWSDRPreferences::onIQChanged(wxSpinEvent& event)
 {
 	switch (event.GetId()) {
@@ -997,4 +1080,32 @@ void CUWSDRPreferences::onRFGainChanged(wxScrollEvent& WXUNUSED(event))
 	unsigned int gain = (unsigned int)(1000.0 * ::pow(10.0, gainDb / 10.0) + 0.5);
 
 	m_dsp->setRFGain(gain);
+}
+
+void CUWSDRPreferences::onTXEQEnabled(wxCommandEvent& WXUNUSED(event))
+{
+	bool enabled = m_txEqEnable->GetSelection() == 1;
+
+	int values[4U];
+	values[0U] = m_txEqPreamp->GetValue();
+	values[1U] = m_txEqGain0->GetValue();
+	values[2U] = m_txEqGain1->GetValue();
+	values[3U] = m_txEqGain2->GetValue();
+
+	m_dsp->setEQ(enabled);
+	m_dsp->setEQLevels(4U, values);
+}
+
+void CUWSDRPreferences::onTXEQChanged(wxScrollEvent& WXUNUSED(event))
+{
+	bool enabled = m_txEqEnable->GetSelection() == 1;
+
+	int values[4U];
+	values[0U] = m_txEqPreamp->GetValue();
+	values[1U] = m_txEqGain0->GetValue();
+	values[2U] = m_txEqGain1->GetValue();
+	values[3U] = m_txEqGain2->GetValue();
+
+	m_dsp->setEQ(enabled);
+	m_dsp->setEQLevels(4U, values);
 }

@@ -55,6 +55,9 @@ public:
 	virtual void setSP(bool onOff);
 	virtual void setSPValue(unsigned int value);
 
+	virtual void setEQ(bool onOff);
+	virtual void setEQLevels(unsigned int n, const int* levels);
+
 	virtual void setCarrierLevel(unsigned int value);
 
 	virtual void setALCValue(unsigned int attack, unsigned int decay, unsigned int hang);
@@ -96,6 +99,8 @@ private:
 	unsigned int m_nb2Value;
 	bool         m_sp;
 	unsigned int m_spValue;
+	bool         m_eq;
+	int*         m_eqLevels;
 	unsigned int m_carrierLevel;
 	unsigned int m_attack;
 	unsigned int m_decay;

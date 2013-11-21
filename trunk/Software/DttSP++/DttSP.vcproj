@@ -330,6 +330,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Downsampler.cpp"
+				>
+			</File>
+			<File
 				RelativePath="DttSP.cpp"
 				>
 				<FileConfiguration
@@ -350,6 +354,10 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\Equaliser.cpp"
+				>
 			</File>
 			<File
 				RelativePath="FilterOVSV.cpp"
@@ -682,6 +690,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Upsampler.cpp"
+				>
+			</File>
+			<File
 				RelativePath="Utils.cpp"
 				>
 				<FileConfiguration
@@ -775,7 +787,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Downsampler.h"
+				>
+			</File>
+			<File
 				RelativePath="DttSP.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Equaliser.h"
 				>
 			</File>
 			<File
@@ -840,6 +860,10 @@
 			</File>
 			<File
 				RelativePath="TX.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Upsampler.h"
 				>
 			</File>
 			<File

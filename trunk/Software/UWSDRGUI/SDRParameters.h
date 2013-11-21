@@ -138,6 +138,12 @@ class CSDRParameters {
 	int           m_txIQphase;
 	int           m_txIQgain;
 
+	bool          m_txEqOn;
+	int           m_txEqPreamp;
+	int           m_txEqGain0;
+	int           m_txEqGain1;
+	int           m_txEqGain2;
+
 	unsigned int  m_afGain;
 	unsigned int  m_rfGain;
 	unsigned int  m_squelch;

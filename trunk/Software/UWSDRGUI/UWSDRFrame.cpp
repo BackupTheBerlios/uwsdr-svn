@@ -257,7 +257,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	CExternalProtocolHandler* extHandler = NULL;
 	if (!m_parameters->m_externalName.IsEmpty())
-		extHandler = new CExternalProtocolHandler(m_parameters->m_externalName, m_parameters->m_externalAddrs, this);
+		extHandler = new CExternalProtocolHandler(m_parameters->m_hardwareSampleRate, BLOCK_SIZE, m_parameters->m_externalName, m_parameters->m_externalAddrs, this);
 
 	switch (m_parameters->m_tuning) {
 		case TUNINGHW_POWERMATE:
@@ -470,6 +470,15 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	m_dsp->setSP(m_parameters->m_spOn);
 	m_dsp->setSPValue(m_parameters->m_spValue);
+
+	int txEqVals[4U];
+	txEqVals[0U] = m_parameters->m_txEqPreamp;
+	txEqVals[1U] = m_parameters->m_txEqGain0;
+	txEqVals[2U] = m_parameters->m_txEqGain1;
+	txEqVals[3U] = m_parameters->m_txEqGain2;
+
+	m_dsp->setEQ(m_parameters->m_txEqOn);
+	m_dsp->setEQLevels(4U, txEqVals);
 
 	m_dsp->setCarrierLevel(m_parameters->m_carrierLevel);
 
@@ -1584,6 +1593,15 @@ void CUWSDRFrame::onMenuSelection(wxCommandEvent& event)
 				m_dsp->setRXIAndQ(m_parameters->m_rxIQphase, m_parameters->m_rxIQgain);
 				m_dsp->setTXIAndQ(m_parameters->m_txIQphase, m_parameters->m_txIQgain);
 				m_dsp->setRFGain(m_parameters->m_rfGain);
+
+				int txEqVals[4U];
+				txEqVals[0U] = m_parameters->m_txEqPreamp;
+				txEqVals[1U] = m_parameters->m_txEqGain0;
+				txEqVals[2U] = m_parameters->m_txEqGain1;
+				txEqVals[3U] = m_parameters->m_txEqGain2;
+
+				m_dsp->setEQ(m_parameters->m_txEqOn);
+				m_dsp->setEQLevels(4U, txEqVals);
 			}
 			break;
 		case MENU_KEYPAD: {
@@ -2015,6 +2033,10 @@ bool CUWSDRFrame::setExtFrequency(const CFrequency& freq)
 bool CUWSDRFrame::setExtMode(UWSDRMODE mode)
 {
 	m_parameters->m_mode = mode;
+
+	// We set the mode to CWUN always, convert to CWLN below 10 MHz
+	if (mode == MODE_CWUN && m_frequency < 10000000ULL)
+		m_parameters->m_mode = MODE_CWLN;
 
 	bool ret = normaliseMode();
 	if (!ret)
