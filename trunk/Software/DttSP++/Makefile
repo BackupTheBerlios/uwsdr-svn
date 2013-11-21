@@ -29,7 +29,7 @@ CXB.o:		CXB.cpp CXB.h Complex.h CXOps.h
 DCBlock.o:	DCBlock.cpp DCBlock.h Complex.h CXB.h Meter.h Spectrum.h
 		$(CC) $(CFLAGS) -c DCBlock.cpp
 
-Downsampler.o:	Downsampler.cpp Downsampler.h FIR.h COMPLEX.h
+Downsampler.o:	Downsampler.cpp Downsampler.h FIR.h Complex.h
 		$(CC) $(CFLAGS) -c Downsampler.cpp
 
 DttSP.o:	DttSP.cpp DttSP.h Defs.h ../Common/RingBuffer.h RX.h TX.h
@@ -85,7 +85,7 @@ TX.o:		TX.cpp TX.h AGC.h AMMod.h CorrectIQ.h CXB.h DCBlock.h Defs.h FilterOVSV.h
 		Meter.h Mod.h Oscillator.h Spectrum.h SpeechProc.h Squelch.h SSBMod.h Equaliser.h
 		$(CC) $(CFLAGS) -c TX.cpp
 
-Upsampler.o:	Upsampler.cpp Upsampler.h FIR.h COMPLEX.h
+Upsampler.o:	Upsampler.cpp Upsampler.h FIR.h Complex.h
 		$(CC) $(CFLAGS) -c Upsampler.cpp
 
 Utils.o:	Utils.cpp Utils.h CXB.h

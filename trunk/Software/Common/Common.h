@@ -24,7 +24,7 @@
 
 const wxString VERSION  = wxT("UWSDR 0.9.1");
 
-const wxDateTime::wxDateTime_t REL_DATE_DAY   = 20;
+const wxDateTime::wxDateTime_t REL_DATE_DAY   = 21;
 const wxDateTime::Month        REL_DATE_MONTH = wxDateTime::Nov;
 const unsigned int             REL_DATE_YEAR  = 2013;
 

@@ -74,8 +74,12 @@ m_inSerial(0U)
 		return;
 
 	wxString address;
-	if (addrs == EXTERNALADDRS_HOST)
+	if (addrs == EXTERNALADDRS_HOST) {
 		address = wxT("127.0.0.1");
+		wxLogMessage(wxT("Listening on 127.0.0.1:%u"), port);
+	} else {
+		wxLogMessage(wxT("Listening on *.*.*.*:%u"), port);
+	}
 
 	m_socket = new CUDPReaderWriter(address, port);
 
@@ -314,7 +318,17 @@ void CExternalProtocolHandler::clock()
 	} else {
 		// Validate the source address, in the case of EXTERNADDRS_HOST we're only listening on the local host anyway
 		if (m_addrs == EXTERNALADDRS_LOCAL) {
-			// XXX FIXME
+			if ((address.s_addr & 0xFF000000U) != 0x7F000000U &&	// 127.0.0.0/8
+			    (address.s_addr & 0xFF000000U) != 0x0A000000U &&	// 10.0.0.0/8
+			    (address.s_addr & 0xFFF00000U) != 0xAC100000U &&	// 172.16.x.x/12
+				(address.s_addr & 0xFFFF0000U) != 0xC0A80000U) {	// 192.168.0.0/16
+				wxLogMessage(wxT("Ignored connect from invalid address: %d.%d.%d.%d"),
+					(address.s_addr >> 24) & 0xFFU,
+					(address.s_addr >> 16) & 0xFFU,
+					(address.s_addr >> 8)  & 0xFFU,
+					(address.s_addr >> 0)  & 0xFFU);
+				return;
+			}
 		}
 
 		if (::memcmp(m_netBuffer, "START AUDIO\n", 12U) == 0) {
@@ -331,6 +345,12 @@ void CExternalProtocolHandler::clock()
 			m_remotePort    = port;
 
 			m_socket->write((unsigned char*)"ACK 8000 F32 I\n", 15U, address, port);
+
+			wxLogMessage(wxT("Audio connect from address: %d.%d.%d.%d"),
+				(address.s_addr >> 24) & 0xFFU,
+				(address.s_addr >> 16) & 0xFFU,
+				(address.s_addr >> 8)  & 0xFFU,
+				(address.s_addr >> 0)  & 0xFFU);
 		} else if (::memcmp(m_netBuffer, "START RAW\n", 10U) == 0) {
 			m_inSerial  = 0U;
 			m_outSerial = 0U;
@@ -348,6 +368,12 @@ void CExternalProtocolHandler::clock()
 			::sprintf(reply, "ACK %.0f F32 IQ\n", m_sampleRate);
 
 			m_socket->write((unsigned char*)reply, ::strlen(reply), address, port);
+
+			wxLogMessage(wxT("Raw connect from address: %d.%d.%d.%d"),
+				(address.s_addr >> 24) & 0xFFU,
+				(address.s_addr >> 16) & 0xFFU,
+				(address.s_addr >> 8)  & 0xFFU,
+				(address.s_addr >> 0)  & 0xFFU);
 		} else if (::memcmp(m_netBuffer, "START\n", 6U) == 0) {
 			m_connected = CONNECTTYPE_CONTROL;
 			m_transmit  = false;
@@ -359,6 +385,20 @@ void CExternalProtocolHandler::clock()
 			m_remotePort    = port;
 
 			m_socket->write((unsigned char*)"ACK\n", 4U, address, port);
+
+			wxLogMessage(wxT("Control connect from address: %d.%d.%d.%d"),
+				(address.s_addr >> 24) & 0xFFU,
+				(address.s_addr >> 16) & 0xFFU,
+				(address.s_addr >> 8)  & 0xFFU,
+				(address.s_addr >> 0)  & 0xFFU);
+		} else {
+			wxString text((char*)m_netBuffer, wxConvLocal, n);
+
+			wxLogMessage(wxT("Invalid connect \"%s\" from address: %d.%d.%d.%d"), text.c_str(),
+				(address.s_addr >> 24) & 0xFFU,
+				(address.s_addr >> 16) & 0xFFU,
+				(address.s_addr >> 8)  & 0xFFU,
+				(address.s_addr >> 0)  & 0xFFU);
 		}
 	}
 }
