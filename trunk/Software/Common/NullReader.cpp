@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ bool CNullReader::open(float sampleRate, unsigned int blockSize)
 	for (unsigned int i = 0; i < m_blockSize * 2; i++)
 		m_buffer[i] = 0.0F;
 
-	::wxLogMessage(wxT("NullReader: started"));
+	wxLogMessage(wxT("NullReader: started"));
 
 	return CThreadReader::open(sampleRate, blockSize);
 }

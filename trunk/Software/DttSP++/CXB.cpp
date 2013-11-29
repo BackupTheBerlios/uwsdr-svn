@@ -34,15 +34,14 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
-#include "CXB.h"
-#include "Utils.h"
-
 #include <cstdio>
 #include <algorithm>
 #include <cstring>
 using std::min;
 using std::max;
 
+#include "CXB.h"
+#include "Utils.h"
 
 void CXBscl(CXB* buff, float scl)
 {

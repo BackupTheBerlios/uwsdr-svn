@@ -65,7 +65,7 @@ m_valid(false)
 				else if (type.Cmp(wxT("si570txrx")) == 0)
 					m_type = TYPE_SI570TXRX;
 				else {
-					::wxLogError(wxT("Unknown type - %s in the .sdr file"), type.c_str());
+					wxLogError(wxT("Unknown type - %s in the .sdr file"), type.c_str());
 					return;
 				}
 			} else if (line.Left(15).Cmp(wxT("frequencyRange=")) == 0) {
@@ -75,7 +75,7 @@ m_valid(false)
 					m_minFreq.set(freqs.Left(pos));
 					m_maxFreq.set(freqs.Mid(pos + 1));
 				} else {
-					::wxLogError(wxT("The frequencyRange entry is invalid - \"%s\""), line.c_str());
+					wxLogError(wxT("The frequencyRange entry is invalid - \"%s\""), line.c_str());
 					return;
 				}
 			} else if (line.Left(13).Cmp(wxT("transmitBand=")) == 0) {
@@ -84,7 +84,7 @@ m_valid(false)
 				if (pos != wxNOT_FOUND) {
 					m_ranges.addRange(freqs.Left(pos), freqs.Mid(pos + 1));
 				} else {
-					::wxLogError(wxT("A transmitBand entry is invalid - \"%s\""), line.c_str());
+					wxLogError(wxT("A transmitBand entry is invalid - \"%s\""), line.c_str());
 					return;
 				}
 			} else if (line.Left(20).Cmp(wxT("frequencyMultiplier=")) == 0) {

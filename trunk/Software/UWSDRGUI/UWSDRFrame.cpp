@@ -29,7 +29,6 @@
 #include "SignalReader.h"
 #include "TwoToneReader.h"
 #include "ThreeToneReader.h"
-#include "SerialInterface.h"
 #include "SoundFileReader.h"
 #include "SoundFileWriter.h"
 #include "JackReaderWriter.h"
@@ -272,7 +271,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 		bool ret = m_tuning->open();
 		if (!ret) {
-			::wxLogError(wxT("Problems communicating with the tuning hardware"));
+			wxLogError(wxT("Problems communicating with the tuning hardware"));
 			::wxMessageBox(_("Problems communicating with the tuning hardware"), _("UWSDR Error"), wxICON_ERROR);
 			Close(true);
 			return;
@@ -296,7 +295,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	bool ret = m_sdr->open();
 	if (!ret) {
-		::wxLogError(wxT("Problems communicating with the SDR"));
+		wxLogError(wxT("Problems communicating with the SDR"));
 		::wxMessageBox(_("Problems communicating with the SDR"), _("UWSDR Error"), wxICON_ERROR);
 		Close(true);
 		return;
@@ -361,16 +360,6 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 				m_dsp->setTXReader(rw);
 				m_dsp->setRXWriter(rw);
 			}
-
-			if (m_parameters->m_txInEnable) {
-				CSerialInterface* control = new CSerialInterface(m_parameters->m_txInDev, m_parameters->m_txInPin);
-				m_dsp->setTXInControl(control);
-			}
-
-			if (m_parameters->m_keyInEnable) {
-				CSerialInterface* control = new CSerialInterface(m_parameters->m_keyInDev, m_parameters->m_keyInPin);
-				m_dsp->setKeyInControl(control);
-			}
 			break;
 
 		case TYPE_DEMO:
@@ -389,16 +378,6 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 			m_dsp->setTXWriter(new CNullWriter());
 			m_dsp->setRXReader(new CSignalReader(1000.5F, 0.00003F, 0.00004F, 0.0F, 0.0F, m_parameters->m_hardwareSwapIQ));
-
-			if (m_parameters->m_txInEnable) {
-				CSerialInterface* control = new CSerialInterface(m_parameters->m_txInDev, m_parameters->m_txInPin);
-				m_dsp->setTXInControl(control);
-			}
-
-			if (m_parameters->m_keyInEnable) {
-				CSerialInterface* control = new CSerialInterface(m_parameters->m_keyInDev, m_parameters->m_keyInPin);
-				m_dsp->setKeyInControl(control);
-			}
 			break;
 
 		case TYPE_HACKRF:
@@ -424,18 +403,6 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 				else
 					m_dsp->setTXWriter(rw);
 				m_dsp->setRXWriter(rw);
-			}
-
-			if (!m_parameters->m_hardwareTXRange.isEmpty()) {
-				if (m_parameters->m_txInEnable) {
-					CSerialInterface* control = new CSerialInterface(m_parameters->m_txInDev, m_parameters->m_txInPin);
-					m_dsp->setTXInControl(control);
-				}
-
-				if (m_parameters->m_keyInEnable) {
-					CSerialInterface* control = new CSerialInterface(m_parameters->m_keyInDev, m_parameters->m_keyInPin);
-					m_dsp->setKeyInControl(control);
-				}
 			}
 			break;
 	}
@@ -523,7 +490,7 @@ void CUWSDRFrame::setParameters(CSDRParameters* parameters)
 
 	ret = m_dsp->open();
 	if (!ret) {
-		::wxLogError(wxT("Problems opening the I/O ports"));
+		wxLogError(wxT("Problems opening the I/O ports"));
 		::wxMessageBox(_("Problems opening the input/output ports."), _("UWSDR Error"), wxICON_ERROR);
 		Close(true);
 		return;
@@ -1976,7 +1943,7 @@ void CUWSDRFrame::onCommandNak(wxEvent& event1)
 	wxCommandEvent& event2 = dynamic_cast<wxCommandEvent&>(event1);
 	wxString message = event2.GetString();
 
-	::wxLogError(wxT("Received a NAK from the SDR: ") + message);
+	wxLogError(wxT("Received a NAK from the SDR: ") + message);
 	::wxMessageBox(_("Received a NAK from the SDR\n") + message, _("UWSDR Error"), wxICON_ERROR);
 }
 
@@ -1985,13 +1952,13 @@ void CUWSDRFrame::onCommandError(wxEvent& event1)
 	wxCommandEvent& event2 = dynamic_cast<wxCommandEvent&>(event1);
 	wxString message = event2.GetString();
 
-	::wxLogError(message);
+	wxLogError(message);
 	::wxMessageBox(message, _("UWSDR Error"), wxICON_ERROR);
 }
 
 void CUWSDRFrame::onConnectionLost(wxEvent& WXUNUSED(event))
 {
-	::wxLogError(wxT("Connection to the SDR lost"));
+	wxLogError(wxT("Connection to the SDR lost"));
 	::wxMessageBox(_("Connection to the SDR lost"), _("UWSDR Error"), wxICON_ERROR);
 
 	Close(true);

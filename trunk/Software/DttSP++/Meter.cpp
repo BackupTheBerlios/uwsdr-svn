@@ -32,15 +32,14 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
-#include "Meter.h"
-#include "Utils.h"
-
 #include <wx/wx.h>
 
 #include <algorithm>
 using std::min;
 using std::max;
 
+#include "Meter.h"
+#include "Utils.h"
 
 CMeter::CMeter() :
 m_rxval(NULL),

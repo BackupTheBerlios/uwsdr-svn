@@ -3,9 +3,8 @@ all:		Common.a
 CFLAGS :=	-I../DttSP++ $(CFLAGS)
 
 OBJS := 	AudioDevInfo.o ExternalProtocolHandler.o Frequency.o FrequencyRangeArray.o GriffinPowerMate.o HackRFController.o JackReaderWriter.o \
-					Log.o NullController.o NullReader.o NullWriter.o RingBuffer.o SDRDescrFile.o SerialControl.o SerialInterface.o SignalReader.o \
-					SI570Controller.o SoundCardReaderWriter.o SoundFileReader.o SoundFileWriter.o ThreadReader.o ThreeToneReader.o TwoToneReader.o \
-					UDPReaderWriter.o
+					Log.o NullController.o NullReader.o NullWriter.o RingBuffer.o SDRDescrFile.o SignalReader.o SI570Controller.o SoundCardReaderWriter.o \
+					SoundFileReader.o SoundFileWriter.o ThreadReader.o ThreeToneReader.o TwoToneReader.o UDPReaderWriter.o
 
 Common.a:	$(OBJS)
 		ar rcs Common.a $(OBJS)
@@ -49,12 +48,6 @@ RingBuffer.o:	RingBuffer.cpp RingBuffer.h
 
 SDRDescrFile.o:	SDRDescrFile.cpp SDRDescrFile.h FrequencyRangeArray.h Frequency.h
 		$(CC) $(CFLAGS) -c SDRDescrFile.cpp
-
-SerialControl.o:	SerialControl.cpp SerialControl.h
-		$(CC) $(CFLAGS) -c SerialControl.cpp
-
-SerialInterface.o:	SerialInterface.cpp SerialInterface.h Common.h ExternalInterface.h SerialControl.h
-		$(CC) $(CFLAGS) -c SerialInterface.cpp
 
 SignalReader.o:	SignalReader.cpp SignalReader.h ThreadReader.h
 		$(CC) $(CFLAGS) -c SignalReader.cpp

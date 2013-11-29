@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2007,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -88,28 +88,28 @@ bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
 	m_client = ::jack_client_open(m_name.char_str(), JackNullOption, &status, NULL);
 	if (m_client == NULL) {
 		if (status & JackServerFailed)
-			::wxLogError(wxT("JackReaderWriter: unabled to start the Jack server"));
+			wxLogError(wxT("JackReaderWriter: unabled to start the Jack server"));
 		else
-			::wxLogError(wxT("JackReaderWriter: received 0x%02X from jack_client_open()"), status);
+			wxLogError(wxT("JackReaderWriter: received 0x%02X from jack_client_open()"), status);
 		return false;
 	}
 
 	if (status & JackNameNotUnique) {
-		::wxLogError(wxT("JackReaderWriter: client '%s' name is not unique"), m_name.c_str());
+		wxLogError(wxT("JackReaderWriter: client '%s' name is not unique"), m_name.c_str());
 		::jack_client_close(m_client);
 		return false;
 	}
 
 	int ret = ::jack_set_process_callback(m_client, jcrwCallback, this);
 	if (ret != 0) {
-		::wxLogError(wxT("JackReaderWriter: unable to set the callback, error = %d"), ret);
+		wxLogError(wxT("JackReaderWriter: unable to set the callback, error = %d"), ret);
 		::jack_client_close(m_client);
 		return false;
 	}
 
 	jack_nframes_t jsr = ::jack_get_sample_rate(m_client);
 	if (float(jsr) != sampleRate) {
-		::wxLogError(wxT("JackReaderWriter: incorrect Jack sample rate of %u"), jsr);
+		wxLogError(wxT("JackReaderWriter: incorrect Jack sample rate of %u"), jsr);
 		::jack_client_close(m_client);
 		return false;
 	}
@@ -121,7 +121,7 @@ bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
 			m_inPortI = ::jack_port_register(m_client, "input", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
 
 			if (m_inPortI == NULL) {
-				::wxLogError(wxT("JackReaderWriter: unable to open the Jack input port"));
+				wxLogError(wxT("JackReaderWriter: unable to open the Jack input port"));
 				::jack_client_close(m_client);
 				return false;
 			}
@@ -130,7 +130,7 @@ bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
 			m_inPortI = ::jack_port_register(m_client, "input_i", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
 
 			if (m_inPortI == NULL) {
-				::wxLogError(wxT("JackReaderWriter: unable to open the Jack I input port"));
+				wxLogError(wxT("JackReaderWriter: unable to open the Jack I input port"));
 				::jack_client_close(m_client);
 				return false;
 			}
@@ -138,7 +138,7 @@ bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
 			m_inPortQ = ::jack_port_register(m_client, "input_q", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
 
 			if (m_inPortQ == NULL) {
-				::wxLogError(wxT("JackReaderWriter: unable to open the Jack Q input port"));
+				wxLogError(wxT("JackReaderWriter: unable to open the Jack Q input port"));
 				::jack_client_close(m_client);
 				return false;
 			}
@@ -155,7 +155,7 @@ bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
 			m_outPortI = ::jack_port_register(m_client, "output", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
 
 			if (m_outPortI == NULL) {
-				::wxLogError(wxT("JackReaderWriter: unable to open the Jack output port"));
+				wxLogError(wxT("JackReaderWriter: unable to open the Jack output port"));
 				::jack_client_close(m_client);
 				return false;
 			}
@@ -164,7 +164,7 @@ bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
 			m_outPortI = ::jack_port_register(m_client, "output_i", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
 
 			if (m_outPortI == NULL) {
-				::wxLogError(wxT("JackReaderWriter: unable to open the Jack I output port"));
+				wxLogError(wxT("JackReaderWriter: unable to open the Jack I output port"));
 				::jack_client_close(m_client);
 				return false;
 			}
@@ -172,7 +172,7 @@ bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
 			m_outPortQ = ::jack_port_register(m_client, "output_q", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
 
 			if (m_outPortQ == NULL) {
-				::wxLogError(wxT("JackReaderWriter: unable to open the Jack Q output port"));
+				wxLogError(wxT("JackReaderWriter: unable to open the Jack Q output port"));
 				::jack_client_close(m_client);
 				return false;
 			}
@@ -189,7 +189,7 @@ bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
 
 	ret = ::jack_activate(m_client);
 	if (ret != 0) {
-		::wxLogError(wxT("JackReaderWriter: error %d when activating the Jack client"), ret);
+		wxLogError(wxT("JackReaderWriter: error %d when activating the Jack client"), ret);
 		::jack_client_close(m_client);
 		return false;
 	}
@@ -197,7 +197,7 @@ bool CJackReaderWriter::open(float sampleRate, unsigned int blockSize)
 	m_opened++;
 	m_active = true;
 
-	::wxLogMessage(wxT("JackReaderWriter: started for client %s"), m_name.c_str());
+	wxLogMessage(wxT("JackReaderWriter: started for client %s"), m_name.c_str());
 
 	return true;
 }
@@ -223,7 +223,7 @@ int CJackReaderWriter::callback(jack_nframes_t nFrames)
 	m_requests++;
 
 	if (nFrames != m_blockSize) {
-		::wxLogError(wxT("JackReaderWriter: invalid frame size, given %u, wanted %u"), nFrames, m_blockSize);
+		wxLogError(wxT("JackReaderWriter: invalid frame size, given %u, wanted %u"), nFrames, m_blockSize);
 		nFrames = m_blockSize;
 	}
 
@@ -353,9 +353,9 @@ void CJackReaderWriter::close()
 
 	int ret = ::jack_client_close(m_client);
 	if (ret != 0)
-		::wxLogError(wxT("JackReaderWriter: received %d from jack_client_close()"), ret);
+		wxLogError(wxT("JackReaderWriter: received %d from jack_client_close()"), ret);
 
-	::wxLogMessage(wxT("JackReaderWriter: %u underruns and %u overruns from %u requests"), m_underruns, m_overruns, m_requests);
+	wxLogMessage(wxT("JackReaderWriter: %u underruns and %u overruns from %u requests"), m_underruns, m_overruns, m_requests);
 }
 
 void CJackReaderWriter::enable(bool enable)
@@ -403,7 +403,7 @@ void CJackReaderWriter::setCallback(IDataCallback* WXUNUSED(callback), int WXUNU
 
 bool CJackReaderWriter::open(float WXUNUSED(sampleRate), unsigned int WXUNUSED(blockSize))
 {
-	::wxLogError(wxT("JackReaderWriter: UWSDR has been built without Jack support"));		
+	wxLogError(wxT("JackReaderWriter: UWSDR has been built without Jack support"));		
 
 	return false;
 }

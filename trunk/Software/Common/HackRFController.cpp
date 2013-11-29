@@ -45,32 +45,32 @@ bool CHackRFController::open()
 {
 	m_device = ::libusb_open_device_with_vid_pid(m_context, HACKRF_VID, HACKRF_PID);
 	if (m_device == NULL) {
-		::wxLogError(wxT("Could not find the HackRF USB device"));
+		wxLogError(wxT("Could not find the HackRF USB device"));
 		return false;
 	}
 
 	int result = ::libusb_set_configuration(m_device, 1);
 	if (result != 0) {
-		::wxLogError(wxT("Could not set the HackRF USB configuration"));
+		wxLogError(wxT("Could not set the HackRF USB configuration"));
 		::libusb_close(m_device);
 		return false;
 	}
 
 	result = ::libusb_claim_interface(m_device, 0);
 	if (result != 0) {
-		::wxLogError(wxT("Could not claim the HackRF USB interface"));
+		wxLogError(wxT("Could not claim the HackRF USB interface"));
 		::libusb_close(m_device);
 		return false;
 	}
 
 	result = ::libusb_control_transfer(m_device, LIBUSB_ENDPOINT_OUT | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE, REQUEST_SET_TRANSMIT, 1U, 0U, NULL, 0UL, 0);
 	if (result < 0) {
-		::wxLogError(wxT("Error from libusb_control_transfer: err=%d"), result);
+		wxLogError(wxT("Error from libusb_control_transfer: err=%d"), result);
 		::libusb_close(m_device);
 		return false;
 	}
 
-	::wxLogInfo(wxT("Opened the HackRF device"));
+	wxLogInfo(wxT("Opened the HackRF device"));
 
 	return true;
 }
@@ -93,7 +93,7 @@ bool CHackRFController::setFrequency(const CFrequency& freq)
 	wxUint8 length = sizeof(setFreqParams);
 	int result = ::libusb_control_transfer(m_device, LIBUSB_ENDPOINT_OUT | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE, REQUEST_SET_FREQUENCY, 0, 0, (unsigned char*)&setFreqParams, length, 0);
 	if (result < 0) {
-		::wxLogError(wxT("Error from libusb_control_transfer: err=%d"), result);
+		wxLogError(wxT("Error from libusb_control_transfer: err=%d"), result);
 		return false;
 	}
 
@@ -106,7 +106,7 @@ bool CHackRFController::setTransmit(bool tx)
 
 	int n = ::libusb_control_transfer(m_device, LIBUSB_ENDPOINT_OUT | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE, REQUEST_SET_TRANSMIT, value, 0U, NULL, 0UL, 0);
 	if (n < 0) {
-		::wxLogError(wxT("Error from libusb_control_transfer: err=%d"), n);
+		wxLogError(wxT("Error from libusb_control_transfer: err=%d"), n);
 		return false;
 	}
 
@@ -117,7 +117,7 @@ void CHackRFController::close()
 {
 	int n = ::libusb_control_transfer(m_device, LIBUSB_ENDPOINT_OUT | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE, REQUEST_SET_TRANSMIT, 0U, 0U, NULL, 0UL, 0);
 	if (n < 0)
-		::wxLogError(wxT("Error from libusb_control_transfer: err=%d"), n);
+		wxLogError(wxT("Error from libusb_control_transfer: err=%d"), n);
 
 	::libusb_close(m_device);
 

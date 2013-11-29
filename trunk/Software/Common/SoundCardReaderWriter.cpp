@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -98,7 +98,7 @@ bool CSoundCardReaderWriter::open(float sampleRate, unsigned int blockSize)
 
 		const PaDeviceInfo* inInfo  = ::Pa_GetDeviceInfo(m_inDev);
 		if (inInfo == NULL) {
-			::wxLogError(wxT("SoundCardReaderWriter: received NULL from Pa_GetDeviceInfo()"));
+			wxLogError(wxT("SoundCardReaderWriter: received NULL from Pa_GetDeviceInfo()"));
 			return false;
 		}
 
@@ -120,7 +120,7 @@ bool CSoundCardReaderWriter::open(float sampleRate, unsigned int blockSize)
 
 		const PaDeviceInfo* outInfo = ::Pa_GetDeviceInfo(m_outDev);
 		if (outInfo == NULL) {
-			::wxLogError(wxT("SoundCardReaderWriter: received NULL from Pa_GetDeviceInfo()"));
+			wxLogError(wxT("SoundCardReaderWriter: received NULL from Pa_GetDeviceInfo()"));
 			return false;
 		}
 
@@ -153,7 +153,7 @@ bool CSoundCardReaderWriter::open(float sampleRate, unsigned int blockSize)
 	m_opened++;
 	m_active = true;
 
-	::wxLogMessage(wxT("SoundCardReaderWriter: started with input device %d and output device %d"), m_inDev, m_outDev);
+	wxLogMessage(wxT("SoundCardReaderWriter: started with input device %d and output device %d"), m_inDev, m_outDev);
 
 	return true;
 }
@@ -260,7 +260,7 @@ void CSoundCardReaderWriter::close()
 	if (error != paNoError)
 		writeLog(wxT("Pa_Terminate()"), error);
 
-	::wxLogMessage(wxT("SoundCardReaderWriter: %u underruns and %u overruns from %u requests"), m_underruns, m_overruns, m_requests);
+	wxLogMessage(wxT("SoundCardReaderWriter: %u underruns and %u overruns from %u requests"), m_underruns, m_overruns, m_requests);
 }
 
 void CSoundCardReaderWriter::enable(bool enable)
@@ -296,7 +296,7 @@ void CSoundCardReaderWriter::writeLog(const wxString& function, PaError error) c
 {
 	wxString message(::Pa_GetErrorText(error), wxConvLocal);
 
-	::wxLogError(wxT("SoundCardReaderWriter: received %d:%s from %s"), error, message.c_str(), function.c_str());
+	wxLogError(wxT("SoundCardReaderWriter: received %d:%s from %s"), error, message.c_str(), function.c_str());
 }
 
 #else
@@ -315,7 +315,7 @@ void CSoundCardReaderWriter::setCallback(IDataCallback* WXUNUSED(callback), int 
 
 bool CSoundCardReaderWriter::open(float WXUNUSED(sampleRate), unsigned int WXUNUSED(blockSize))
 {
-	::wxLogError(wxT("SoundCardReaderWriter: UWSDR has been built without PortAudio support"));
+	wxLogError(wxT("SoundCardReaderWriter: UWSDR has been built without PortAudio support"));
 
 	return false;
 }

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -87,7 +87,7 @@ bool CThreeToneReader::open(float sampleRate, unsigned int blockSize)
 	m_cosDelta3 = ::cos(delta);
 	m_sinDelta3 = ::sin(delta);
 
-	::wxLogMessage(wxT("ThreeToneReader: started"));
+	wxLogMessage(wxT("ThreeToneReader: started"));
 
 	return CThreadReader::open(sampleRate, blockSize);
 }

@@ -32,14 +32,13 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
-#include "RX.h"
-
 #include <wx/wx.h>
 
 #include <algorithm>
 using std::min;
 using std::max;
 
+#include "RX.h"
 
 CRX::CRX(unsigned int bufLen, unsigned int bits, float sampleRate, CMeter* meter, CSpectrum* spectrum, bool swapIQ) :
 m_sampleRate(sampleRate),

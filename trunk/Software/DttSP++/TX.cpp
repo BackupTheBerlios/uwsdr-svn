@@ -32,9 +32,9 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
-#include "TX.h"
-
 #include <wx/wx.h>
+
+#include "TX.h"
 
 CTX::CTX(unsigned int bufLen, unsigned int bits, float sampleRate, CMeter* meter, CSpectrum* spectrum, bool swapIQ) :
 m_sampleRate(sampleRate),

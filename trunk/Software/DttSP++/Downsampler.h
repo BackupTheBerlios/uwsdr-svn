@@ -21,8 +21,6 @@
 
 #include "Complex.h"
 
-#include <wx/wx.h>
-
 class CDownsampler {
 public:
 	CDownsampler(float fromSampleRate, float toSampleRate);

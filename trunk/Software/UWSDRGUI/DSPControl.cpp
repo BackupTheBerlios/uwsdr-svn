@@ -215,8 +215,8 @@ void* CDSPControl::Entry()
 	m_rxWriter->disable();
 	m_txWriter->disable();
 
-	::wxLogMessage(wxT("DSPControl: RX Overruns=%u, RX Fills=%u"), m_rxOverruns, m_rxFills);
-	::wxLogMessage(wxT("DSPControl: TX Overruns=%u, TX Fills=%u"), m_txOverruns, m_txFills);
+	wxLogMessage(wxT("DSPControl: RX Overruns=%u, RX Fills=%u"), m_rxOverruns, m_rxFills);
+	wxLogMessage(wxT("DSPControl: TX Overruns=%u, TX Fills=%u"), m_txOverruns, m_txFills);
 
 	closeIO();
 
@@ -315,7 +315,7 @@ bool CDSPControl::openIO()
 		m_cwKeyer->close();
 		m_voiceKeyer->close();
 
-		::wxLogError(wxT("No reader can provide a suitable clock"));
+		wxLogError(wxT("No reader can provide a suitable clock"));
 		return false;
 	}
 
@@ -488,7 +488,7 @@ void CDSPControl::callback(float* inBuffer, unsigned int nSamples, int id)
 			break;
 
 		default:
-			::wxLogError(wxT("callback() from unknown source = %d"), id);
+			wxLogError(wxT("callback() from unknown source = %d"), id);
 			break;
 	}
 
@@ -725,13 +725,13 @@ bool CDSPControl::setRecordOn(RECORDTYPE type)
 				sdfw = new CSoundFileWriter(fileName, 2U, 32U);
 				break;
 			default:
-				::wxLogError(wxT("Unknown recording type = %d"), type);				
+				wxLogError(wxT("Unknown recording type = %d"), type);				
 				return false;
 		}
 
 		bool ret = sdfw->open(m_sampleRate, m_blockSize);
 		if (!ret) {
-			::wxLogError(wxT("Cannot open file %s for recording"), fileName.c_str());
+			wxLogError(wxT("Cannot open file %s for recording"), fileName.c_str());
 			return false;
 		}
 
@@ -740,7 +740,7 @@ bool CDSPControl::setRecordOn(RECORDTYPE type)
 		m_recordType = type;
 		m_record     = sdfw;
 
-		::wxLogMessage(wxT("Opened file %s for recording"), fileName.c_str());
+		wxLogMessage(wxT("Opened file %s for recording"), fileName.c_str());
 	}
 
 	return true;
@@ -756,7 +756,7 @@ void CDSPControl::setRecordOff()
 
 		sdfw->close();
 
-		::wxLogMessage(wxT("Closed sound file"));
+		wxLogMessage(wxT("Closed sound file"));
 	}
 }
 
@@ -783,10 +783,10 @@ void CDSPControl::dumpBuffer(const wxString& title, float* buffer, unsigned int 
 	wxASSERT(buffer != NULL);
 	wxASSERT(nSamples > 0);
 
-	::wxLogMessage(title);
-	::wxLogMessage(wxT("Length: %05X"), nSamples);
+	wxLogMessage(title);
+	wxLogMessage(wxT("Length: %05X"), nSamples);
 
-	::wxLogMessage(wxT(":"));
+	wxLogMessage(wxT(":"));
 
 	unsigned int n = 0;
 	for (unsigned int i = 0; i < nSamples; i += 16) {
@@ -802,7 +802,7 @@ void CDSPControl::dumpBuffer(const wxString& title, float* buffer, unsigned int 
 				break;
 		}
 
-		::wxLogMessage(text);
+		wxLogMessage(text);
 	}
 }
 #endif

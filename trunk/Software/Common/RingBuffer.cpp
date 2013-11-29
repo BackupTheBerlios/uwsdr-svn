@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2008 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2008,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -43,10 +43,10 @@ CRingBuffer::~CRingBuffer()
 #if defined(__WXDEBUG__)
 void CRingBuffer::dump(const wxString& title) const
 {
-	::wxLogMessage(title);
-	::wxLogMessage(wxT("Length: 0x%05X  Step: %u  oPtr: 0x%05X  iPtr: 0x%05X  State: %d"), m_length, m_step, m_oPtr / m_step, m_iPtr / m_step, m_state);
+	wxLogMessage(title);
+	wxLogMessage(wxT("Length: 0x%05X  Step: %u  oPtr: 0x%05X  iPtr: 0x%05X  State: %d"), m_length, m_step, m_oPtr / m_step, m_iPtr / m_step, m_state);
 
-	::wxLogMessage(wxT(":"));
+	wxLogMessage(wxT(":"));
 
 	unsigned int n = 0U;
 	for (unsigned int i = 0U; i < m_length; i += 16) {
@@ -69,7 +69,7 @@ void CRingBuffer::dump(const wxString& title) const
 			text.Append(wxT("  "));
 		}
 
-		::wxLogMessage(text);
+		wxLogMessage(text);
 	}
 }
 #endif

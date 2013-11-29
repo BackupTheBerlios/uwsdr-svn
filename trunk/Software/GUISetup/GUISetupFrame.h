@@ -23,7 +23,7 @@
 
 #include "SDRDescrFile.h"
 #include "AudioDevInfo.h"
-#include "PortDialog.h"
+#include "Common.h"
 
 class CGUISetupFrame : public wxFrame {
 public:
@@ -34,7 +34,6 @@ public:
 	void onBrowse(wxCommandEvent& event);
 	void onUserAudio(wxCommandEvent& event);
 	void onSDRAudio(wxCommandEvent& event);
-	void onPort(wxCommandEvent& event);
 	void onTuning(wxCommandEvent& event);
 	void onExternal(wxCommandEvent& event);
 	void onCreate(wxCommandEvent& event);
@@ -45,7 +44,6 @@ private:
 	wxCheckBox*    m_deskTop;
 	wxButton*      m_userAudio;
 	wxButton*      m_sdrAudio;
-	wxButton*      m_port;
 	wxString       m_filename;
 	SDRTYPE        m_sdrType;
 	SOUNDTYPE      m_userAudioType;
@@ -54,14 +52,6 @@ private:
 	SOUNDTYPE      m_sdrAudioType;
 	int            m_sdrAudioInDev;
 	int            m_sdrAudioOutDev;
-	bool           m_txInEnable;
-	wxString       m_txInDev;
-	INPIN          m_txInPin;
-	bool           m_keyInEnable;
-	wxString       m_keyInDev;
-	INPIN          m_keyInPin;
-	wxString       m_txOutDev;
-	OUTPIN         m_txOutPin;
 	TUNINGHW       m_tuningHW;
 	wxString       m_externalName;
 	EXTERNALADDRS  m_externalAddr;

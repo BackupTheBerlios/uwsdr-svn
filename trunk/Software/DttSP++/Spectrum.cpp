@@ -32,11 +32,6 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
-#include "Spectrum.h"
-#include "Window.h"
-#include "FIR.h"
-#include "Utils.h"
-
 #include <wx/wx.h>
 
 #include <cmath>
@@ -44,6 +39,10 @@ Bridgewater, NJ 08807
 using std::max;
 using std::min;
 
+#include "Spectrum.h"
+#include "Window.h"
+#include "FIR.h"
+#include "Utils.h"
 
 CSpectrum::CSpectrum(unsigned int size, unsigned int planbits, SPECTRUMscale scale) :
 m_accum(NULL),

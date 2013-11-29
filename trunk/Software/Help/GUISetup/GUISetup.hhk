@@ -21,11 +21,6 @@
               </object>
 
          <li> <object type="text/sitemap">
-                  <param name="Name" value="Control Port Setup">
-                  <param name="Local" value="ControlPort.htm">
-              </object>
-
-         <li> <object type="text/sitemap">
                   <param name="Name" value="Core Audio (Mac OS X)">
                   <param name="Local" value="AudioAPI.htm">
               </object>
@@ -53,11 +48,6 @@
          <li> <object type="text/sitemap">
                   <param name="Name" value="GUI">
                   <param name="Local" value="GUI.htm">
-              </object>
-
-         <li> <object type="text/sitemap">
-                  <param name="Name" value="Key In">
-                  <param name="Local" value="KeyIn.htm">
               </object>
 
          <li> <object type="text/sitemap">
@@ -103,16 +93,6 @@
          <li> <object type="text/sitemap">
                   <param name="Name" value="SDR IP Address">
                   <param name="Local" value="SDRIPAddress.htm">
-              </object>
-
-         <li> <object type="text/sitemap">
-                  <param name="Name" value="Transmit In">
-                  <param name="Local" value="TXIn.htm">
-              </object>
-
-         <li> <object type="text/sitemap">
-                  <param name="Name" value="Transmit Out">
-                  <param name="Local" value="TXOut.htm">
               </object>
 
          <li> <object type="text/sitemap">

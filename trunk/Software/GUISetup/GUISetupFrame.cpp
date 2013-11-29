@@ -45,21 +45,19 @@ const wxChar* NAME_TOKEN    = wxT("@NAME@");
 
 const struct {
 	bool sdrAudioButton;
-	bool portButton;
 	bool txOutData;
 	bool audioCheck;
 } featureList[] = {
-	{false, true,  false, false},	// TYPE_DEMO
-	{false, false, false, false},	// TYPE_HACKRF
-	{true,  false, false, false},	// TYPE_SI570RX
-	{true,  true,  true,  true}		// TYPE_SI570TXRX
+	{false, false, false},	// TYPE_DEMO
+	{false, false, false},	// TYPE_HACKRF
+	{true,  false, false},	// TYPE_SI570RX
+	{true,  true,  true}	// TYPE_SI570TXRX
 };
 
 const int CREATE_BUTTON     = 27543;
 const int BROWSE_BUTTON     = 27544;
 const int USER_AUDIO_BUTTON = 27545;
 const int SDR_AUDIO_BUTTON  = 27546;
-const int PORT_BUTTON       = 27548;
 const int TUNING_BUTTON     = 27550;
 const int NAME_COMBO        = 27551;
 const int EXTERNAL_BUTTON   = 27552;
@@ -76,7 +74,6 @@ BEGIN_EVENT_TABLE(CGUISetupFrame, wxFrame)
 	EVT_BUTTON(BROWSE_BUTTON,     CGUISetupFrame::onBrowse)
 	EVT_BUTTON(USER_AUDIO_BUTTON, CGUISetupFrame::onUserAudio)
 	EVT_BUTTON(SDR_AUDIO_BUTTON,  CGUISetupFrame::onSDRAudio)
-	EVT_BUTTON(PORT_BUTTON,       CGUISetupFrame::onPort)
 	EVT_BUTTON(TUNING_BUTTON,     CGUISetupFrame::onTuning)
 	EVT_BUTTON(EXTERNAL_BUTTON,   CGUISetupFrame::onExternal)
 END_EVENT_TABLE()
@@ -89,7 +86,6 @@ m_filenameText(NULL),
 m_deskTop(NULL),
 m_userAudio(NULL),
 m_sdrAudio(NULL),
-m_port(NULL),
 m_filename(),
 m_sdrType(TYPE_DEMO),
 m_userAudioType(),
@@ -98,14 +94,6 @@ m_userAudioOutDev(NO_DEV),
 m_sdrAudioType(),
 m_sdrAudioInDev(NO_DEV),
 m_sdrAudioOutDev(NO_DEV),
-m_txInEnable(false),
-m_txInDev(),
-m_txInPin(IN_NONE),
-m_keyInEnable(false),
-m_keyInDev(),
-m_keyInPin(IN_NONE),
-m_txOutDev(),
-m_txOutPin(OUT_NONE),
 m_tuningHW(TUNINGHW_NONE),
 m_externalName(),
 m_externalAddr(EXTERNALADDRS_LOCAL)
@@ -154,16 +142,6 @@ m_externalAddr(EXTERNALADDRS_LOCAL)
 
 	wxStaticText* dummy3 = new wxStaticText(panel, -1, wxEmptyString);
 	panelSizer->Add(dummy3, 0, wxALL, BORDER_SIZE);
-
-	wxStaticText* label6 = new wxStaticText(panel, -1, _("Control Port:"));
-	panelSizer->Add(label6, 0, wxALL, BORDER_SIZE);
-
-	m_port = new wxButton(panel, PORT_BUTTON, _("Set"), wxDefaultPosition, wxSize(DATA_WIDTH, -1));
-	m_port->Disable();
-	panelSizer->Add(m_port, 0, wxALL, BORDER_SIZE);
-
-	wxStaticText* dummy5 = new wxStaticText(panel, -1, wxEmptyString);
-	panelSizer->Add(dummy5, 0, wxALL, BORDER_SIZE);
 
 	wxStaticText* label8 = new wxStaticText(panel, -1, _("Tuning Hardware:"));
 	panelSizer->Add(label8, 0, wxALL, BORDER_SIZE);
@@ -268,7 +246,6 @@ void CGUISetupFrame::onBrowse(wxCommandEvent& WXUNUSED(event))
 
 	// Clear everything
 	m_sdrAudio->Disable();
-	m_port->Disable();
 
 	CSDRDescrFile file(m_filename);
 	if (!file.isValid()) {
@@ -280,8 +257,6 @@ void CGUISetupFrame::onBrowse(wxCommandEvent& WXUNUSED(event))
 
 	if (featureList[m_sdrType].sdrAudioButton)
 		m_sdrAudio->Enable();
-	if (featureList[m_sdrType].portButton)
-		m_port->Enable();
 }
 
 void CGUISetupFrame::onCreate(wxCommandEvent& WXUNUSED(event))
@@ -328,13 +303,6 @@ void CGUISetupFrame::onCreate(wxCommandEvent& WXUNUSED(event))
 	if (featureList[m_sdrType].audioCheck) {
 		if (m_sdrAudioType != SOUND_JACK && m_userAudioType == m_sdrAudioType && (m_sdrAudioInDev == m_userAudioInDev || m_sdrAudioOutDev == m_userAudioOutDev)) {
 			::wxMessageBox(_("The SDR Audio cannot be the same as the User Audio"), _("GUISetup Error"), wxICON_ERROR);
-			return;
-		}
-	}
-
-	if (featureList[m_sdrType].txOutData) {
-		if (m_txOutDev.IsEmpty() || m_txOutPin == -1) {
-			::wxMessageBox(_("The Transmit Out Port has not been set"), _("GUISetup Error"), wxICON_ERROR);
 			return;
 		}
 	}
@@ -411,58 +379,6 @@ void CGUISetupFrame::onCreate(wxCommandEvent& WXUNUSED(event))
 		}
 	}
 
-	if (featureList[m_sdrType].portButton) {
-		bool ret = config->Write(txInEnableKey, m_txInEnable);
-		if (!ret) {
-			::wxMessageBox(_("Unable to write configuration data - TXInEnable"), _("GUISetup Error"), wxICON_ERROR);
-			return;
-		}
-
-		ret = config->Write(txInDevKey, m_txInDev);
-		if (!ret) {
-			::wxMessageBox(_("Unable to write configuration data - TXInDev"), _("GUISetup Error"), wxICON_ERROR);
-			return;
-		}
-
-		ret = config->Write(txInPinKey, long(m_txInPin));
-		if (!ret) {
-			::wxMessageBox(_("Unable to write configuration data - TXInPin"), _("GUISetup Error"), wxICON_ERROR);
-			return;
-		}
-
-		ret = config->Write(keyInEnableKey, m_keyInEnable);
-		if (!ret) {
-			::wxMessageBox(_("Unable to write configuration data - KeyInEnable"), _("GUISetup Error"), wxICON_ERROR);
-			return;
-		}
-
-		ret = config->Write(keyInDevKey, m_keyInDev);
-		if (!ret) {
-			::wxMessageBox(_("Unable to write configuration data - KeyInDev"), _("GUISetup Error"), wxICON_ERROR);
-			return;
-		}
-
-		ret = config->Write(keyInPinKey, long(m_keyInPin));
-		if (!ret) {
-			::wxMessageBox(_("Unable to write configuration data - KeyInPin"), _("GUISetup Error"), wxICON_ERROR);
-			return;
-		}
-
-		if (featureList[m_sdrType].txOutData) {
-			bool ret = config->Write(txOutDevKey, m_txOutDev);
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - TXOutDev"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-
-			ret = config->Write(txOutPinKey, long(m_txOutPin));
-			if (!ret) {
-				::wxMessageBox(_("Unable to write configuration data - TXOutPin"), _("GUISetup Error"), wxICON_ERROR);
-				return;
-			}
-		}
-	}
-
 	ret = config->Write(tuningKey, long(m_tuningHW));
 	if (!ret) {
 		::wxMessageBox(_("Unable to write configuration data - TuningHW"), _("GUISetup Error"), wxICON_ERROR);
@@ -536,7 +452,6 @@ void CGUISetupFrame::readConfig(const wxString& name)
 {
 	// Clear everything
 	m_sdrAudio->Disable();
-	m_port->Disable();
 
 	m_filenameText->Clear();
 
@@ -582,17 +497,6 @@ void CGUISetupFrame::readConfig(const wxString& name)
 	config->Read(sdrAudioInDevKey,  &m_sdrAudioInDev);
 	config->Read(sdrAudioOutDevKey, &m_sdrAudioOutDev);
 
-	config->Read(txInEnableKey,  &m_txInEnable);
-	config->Read(txInDevKey,     &m_txInDev);
-	config->Read(txInPinKey,     (int*)&m_txInPin);
-
-	config->Read(keyInEnableKey, &m_keyInEnable);
-	config->Read(keyInDevKey,    &m_keyInDev);
-	config->Read(keyInPinKey,    (int*)&m_keyInPin);
-
-	config->Read(txOutDevKey,    &m_txOutDev);
-	config->Read(txOutPinKey,    (int*)&m_txOutPin);
-
 	config->Read(tuningKey,      (int*)&m_tuningHW);
 
 	config->Read(extNameKey,     &m_externalName);
@@ -605,8 +509,6 @@ void CGUISetupFrame::readConfig(const wxString& name)
 
 	if (featureList[m_sdrType].sdrAudioButton)
 		m_sdrAudio->Enable();
-	if (featureList[m_sdrType].portButton)
-		m_port->Enable();
 }
 
 void CGUISetupFrame::onUserAudio(wxCommandEvent& WXUNUSED(event))
@@ -631,37 +533,6 @@ void CGUISetupFrame::onSDRAudio(wxCommandEvent& WXUNUSED(event))
 		m_sdrAudioInDev  = dialog.getInDev();
 		m_sdrAudioOutDev = dialog.getOutDev();
 	}
-}
-
-void CGUISetupFrame::onPort(wxCommandEvent& WXUNUSED(event))
-{
-	CPortDialog dialog(this, _("Control Port Setup"), featureList[m_sdrType].txOutData);
-
-	dialog.setTXInEnable(m_txInEnable);
-	dialog.setTXInDev(m_txInDev);
-	dialog.setTXInPin(m_txInPin);
-
-	dialog.setKeyInEnable(m_keyInEnable);
-	dialog.setKeyInDev(m_keyInDev);
-	dialog.setKeyInPin(m_keyInPin);
-
-	dialog.setTXOutDev(m_txOutDev);
-	dialog.setTXOutPin(m_txOutPin);
-
-	int ret = dialog.ShowModal();
-	if (ret != wxID_OK)
-		return;
-
-	m_txInEnable = dialog.getTXInEnable();
-	m_txInDev    = dialog.getTXInDev();
-	m_txInPin    = dialog.getTXInPin();
-
-	m_keyInEnable = dialog.getKeyInEnable();
-	m_keyInDev    = dialog.getKeyInDev();
-	m_keyInPin    = dialog.getKeyInPin();
-
-	m_txOutDev = dialog.getTXOutDev();
-	m_txOutPin = dialog.getTXOutPin();
 }
 
 void CGUISetupFrame::onTuning(wxCommandEvent& WXUNUSED(event))

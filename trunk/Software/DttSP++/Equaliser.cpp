@@ -32,13 +32,13 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
+#include <wx/wx.h>
+
 #include "Equaliser.h"
 #include "Complex.h"
 #include "FIR.h"
 
 #include "fftw3.h"
-
-#include <wx/wx.h>
 
 CEqualiser::CEqualiser(float samprate, unsigned int pbits, CXB* vec) :
 m_samprate(samprate),

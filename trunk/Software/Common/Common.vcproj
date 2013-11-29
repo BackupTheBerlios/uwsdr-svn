@@ -338,14 +338,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SerialControl.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SerialInterface.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\SI570Controller.cpp"
 				>
 			</File>
@@ -552,14 +544,6 @@
 			</File>
 			<File
 				RelativePath=".\SDRDescrFile.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SerialControl.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SerialInterface.h"
 				>
 			</File>
 			<File

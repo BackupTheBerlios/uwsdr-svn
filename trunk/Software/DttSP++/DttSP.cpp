@@ -37,7 +37,6 @@ Bridgewater, NJ 08807
 #include "DttSP.h"
 #include "Defs.h"
 
-
 CDttSP::CDttSP(float sampleRate, unsigned int audioSize, bool swapIQ) :
 m_sampleRate(sampleRate),
 m_running(true),
@@ -539,7 +538,7 @@ void CDttSP::audioEntry(const float* input, float* output, unsigned int nframes)
 		// m_outputI->clear();
 		// m_outputQ->clear();
 
-		::wxLogError(wxT("Not enough space in the input ring buffer"));
+		wxLogError(wxT("Not enough space in the input ring buffer"));
 	}
 
 	// if enough accumulated in ring, fire dsp
@@ -551,7 +550,7 @@ void CDttSP::getHold()
 {
 	if (m_outputI->freeSpace() < m_frames) {
 		// pathology
-		::wxLogError(wxT("Not enough space in the output ring buffer"));
+		wxLogError(wxT("Not enough space in the output ring buffer"));
 	} else {
 		m_outputI->addData(m_bufferI, m_frames);
 		m_outputQ->addData(m_bufferQ, m_frames);
@@ -562,7 +561,7 @@ void CDttSP::getHold()
 		::memset(m_bufferI, 0x00, m_frames * sizeof(float));
 		::memset(m_bufferQ, 0x00, m_frames * sizeof(float));
 
-		::wxLogError(wxT("Not enough data in the input ring buffer"));
+		wxLogError(wxT("Not enough data in the input ring buffer"));
 	} else {
 		m_inputI->getData(m_bufferI, m_frames);
 		m_inputQ->getData(m_bufferQ, m_frames);

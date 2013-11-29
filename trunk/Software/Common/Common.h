@@ -24,7 +24,7 @@
 
 const wxString VERSION  = wxT("UWSDR 0.9.1");
 
-const wxDateTime::wxDateTime_t REL_DATE_DAY   = 21;
+const wxDateTime::wxDateTime_t REL_DATE_DAY   = 29;
 const wxDateTime::Month        REL_DATE_MONTH = wxDateTime::Nov;
 const unsigned int             REL_DATE_YEAR  = 2013;
 
@@ -40,20 +40,6 @@ enum UWSDRMODE {
 	MODE_FMW,
 	MODE_LSB,
 	MODE_USB
-};
-
-enum INPIN {
-	IN_NONE = -1,
-	IN_RTS_CTS,
-	IN_RTS_DSR,
-	IN_DTR_DSR,
-	IN_DTR_CTS
-};
-
-enum OUTPIN {
-	OUT_NONE = -1,
-	OUT_RTS,
-	OUT_DTR
 };
 
 enum TUNINGHW {

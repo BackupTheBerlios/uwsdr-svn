@@ -82,29 +82,6 @@
          </ul>
 
          <li> <object type="text/sitemap">
-                  <param name="Name" value="Control Port Setup">
-                  <param name="ID" value=8>
-                  <param name="Local" value="ControlPort.htm">
-              </object>
-         <ul>
-             <li> <object type="text/sitemap">
-                      <param name="Name" value="Transmit In">
-                      <param name="ID" value=40>
-                      <param name="Local" value="TXIn.htm">
-                  </object>
-             <li> <object type="text/sitemap">
-                      <param name="Name" value="Key In">
-                      <param name="ID" value=41>
-                      <param name="Local" value="KeyIn.htm">
-                  </object>
-             <li> <object type="text/sitemap">
-                      <param name="Name" value="Transmit Out">
-                      <param name="ID" value=42>
-                      <param name="Local" value="TXOut.htm">
-                  </object>
-         </ul>
-
-         <li> <object type="text/sitemap">
                   <param name="Name" value="Tuning Hardware Setup">
                   <param name="ID" value=10>
                   <param name="Local" value="Tuning.htm">

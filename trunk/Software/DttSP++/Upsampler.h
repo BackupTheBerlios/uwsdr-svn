@@ -21,8 +21,6 @@
 
 #include "Complex.h"
 
-#include <wx/wx.h>
-
 class CUpsampler {
 public:
 	CUpsampler(float fromSampleRate, float toSampleRate);

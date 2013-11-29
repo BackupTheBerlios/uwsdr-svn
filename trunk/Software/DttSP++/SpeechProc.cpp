@@ -3,7 +3,7 @@
   This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY, Phil Harman, VK6APH
-Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008,2013 by Jonathan Naylor, G4KLX
 
 Based on Visual Basic code for SDR by Phil Harman
 
@@ -34,15 +34,14 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
-#include "SpeechProc.h"
-#include "Utils.h"
-
 #include <wx/wx.h>
 
 #include <algorithm>
 using std::min;
 using std::max;
 
+#include "SpeechProc.h"
+#include "Utils.h"
 
 CSpeechProc::CSpeechProc(float k, float maxCompression, CXB* spdat) :
 m_CG(NULL),

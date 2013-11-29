@@ -16,8 +16,9 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "Downsampler.h"
+#include <wx/wx.h>
 
+#include "Downsampler.h"
 #include "FIR.h"
 
 const unsigned int FIR_COEFFS_LEN = 50U;

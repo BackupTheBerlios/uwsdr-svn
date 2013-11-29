@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2007 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2007,2013 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ CNullWriter::~CNullWriter()
 
 bool CNullWriter::open(float WXUNUSED(sampleRate), unsigned int WXUNUSED(blockSize))
 {
-	::wxLogMessage(wxT("NullWriter: started"));
+	wxLogMessage(wxT("NullWriter: started"));
 
 	return true;
 }

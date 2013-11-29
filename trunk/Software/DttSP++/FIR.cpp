@@ -42,7 +42,6 @@ Bridgewater, NJ 08807
 const double M_PI = 3.14159265358979323846;
 #endif
 
-
 COMPLEX* CFIR::lowpass(float cutoff, float samprate, unsigned int size)
 {
 	if (cutoff < 0.0F || cutoff > (samprate / 2.0F))

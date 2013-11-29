@@ -268,10 +268,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\PortDialog.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\SoundCardDialog.cpp"
 				>
 			</File>
@@ -294,10 +290,6 @@
 			</File>
 			<File
 				RelativePath="GUISetupFrame.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PortDialog.h"
 				>
 			</File>
 			<File

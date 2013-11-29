@@ -91,17 +91,6 @@ class CSDRParameters {
 	FILTERWIDTH   m_filterCWN;
 	FILTERWIDTH   m_filterDig;
 
-	bool          m_txInEnable;
-	wxString      m_txInDev;
-	INPIN         m_txInPin;
-
-	bool          m_keyInEnable;
-	wxString      m_keyInDev;
-	INPIN         m_keyInPin;
-
-	wxString      m_txOutDev;
-	OUTPIN        m_txOutPin;
-
 	SOUNDTYPE     m_userAudioType;
 	int           m_userAudioInDev;
 	int           m_userAudioOutDev;

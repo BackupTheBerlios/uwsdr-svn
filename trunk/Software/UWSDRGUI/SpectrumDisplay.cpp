@@ -147,7 +147,7 @@ void CSpectrumDisplay::setBandwidth(float bandwidth)
 			createScope();
 			break;
 		default:
-			::wxLogError(wxT("Unknown spectrum type = %d"), m_type);
+			wxLogError(wxT("Unknown spectrum type = %d"), m_type);
 			break;
 	}
 
@@ -735,7 +735,7 @@ void CSpectrumDisplay::onRightMouse(wxMouseEvent& event)
 			m_typeMenu->Check(MENU_AUDIO, true);
 			break;
 		default:
-			::wxLogError(wxT("Unknown spectrum type = %d"), m_type);
+			wxLogError(wxT("Unknown spectrum type = %d"), m_type);
 			break;
 	}
 
@@ -756,7 +756,7 @@ void CSpectrumDisplay::onRightMouse(wxMouseEvent& event)
 			m_speedMenu->Check(MENU_1000MS, true);
 			break;
 		default:
-			::wxLogError(wxT("Unknown spectrum speed = %d"), m_speed);
+			wxLogError(wxT("Unknown spectrum speed = %d"), m_speed);
 			break;
 	}
 
@@ -780,7 +780,7 @@ void CSpectrumDisplay::onRightMouse(wxMouseEvent& event)
 			m_dbMenu->Check(MENU_60DB, true);
 			break;
 		default:
-			::wxLogError(wxT("Unknown dB range = %d"), m_db);
+			wxLogError(wxT("Unknown dB range = %d"), m_db);
 			break;
 	}
 
@@ -842,7 +842,7 @@ void CSpectrumDisplay::onMenu(wxCommandEvent& event)
 			setDB(SPECTRUM_60DB);
 			break;
 		default:
-			::wxLogError(wxT("Unknown spectrum menu item = %d"), event.GetId());
+			wxLogError(wxT("Unknown spectrum menu item = %d"), event.GetId());
 			break;
 	}
 }

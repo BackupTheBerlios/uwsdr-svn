@@ -32,7 +32,7 @@ void CNullController::setCallback(IControlInterface* WXUNUSED(callback))
 
 bool CNullController::open()
 {
-	::wxLogMessage(wxT("NullController: started"));
+	wxLogMessage(wxT("NullController: started"));
 
 	return true;
 }

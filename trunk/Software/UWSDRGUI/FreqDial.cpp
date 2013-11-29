@@ -158,7 +158,7 @@ void CFreqDial::onMouseMenu(wxMouseEvent& event)
 			m_menu->Check(MENU_25X, true);
 			break;
 		default:
-			::wxLogError(wxT("Unknown freq dial multiplier = %u"), m_mult);
+			wxLogError(wxT("Unknown freq dial multiplier = %u"), m_mult);
 			break;
 	}
 
@@ -226,7 +226,7 @@ void CFreqDial::onMenu(wxCommandEvent& event)
 			m_mult = 1;
 			break;
 		default:
-			::wxLogError(wxT("Unknown freq diql menu option = %d"), id);
+			wxLogError(wxT("Unknown freq diql menu option = %d"), id);
 			break;
 	}
 }

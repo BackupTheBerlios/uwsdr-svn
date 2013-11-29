@@ -3,7 +3,7 @@
 This file is part of a program that implements a Software-Defined Radio.
 
 Copyright (C) 2004, 2005, 2006 by Frank Brickle, AB2KT and Bob McGwier, N4HY
-Copyright (C) 2006-2008 by Jonathan Naylor, G4KLX
+Copyright (C) 2006-2008,2013 by Jonathan Naylor, G4KLX
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -32,15 +32,14 @@ The DTTS Microwave Society
 Bridgewater, NJ 08807
 */
 
-#include "AGC.h"
-#include "Utils.h"
-
 #include <wx/wx.h>
 
 #include <algorithm>
 using std::max;
 using std::min;
 
+#include "AGC.h"
+#include "Utils.h"
 
 CAGC::CAGC(AGCMODE mode, CXB* buff, float limit, float attack,
 		   float decay, float slope, float hangtime, float samprate, float maxGain,

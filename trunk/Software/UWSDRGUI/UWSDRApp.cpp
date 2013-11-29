@@ -184,22 +184,22 @@ bool CUWSDRApp::OnInit()
 	fileName.SetFullName(wxT("UWSDR.zip"));
 	m_help->AddBook(fileName);
 
-	::wxLogMessage(wxT("Starting ") + VERSION);
-	::wxLogMessage(wxT("Using configuration: ") + m_parameters->m_name);
+	wxLogMessage(wxT("Starting ") + VERSION);
+	wxLogMessage(wxT("Using configuration: ") + m_parameters->m_name);
 
 	if (!readConfig()) {
-		::wxLogError(wxT("Cannot open the SDR configuration - ") + m_parameters->m_name);
+		wxLogError(wxT("Cannot open the SDR configuration - ") + m_parameters->m_name);
 		::wxMessageBox(_("Cannot open the SDR configuration - ") + m_parameters->m_name, _("UWSDR Error"), wxICON_ERROR);
 		return false;
 	}
 
 	if (!readDescrFile()) {
-		::wxLogError(wxT("Cannot open the SDR description file - ") + m_parameters->m_fileName);
+		wxLogError(wxT("Cannot open the SDR description file - ") + m_parameters->m_fileName);
 		::wxMessageBox(_("Cannot open the SDR description file - ") + m_parameters->m_fileName, _("UWSDR Error"), wxICON_ERROR);
 		return false;
 	}
 
-	::wxLogMessage(wxT("Using hardware configuration file: ") + m_parameters->m_fileName);
+	wxLogMessage(wxT("Using hardware configuration file: ") + m_parameters->m_fileName);
 
 	// We cannot use Weaver on hardware with too large step sizes
 	if (m_parameters->m_hardwareStepSize >= 100U        ||
@@ -270,7 +270,7 @@ bool CUWSDRApp::OnCmdLineParsed(wxCmdLineParser& parser)
 
 int CUWSDRApp::OnExit()
 {
-	::wxLogMessage(wxT("Ending UWSDR"));
+	wxLogMessage(wxT("Ending UWSDR"));
 
 	writeConfig();
 
@@ -516,20 +516,6 @@ bool CUWSDRApp::readConfig()
 	m_parameters->m_filterCWN = FILTERWIDTH(num);
 	profile->Read(keyFilterDig,        &num, FILTER_2100);
 	m_parameters->m_filterDig = FILTERWIDTH(num);
-
-	profile->Read(keyTXInEnable,       &m_parameters->m_txInEnable, false);
-	profile->Read(keyTXInDev,          &m_parameters->m_txInDev,    wxEmptyString);
-	profile->Read(keyTXInPin,          &num,                        IN_NONE);
-	m_parameters->m_txInPin = INPIN(num);
-
-	profile->Read(keyKeyInEnable,      &m_parameters->m_keyInEnable, false);
-	profile->Read(keyKeyInDev,         &m_parameters->m_keyInDev,    wxEmptyString);
-	profile->Read(keyKeyInPin,         &num,                         IN_NONE);
-	m_parameters->m_keyInPin = INPIN(num);
-
-	profile->Read(keyTXOutDev,         &m_parameters->m_txOutDev, wxEmptyString);
-	profile->Read(keyTXOutPin,         &num,                      OUT_NONE);
-	m_parameters->m_txOutPin = OUTPIN(num);
 
 	profile->Read(keyUserAudioType,    &num);
 	m_parameters->m_userAudioType = SOUNDTYPE(num);
@@ -925,6 +911,6 @@ wxString CUWSDRApp::getHelpDir()
 #if defined(__WXDEBUG__)
 void CUWSDRApp::OnAssertFailure(const wxChar* file, int line, const wxChar* func, const wxChar* cond, const wxChar* msg)
 {
-	::wxLogFatalError(wxT("Assertion failed on line %d of %s in file %s: %s %s"), line, func, file, cond, msg);
+	wxLogFatalError(wxT("Assertion failed on line %d of %s in file %s: %s %s"), line, func, file, cond, msg);
 }
 #endif

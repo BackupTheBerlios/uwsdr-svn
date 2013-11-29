@@ -306,7 +306,7 @@ void CSMeter::onMouse(wxMouseEvent& event)
 			m_rxMenu->Check(MENU_AVG_SIGNAL, true);
 			break;
 		default:
-			::wxLogError(wxT("Unknown RX meter type = %d"), m_rxMeter);
+			wxLogError(wxT("Unknown RX meter type = %d"), m_rxMeter);
 			break;
 	}
 
@@ -324,7 +324,7 @@ void CSMeter::onMouse(wxMouseEvent& event)
 			m_txMenu->Check(MENU_COMPRESSED, true);
 			break;
 		default:
-			::wxLogError(wxT("Unknown TX meter type = %d"), m_txMeter);
+			wxLogError(wxT("Unknown TX meter type = %d"), m_txMeter);
 			break;
 	}
 

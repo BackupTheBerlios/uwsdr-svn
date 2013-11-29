@@ -53,7 +53,7 @@ bool CSI570Controller::open()
 				m_handle = ::usb_open(dev);
 				if (m_handle == NULL) {
 					wxString err(::usb_strerror(), wxConvLocal);
-					::wxLogError(wxT("Could not open the USB device: %s"), err.c_str());
+					wxLogError(wxT("Could not open the USB device: %s"), err.c_str());
 					return false;
 				}
 
@@ -63,21 +63,21 @@ bool CSI570Controller::open()
 				int n = ::usb_control_msg(m_handle, USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN, REQUEST_GET_VERSION, 0xE00U, 0U, version, 2U, 500);
 				if (n < 0) {
 					wxString err(::usb_strerror(), wxConvLocal);
-					::wxLogError(wxT("Error from usb_control_msg: %s"), err.c_str());
+					wxLogError(wxT("Error from usb_control_msg: %s"), err.c_str());
 					::usb_close(m_handle);
 					return false;
 				} else if (n == 2) {
-					::wxLogMessage(wxT("SI570Controller version: %d.%d"), version[1U], version[0U]);
+					wxLogMessage(wxT("SI570Controller version: %d.%d"), version[1U], version[0U]);
 					return true;
 				} else {
-					::wxLogMessage(wxT("SI570Controller version: unknown"));
+					wxLogMessage(wxT("SI570Controller version: unknown"));
 					return true;
 				}
 			}
 		}
 	}
 
-	::wxLogError(wxT("Could not find the Si570 USB device"));
+	wxLogError(wxT("Could not find the Si570 USB device"));
 
 	return false;
 }
@@ -91,7 +91,7 @@ bool CSI570Controller::setFrequency(const CFrequency& freq)
 	int n = ::usb_control_msg(m_handle, USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT, REQUEST_SET_FREQUENCY, 0U, 0U, (char*)&frequency, 4U, 500);
 	if (n < 0) {
 		wxString err(::usb_strerror(), wxConvLocal);
-		::wxLogError(wxT("Error from usb_control_msg: %s"), err.c_str());
+		wxLogError(wxT("Error from usb_control_msg: %s"), err.c_str());
 		return false;
 	}
 
@@ -106,7 +106,7 @@ bool CSI570Controller::setTransmit(bool tx)
 	int n = ::usb_control_msg(m_handle, USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN, REQUEST_SET_TRANSMIT, value, 0U, &key, 1U, 500);
 	if (n < 0) {
 		wxString err(::usb_strerror(), wxConvLocal);
-		::wxLogError(wxT("Error from usb_control_msg: %s"), err.c_str());
+		wxLogError(wxT("Error from usb_control_msg: %s"), err.c_str());
 		return false;
 	}
 
@@ -142,7 +142,7 @@ bool CSI570Controller::open()
 {
 	m_device = ::libusb_open_device_with_vid_pid(m_context, SI570_VID, SI570_PID);
 	if (m_device == NULL) {
-		::wxLogError(wxT("Could not find the Si570 USB device"));
+		wxLogError(wxT("Could not find the Si570 USB device"));
 		return false;
 	}
 
@@ -151,14 +151,14 @@ bool CSI570Controller::open()
 	unsigned char version[2U];
 	int n = ::libusb_control_transfer(m_device, LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE | LIBUSB_ENDPOINT_IN, REQUEST_GET_VERSION, 0xE00U, 0U, version, 2U, 500);
 	if (n < 0) {
-		::wxLogError(wxT("Error from libusb_control_transfer: err=%d"), n);
+		wxLogError(wxT("Error from libusb_control_transfer: err=%d"), n);
 		::libusb_close(m_device);
 		return false;
 	} else if (n == 2) {
-		::wxLogMessage(wxT("SI570Controller version: %u.%u"), version[1U], version[0U]);
+		wxLogMessage(wxT("SI570Controller version: %u.%u"), version[1U], version[0U]);
 		return true;
 	} else {
-		::wxLogMessage(wxT("SI570Controller version: unknown"));
+		wxLogMessage(wxT("SI570Controller version: unknown"));
 		return true;
 	}
 }
@@ -171,7 +171,7 @@ bool CSI570Controller::setFrequency(const CFrequency& freq)
 
 	int n = ::libusb_control_transfer(m_device, LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE | LIBUSB_ENDPOINT_OUT, REQUEST_SET_FREQUENCY, 0U, 0U, (unsigned char*)&frequency, 4U, 500);
 	if (n < 0) {
-		::wxLogError(wxT("Error from libusb_control_transfer: err=%d"), n);
+		wxLogError(wxT("Error from libusb_control_transfer: err=%d"), n);
 		return false;
 	}
 
@@ -185,7 +185,7 @@ bool CSI570Controller::setTransmit(bool tx)
 	unsigned char key;
 	int n = ::libusb_control_transfer(m_device, LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE | LIBUSB_ENDPOINT_IN, REQUEST_SET_TRANSMIT, value, 0U, &key, 1U, 500);
 	if (n < 0) {
-		::wxLogError(wxT("Error from libusb_control_transfer: err=%d"), n);
+		wxLogError(wxT("Error from libusb_control_transfer: err=%d"), n);
 		return false;
 	}
 
