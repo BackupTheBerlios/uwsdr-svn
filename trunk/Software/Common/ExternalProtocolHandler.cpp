@@ -125,7 +125,7 @@ void CExternalProtocolHandler::clock()
 		// Let our partner know that we're still alive
 		m_pingOutTimer++;
 		if (m_pingOutTimer >= m_pingOutTimeout) {
-			m_socket->write((unsigned char*)"PING\n", 5U, m_remoteAddress, m_remotePort);
+			m_socket->write((unsigned char*)"QRZ\n", 4U, m_remoteAddress, m_remotePort);
 			m_pingOutTimer = 0U;
 		}
 
@@ -191,7 +191,7 @@ void CExternalProtocolHandler::clock()
 			}
 		} else if (m_netBuffer[0U] == 0xFEU) {
 			// Quietly ignore
-		} else if (::memcmp(m_netBuffer, "PING\n", 5U) == 0) {
+		} else if (::memcmp(m_netBuffer, "QRZ\n", 4U) == 0) {
 			m_pingInTimer = 0U;
 		} else if (::memcmp(m_netBuffer, "FREQ ", 5U) == 0) {
 			if (m_transmit) {
